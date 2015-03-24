@@ -1,0 +1,62 @@
+/*
+ * Copyright 2011-2015 UnboundID Corp.
+ * All Rights Reserved.
+ */
+
+package com.unboundid.scim2;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.unboundid.scim2.model.BaseScimObject;
+import com.unboundid.scim2.utils.ScimJsonHelper;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+/**
+ * Tests JsonHelper class.
+ */
+@Test
+public class JsonHelperTest
+{
+  /**
+   * Tests the path and canonical type helpers.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testJsonHelperPath() throws Exception
+  {
+    String testString = "{ \"sv1\" : \"stringValue1\",\n" +
+        "  \"nv1\" : 22,\n" +
+        "  \"nv2\" : 12.30,\n" +
+        "  \"av1\" : [ \"value1\", \"value2\", \"value3\" ],\n" +
+        "  \"av2\" : [\n" +
+        "    {\n" +
+        "        \"address\" : \"home address\",\n" +
+        "        \"type\" : \"home\"\n" +
+        "    }, \n" +
+        "    {\n" +
+        "        \"address\" : \"office address\",\n" +
+        "        \"type\" : \"office\"\n" +
+        "    },\n" +
+        "    {\n" +
+        "        \"address\" : \"other address\",\n" +
+        "        \"type\" : \"other\"\n" +
+        "    }   \n" +
+        "],\n" +
+        "  \"ov1\" :  {\n" +
+        "        \"thing1\" : \"thing1.value\",\n" +
+        "        \"thing2\" : \"thing2.value\"\n" +
+        "    }   \n" +
+        "}";
+
+    ObjectMapper mapper = BaseScimObject.createSCIMCompatibleMapper();
+    ScimJsonHelper helper = new ScimJsonHelper(mapper.readTree(testString));
+
+    Assert.assertEquals(22, helper.path("nv1").intValue());
+    Assert.assertEquals("thing1.value", helper.path("ov1").
+        path("thing1").textValue());
+    Assert.assertEquals(
+        helper.path("av2").getCanonicalType("other")
+            .path("address").textValue(), "other address");
+  }
+}

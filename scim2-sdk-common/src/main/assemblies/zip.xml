@@ -1,0 +1,102 @@
+<!--
+  Copyright 2011-2015 UnboundID Corp.
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License (GPLv2 only)
+  or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
+  as published by the Free Software Foundation.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, see <http://www.gnu.org/licenses>.
+-->
+<assembly
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>scim-sdk</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <outputDirectory>.</outputDirectory>
+            <directory>${project.build.directory}</directory>
+            <includes>
+                <include>3RD_PARTY_LICENSES.txt</include>
+            </includes>
+            <directoryMode>755</directoryMode>
+            <fileMode>644</fileMode>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>.</outputDirectory>
+            <directory>${main.basedir}/resource/licenses</directory>
+            <includes>
+                <include>LICENSE*.txt</include>
+            </includes>
+            <excludes>
+                <exclude>licenseTable.xml</exclude>
+            </excludes>
+            <directoryMode>755</directoryMode>
+            <fileMode>644</fileMode>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>docs/javadoc</outputDirectory>
+            <directory>${project.build.directory}/javadoc</directory>
+            <directoryMode>755</directoryMode>
+            <fileMode>644</fileMode>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>docs/getting-started</outputDirectory>
+            <directory>${project.basedir}/src/main/doc/getting-started</directory>
+            <excludes>
+                <exclude>index.html</exclude>
+            </excludes>
+            <directoryMode>755</directoryMode>
+            <fileMode>644</fileMode>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>docs/getting-started</outputDirectory>
+            <directory>${project.build.directory}/docs/getting-started</directory>
+            <includes>
+                <include>*.html</include>
+            </includes>
+            <directoryMode>755</directoryMode>
+            <fileMode>644</fileMode>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>docs/getting-started/resources</outputDirectory>
+            <directory>${main.basedir}/resource</directory>
+            <includes>
+              <include>unboundid.css</include>
+              <include>**/images/*</include>
+            </includes>
+            <directoryMode>755</directoryMode>
+            <fileMode>644</fileMode>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <outputDirectory>.</outputDirectory>
+            <source>${project.build.directory}/${project.build.finalName}-sources.jar</source>
+            <destName>sources.jar</destName>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <outputDirectory>.</outputDirectory>
+            <source>${main.basedir}/resource/Release-Notes.txt</source>
+            <fileMode>644</fileMode>
+        </file>
+    </files>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <directoryMode>755</directoryMode>
+            <fileMode>644</fileMode>
+        </dependencySet>
+    </dependencySets>
+</assembly>

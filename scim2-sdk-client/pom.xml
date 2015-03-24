@@ -1,0 +1,160 @@
+<!--
+  Copyright 2011-2015 UnboundID Corp.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>scim2-parent</artifactId>
+        <groupId>com.unboundid.product.scim2</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>scim2-sdk-client</artifactId>
+    <packaging>jar</packaging>
+    <name>UnboundID SCIM 2 SDK Client</name>
+
+    <properties>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <headerLocation>config/scim2-ubid.sourceheader</headerLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-source-plugin</artifactId>
+              <executions>
+                <execution>
+                  <!-- A jar of the project sources is required for publishing to
+                       Maven Central. -->
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                  <configuration>
+                    <archive>
+                      <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <id>create-test-jar</id>
+                    <goals>
+                      <goal>test-jar</goal>
+                    </goals>
+                  </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-zip-archive</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${project.basedir}/src/main/assemblies/zip.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                    <execution>
+                    <!-- We use an assembly instead of the maven-javadoc-plugin to
+                         create the javadoc jar (required for publishing to Maven Central)
+                         because we have copied in certain resources to the javadoc directory.
+                         See the SCIM-Parent POM for more info. -->
+                        <id>create-javadoc-archive</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${project.basedir}/src/main/assemblies/javadoc.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                            <appendAssemblyId>true</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-sonatype-bundle</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${project.basedir}/src/main/assemblies/sonatype-bundle.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <finalName>sonatype-bundle</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+      <dependency>
+        <groupId>com.unboundid.product.scim2</groupId>
+        <artifactId>scim2-sdk-common</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+      </dependency>
+
+      <!-- this needs to go ... its the wink server. 
+           doesn't make sense in the client -->
+      <dependency>
+        <groupId>org.apache.wink</groupId>
+        <artifactId>wink-server</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.wink</groupId>
+        <artifactId>wink-server</artifactId>
+        <version>1.4</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <!-- This will pull in wink-client -->
+      <dependency>
+        <groupId>org.apache.wink</groupId>
+        <artifactId>wink-client-apache-httpclient</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.wink</groupId>
+        <artifactId>wink-client</artifactId>
+        <version>1.4</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.wink</groupId>
+        <artifactId>wink-client-apache-httpclient</artifactId>
+        <version>1.4</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.wink</groupId>
+        <artifactId>wink-common</artifactId>
+        <version>1.4</version>
+        <classifier>sources</classifier>
+      </dependency>
+    </dependencies>
+</project>
