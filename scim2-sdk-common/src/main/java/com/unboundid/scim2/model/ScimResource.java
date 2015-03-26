@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Interface that can be used to access data from all scim objects.
  */
-public interface CommonScimObject
+public interface ScimResource
 {
 
   /**
@@ -91,6 +91,6 @@ public interface CommonScimObject
    * @throws Exception thrown if an error is encountered while locating
    * the extension or parsing it.
    */
-  GenericScimObject getExtension(final String schemaId)
+  GenericScimResourceObject getExtension(final String schemaId)
       throws Exception;
 }

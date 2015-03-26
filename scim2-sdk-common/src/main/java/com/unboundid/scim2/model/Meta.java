@@ -6,7 +6,7 @@
 package com.unboundid.scim2.model;
 
 import com.unboundid.scim2.annotations.SchemaProperty;
-import com.unboundid.scim2.schema.SCIM2Attribute;
+import com.unboundid.scim2.schema.AttributeDefinition;
 
 import java.net.URI;
 import java.util.Calendar;
@@ -17,23 +17,23 @@ import java.util.Calendar;
 public class Meta extends BaseScimObject
 {
   @SchemaProperty(description = "The resource Type",
-      mutability = SCIM2Attribute.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String resourceType;
 
   @SchemaProperty(description = "Date and time the resource was created",
-      mutability = SCIM2Attribute.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private Calendar created;
 
   @SchemaProperty(description = "Date and time the resource was last modified",
-      mutability = SCIM2Attribute.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private Calendar lastModified;
 
   @SchemaProperty(description = "The location (URI) of the resource",
-      mutability = SCIM2Attribute.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private URI location;
 
   @SchemaProperty(description = "The version of the resource",
-      mutability = SCIM2Attribute.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String version;
 
   /**

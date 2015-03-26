@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * An attribute in a schema for a SCIM Object.
  */
-public class SCIM2Attribute
+public class AttributeDefinition
 {
 
   /**
@@ -321,14 +321,14 @@ public class SCIM2Attribute
 
   /**
    * The attribute's type.  For the possible values, see:
-   * {@link com.unboundid.scim2.schema.SCIM2Attribute.Type}
+   * {@link AttributeDefinition.Type}
    */
   private String type;
 
   /**
    * The sub-attributes of this attribute.
    */
-  private Collection<SCIM2Attribute> subAttributes;
+  private Collection<AttributeDefinition> subAttributes;
 
   /**
    * A boolean value indicating whether or not this attribute can have
@@ -361,21 +361,21 @@ public class SCIM2Attribute
 
   /**
    * This value indicates the mutability constraints of this attribute.
-   * See {@link com.unboundid.scim2.schema.SCIM2Attribute.Mutability}
+   * See {@link AttributeDefinition.Mutability}
    */
   private String mutability;
 
   /**
    * Indicates the when this attribute will be returned as part of
    * a scim object.
-   * See {@link com.unboundid.scim2.schema.SCIM2Attribute.Returned}
+   * See {@link AttributeDefinition.Returned}
    */
   private String returned;
 
   /**
    * This field represents the uniqueness constraints of this
    * attribute.
-   * See {@link com.unboundid.scim2.schema.SCIM2Attribute.Uniqueness}
+   * See {@link AttributeDefinition.Uniqueness}
    */
   private String uniqueness;
 
@@ -396,14 +396,14 @@ public class SCIM2Attribute
 
     /**
      * The type of the attribute.  For the possible values, see:
-     * {@link com.unboundid.scim2.schema.SCIM2Attribute.Type}
+     * {@link AttributeDefinition.Type}
      */
     private Type type;
 
     /**
      * The sub-attributes of this attribute.
      */
-    private Collection<SCIM2Attribute> subAttributes;
+    private Collection<AttributeDefinition> subAttributes;
 
     /**
      * A boolean value indicating whether or not this attribute can have
@@ -436,21 +436,21 @@ public class SCIM2Attribute
 
     /**
      * This value indicates the mutability constraints of this attribute.
-     * See {@link com.unboundid.scim2.schema.SCIM2Attribute.Mutability}
+     * See {@link AttributeDefinition.Mutability}
      */
     private Mutability mutability;
 
     /**
      * Indicates the when this attribute will be returned as part of
      * a scim object.
-     * See {@link com.unboundid.scim2.schema.SCIM2Attribute.Returned}
+     * See {@link AttributeDefinition.Returned}
      */
     private Returned returned;
 
     /**
      * This field represents the uniqueness constraints of this
      * attribute.
-     * See {@link com.unboundid.scim2.schema.SCIM2Attribute.Uniqueness}
+     * See {@link AttributeDefinition.Uniqueness}
      */
     private Uniqueness uniqueness;
 
@@ -490,7 +490,7 @@ public class SCIM2Attribute
      * @return this.
      */
     public Builder setSubAttributes(
-        final Collection<SCIM2Attribute> subAttributes)
+        final Collection<AttributeDefinition> subAttributes)
     {
       this.subAttributes = subAttributes;
       return this;
@@ -635,9 +635,9 @@ public class SCIM2Attribute
      *
      * @return a new SCIM2Attribute.
      */
-    public SCIM2Attribute build()
+    public AttributeDefinition build()
     {
-      SCIM2Attribute attribute = new SCIM2Attribute();
+      AttributeDefinition attribute = new AttributeDefinition();
       attribute.setName(name);
       attribute.setType((type == null) ? null : type.getName());
       attribute.setSubAttributes(subAttributes);
@@ -659,7 +659,7 @@ public class SCIM2Attribute
   /**
    * Default constructor.  Used mainly for deserialization from JSON
    */
-  public SCIM2Attribute()
+  public AttributeDefinition()
   {
 
   }
@@ -796,7 +796,7 @@ public class SCIM2Attribute
    *
    * @return the subattributes of the attribute.
    */
-  public Collection<SCIM2Attribute> getSubAttributes()
+  public Collection<AttributeDefinition> getSubAttributes()
   {
     return subAttributes;
   }
@@ -806,7 +806,8 @@ public class SCIM2Attribute
    *
    * @param subAttributes the sub-attributes of this attribute.
    */
-  private void setSubAttributes(final Collection<SCIM2Attribute> subAttributes)
+  private void setSubAttributes(
+      final Collection<AttributeDefinition> subAttributes)
   {
     this.subAttributes = subAttributes;
   }
@@ -945,7 +946,7 @@ public class SCIM2Attribute
     builder.append(" isCaseExact: ");
     builder.append(isCaseExact());
     builder.append(System.lineSeparator());
-    for(SCIM2Attribute a : getSubAttributes())
+    for(AttributeDefinition a : getSubAttributes())
     {
       builder.append(a.toIndentedString(indent + "  "));
     }

@@ -16,15 +16,16 @@ import java.io.IOException;
  * Serializer for generic scim objects.
  */
 public class GenericScimObjectSerializer
-    extends JsonSerializer<GenericScimObject>
+    extends JsonSerializer<GenericScimResourceObject>
 {
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void serialize(final GenericScimObject value, final JsonGenerator jgen,
-      final SerializerProvider provider) throws IOException
+  public void serialize(final GenericScimResourceObject value,
+      final JsonGenerator jgen, final SerializerProvider provider)
+      throws IOException
   {
     ObjectMapper om = new ObjectMapper();
     om.writeTree(jgen, value.getJsonNode());

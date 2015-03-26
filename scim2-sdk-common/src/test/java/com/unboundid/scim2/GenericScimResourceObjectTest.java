@@ -6,10 +6,10 @@
 package com.unboundid.scim2;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.unboundid.scim2.model.BaseScimObject;
-import com.unboundid.scim2.model.CommonScimObject;
-import com.unboundid.scim2.model.GenericScimObject;
+import com.unboundid.scim2.model.ScimResource;
+import com.unboundid.scim2.model.GenericScimResourceObject;
 import com.unboundid.scim2.model.Meta;
+import com.unboundid.scim2.schema.SchemaUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -23,7 +23,7 @@ import java.util.TimeZone;
  * Tests generic scim objects.
  */
 @Test
-public class GenericScimObjectTest
+public class GenericScimResourceObjectTest
 {
   private DateFormat dateFormat =
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -31,7 +31,7 @@ public class GenericScimObjectTest
   /**
    * Constructor.  Sets up the dateFormat.
    */
-  public GenericScimObjectTest()
+  public GenericScimResourceObjectTest()
   {
     dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
   }
@@ -44,7 +44,7 @@ public class GenericScimObjectTest
   @Test
   public void testBasicParsing() throws Exception
   {
-    JsonNode node = BaseScimObject.createSCIMCompatibleMapper().
+    JsonNode node = SchemaUtils.createSCIMCompatibleMapper().
         readTree("{\n" +
             "    \"externalId\": \"user:externalId\",\n" +
             "    \"id\": \"user:id\",\n" +
@@ -72,10 +72,10 @@ public class GenericScimObjectTest
             "    \"userName\": \"user:username\"\n" +
             "}");
 
-    GenericScimObject gso = new GenericScimObject();
+    GenericScimResourceObject gso = new GenericScimResourceObject();
     gso.setJsonNode(node);
 
-    CommonScimObject cso = gso;
+    ScimResource cso = gso;
 
     Set<String> schemaSet = new HashSet<String>();
     schemaSet.add("urn:unboundid:schemas:baseSchema");
@@ -96,6 +96,7 @@ public class GenericScimObjectTest
     Assert.assertEquals("1.0", meta.getVersion());
 
     Assert.assertEquals("12W",
-        ((GenericScimObject)cso).getJsonNode().path("shoeSize").asText());
+        ((GenericScimResourceObject)cso).getJsonNode().path("shoeSize")
+            .asText());
   }
 }

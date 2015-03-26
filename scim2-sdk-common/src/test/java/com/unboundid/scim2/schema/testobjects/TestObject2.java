@@ -8,7 +8,7 @@ package com.unboundid.scim2.schema.testobjects;
 import com.unboundid.scim2.annotations.SchemaInfo;
 import com.unboundid.scim2.annotations.SchemaProperty;
 import com.unboundid.scim2.model.BaseScimResourceObject;
-import com.unboundid.scim2.schema.SCIM2Attribute;
+import com.unboundid.scim2.schema.AttributeDefinition;
 
 /**
  * Test class.
@@ -23,38 +23,38 @@ public class TestObject2 extends BaseScimResourceObject
 
   @SchemaProperty(description = "description:booleanObjectField",
       isCaseExact = true, isRequired = false,
-      returned = SCIM2Attribute.Returned.REQUEST)
+      returned = AttributeDefinition.Returned.REQUEST)
   private Boolean booleanObjectField;
 
   @SchemaProperty(description = "description:booleanField",
       isCaseExact = false, isRequired = false,
-      returned = SCIM2Attribute.Returned.NEVER)
+      returned = AttributeDefinition.Returned.NEVER)
   private boolean booleanField;
 
   @SchemaProperty(description = "description:integerObjectField",
       isCaseExact = false, isRequired = true,
-      returned = SCIM2Attribute.Returned.DEFAULT)
+      returned = AttributeDefinition.Returned.DEFAULT)
   private Integer integerObjectField;
 
   @SchemaProperty(description = "description:integerField",
       isCaseExact = true, isRequired = true,
-      returned = SCIM2Attribute.Returned.ALWAYS)
+      returned = AttributeDefinition.Returned.ALWAYS)
   private int integerField;
 
   @SchemaProperty(description = "description:mutabilityImmutable",
-      mutability = SCIM2Attribute.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private String mutabilityImmutable;
 
   @SchemaProperty(description = "description:mutabilityReadWrite",
-      mutability = SCIM2Attribute.Mutability.READ_WRITE)
+      mutability = AttributeDefinition.Mutability.READ_WRITE)
   private String mutabilityReadWrite;
 
   @SchemaProperty(description = "description:mutabilityWriteOnly",
-      mutability = SCIM2Attribute.Mutability.WRITE_ONLY)
+      mutability = AttributeDefinition.Mutability.WRITE_ONLY)
   private String mutabilityWriteOnly;
 
   @SchemaProperty(description = "description:mutabilityReadOnly",
-      mutability = SCIM2Attribute.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String mutabilityReadOnly;
 
   /**

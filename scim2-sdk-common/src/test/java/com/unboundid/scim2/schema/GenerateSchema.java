@@ -6,7 +6,6 @@
 package com.unboundid.scim2.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unboundid.scim2.model.BaseScimObject;
 import com.unboundid.scim2.schema.testobjects.TestObject1;
 import com.unboundid.scim2.schema.testobjects.TestObject2;
 import com.unboundid.scim2.schema.testobjects.TestObject3;
@@ -57,7 +56,7 @@ public class GenerateSchema
   public void testCase1() throws Exception
   {
     SchemaDefinition schemaDefinition =
-        BaseScimObject.getSchema(TestObject1.class);
+        SchemaUtils.getSchema(TestObject1.class);
     String schemaJsonString = mapper.writeValueAsString(schemaDefinition);
   }
 
@@ -70,7 +69,7 @@ public class GenerateSchema
   public void testCase2() throws Exception
   {
     SchemaDefinition schemaDefinition =
-        BaseScimObject.getSchema(TestObject2.class);
+        SchemaUtils.getSchema(TestObject2.class);
 
     tc2_checkSchema(schemaDefinition);
 
@@ -80,7 +79,7 @@ public class GenerateSchema
         "mutabilityWriteOnly", "mutabilityImmutable");
     addBaseResourceObjectFields(expectedAttributes);
 
-    for(SCIM2Attribute attribute : schemaDefinition.getAttributes())
+    for(AttributeDefinition attribute : schemaDefinition.getAttributes())
     {
       if(attribute.getName().equals("stringField" ))
       {
@@ -88,7 +87,7 @@ public class GenerateSchema
         //        isCaseExact = true, isRequired = true)
         checkAttribute(attribute, "description:stringField",
             Required.REQUIRED, CaseExact.CASE_EXACT, Multivalued.DEFAULT,
-            SCIM2Attribute.Type.STRING, null,
+            AttributeDefinition.Type.STRING, null,
             null, null, null, null);
       }
       else if(attribute.getName().equals("booleanObjectField" ))
@@ -98,8 +97,8 @@ public class GenerateSchema
         //        returned = SCIM2Attribute.Returned.REQUEST)
         checkAttribute(attribute, "description:booleanObjectField",
             Required.NOT_REQUIRED, CaseExact.CASE_EXACT,
-            Multivalued.DEFAULT, SCIM2Attribute.Type.BOOLEAN,
-            SCIM2Attribute.Returned.REQUEST,
+            Multivalued.DEFAULT, AttributeDefinition.Type.BOOLEAN,
+            AttributeDefinition.Returned.REQUEST,
             null, null, null, null);
       }
       else if(attribute.getName().equals("booleanField" ))
@@ -110,8 +109,8 @@ public class GenerateSchema
 
         checkAttribute(attribute, "description:booleanField",
             Required.NOT_REQUIRED, CaseExact.NOT_CASE_EXACT,
-            Multivalued.DEFAULT, SCIM2Attribute.Type.BOOLEAN,
-            SCIM2Attribute.Returned.NEVER,
+            Multivalued.DEFAULT, AttributeDefinition.Type.BOOLEAN,
+            AttributeDefinition.Returned.NEVER,
             null, null, null, null);
       }
       else if(attribute.getName().equals("integerObjectField" ))
@@ -122,8 +121,8 @@ public class GenerateSchema
 
         checkAttribute(attribute, "description:integerObjectField",
             Required.REQUIRED, CaseExact.NOT_CASE_EXACT,
-            Multivalued.DEFAULT, SCIM2Attribute.Type.INTEGER,
-            SCIM2Attribute.Returned.DEFAULT,
+            Multivalued.DEFAULT, AttributeDefinition.Type.INTEGER,
+            AttributeDefinition.Returned.DEFAULT,
             null, null, null, null);
       }
       else if(attribute.getName().equals("integerField" ))
@@ -133,8 +132,8 @@ public class GenerateSchema
         //        returned = SCIM2Attribute.Returned.ALWAYS)
         checkAttribute(attribute, "description:integerField",
             Required.REQUIRED, CaseExact.CASE_EXACT,
-            Multivalued.DEFAULT, SCIM2Attribute.Type.INTEGER,
-            SCIM2Attribute.Returned.ALWAYS,
+            Multivalued.DEFAULT, AttributeDefinition.Type.INTEGER,
+            AttributeDefinition.Returned.ALWAYS,
             null, null, null, null);
       }
       else if(attribute.getName().equals("mutabilityReadWrite" ))
@@ -143,8 +142,8 @@ public class GenerateSchema
         //        mutability = SCIM2Attribute.Mutability.READ_WRITE)
         checkAttribute(attribute, "description:mutabilityReadWrite",
             Required.DEFAULT, CaseExact.DEFAULT,
-            Multivalued.DEFAULT, SCIM2Attribute.Type.STRING,
-            null, SCIM2Attribute.Mutability.READ_WRITE, null, null, null);
+            Multivalued.DEFAULT, AttributeDefinition.Type.STRING,
+            null, AttributeDefinition.Mutability.READ_WRITE, null, null, null);
       }
       else if(attribute.getName().equals("mutabilityReadOnly" ))
       {
@@ -152,8 +151,8 @@ public class GenerateSchema
         //        mutability = SCIM2Attribute.Mutability.READ_ONLY)
         checkAttribute(attribute, "description:mutabilityReadOnly",
             Required.DEFAULT, CaseExact.DEFAULT,
-            Multivalued.DEFAULT, SCIM2Attribute.Type.STRING,
-            null, SCIM2Attribute.Mutability.READ_ONLY, null, null, null);
+            Multivalued.DEFAULT, AttributeDefinition.Type.STRING,
+            null, AttributeDefinition.Mutability.READ_ONLY, null, null, null);
       }
       else if(attribute.getName().equals("mutabilityWriteOnly" ))
       {
@@ -161,8 +160,8 @@ public class GenerateSchema
         //        mutability = SCIM2Attribute.Mutability.WRITE_ONLY)
         checkAttribute(attribute, "description:mutabilityWriteOnly",
             Required.DEFAULT, CaseExact.DEFAULT, Multivalued.DEFAULT,
-            SCIM2Attribute.Type.STRING, null,
-            SCIM2Attribute.Mutability.WRITE_ONLY,
+            AttributeDefinition.Type.STRING, null,
+            AttributeDefinition.Mutability.WRITE_ONLY,
             null, null, null);
       }
       else if(attribute.getName().equals("mutabilityImmutable" ))
@@ -171,8 +170,8 @@ public class GenerateSchema
         //        mutability = SCIM2Attribute.Mutability.IMMUTABLE)
         checkAttribute(attribute, "description:mutabilityImmutable",
             Required.DEFAULT, CaseExact.DEFAULT, Multivalued.DEFAULT,
-            SCIM2Attribute.Type.STRING, null,
-            SCIM2Attribute.Mutability.IMMUTABLE,
+            AttributeDefinition.Type.STRING, null,
+            AttributeDefinition.Mutability.IMMUTABLE,
             null, null, null);
       }
 
@@ -191,14 +190,14 @@ public class GenerateSchema
   public void testCase3() throws Exception
   {
     SchemaDefinition schemaDefinition =
-        BaseScimObject.getSchema(TestObject3.class);
+        SchemaUtils.getSchema(TestObject3.class);
 
     List<String> expectedAttributes = makeModifiableList("complexObject",
         "multiValuedString", "multiValuedComplex",
         "multiValuedField_missingType");
     addBaseResourceObjectFields(expectedAttributes);
 
-    for (SCIM2Attribute attribute : schemaDefinition.getAttributes())
+    for (AttributeDefinition attribute : schemaDefinition.getAttributes())
     {
       if (attribute.getName().equals("complexObject"))
       {
@@ -225,27 +224,28 @@ public class GenerateSchema
     Assert.assertEquals(schemaDefinition.getName(), "name:TestObject1");
   }
 
-  private void tc3_checkComplexObject(SCIM2Attribute attribute)
+  private void tc3_checkComplexObject(AttributeDefinition attribute)
   {
     checkAttribute(attribute, "description:complexObject",
         Required.DEFAULT, CaseExact.DEFAULT, Multivalued.DEFAULT,
-        SCIM2Attribute.Type.COMPLEX, null,
+        AttributeDefinition.Type.COMPLEX, null,
         null, null, null, null);
 
-    Collection<SCIM2Attribute> subAttributes = attribute.getSubAttributes();
+    Collection<AttributeDefinition> subAttributes =
+        attribute.getSubAttributes();
     Assert.assertTrue(subAttributes != null);
     Assert.assertTrue(subAttributes.size() > 0);
     List<String> expectedAttributes = makeModifiableList("stringField_3a");
     addBaseResourceObjectFields(expectedAttributes);
 
-    for(SCIM2Attribute subAttribute : subAttributes)
+    for(AttributeDefinition subAttribute : subAttributes)
     {
       if(subAttribute.getName().equals("stringField_3a"))
       {
         //   @SchemaProperty(description = "description:stringField_3a")
         checkAttribute(subAttribute, "description:stringField_3a",
             Required.DEFAULT, CaseExact.DEFAULT, Multivalued.DEFAULT,
-            SCIM2Attribute.Type.STRING, null,
+            AttributeDefinition.Type.STRING, null,
             null, null, null, null);
       }
 
@@ -256,24 +256,25 @@ public class GenerateSchema
     checkAllAttributesFound(expectedAttributes);
   }
 
-  private void tc3_checkMultiValuedString(SCIM2Attribute attribute)
+  private void tc3_checkMultiValuedString(AttributeDefinition attribute)
   {
 //    @SchemaProperty(description = "description:multiValuedString",
 //        canonicalValues = {"one", "two", "three"})
 
     checkAttribute(attribute, "description:multiValuedString",
         Required.DEFAULT, CaseExact.DEFAULT, Multivalued.MULTIVALUED,
-        SCIM2Attribute.Type.COMPLEX, null, null, null,
+        AttributeDefinition.Type.COMPLEX, null, null, null,
         new HashSet(makeModifiableList("one", "two", "three")), null);
 
-    Collection<SCIM2Attribute> subAttributes = attribute.getSubAttributes();
+    Collection<AttributeDefinition> subAttributes =
+        attribute.getSubAttributes();
     Assert.assertTrue(subAttributes != null);
     Assert.assertTrue(subAttributes.size() > 0);
     List<String> expectedAttributes = new LinkedList<String>();
     addSubAttributeFields(expectedAttributes);
     addBaseResourceObjectFields(expectedAttributes);
 
-    for(SCIM2Attribute subAttribute : subAttributes)
+    for(AttributeDefinition subAttribute : subAttributes)
     {
       markAttributeFound(expectedAttributes, subAttribute);
     }
@@ -281,26 +282,27 @@ public class GenerateSchema
     checkAllAttributesFound(expectedAttributes);
   }
 
-  private void checkAttribute(SCIM2Attribute attribute,
+  private void checkAttribute(AttributeDefinition attribute,
       String description, Required required, CaseExact caseExact,
-      Multivalued multivalued, SCIM2Attribute.Type type,
-      SCIM2Attribute.Returned returned, SCIM2Attribute.Mutability mutability,
-      SCIM2Attribute.Uniqueness uniqueness, Set canonicalValues,
+      Multivalued multivalued, AttributeDefinition.Type type,
+      AttributeDefinition.Returned returned,
+      AttributeDefinition.Mutability mutability,
+      AttributeDefinition.Uniqueness uniqueness, Set canonicalValues,
       String referenceType)
   {
     if (mutability == null)
     {
-      mutability = SCIM2Attribute.Mutability.READ_WRITE;
+      mutability = AttributeDefinition.Mutability.READ_WRITE;
     }
 
     if(returned  == null)
     {
-      returned = SCIM2Attribute.Returned.DEFAULT;
+      returned = AttributeDefinition.Returned.DEFAULT;
     }
 
     if(uniqueness == null)
     {
-      uniqueness = SCIM2Attribute.Uniqueness.NONE;
+      uniqueness = AttributeDefinition.Uniqueness.NONE;
     }
 
     Assert.assertEquals(attribute.getDescription(), description);
@@ -361,7 +363,7 @@ public class GenerateSchema
   }
 
   private void markAttributeFound(List<String> expectedAttributes,
-                                  SCIM2Attribute attribute)
+                                  AttributeDefinition attribute)
   {
     if(expectedAttributes.contains(attribute.getName()))
     {

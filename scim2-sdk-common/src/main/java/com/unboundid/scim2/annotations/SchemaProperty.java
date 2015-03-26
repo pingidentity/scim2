@@ -6,7 +6,7 @@
 package com.unboundid.scim2.annotations;
 
 
-import com.unboundid.scim2.schema.SCIM2Attribute;
+import com.unboundid.scim2.schema.AttributeDefinition;
 
 import javax.lang.model.type.NullType;
 import java.lang.annotation.ElementType;
@@ -44,12 +44,14 @@ public @interface SchemaProperty
   /**
    * The return constraint for the attribute.
    */
-  SCIM2Attribute.Returned returned() default SCIM2Attribute.Returned.DEFAULT;
+  AttributeDefinition.Returned returned()
+      default AttributeDefinition.Returned.DEFAULT;
 
   /**
    * The uniqueness constraint for the attribute.
    */
-  SCIM2Attribute.Uniqueness uniqueness() default SCIM2Attribute.Uniqueness.NONE;
+  AttributeDefinition.Uniqueness uniqueness()
+      default AttributeDefinition.Uniqueness.NONE;
 
   /**
    * The reference type for the attribute.
@@ -59,8 +61,8 @@ public @interface SchemaProperty
   /**
    * The mutability constraint for the attribute.
    */
-  SCIM2Attribute.Mutability mutability() default
-      SCIM2Attribute.Mutability.READ_WRITE;
+  AttributeDefinition.Mutability mutability() default
+      AttributeDefinition.Mutability.READ_WRITE;
 
   /**
    * If the attribute is multi-value, this holds the type of the

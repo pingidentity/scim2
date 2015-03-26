@@ -7,7 +7,7 @@ package com.unboundid.scim2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.annotations.SchemaProperty;
-import com.unboundid.scim2.schema.SCIM2Attribute;
+import com.unboundid.scim2.schema.AttributeDefinition;
 
 import java.net.URI;
 
@@ -42,7 +42,7 @@ public class ScimMultiValuedObject<T>
    * The display name for this value.  For example:  "Work phone number".
    */
   @SchemaProperty(description = "The display name of the sub attribute.",
-      mutability = SCIM2Attribute.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.IMMUTABLE)
   String display;
 
   /**

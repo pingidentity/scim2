@@ -17,18 +17,18 @@ import java.io.IOException;
  * Deserializer for the GenericScimObject.
  */
 public class GenericScimObjectDeserializer
-    extends JsonDeserializer<GenericScimObject>
+    extends JsonDeserializer<GenericScimResourceObject>
 {
   /**
    * {@inheritDoc}
    */
   @Override
-  public GenericScimObject deserialize(final JsonParser jp,
+  public GenericScimResourceObject deserialize(final JsonParser jp,
       final DeserializationContext ctxt) throws IOException
   {
     ObjectMapper objectMapper = new ObjectMapper();
     JsonNode jsonNode = objectMapper.readTree(jp);
-    GenericScimObject newObject = new GenericScimObject();
+    GenericScimResourceObject newObject = new GenericScimResourceObject();
     newObject.setJsonNode(jsonNode);
     return newObject;
   }

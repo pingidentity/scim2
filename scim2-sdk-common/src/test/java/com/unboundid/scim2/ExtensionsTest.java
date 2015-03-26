@@ -11,10 +11,11 @@ import com.unboundid.scim2.annotations.SchemaInfo;
 import com.unboundid.scim2.annotations.SchemaProperty;
 import com.unboundid.scim2.model.BaseScimObject;
 import com.unboundid.scim2.model.BaseScimResourceObject;
-import com.unboundid.scim2.model.CommonScimObject;
-import com.unboundid.scim2.model.GenericScimObject;
+import com.unboundid.scim2.model.ScimResource;
+import com.unboundid.scim2.model.GenericScimResourceObject;
 import com.unboundid.scim2.model.Meta;
-import com.unboundid.scim2.schema.SCIM2Attribute;
+import com.unboundid.scim2.schema.AttributeDefinition;
+import com.unboundid.scim2.schema.SchemaUtils;
 import com.unboundid.scim2.utils.ScimJsonHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,7 +44,7 @@ public class ExtensionsTest
     private CoreClass_Name name;
 
     @SchemaProperty(description = "The user's password",
-        mutability = SCIM2Attribute.Mutability.WRITE_ONLY)
+        mutability = AttributeDefinition.Mutability.WRITE_ONLY)
     private String password;
 
     /**
@@ -191,7 +192,7 @@ public class ExtensionsTest
   @Test
   public void testJsonGeneration_annotations() throws Exception
   {
-    ObjectMapper mapper = BaseScimResourceObject.createSCIMCompatibleMapper();
+    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
 
     CoreClass_User user = getBasicUser();
     String userString = mapper.writeValueAsString(user);
@@ -223,7 +224,7 @@ public class ExtensionsTest
   @Test
   public void testJsonParsing_annotations() throws Exception
   {
-    ObjectMapper mapper = BaseScimResourceObject.createSCIMCompatibleMapper();
+    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
 
     String jsonString = "{\n" +
         "    \"externalId\": \"user:externalId\",\n" +
@@ -279,17 +280,18 @@ public class ExtensionsTest
   @Test
   public void testGetExtensionAsGenericScimObject() throws Exception
   {
-    CommonScimObject commonScimObject = getGenericUser();
+    ScimResource commonScimObject = getGenericUser();
 
     ExtensionClass extensionClass =
         commonScimObject.getExtension(ExtensionClass.class);
-    GenericScimObject genericScimObject =
+    GenericScimResourceObject genericScimResourceObject =
         commonScimObject.getExtension("urn:unboundid:schemas:favoriteColor");
 
     Assert.assertEquals(extensionClass.getFavoriteColor(),
         "extension:favoritecolor");
 
-    ScimJsonHelper helper = new ScimJsonHelper(genericScimObject.getJsonNode());
+    ScimJsonHelper helper = new ScimJsonHelper(
+        genericScimResourceObject.getJsonNode());
     Assert.assertEquals(helper.path("favoriteColor").asText(),
         extensionClass.getFavoriteColor());
   }
@@ -334,9 +336,9 @@ public class ExtensionsTest
    * @return a GenericScimObject user for tests.
    * @throws Exception thrown if an error occurs.
    */
-  private GenericScimObject getGenericUser() throws Exception
+  private GenericScimResourceObject getGenericUser() throws Exception
   {
-    ObjectMapper mapper = BaseScimResourceObject.createSCIMCompatibleMapper();
+    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
 
     String jsonString = "{\n" +
         "    \"externalId\": \"user:externalId\",\n" +
@@ -364,8 +366,8 @@ public class ExtensionsTest
         "    \"userName\": \"user:username\"\n" +
         "}";
 
-    GenericScimObject user =
-        mapper.readValue(jsonString, GenericScimObject.class);
+    GenericScimResourceObject user =
+        mapper.readValue(jsonString, GenericScimResourceObject.class);
     return user;
   }
 }

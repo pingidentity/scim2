@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.schema.SchemaUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -18,10 +19,25 @@ import java.util.Set;
 /**
  * A generic SCIM object.  This object can be used if you have no
  * java object representing the SCIM object being returned.
+ *
+ * This object can be used when the exact structure of the SCIM object
+ * that will be recieved as JSON text is not known.  This will provide
+ * methods that can read attributes from those objects without needing
+ * to know the schema ahead of time.  Another way to work with SCIM
+ * objects is when you know ahead of time what the schema will be.  In
+ * that case you could still use this object, but BaseScimResourceObject
+ * might be a better choice.
+ *
+ * If you have a BaseScimResourceObject derived object, you can always get a
+ * GenericScimResourceObject by serializing The BaseScimResourceObject
+ * derived object into a JSON string, and deserializing back to a
+ * GenericScimResourceObject.  You could also go the other way.
+ *
+ * @See BaseScimResourceObject
  */
 @JsonDeserialize(using = GenericScimObjectDeserializer.class)
 @JsonSerialize(using = GenericScimObjectSerializer.class)
-public final class GenericScimObject implements CommonScimObject
+public final class GenericScimResourceObject implements ScimResource
 {
   private JsonNode jsonNode;
   private ThreadLocal<ObjectMapper> objectMapperThreadLocal =
@@ -104,16 +120,17 @@ public final class GenericScimObject implements CommonScimObject
   public <T> T getExtension(final Class<T> cl) throws Exception
   {
     return getObjectFromJsonNode(
-        BaseScimObject.getSchemaIdFromAnnotation(cl), cl);
+        SchemaUtils.getSchemaIdFromAnnotation(cl), cl);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public GenericScimObject getExtension(final String schemaId) throws Exception
+  public GenericScimResourceObject getExtension(final String schemaId)
+      throws Exception
   {
-    return getObjectFromJsonNode(schemaId, GenericScimObject.class);
+    return getObjectFromJsonNode(schemaId, GenericScimResourceObject.class);
   }
 
   /**

@@ -6,7 +6,7 @@
 package com.unboundid.scim2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unboundid.scim2.model.BaseScimObject;
+import com.unboundid.scim2.schema.SchemaUtils;
 import com.unboundid.scim2.utils.ScimJsonHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -49,7 +49,7 @@ public class JsonHelperTest
         "    }   \n" +
         "}";
 
-    ObjectMapper mapper = BaseScimObject.createSCIMCompatibleMapper();
+    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
     ScimJsonHelper helper = new ScimJsonHelper(mapper.readTree(testString));
 
     Assert.assertEquals(22, helper.path("nv1").intValue());

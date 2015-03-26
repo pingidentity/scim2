@@ -5,11 +5,9 @@
 
 package com.unboundid.scim2.schema;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.model.BaseScimResourceObject;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * This represents a SCIM schema.
@@ -43,7 +41,7 @@ public class SchemaDefinition extends BaseScimResourceObject
   /**
    * Attributes of the object described by this schema.
    */
-  private Collection<SCIM2Attribute> attributes;
+  private Collection<AttributeDefinition> attributes;
 
   /**
    * Gets the object's name.
@@ -87,7 +85,7 @@ public class SchemaDefinition extends BaseScimResourceObject
    *
    * @return the attributes of the SCIM object.
    */
-  public Collection<SCIM2Attribute> getAttributes()
+  public Collection<AttributeDefinition> getAttributes()
   {
     return attributes;
   }
@@ -96,7 +94,7 @@ public class SchemaDefinition extends BaseScimResourceObject
    * Sets the attributes of the SCIM object in the schema.
    * @param attributes attributes of the SCIM object in the schema.
    */
-  public void setAttributes(final Collection<SCIM2Attribute> attributes)
+  public void setAttributes(final Collection<AttributeDefinition> attributes)
   {
     this.attributes = attributes;
   }
@@ -119,10 +117,10 @@ public class SchemaDefinition extends BaseScimResourceObject
     this.id = id;
   }
 
-  @Override
-  public Map<String, JsonNode> getExtensions()
-  {
-    return null;
-  }
-
+//  @Override
+//  public Map<String, JsonNode> getExtensions()
+//  {
+//    return null;
+//  }
+//
 }
