@@ -1,18 +1,28 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
+ */
+
 package com.unboundid.scim2.filters;
 
 import java.util.Collections;
 import java.util.List;
 
 /**
-* Created by boli on 3/26/15.
-*/
+ * Logical combining filter.
+ */
 public abstract class CombiningFilter extends Filter
 {
   private final List<Filter> filterComponents;
 
-  CombiningFilter(List<Filter> filterComponents)
+  /**
+   * Create a new logical combining filter.
+   *
+   * @param filterComponents The filter components to combine.
+   */
+  CombiningFilter(final List<Filter> filterComponents)
   {
-    this.filterComponents = filterComponents;
+    this.filterComponents = Collections.unmodifiableList(filterComponents);
   }
 
   /**
@@ -30,14 +40,14 @@ public abstract class CombiningFilter extends Filter
   @Override
   public List<Filter> getCombinedFilters()
   {
-    return Collections.unmodifiableList(filterComponents);
+    return filterComponents;
   }
 
   /**
    * Append the string representation of the filter to the provided buffer.
    *
-   * @param builder  The buffer to which the string representation of the
-   *                 filter is to be appended.
+   * @param builder The buffer to which the string representation of the
+   *                filter is to be appended.
    */
   public void toString(final StringBuilder builder)
   {

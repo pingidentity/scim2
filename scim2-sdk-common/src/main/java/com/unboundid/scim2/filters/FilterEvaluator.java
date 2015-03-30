@@ -1,3 +1,8 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
+ */
+
 package com.unboundid.scim2.filters;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,24 +15,37 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by boli on 3/26/15.
+ * A filter visitor that will evaluate a filter on a JsonNode and return
+ * whether the JsonNode matches the filter.
  */
 public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
 {
   private static final FilterEvaluator SINGLETON = new FilterEvaluator();
 
-  public static boolean evaluate(Filter filter, JsonNode jsonNode)
+  /**
+   * Evaluate the provided filter against the provided JsonNode.
+   *
+   * @param filter   The filter to evaluate.
+   * @param jsonNode The JsonNode to evaluate the filter against.
+   * @return {@code true} if the JsonNode matches the filter or {@code false}
+   * otherwise.
+   * @throws SCIMException If the filter is not valid for matching.
+   */
+  public static boolean evaluate(final Filter filter, final JsonNode jsonNode)
       throws SCIMException
   {
     return filter.visit(SINGLETON, jsonNode);
   }
 
-  public Boolean visit(EqualFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final EqualFilter filter, final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    if(filter.getComparisonValue().isNull() && nodes.isEmpty())
+    if (filter.getComparisonValue().isNull() && nodes.isEmpty())
     {
       // draft-ietf-scim-core-schema section 2.4 states "Unassigned
       // attributes, the null value, or empty array (in the case of
@@ -35,24 +53,25 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
       // equivalent in "state".
       return true;
     }
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
-      if(node.isTextual() && filter.getComparisonValue().isTextual())
+      if (node.isTextual() && filter.getComparisonValue().isTextual())
       {
         Date dateValue = dateValue(node);
         Date compareDateValue = dateValue(filter.getComparisonValue());
-        if(dateValue != null && compareDateValue != null &&
-            dateValue.compareTo(compareDateValue) == 0)
+        if (dateValue != null && compareDateValue != null)
         {
-          return true;
-        }
-        if (node.textValue().equalsIgnoreCase(
+          if (dateValue.compareTo(compareDateValue) == 0)
+          {
+            return true;
+          }
+        } else if (node.textValue().equalsIgnoreCase(
             filter.getComparisonValue().textValue()))
         {
           return true;
         }
       }
-      if(node.equals(filter.getComparisonValue()))
+      if (node.equals(filter.getComparisonValue()))
       {
         return true;
       }
@@ -60,12 +79,15 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     return false;
   }
 
-  public Boolean visit(NotEqualFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final NotEqualFilter filter, final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    if(filter.getComparisonValue().isNull() && nodes.isEmpty())
+    if (filter.getComparisonValue().isNull() && nodes.isEmpty())
     {
       // draft-ietf-scim-core-schema section 2.4 states "Unassigned
       // attributes, the null value, or empty array (in the case of
@@ -73,39 +95,43 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
       // equivalent in "state".
       return false;
     }
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
-      if(node.isTextual() && filter.getComparisonValue().isTextual())
+      if (node.isTextual() && filter.getComparisonValue().isTextual())
       {
         Date dateValue = dateValue(node);
         Date compareDateValue = dateValue(filter.getComparisonValue());
-        if(dateValue != null && compareDateValue != null &&
-            dateValue.compareTo(compareDateValue) != 0)
+        if (dateValue != null && compareDateValue != null)
         {
-          return true;
-        }
-        if (!node.textValue().equalsIgnoreCase(
+          if (dateValue.compareTo(compareDateValue) == 0)
+          {
+            return false;
+          }
+        } else if (node.textValue().equalsIgnoreCase(
             filter.getComparisonValue().textValue()))
         {
-          return true;
+          return false;
         }
       }
-      if(!node.equals(filter.getComparisonValue()))
+      if (node.equals(filter.getComparisonValue()))
       {
-        return true;
+        return false;
       }
     }
-    return false;
+    return true;
   }
 
-  public Boolean visit(ContainsFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final ContainsFilter filter, final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
-      if(node.isTextual() && filter.getComparisonValue().isTextual() &&
+      if (node.isTextual() && filter.getComparisonValue().isTextual() &&
           node.textValue().toLowerCase().contains(
               filter.getComparisonValue().textValue().toLowerCase()) ||
           node.equals(filter.getComparisonValue()))
@@ -116,14 +142,17 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     return false;
   }
 
-  public Boolean visit(StartsWithFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final StartsWithFilter filter, final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
-      if(node.isTextual() && filter.getComparisonValue().isTextual() &&
+      if (node.isTextual() && filter.getComparisonValue().isTextual() &&
           node.textValue().toLowerCase().startsWith(
               filter.getComparisonValue().textValue().toLowerCase()) ||
           node.equals(filter.getComparisonValue()))
@@ -134,14 +163,17 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     return false;
   }
 
-  public Boolean visit(EndsWithFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final EndsWithFilter filter, final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
-      if(node.isTextual() && filter.getComparisonValue().isTextual() &&
+      if (node.isTextual() && filter.getComparisonValue().isTextual() &&
           node.textValue().toLowerCase().endsWith(
               filter.getComparisonValue().textValue().toLowerCase()) ||
           node.equals(filter.getComparisonValue()))
@@ -152,18 +184,21 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     return false;
   }
 
-  public Boolean visit(PresentFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final PresentFilter filter, final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
       // draft-ietf-scim-core-schema section 2.4 states "Unassigned
       // attributes, the null value, or empty array (in the case of
       // a multi-valued attribute) SHALL be considered to be
       // equivalent in "state".
-      if(!node.isNull())
+      if (!node.isNull())
       {
         return true;
       }
@@ -171,172 +206,201 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     return false;
   }
 
-  public Boolean visit(GreaterThanFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final GreaterThanFilter filter, final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
-      if(node.isBoolean() || node.isBinary())
+      if (node.isBoolean() || node.isBinary())
       {
         throw new InvalidResourceException("Greater than filter may not " +
             "compare boolean or binary attribute values");
       }
-      if(node.isTextual() && filter.getComparisonValue().isTextual())
+      if (node.isTextual() && filter.getComparisonValue().isTextual())
       {
         Date dateValue = dateValue(node);
         Date compareDateValue = dateValue(filter.getComparisonValue());
-        if(dateValue != null && compareDateValue != null &&
-            dateValue.compareTo(compareDateValue) > 0)
+        if (dateValue != null && compareDateValue != null)
         {
-          return true;
-        }
-        if(node.textValue().compareToIgnoreCase(
+          if (dateValue.compareTo(compareDateValue) > 0)
+          {
+            return true;
+          }
+        } else if (node.textValue().compareToIgnoreCase(
             filter.getComparisonValue().textValue()) > 0)
         {
           return true;
         }
       }
-      if(node.isNumber() && filter.getComparisonValue().isNumber())
+      if (node.isNumber() && filter.getComparisonValue().isNumber())
       {
-        if((node.isFloatingPointNumber() ?
+        if ((node.isFloatingPointNumber() ?
             node.doubleValue() : node.longValue()) >
             (filter.getComparisonValue().isFloatingPointNumber() ?
                 filter.getComparisonValue().doubleValue() :
                 filter.getComparisonValue().longValue()))
+        {
           return true;
+        }
       }
     }
     return false;
   }
 
-  public Boolean visit(GreaterThanOrEqualFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final GreaterThanOrEqualFilter filter,
+                       final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
-      if(node.isBoolean() || node.isBinary())
+      if (node.isBoolean() || node.isBinary())
       {
         throw new InvalidResourceException("Greater than filter may not " +
             "compare boolean or binary attribute values");
       }
-      if(node.isTextual() && filter.getComparisonValue().isTextual())
+      if (node.isTextual() && filter.getComparisonValue().isTextual())
       {
         Date dateValue = dateValue(node);
         Date compareDateValue = dateValue(filter.getComparisonValue());
-        if(dateValue != null && compareDateValue != null &&
-            dateValue.compareTo(compareDateValue) >= 0)
+        if (dateValue != null && compareDateValue != null)
         {
-          return true;
-        }
-        if(node.textValue().compareToIgnoreCase(
+          if (dateValue.compareTo(compareDateValue) >= 0)
+          {
+            return true;
+          }
+        } else if (node.textValue().compareToIgnoreCase(
             filter.getComparisonValue().textValue()) >= 0)
         {
           return true;
         }
       }
-      if(node.isNumber() && filter.getComparisonValue().isNumber())
+      if (node.isNumber() && filter.getComparisonValue().isNumber())
       {
-        if((node.isFloatingPointNumber() ?
+        if ((node.isFloatingPointNumber() ?
             node.doubleValue() : node.longValue()) >=
             (filter.getComparisonValue().isFloatingPointNumber() ?
                 filter.getComparisonValue().doubleValue() :
                 filter.getComparisonValue().longValue()))
+        {
           return true;
+        }
       }
     }
     return false;
   }
 
-  public Boolean visit(LessThanFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final LessThanFilter filter, final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
-      if(node.isBoolean() || node.isBinary())
+      if (node.isBoolean() || node.isBinary())
       {
         throw new InvalidResourceException("Greater than filter may not " +
             "compare boolean or binary attribute values");
       }
-      if(node.isTextual() && filter.getComparisonValue().isTextual())
+      if (node.isTextual() && filter.getComparisonValue().isTextual())
       {
         Date dateValue = dateValue(node);
         Date compareDateValue = dateValue(filter.getComparisonValue());
-        if(dateValue != null && compareDateValue != null &&
-            dateValue.compareTo(compareDateValue) < 0)
+        if (dateValue != null && compareDateValue != null)
         {
-          return true;
-        }
-        if(node.textValue().compareToIgnoreCase(
+          if (dateValue.compareTo(compareDateValue) < 0)
+          {
+            return true;
+          }
+        } else if (node.textValue().compareToIgnoreCase(
             filter.getComparisonValue().textValue()) < 0)
         {
           return true;
         }
       }
-      if(node.isNumber() && filter.getComparisonValue().isNumber())
+      if (node.isNumber() && filter.getComparisonValue().isNumber())
       {
-        if((node.isFloatingPointNumber() ?
+        if ((node.isFloatingPointNumber() ?
             node.doubleValue() : node.longValue()) <
             (filter.getComparisonValue().isFloatingPointNumber() ?
                 filter.getComparisonValue().doubleValue() :
                 filter.getComparisonValue().longValue()))
+        {
           return true;
+        }
       }
     }
     return false;
   }
 
-  public Boolean visit(LessThanOrEqualFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final LessThanOrEqualFilter filter,
+                       final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
-      if(node.isBoolean() || node.isBinary())
+      if (node.isBoolean() || node.isBinary())
       {
         throw new InvalidResourceException("Greater than filter may not " +
             "compare boolean or binary attribute values");
       }
-      if(node.isTextual() && filter.getComparisonValue().isTextual())
+      if (node.isTextual() && filter.getComparisonValue().isTextual())
       {
         Date dateValue = dateValue(node);
         Date compareDateValue = dateValue(filter.getComparisonValue());
-        if(dateValue != null && compareDateValue != null &&
-            dateValue.compareTo(compareDateValue) <= 0)
+        if (dateValue != null && compareDateValue != null)
         {
-          return true;
-        }
-        if(node.textValue().compareToIgnoreCase(
+          if (dateValue.compareTo(compareDateValue) <= 0)
+          {
+            return true;
+          }
+        } else if (node.textValue().compareToIgnoreCase(
             filter.getComparisonValue().textValue()) <= 0)
         {
           return true;
         }
       }
-      if(node.isNumber() && filter.getComparisonValue().isNumber())
+      if (node.isNumber() && filter.getComparisonValue().isNumber())
       {
-        if((node.isFloatingPointNumber() ?
+        if ((node.isFloatingPointNumber() ?
             node.doubleValue() : node.longValue()) <=
             (filter.getComparisonValue().isFloatingPointNumber() ?
                 filter.getComparisonValue().doubleValue() :
                 filter.getComparisonValue().longValue()))
+        {
           return true;
+        }
       }
     }
     return false;
   }
 
-  public Boolean visit(AndFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final AndFilter filter, final JsonNode object)
       throws SCIMException
   {
-    for(Filter combinedFilter : filter.getCombinedFilters())
+    for (Filter combinedFilter : filter.getCombinedFilters())
     {
-      if(!combinedFilter.visit(this, object))
+      if (!combinedFilter.visit(this, object))
       {
         return false;
       }
@@ -344,12 +408,15 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     return true;
   }
 
-  public Boolean visit(OrFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final OrFilter filter, final JsonNode object)
       throws SCIMException
   {
-    for(Filter combinedFilter : filter.getCombinedFilters())
+    for (Filter combinedFilter : filter.getCombinedFilters())
     {
-      if(combinedFilter.visit(this, object))
+      if (combinedFilter.visit(this, object))
       {
         return true;
       }
@@ -357,20 +424,26 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     return false;
   }
 
-  public Boolean visit(NotFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final NotFilter filter, final JsonNode object)
       throws SCIMException
   {
     return !filter.getInvertedFilter().visit(this, object);
   }
 
-  public Boolean visit(ComplexValueFilter filter, JsonNode object)
+  /**
+   * {@inheritDoc}
+   */
+  public Boolean visit(final ComplexValueFilter filter, final JsonNode object)
       throws SCIMException
   {
     List<JsonNode> nodes = JsonUtils.gatherValues(
         filter.getAttributePath(), object);
-    for(JsonNode node : nodes)
+    for (JsonNode node : nodes)
     {
-      if(filter.getValueFilter().visit(this, node))
+      if (filter.getValueFilter().visit(this, node))
       {
         return true;
       }
@@ -378,10 +451,18 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     return false;
   }
 
-  private Date dateValue(JsonNode node)
+  /**
+   * Try to parse out a date from a JSON text node.
+   *
+   * @param node The JSON node to parse.
+   *
+   * @return A parsed date instance or {@code null} if the text is not an
+   * ISO8601 formatted date and time string.
+   */
+  private Date dateValue(final JsonNode node)
   {
     String text = node.textValue().trim();
-    if(text.length() >= 19 &&
+    if (text.length() >= 19 &&
         Character.isDigit(text.charAt(0)) &&
         Character.isDigit(text.charAt(1)) &&
         Character.isDigit(text.charAt(2)) &&
@@ -392,7 +473,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
       {
         return ISO8601Utils.parse(text);
       }
-      catch(IllegalArgumentException e)
+      catch (IllegalArgumentException e)
       {
         // This is not a date after all.
       }

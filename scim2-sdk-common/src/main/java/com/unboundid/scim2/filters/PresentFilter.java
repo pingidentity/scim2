@@ -1,20 +1,33 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
+ */
+
 package com.unboundid.scim2.filters;
 
 import com.unboundid.scim2.Path;
 import com.unboundid.scim2.exceptions.SCIMException;
 
 /**
-* Created by boli on 3/26/15.
-*/
+ * Attribute present filter.
+ */
 public final class PresentFilter extends Filter
 {
   private final Path filterAttribute;
 
-  PresentFilter(Path filterAttribute)
+  /**
+   * Create a new present filter.
+   *
+   * @param filterAttribute The path to the attribute.
+   */
+  PresentFilter(final Path filterAttribute)
   {
     this.filterAttribute = filterAttribute;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Path getAttributePath()
   {
@@ -24,8 +37,8 @@ public final class PresentFilter extends Filter
   /**
    * Append the string representation of the filter to the provided buffer.
    *
-   * @param builder  The buffer to which the string representation of the
-   *                 filter is to be appended.
+   * @param builder The buffer to which the string representation of the
+   *                filter is to be appended.
    */
   public void toString(final StringBuilder builder)
   {
@@ -37,7 +50,7 @@ public final class PresentFilter extends Filter
   /**
    * {@inheritDoc}
    */
-  public final <R, P> R visit(FilterVisitor<R, P> visitor, P param)
+  public <R, P> R visit(final FilterVisitor<R, P> visitor, final P param)
       throws SCIMException
   {
     return visitor.visit(this, param);
@@ -56,7 +69,7 @@ public final class PresentFilter extends Filter
    * {@inheritDoc}
    */
   @Override
-  public boolean equals(Object o)
+  public boolean equals(final Object o)
   {
     if (this == o)
     {

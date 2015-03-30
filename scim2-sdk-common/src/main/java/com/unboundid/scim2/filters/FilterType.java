@@ -1,22 +1,9 @@
 /*
- * Copyright 2011-2015 UnboundID Corp.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License (GPLv2 only)
- * or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses>.
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
  */
 
 package com.unboundid.scim2.filters;
-
 
 
 /**
@@ -31,12 +18,10 @@ public enum FilterType
   AND("and"),
 
 
-
   /**
    * The filter type for or filters.
    */
   OR("or"),
-
 
 
   /**
@@ -45,12 +30,10 @@ public enum FilterType
   NOT("not"),
 
 
-
   /**
    * The filter type for complex attribute value filters.
    */
   COMPLEX_VALUE("complex"),
-
 
 
   /**
@@ -59,12 +42,10 @@ public enum FilterType
   EQUAL("eq"),
 
 
-
   /**
    * The filter type for not equal filters.
    */
   NOT_EQUAL("ne"),
-
 
 
   /**
@@ -73,12 +54,10 @@ public enum FilterType
   CONTAINS("co"),
 
 
-
   /**
    * The filter type for starts with filters.
    */
   STARTS_WITH("sw"),
-
 
 
   /**
@@ -87,12 +66,10 @@ public enum FilterType
   ENDS_WITH("ew"),
 
 
-
   /**
    * The filter type for present filters.
    */
   PRESENT("pr"),
-
 
 
   /**
@@ -101,12 +78,10 @@ public enum FilterType
   GREATER_THAN("gt"),
 
 
-
   /**
    * The filter type for greater or equal filters.
    */
   GREATER_OR_EQUAL("ge"),
-
 
 
   /**
@@ -115,12 +90,10 @@ public enum FilterType
   LESS_THAN("lt"),
 
 
-
   /**
    * The filter type for less or equal filters.
    */
   LESS_OR_EQUAL("le");
-
 
 
   /**
@@ -129,11 +102,10 @@ public enum FilterType
   private String stringValue;
 
 
-
   /**
    * Creates a new filter type with the provided string value.
    *
-   * @param  stringValue  The lower case string value for this filter type.
+   * @param stringValue The lower case string value for this filter type.
    */
   private FilterType(final String stringValue)
   {
@@ -141,11 +113,10 @@ public enum FilterType
   }
 
 
-
   /**
    * Retrieves the lower case string value for this filter type.
    *
-   * @return  The lower case string value for this filter type.
+   * @return The lower case string value for this filter type.
    */
   public String getStringValue()
   {
@@ -153,11 +124,10 @@ public enum FilterType
   }
 
 
-
   /**
    * Retrieves a string representation of this filter type.
    *
-   * @return  A string representation of this filter type.
+   * @return A string representation of this filter type.
    */
   public String toString()
   {

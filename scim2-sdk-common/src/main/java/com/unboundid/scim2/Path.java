@@ -1,3 +1,8 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
+ */
+
 package com.unboundid.scim2;
 
 import com.unboundid.scim2.filters.Filter;
@@ -9,28 +14,53 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by boli on 3/26/15.
+ * This class represents a path to one or more JSON values that are the targets
+ * of a SCIM PATCH operation. A path may also be used to describe which JSON
+ * values to get or set when manipulating SCIM resources using the
+ * GenericScimResourceObject class.
  */
 public final class Path
 {
   private static Path ROOT = new Path(Collections.<Element>emptyList());
 
-  public final static class Element
+  /**
+   * This class represents an element of the path.
+   */
+  public static final class Element
   {
     private final String attribute;
     private final Filter valueFilter;
 
-    private Element(String attribute, Filter valueFilter)
+    /**
+     * Create a new path element.
+     *
+     * @param attribute The attribute referenced by this path element.
+     * @param valueFilter The optional value filter.
+     */
+    private Element(final String attribute, final Filter valueFilter)
     {
       this.attribute = attribute;
       this.valueFilter = valueFilter;
     }
 
+    /**
+     * Retrieves the attribute referenced by this path element.
+     *
+     * @return The attribute referenced by this path element.
+     */
     public String getAttribute()
     {
       return attribute;
     }
 
+    /**
+     * Retrieves the value filter that may be used to narrow down the values
+     * of the attribute referenced by this path element.
+     *
+     * @return The value filter that may be used to narrow down the values of
+     * the attribute referenced by this path element or {@code null} if all
+     * values are referened by this path element.
+     */
     public Filter getValueFilter()
     {
       return valueFilter;
@@ -40,7 +70,7 @@ public final class Path
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object o)
+    public boolean equals(final Object o)
     {
       if (this == o)
       {
@@ -98,41 +128,92 @@ public final class Path
 
   private final List<Element> elements;
 
-  private Path(List<Element> elements)
+  /**
+   * Create a new path with the provided elements.
+   *
+   * @param elements The path elements.
+   */
+  private Path(final List<Element> elements)
   {
     this.elements = Collections.unmodifiableList(elements);
   }
 
-  public Path sub(String attribute)
+  /**
+   * Create a new path to a sub-attribute of the attribute referenced by this
+   * path.
+   *
+   * @param attribute The name of the sub-attribute.
+   *
+   * @return A new path to a sub-attribute of the attribute referenced by this
+   * path.
+   */
+  public Path sub(final String attribute)
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.add(new Element(attribute, null));
     return new Path(newElements);
   }
 
-  public Path sub(String attribute, Filter valueFilter)
+  /**
+   * Create a new path to a sub-set of values of a sub-attribute of the
+   * attribute referenced by this path.
+   *
+   * @param attribute The name of the sub-attribute.
+   * @param valueFilter The value filter.
+   *
+   * @return A new path to a sub-attribute of the attribute referenced by this
+   * path.
+   */
+  public Path sub(final String attribute, final Filter valueFilter)
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.add(new Element(attribute, valueFilter));
     return new Path(newElements);
   }
 
+  /**
+   * Retrieve the list of all element of this path in order from the root.
+   *
+   * @return The list of all element of this path in order from the root.
+   */
   public List<Element> getElements()
   {
     return elements;
   }
 
-  public static Path fromString(String path)
+  /**
+   * Parse a path from its string representation.
+   *
+   * @param pathString The string representation of the path.
+   * @return The parsed path.
+   */
+  public static Path fromString(final String pathString)
   {
-    return Parser.parsePath(path);
+    return Parser.parsePath(pathString);
   }
 
+  /**
+   * Creates a path to the root of the JSON object that represents the
+   * SCIM resource.
+   *
+   * @return The path to the root of the JSON object that represents the
+   * SCIM resource.
+   */
   public static Path root()
   {
     return ROOT;
   }
 
-  public static Path root(String extensionSchemaUrn)
+  /**
+   * Creates a path to the root of the JSON object that contains all the
+   * extension attributes of an extension schema.
+   *
+   * @param extensionSchemaUrn The the extension schema URN.
+   *
+   * @return The path to the root of the JSON object that contains all the
+   * extension attributes of an extension schema.
+   */
+  public static Path root(final String extensionSchemaUrn)
   {
     if(!extensionSchemaUrn.startsWith("urn:") ||
         extensionSchemaUrn.length() <= 4)
@@ -145,23 +226,58 @@ public final class Path
         new Element(extensionSchemaUrn, null)));
   }
 
-  public static Path fromAttribute(String attribute)
+  /**
+   * Creates a path to a core attribute.
+   *
+   * @param attribute The name of the core attribute.
+   *
+   * @return The path to a core attribute.
+   */
+  public static Path attribute(final String attribute)
   {
-    return fromAttribute(null, attribute, null);
+    return attribute(null, attribute, null);
   }
 
-  public static Path fromAttribute(String schemaUrn, String attribute)
+  /**
+   * Creates a path to an extension attribute.
+   *
+   * @param schemaUrn The URN of the extensions schema.
+   * @param attribute The name of the extension attribute.
+   *
+   * @return The path to a core attribute.
+   */
+  public static Path attribute(final String schemaUrn,
+                               final String attribute)
   {
-    return fromAttribute(schemaUrn, attribute, null);
+    return attribute(schemaUrn, attribute, null);
   }
 
-  public static Path fromAttribute(String attribute, Filter valueFilter)
+  /**
+   * Creates a path to a sub-set of values of a core attribute.
+   *
+   * @param attribute The name of the core attribute.
+   * @param valueFilter The value filter.
+   *
+   * @return The path to a sub-set of values of a core attribute.
+   */
+  public static Path attribute(final String attribute,
+                               final Filter valueFilter)
   {
-    return fromAttribute(null, attribute, valueFilter);
+    return attribute(null, attribute, valueFilter);
   }
 
-  public static Path fromAttribute(String schemaUrn, String attribute,
-                                   Filter valueFilter)
+  /**
+   * Creates a path to a sub-set of values of an extension attribute.
+   *
+   * @param schemaUrn The URN of the extensions schema.
+   * @param attribute The name of the extension attribute.
+   * @param valueFilter The value filter.
+   *
+   * @return The path to a sub-set of values of an extension attribute.
+   */
+  public static Path attribute(final String schemaUrn,
+                               final String attribute,
+                               final Filter valueFilter)
   {
     if(schemaUrn != null &&
         (!schemaUrn.startsWith("urn:") || schemaUrn.length() <= 4))
@@ -178,9 +294,16 @@ public final class Path
     return new Path(elements);
   }
 
+  /**
+   * Retrieves the extension schema URN of the extension attribute referenced by
+   * this path.
+   *
+   * @return The extension schema URN of the extension attribute referenced by
+   * this path or {@code null} if this path references a core attribute.
+   */
   public String getSchemaUrn()
   {
-    if(elements.isEmpty() && elements.get(0).getAttribute().startsWith("urn:"))
+    if(!elements.isEmpty() && elements.get(0).getAttribute().startsWith("urn:"))
     {
       return elements.get(0).getAttribute();
     }
@@ -191,7 +314,7 @@ public final class Path
    * {@inheritDoc}
    */
   @Override
-  public boolean equals(Object o)
+  public boolean equals(final Object o)
   {
     if (this == o)
     {
@@ -245,7 +368,8 @@ public final class Path
 
     Element element;
 
-    // If the first element has a colon, it is a schema extension URN.
+    // If the first element has an attribute that starts with "urn:", it is a
+    // schema extension URN.
     if(i.hasNext())
     {
       element = i.next();

@@ -1,15 +1,25 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
+ */
+
 package com.unboundid.scim2.filters;
 
 import com.unboundid.scim2.exceptions.SCIMException;
 
 /**
-* Created by boli on 3/26/15.
-*/
+ * Not function filter.
+ */
 public final class NotFilter extends Filter
 {
   private final Filter filterComponent;
 
-  NotFilter(Filter filterComponent)
+  /**
+   * Creates a new not function filter.
+   *
+   * @param filterComponent The filter to inverse.
+   */
+  NotFilter(final Filter filterComponent)
   {
     this.filterComponent = filterComponent;
   }
@@ -35,8 +45,8 @@ public final class NotFilter extends Filter
   /**
    * Append the string representation of the filter to the provided buffer.
    *
-   * @param builder  The buffer to which the string representation of the
-   *                 filter is to be appended.
+   * @param builder The buffer to which the string representation of the
+   *                filter is to be appended.
    */
   public void toString(final StringBuilder builder)
   {
@@ -50,7 +60,7 @@ public final class NotFilter extends Filter
   /**
    * {@inheritDoc}
    */
-  public final <R, P> R visit(FilterVisitor<R, P> visitor, P param)
+  public <R, P> R visit(final FilterVisitor<R, P> visitor, final P param)
       throws SCIMException
   {
     return visitor.visit(this, param);
@@ -69,7 +79,7 @@ public final class NotFilter extends Filter
    * {@inheritDoc}
    */
   @Override
-  public boolean equals(Object o)
+  public boolean equals(final Object o)
   {
     if (this == o)
     {

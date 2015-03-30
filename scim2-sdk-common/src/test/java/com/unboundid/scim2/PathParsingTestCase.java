@@ -1,3 +1,8 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
+ */
+
 package com.unboundid.scim2;
 
 import com.unboundid.scim2.filters.Filter;
@@ -9,7 +14,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 /**
- * Created by boli on 3/27/15.
+ * Tests for parsing SCIM 2 paths.
  */
 public class PathParsingTestCase
 {
@@ -24,15 +29,15 @@ public class PathParsingTestCase
     return new Object[][]
         {
             new Object[] { "attr",
-                Path.fromAttribute("attr") },
+                Path.attribute("attr") },
             new Object[] { "urn:extension:attr",
-                Path.fromAttribute("urn:extension", "attr") },
+                Path.attribute("urn:extension", "attr") },
             new Object[] { "attr.subAttr",
-                Path.fromAttribute("attr").sub("subAttr") },
+                Path.attribute("attr").sub("subAttr") },
             new Object[] { "attr[subAttr eq \"78750\"].subAttr",
-                Path.fromAttribute("attr", eq("subAttr", "78750")).sub("subAttr") },
+                Path.attribute("attr", eq("subAttr", "78750")).sub("subAttr") },
             new Object[] { "urn:extension:attr[subAttr eq \"78750\"].subAttr",
-                Path.fromAttribute("urn:extension", "attr",
+                Path.attribute("urn:extension", "attr",
                     eq("subAttr", "78750")).sub("subAttr") },
 
             // The following does not technically conform to the SCIM spec
@@ -42,7 +47,7 @@ public class PathParsingTestCase
             new Object[] { "urn:extension:", Path.root("urn:extension") },
             new Object[] { "urn:extension:attr[subAttr eq \"78750\"]." +
                 "subAttr[subSub pr].this.is.crazy[type eq \"good\"].deep",
-                Path.fromAttribute("urn:extension", "attr", eq("subAttr", "78750")).
+                Path.attribute("urn:extension", "attr", eq("subAttr", "78750")).
                     sub("subAttr", pr("subSub")).
                     sub("this").
                     sub("is").
@@ -80,13 +85,14 @@ public class PathParsingTestCase
   /**
    * Tests the {@code fromString} method with a valid path string.
    *
-   * @param  pathString  The string representation of the path to fromString.
+   * @param pathString  The string representation of the path to fromString.
+   * @param expectedPath The expected parsed path instance.
    *
    * @throws Exception  If the test fails.
    */
   @Test(dataProvider = "testValidPathStrings")
   public void testParseValidPath(final String pathString,
-                                   final Path expectedPath)
+                                 final Path expectedPath)
       throws Exception
   {
     final Path parsedPath = Path.fromString(pathString);

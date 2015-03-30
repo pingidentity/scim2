@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2015 UnboundID Corp.
+ * Copyright 2015 UnboundID Corp.
  * All Rights Reserved.
  */
 
@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for "getter" methods of a scim object.
+ * Annotation for "getter" methods of a SCIM object.
  */
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.FIELD)

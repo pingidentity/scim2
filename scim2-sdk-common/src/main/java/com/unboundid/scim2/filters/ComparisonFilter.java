@@ -1,28 +1,36 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
+ */
+
 package com.unboundid.scim2.filters;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.Path;
 
 /**
-* Created by boli on 3/26/15.
-*/
+ * Attribute comparison filter.
+ */
 public abstract class ComparisonFilter extends Filter
 {
   private final Path filterAttribute;
 
   private final ValueNode filterValue;
 
-  public ComparisonFilter(Path filterAttribute,
-                          ValueNode filterValue)
+  /**
+   * Create a new attribute comparison filter.
+   *
+   * @param filterAttribute The path to the attribute to compare.
+   * @param filterValue The comparison value.
+   */
+  ComparisonFilter(final Path filterAttribute, final ValueNode filterValue)
   {
     this.filterAttribute = filterAttribute;
-    if(filterValue == null)
+    if (filterValue == null)
     {
       this.filterValue = JsonNodeFactory.instance.nullNode();
-    }
-    else
+    } else
     {
       this.filterValue = filterValue;
     }
@@ -58,8 +66,8 @@ public abstract class ComparisonFilter extends Filter
   /**
    * Append the string representation of the filter to the provided buffer.
    *
-   * @param builder  The buffer to which the string representation of the
-   *                 filter is to be appended.
+   * @param builder The buffer to which the string representation of the
+   *                filter is to be appended.
    */
   public void toString(final StringBuilder builder)
   {

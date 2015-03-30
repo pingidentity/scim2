@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2011-2015 UnboundID Corp.
+  ~ Copyright 2015 UnboundID Corp.
   ~ All Rights Reserved.
   -->
 
@@ -134,7 +134,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <headerLocation>config/scim2-ubid.sourceheader</headerLocation>
+                    <headerLocation>config/scim2-parent-ubid.sourceheader</headerLocation>
                     <failOnViolation>true</failOnViolation>
                     <propertyExpansion>cacheFile=${project.build.directory}/checkstyle-cachefile</propertyExpansion>
                     <logViolationsToConsole>true</logViolationsToConsole>

@@ -1,18 +1,6 @@
 /*
- * Copyright 2011-2015 UnboundID Corp.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License (GPLv2 only)
- * or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses>.
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
  */
 
 package com.unboundid.scim2.utils;
@@ -38,17 +26,25 @@ import java.util.Stack;
 public class Parser
 {
 
-  private static class StringReader extends Reader
+  private static final class StringReader extends Reader
   {
     private final String string;
     private int pos;
     private int mark;
 
-    private StringReader(String filterString)
+    /**
+     * Create a new reader.
+     *
+     * @param string The string to read from.
+     */
+    private StringReader(final String string)
     {
-      this.string = filterString;
+      this.string = string;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read()
     {
@@ -59,45 +55,66 @@ public class Parser
       return string.charAt(pos++);
     }
 
+    /**
+     * Move the current read position back one character.
+     */
     public void unread()
     {
       pos--;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean ready()
     {
       return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean markSupported()
     {
       return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void mark(int readAheadLimit)
+    public void mark(final int readAheadLimit)
     {
       mark = pos;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void reset()
     {
       pos = mark;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public long skip(long n)
+    public long skip(final long n)
     {
       long chars = Math.min(string.length() - pos, n);
       pos += chars;
       return chars;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public int read(char[] cbuf, int off, int len)
+    public int read(final char[] cbuf, final int off, final int len)
     {
       if(pos  >= string.length())
       {
@@ -109,6 +126,9 @@ public class Parser
       return chars;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close()
     {
@@ -119,10 +139,11 @@ public class Parser
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   /**
-   * Parse the filter provided in the constructor.
+   * Parse a filter string.
    *
-   * @return  A parsed SCIM filter.
+   * @param filterString   The filter string to parse.
    *
+   * @return A parsed SCIM filter.
    * @throws  SCIMException  If the filter string could not be parsed.
    */
   public static Filter parseFilter(final String filterString)
@@ -141,6 +162,13 @@ public class Parser
     // }
   }
 
+  /**
+   * Parse a path string.
+   *
+   * @param pathString   The path string to parse.
+   *
+   * @return A parsed SCIM path.
+   */
   public static Path parsePath(final String pathString)
   {
     return readPath(new StringReader(pathString.trim()));
@@ -158,10 +186,12 @@ public class Parser
    *   <li>
    * </ul>
    *
+   * @param reader The reader to read from.
+   *
    * @return The token at the current position, or {@code null} if the end of
    *         the input has been reached.
    */
-  private static String readPathToken(StringReader reader)
+  private static String readPathToken(final StringReader reader)
   {
     reader.mark(0);
     int c = reader.read();
@@ -208,7 +238,14 @@ public class Parser
     return null;
   }
 
-  private static Path readPath(StringReader reader)
+  /**
+   * Read a path from the reader.
+   *
+   * @param reader The reader to read the path from.
+   *
+   * @return The parsed path.
+   */
+  private static Path readPath(final StringReader reader)
   {
     Path path = null;
 
@@ -261,7 +298,7 @@ public class Parser
         {
           if (path == null)
           {
-            path = Path.fromAttribute(schemaUrn, attributeName, valueFilter);
+            path = Path.attribute(schemaUrn, attributeName, valueFilter);
           }
           else
           {
@@ -312,10 +349,14 @@ public class Parser
    *   </li>
    * </ul>
    *
+   * @param reader The reader to read from.
+   * @param isValueFilter Whether to read the token for a value filter.
+   *
    * @return The token at the current position, or {@code null} if the end of
    *         the input has been reached.
    */
-  private static String readFilterToken(StringReader reader, boolean isValueFilter)
+  private static String readFilterToken(final StringReader reader,
+                                        final boolean isValueFilter)
   {
     int c;
     do
@@ -388,7 +429,15 @@ public class Parser
     return null;
   }
 
-  private static Filter readFilter(StringReader reader, boolean isValueFilter)
+  /**
+   * Read a filter from the reader.
+   *
+   * @param reader The reader to read the filter from.
+   * @param isValueFilter Whether to read the filter as a value filter.
+   * @return The parsed filter.
+   */
+  private static Filter readFilter(final StringReader reader,
+                                   final boolean isValueFilter)
   {
     final Stack<Filter> outputStack = new Stack<Filter>();
     final Stack<String> precedenceStack = new Stack<String>();
@@ -450,7 +499,8 @@ public class Parser
         LinkedList<Filter> andComponents = new LinkedList<Filter>();
         while (!precedenceStack.isEmpty())
         {
-          if (precedenceStack.peek().equalsIgnoreCase(FilterType.AND.getStringValue()))
+          if (precedenceStack.peek().equalsIgnoreCase(
+              FilterType.AND.getStringValue()))
           {
             precedenceStack.pop();
             andComponents.addFirst(outputStack.pop());
@@ -577,28 +627,36 @@ public class Parser
           if (op.equalsIgnoreCase(FilterType.EQUAL.getStringValue()))
           {
             outputStack.push(Filter.eq(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(FilterType.NOT_EQUAL.getStringValue()))
+          } else if (op.equalsIgnoreCase(
+              FilterType.NOT_EQUAL.getStringValue()))
           {
             outputStack.push(Filter.ne(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(FilterType.CONTAINS.getStringValue()))
+          } else if (op.equalsIgnoreCase(
+              FilterType.CONTAINS.getStringValue()))
           {
             outputStack.push(Filter.co(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(FilterType.STARTS_WITH.getStringValue()))
+          } else if (op.equalsIgnoreCase(
+              FilterType.STARTS_WITH.getStringValue()))
           {
             outputStack.push(Filter.sw(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(FilterType.ENDS_WITH.getStringValue()))
+          } else if (op.equalsIgnoreCase(
+              FilterType.ENDS_WITH.getStringValue()))
           {
             outputStack.push(Filter.ew(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(FilterType.GREATER_THAN.getStringValue()))
+          } else if (op.equalsIgnoreCase(
+              FilterType.GREATER_THAN.getStringValue()))
           {
             outputStack.push(Filter.gt(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(FilterType.GREATER_OR_EQUAL.getStringValue()))
+          } else if (op.equalsIgnoreCase(
+              FilterType.GREATER_OR_EQUAL.getStringValue()))
           {
             outputStack.push(Filter.ge(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(FilterType.LESS_THAN.getStringValue()))
+          } else if (op.equalsIgnoreCase(
+              FilterType.LESS_THAN.getStringValue()))
           {
             outputStack.push(Filter.lt(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(FilterType.LESS_OR_EQUAL.getStringValue()))
+          } else if (op.equalsIgnoreCase(
+              FilterType.LESS_OR_EQUAL.getStringValue()))
           {
             outputStack.push(Filter.le(filterAttribute, valueNode));
           } else
@@ -631,8 +689,17 @@ public class Parser
     return outputStack.pop();
   }
 
-  private static String closeGrouping(Stack<String> operators, Stack<Filter> output,
-                                      boolean isAtTheEnd)
+  /**
+   * Close a grouping of filters enclosed by parenthesis.
+   *
+   * @param operators The stack of operators tokens.
+   * @param output The stack of output tokens.
+   * @param isAtTheEnd Whether the end of the filter string was reached.
+   * @return The last operator encountered that signaled the end of the group.
+   */
+  private static String closeGrouping(final Stack<String> operators,
+                                      final Stack<Filter> output,
+                                      final boolean isAtTheEnd)
   {
     String operator = null;
     String repeatingOperator = null;
@@ -709,7 +776,13 @@ public class Parser
     return operator;
   }
 
-  private static boolean expectsNewFilter(String previousToken)
+  /**
+   * Whether a new filter token is expected given the previous token.
+   *
+   * @param previousToken The previous filter token.
+   * @return Whether a new filter token is expected.
+   */
+  private static boolean expectsNewFilter(final String previousToken)
   {
     return previousToken == null ||
         previousToken.equals("(") ||

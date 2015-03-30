@@ -1,3 +1,8 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
+ */
+
 package com.unboundid.scim2;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -5,7 +10,7 @@ import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.exceptions.SCIMException;
 import com.unboundid.scim2.filters.Filter;
 import com.unboundid.scim2.filters.FilterEvaluator;
-import com.unboundid.scim2.model.BaseScimObject;
+import com.unboundid.scim2.schema.SchemaUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -17,24 +22,30 @@ import java.util.TimeZone;
 import static org.testng.Assert.assertEquals;
 
 /**
- * Created by boli on 3/26/15.
+ * Tests for evaluating SCIM 2 filters.
  */
 public class FilterEvaluatorTestCase
 {
   private JsonNode node;
   private Date date;
 
+  /**
+   * Sets up the test by creating a new JsonNode.
+   *
+   * @throws IOException if an unexpected JSON parsing error occurs.
+   */
   @BeforeClass
   public void setup() throws IOException
   {
     date = new Date();
 
-    node = BaseScimObject.createSCIMCompatibleMapper().
+    node = SchemaUtils.createSCIMCompatibleMapper().
         readTree("{\n" +
             "    \"externalId\": \"user:externalId\",\n" +
             "    \"id\": \"user:id\",\n" +
             "    \"meta\": {\n" +
-            "        \"created\": \"" + ISO8601Utils.format(date, true) + "\",\n" +
+            "        \"created\": \"" +
+            ISO8601Utils.format(date, true) + "\",\n" +
             "        \"lastModified\": \"2015-02-27T11:29:39Z\",\n" +
             "        \"location\": \"http://here/user\",\n" +
             "        \"resourceType\": \"some resource type\",\n" +
@@ -61,7 +72,8 @@ public class FilterEvaluatorTestCase
             "        \"postalCode\": \"91608\",\n" +
             "        \"priority\": 0,\n" +
             "        \"country\": \"USA\",\n" +
-            "        \"formatted\": \"100 Universal City Plaza\\nHollywood, CA 91608 USA\",\n" +
+            "        \"formatted\": \"100 Universal City Plaza\\n" +
+            "Hollywood, CA 91608 USA\",\n" +
             "        \"primary\": true\n" +
             "      },\n" +
             "      {\n" +
@@ -72,7 +84,8 @@ public class FilterEvaluatorTestCase
             "        \"postalCode\": \"91608\",\n" +
             "        \"priority\": 10,\n" +
             "        \"country\": \"USA\",\n" +
-            "        \"formatted\": \"456 Hollywood Blvd\\nHollywood, CA 91608 USA\"\n" +
+            "        \"formatted\": \"456 Hollywood Blvd\\n" +
+            "Hollywood, CA 91608 USA\"\n" +
             "      }\n" +
             "    ],\n" +
             "    \"password\": \"user:password\",\n" +
@@ -93,7 +106,7 @@ public class FilterEvaluatorTestCase
    * @return  A set of valid filter strings.
    */
   @DataProvider(name = "testValidFilterStrings")
-  public Object[][] getTestValidFilterStrings() throws InterruptedException
+  public Object[][] getTestValidFilterStrings()
   {
     return new Object[][]
         {
@@ -140,42 +153,61 @@ public class FilterEvaluatorTestCase
             new Object[] { "true eq true or true eq false", true },
             new Object[] { "not(true eq true)", false },
             new Object[] { "not(true eq false)", true },
-            new Object[] { "addresses[type eq \"home\" and streetAddress co \"Hollywood\"]", true },
-            new Object[] { "addresses[type eq \"work\" and streetAddress co \"Hollywood\"]", false },
-            new Object[] { "addresses.type eq \"work\" and addresses.streetAddress co \"Hollywood\"", true },
-            new Object[] { "addresses[priority gt 5 and streetAddress co \"Hollywood\"]", true },
+            new Object[] { "addresses[type eq \"home\" and " +
+                "streetAddress co \"Hollywood\"]", true },
+            new Object[] { "addresses[type eq \"work\" and " +
+                "streetAddress co \"Hollywood\"]", false },
+            new Object[] { "addresses.type eq \"work\" and " +
+                "addresses.streetAddress co \"Hollywood\"", true },
+            new Object[] { "addresses[priority gt 5 and " +
+                "streetAddress co \"Hollywood\"]", true },
             new Object[] { "addresses.priority ge 10", true },
             new Object[] { "addresses.priority le 0", true },
-            new Object[] { "meta.created eq \"" + ISO8601Utils.format(date, true) + "\"", true },
-            new Object[] { "meta.created eq \"" + ISO8601Utils.format(date, true,
-                TimeZone.getTimeZone("CST")) + "\"", true },
-            new Object[] { "meta.created eq \"" + ISO8601Utils.format(date, true,
-                TimeZone.getTimeZone("PST")) + "\"", true },
+            new Object[] { "meta.created eq \"" +
+                ISO8601Utils.format(date, true) + "\"", true },
+            new Object[] { "meta.created eq \"" +
+                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) +
+                "\"", true },
+            new Object[] { "meta.created eq \"" +
+                ISO8601Utils.format(date, true, TimeZone.getTimeZone("PST")) +
+                "\"", true },
             new Object[] { "meta.created ge \"" +
-                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) + "\"", true },
+                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) +
+                "\"", true },
             new Object[] { "meta.created le \"" +
-                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) + "\"", true },
+                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) +
+                "\"", true },
             new Object[] { "meta.created gt \"" +
-                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) + "\"", false },
+                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) +
+                "\"", false },
             new Object[] { "meta.created lt \"" +
-                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) + "\"", false },
+                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) +
+                "\"", false },
             new Object[] { "meta.created gt \"" +
-                ISO8601Utils.format(new Date(date.getTime() + 1000), false, TimeZone.getTimeZone("CST")) + "\"", false },
+                ISO8601Utils.format(new Date(date.getTime() + 1000), false,
+                    TimeZone.getTimeZone("CST")) + "\"", false },
             new Object[] { "meta.created lt \"" +
-                ISO8601Utils.format(new Date(date.getTime() + 1000), false, TimeZone.getTimeZone("CST")) + "\"", true },
+                ISO8601Utils.format(new Date(date.getTime() + 1000), false,
+                    TimeZone.getTimeZone("CST")) + "\"", true },
             new Object[] { "meta.created gt \"" +
-                ISO8601Utils.format(new Date(date.getTime() - 1000), false, TimeZone.getTimeZone("CST")) + "\"", true },
+                ISO8601Utils.format(new Date(date.getTime() - 1000), false,
+                    TimeZone.getTimeZone("CST")) + "\"", true },
             new Object[] { "meta.created lt \"" +
-                ISO8601Utils.format(new Date(date.getTime() - 1000), false, TimeZone.getTimeZone("CST")) + "\"", false },
+                ISO8601Utils.format(new Date(date.getTime() - 1000), false,
+                    TimeZone.getTimeZone("CST")) + "\"", false },
         };
   }
 
   /**
-   * Test that filters matching
+   * Test that filters matching.
+   *
+   * @param filter The filter string to evaluate.
+   * @param result The expected result.
+   * @throws SCIMException If the filter string is invalid.
    */
   @Test(dataProvider = "testValidFilterStrings")
   public void testBinaryFilterValue(String filter, boolean result)
-      throws IOException, SCIMException
+      throws SCIMException
   {
     assertEquals(FilterEvaluator.evaluate(Filter.fromString(filter), node),
         result);

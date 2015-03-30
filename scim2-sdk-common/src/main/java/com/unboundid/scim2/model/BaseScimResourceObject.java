@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2015 UnboundID Corp.
+ * Copyright 2015 UnboundID Corp.
  * All Rights Reserved.
  */
 
@@ -32,7 +32,7 @@ import java.util.Set;
  * derived object into a JSON string, and deserializing back to a
  * GenericScimResourceObject.  You could also go the other way.
  *
- * @See GenericResourceObject
+ * {@link com.unboundid.scim2.model.GenericScimResourceObject}
  */
 public class BaseScimResourceObject extends BaseScimObject
     implements ScimResource
@@ -149,7 +149,7 @@ public class BaseScimResourceObject extends BaseScimObject
   {
     this.schemaUrns = schemaUrns;
   }
-  
+
   /**
    * Adds an extension object.  In SCIM terms "this" is the CORE
    * schema object, and the class passed in is the object with the

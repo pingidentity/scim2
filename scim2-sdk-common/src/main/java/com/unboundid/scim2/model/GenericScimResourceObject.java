@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2015 UnboundID Corp.
+ * Copyright 2015 UnboundID Corp.
  * All Rights Reserved.
  */
 
@@ -33,7 +33,7 @@ import java.util.Set;
  * derived object into a JSON string, and deserializing back to a
  * GenericScimResourceObject.  You could also go the other way.
  *
- * @See BaseScimResourceObject
+ * {@link com.unboundid.scim2.model.BaseScimResourceObject}
  */
 @JsonDeserialize(using = GenericScimObjectDeserializer.class)
 @JsonSerialize(using = GenericScimObjectSerializer.class)

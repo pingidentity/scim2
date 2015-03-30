@@ -1,3 +1,8 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ * All Rights Reserved.
+ */
+
 package com.unboundid.scim2.filters;
 
 import com.fasterxml.jackson.databind.node.ValueNode;
@@ -5,11 +10,17 @@ import com.unboundid.scim2.Path;
 import com.unboundid.scim2.exceptions.SCIMException;
 
 /**
-* Created by boli on 3/26/15.
-*/
+ * Equal attribute comparison filter.
+ */
 public final class EqualFilter extends ComparisonFilter
 {
-  public EqualFilter(Path filterAttribute, ValueNode filterValue)
+  /**
+   * Creates a new equals attribute comparison filter.
+   *
+   * @param filterAttribute The path to the attribute to compare.
+   * @param filterValue The comparison value.
+   */
+  EqualFilter(final Path filterAttribute, final ValueNode filterValue)
   {
     super(filterAttribute, filterValue);
   }
@@ -17,7 +28,7 @@ public final class EqualFilter extends ComparisonFilter
   /**
    * {@inheritDoc}
    */
-  public final <R, P> R visit(FilterVisitor<R, P> visitor, P param)
+  public <R, P> R visit(final FilterVisitor<R, P> visitor, final P param)
       throws SCIMException
   {
     return visitor.visit(this, param);
@@ -36,7 +47,7 @@ public final class EqualFilter extends ComparisonFilter
    * {@inheritDoc}
    */
   @Override
-  public boolean equals(Object o)
+  public boolean equals(final Object o)
   {
     if (this == o)
     {
