@@ -35,7 +35,7 @@ import java.util.Set;
  * Tests cases for SCIM schema generation.
  */
 @Test
-public class GenerateSchema
+public class SchemaGenerationTest
 {
   private enum Required
   {
