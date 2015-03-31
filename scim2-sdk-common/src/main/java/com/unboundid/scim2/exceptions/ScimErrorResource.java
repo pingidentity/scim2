@@ -14,16 +14,17 @@ import com.unboundid.scim2.model.BaseScimResourceObject;
  */
 @SchemaInfo(id="urn:ietf:params:scim:api:messages:2.0", name="Error",
   description = "Contains errors")
-public class ScimError extends BaseScimResourceObject
+public class ScimErrorResource extends BaseScimResourceObject
 {
   @SchemaProperty(description = "Type of the SCIM error.")
-  private String scimType;
+  private String scimType = "";
 
   @SchemaProperty(description = "Summary of the SCIM error.")
-  private String detail;
+  private String detail = "";
 
   @SchemaProperty(description = "HTTP Status of the SCIM error.")
-  private Integer status;
+  private Integer status = 200;
+
 
   /**
    * Gets the type of the error.
