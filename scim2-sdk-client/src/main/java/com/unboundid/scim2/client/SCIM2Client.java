@@ -13,6 +13,7 @@ import com.unboundid.scim2.client.security.OAuthToken;
 import com.unboundid.scim2.exceptions.NotModifiedException;
 import com.unboundid.scim2.exceptions.PreconditionFailedException;
 import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.ScimError;
 import com.unboundid.scim2.utils.Debug;
 import com.unboundid.scim2.utils.StaticUtils;
 import org.apache.http.ConnectionClosedException;
@@ -223,11 +224,12 @@ public class SCIM2Client
   public SCIMException createErrorResponseException(
       final ClientResponse response)
   {
+    ScimError scimError = null;
     SCIMException scimException = null;
 
     try
     {
-      scimException = response.getEntity(SCIMException.class);
+      scimError = response.getEntity(ScimError.class);
     }
     catch (Exception e)
     {
@@ -238,27 +240,29 @@ public class SCIM2Client
       Debug.debugException(e);
     }
 
-    if(scimException == null)
+    if(scimError == null)
     {
       scimException = SCIMException.createException(
           response.getStatusCode(), response.getMessage());
     }
 
-    if(response.getStatusType() == Response.Status.PRECONDITION_FAILED)
-    {
-      scimException = new PreconditionFailedException(
-          scimException.getMessage(),
-          response.getHeaders().getFirst(javax.ws.rs.core.HttpHeaders.ETAG),
-          scimException.getCause());
-    }
-    else if(response.getStatusType() == Response.Status.NOT_MODIFIED)
-    {
-      scimException = new NotModifiedException(
-          scimException.getMessage(),
-          response.getHeaders().getFirst(javax.ws.rs.core.HttpHeaders.ETAG),
-          scimException.getCause());
-    }
-
+    // DAN - attend to this!
+//
+//    if(response.getStatusType() == Response.Status.PRECONDITION_FAILED)
+//    {
+//      scimException = new PreconditionFailedException(
+//          scimError.getDetail(),
+//          response.getHeaders().getFirst(javax.ws.rs.core.HttpHeaders.ETAG),
+//          scimError.getCause());
+//    }
+//    else if(response.getStatusType() == Response.Status.NOT_MODIFIED)
+//    {
+//      scimException = new NotModifiedException(
+//          scimError.getMessage(),
+//          response.getHeaders().getFirst(javax.ws.rs.core.HttpHeaders.ETAG),
+//          scimError.getCause());
+//    }
+//
     return scimException;
   }
 

@@ -107,4 +107,5 @@ public class SCIMException extends Exception
       default : return new SCIMException(statusCode, errorMessage, cause);
     }
   }
+
 }
