@@ -32,6 +32,19 @@
         <com.fasterxml.jackson.version>2.0.0</com.fasterxml.jackson.version>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>Engineering Releases Repo</name>
+            <url>http://maven-eng:8080/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Engineering Snapshots Repo</name>
+            <url>http://maven-eng:8080/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <organization>
         <name>UnboundID</name>
         <url>http://www.unboundid.com</url>
