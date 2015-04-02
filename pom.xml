@@ -36,6 +36,9 @@
         <name>UnboundID</name>
         <url>http://www.unboundid.com</url>
     </organization>
+    <scm>
+        <connection>scm:git:https://github.com/UnboundID/scim2.git</connection>
+    </scm>
 
     <modules>
         <module>scim2-sdk-common</module>
@@ -209,6 +212,19 @@
                     <sort>+name,+line</sort>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.2</version>
+                <configuration>
+                  <tagNameFormat>scim-@{project.version}</tagNameFormat>
+                  <goals>deploy scm:export -Doriginal.target.dir=${project.build.directory} -Dgpg.sign</goals>
+                  <useReleaseProfile>false</useReleaseProfile>
+                  <checkModificationExcludeList>pom.xml</checkModificationExcludeList>
+                  <waitBeforeTagging>3</waitBeforeTagging>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
