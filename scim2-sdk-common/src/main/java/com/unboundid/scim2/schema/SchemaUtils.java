@@ -44,7 +44,7 @@ import java.util.Stack;
 import java.util.TimeZone;
 
 /**
- * Created by dvernon on 3/27/15.
+ * Utility class with static methods for common schema operations.
  */
 public class SchemaUtils
 {
@@ -566,6 +566,7 @@ public class SchemaUtils
     mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
     mapper.setTimeZone(TimeZone.getTimeZone("UTC"));
     mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     return mapper;
   }
@@ -574,8 +575,8 @@ public class SchemaUtils
    * Gets the id of the schema from the annotation of the class
    * passed in.
    *
-   * @param cls class to find the schema name property of the annotation from.
-   * @return the name of the schema.
+   * @param cls class to find the schema id property of the annotation from.
+   * @return the id of the schema, or null if it was not provided.
    */
   public static String getSchemaIdFromAnnotation(final Class<?> cls)
   {
@@ -584,11 +585,11 @@ public class SchemaUtils
   }
 
   /**
-   * Gets the name property from schema annotation.  If the the name
-   * attribute was null, a schema name is generated.
+   * Gets the id property from schema annotation.  If the the id
+   * attribute was null, a schema id is generated.
    *
    * @param schemaAnnotation the SCIM SchemaInfo annotation.
-   * @return the name of the schema or a generated name.
+   * @return the id of the schema, or null if it was not provided.
    */
   private static String getSchemaIdFromAnnotation(
       final SchemaInfo schemaAnnotation)
@@ -597,9 +598,100 @@ public class SchemaUtils
     {
       return schemaAnnotation.id();
     }
+
+    return null;
+  }
+
+  /**
+   * Gets the name property from the annotation of the class
+   * passed in.
+   *
+   * @param cls class to find the schema name property of the annotation from.
+   * @return the name of the schema.
+   */
+  public static String getNameFromSchemaAnnotation(final Class<?> cls)
+  {
+    SchemaInfo schema = (SchemaInfo)cls.getAnnotation(SchemaInfo.class);
+    return SchemaUtils.getNameFromSchemaAnnotation(schema);
+  }
+
+  /**
+   * Gets the name property from schema annotation.
+   *
+   * @param schemaAnnotation the SCIM SchemaInfo annotation.
+   * @return the name of the schema or a generated name.
+   */
+  private static String getNameFromSchemaAnnotation(
+      final SchemaInfo schemaAnnotation)
+  {
+    if(schemaAnnotation != null)
+    {
+      return schemaAnnotation.name();
+    }
+
+    return null;
+  }
+
+  /**
+   * Gets the schema urn from a java <code>Class</code>.
+   * @param cls <code>Class</code> of the object.
+   * @return The schema urn for the object.
+   */
+  public static String getSchemaUrn(final Class cls)
+  {
+    String schemaId =
+        SchemaUtils.getSchemaIdFromAnnotation(cls);
+    String schemaName =
+        SchemaUtils.getNameFromSchemaAnnotation(cls);
+    String urn = null;
+    if ((schemaId == null) || (schemaId.isEmpty()))
+    {
+      urn = cls.getCanonicalName();
+    }
     else
     {
-      return null;
+      urn = schemaId + ":" + schemaName;
     }
+
+    // if this doesn't appear to be a urn, stick the "urn:" prefix
+    // on it, and use it as a urn anyway.
+    return forceToBeUrn(urn);
   }
+
+
+  /**
+   * Returns true if the string passed in appears to be a urn.
+   * That determination is made by looking to see if the string
+   * starts with "urn:".
+   *
+   * @param string the string to check.
+   * @return true if it's a urn, or false if not.
+   */
+  public static boolean isUrn(final String string)
+  {
+    return string.startsWith("urn:");
+  }
+
+  /**
+   * Will force the string passed in to look like a urn.  If the
+   * string starts with "urn:" it will be returned as is, however
+   * if the string starts with anything else, this method will
+   * prepend "urn:".  This is mainly so that if we have a class that
+   * will be used as an extension schema, we will ensure that it's
+   * schema will be a urn and distinguishable from all other unmmapped
+   * values.
+   *
+   * @param string the string to force to be a urn.
+   * @return the urn.
+   */
+  public static String forceToBeUrn(final String string)
+  {
+    if(isUrn(string))
+    {
+      return string;
+    }
+
+    return "urn:" + string;
+  }
+
 }

@@ -224,7 +224,8 @@ public class ExtensionsTest
             HashSet.class), user.getSchemaUrns());
 
     // check the extension values
-    Assert.assertEquals(userNode.path("urn:unboundid:schemas:favoriteColor").
+    Assert.assertEquals(
+        userNode.path("urn:unboundid:schemas:favoriteColor:FavoriteColor").
             path("favoriteColor").asText(),
         user.getExtension(ExtensionClass.class).getFavoriteColor());
   }
@@ -256,9 +257,9 @@ public class ExtensionsTest
         "    \"password\": \"user:password\",\n" +
         "    \"schemas\": [\n" +
         "        \"urn:unboundid:schemas:favoriteColor\",\n" +
-        "        \"urn:junit:CoreClass_User\"\n" +
+        "        \"urn:junit:CoreClass_User:Users\"\n" +
         "    ],\n" +
-        "    \"urn:unboundid:schemas:favoriteColor\": {\n" +
+        "    \"urn:unboundid:schemas:favoriteColor:FavoriteColor\": {\n" +
         "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
         "    },\n" +
         "    \"userName\": \"user:username\"\n" +
@@ -274,7 +275,7 @@ public class ExtensionsTest
     // check the schemas
     Set<String> schemaSet = new HashSet<String>();
     schemaSet.add("urn:unboundid:schemas:favoriteColor");
-    schemaSet.add("urn:junit:CoreClass_User");
+    schemaSet.add("urn:junit:CoreClass_User:Users");
 
     Assert.assertEquals(user.getSchemaUrns(),
         schemaSet);
@@ -369,8 +370,8 @@ public class ExtensionsTest
         "    },\n" +
         "    \"password\": \"user:password\",\n" +
         "    \"schemas\": [\n" +
-        "        \"urn:unboundid:schemas:favoriteColor\",\n" +
-        "        \"urn:junit:CoreClass_User\"\n" +
+        "        \"urn:unboundid:schemas:favoriteColor:FavoriteColor\",\n" +
+        "        \"urn:junit:CoreClass_User:Users\"\n" +
         "    ],\n" +
         "    \"urn:unboundid:schemas:favoriteColor\": {\n" +
         "        \"favoriteColor\": \"extension:favoritecolor\"\n" +

@@ -25,6 +25,7 @@ import com.unboundid.scim2.client.security.OAuthToken;
 import com.unboundid.scim2.exceptions.NotModifiedException;
 import com.unboundid.scim2.exceptions.PreconditionFailedException;
 import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.ScimErrorResource;
 import com.unboundid.scim2.utils.Debug;
 import com.unboundid.scim2.utils.StaticUtils;
 import org.apache.http.ConnectionClosedException;
@@ -235,11 +236,12 @@ public class SCIM2Client
   public SCIMException createErrorResponseException(
       final ClientResponse response)
   {
+    ScimErrorResource scimErrorResource = null;
     SCIMException scimException = null;
 
     try
     {
-      scimException = response.getEntity(SCIMException.class);
+      scimErrorResource = response.getEntity(ScimErrorResource.class);
     }
     catch (Exception e)
     {
@@ -250,25 +252,22 @@ public class SCIM2Client
       Debug.debugException(e);
     }
 
-    if(scimException == null)
+    if(scimErrorResource == null)
     {
       scimException = SCIMException.createException(
           response.getStatusCode(), response.getMessage());
     }
 
+
     if(response.getStatusType() == Response.Status.PRECONDITION_FAILED)
     {
       scimException = new PreconditionFailedException(
-          scimException.getMessage(),
-          response.getHeaders().getFirst(javax.ws.rs.core.HttpHeaders.ETAG),
-          scimException.getCause());
+          scimErrorResource.getDetail());
     }
     else if(response.getStatusType() == Response.Status.NOT_MODIFIED)
     {
       scimException = new NotModifiedException(
-          scimException.getMessage(),
-          response.getHeaders().getFirst(javax.ws.rs.core.HttpHeaders.ETAG),
-          scimException.getCause());
+          scimErrorResource.getDetail());
     }
 
     return scimException;
