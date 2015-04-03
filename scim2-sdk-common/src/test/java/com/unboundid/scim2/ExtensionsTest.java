@@ -45,7 +45,7 @@ import java.util.Set;
 public class ExtensionsTest
 {
   @SchemaInfo(description = "Class to represent users",
-      id = "urn:junit:CoreClass_User",
+      id = "urn:junit:CoreClass_User:Users",
     name = "Users")
   private static class CoreClass_User extends BaseScimResourceObject
   {
@@ -172,7 +172,8 @@ public class ExtensionsTest
   }
 
   @SchemaInfo(description = "Class to represent a favorite color",
-      id = "urn:unboundid:schemas:favoriteColor", name = "FavoriteColor")
+      id = "urn:unboundid:schemas:FavoriteColor",
+      name = "FavoriteColor")
   private static class ExtensionClass extends BaseScimObject
   {
     @SchemaProperty(description = "Favorite color")
@@ -225,7 +226,7 @@ public class ExtensionsTest
 
     // check the extension values
     Assert.assertEquals(
-        userNode.path("urn:unboundid:schemas:favoriteColor:FavoriteColor").
+        userNode.path("urn:unboundid:schemas:FavoriteColor").
             path("favoriteColor").asText(),
         user.getExtension(ExtensionClass.class).getFavoriteColor());
   }
@@ -256,10 +257,10 @@ public class ExtensionsTest
         "    },\n" +
         "    \"password\": \"user:password\",\n" +
         "    \"schemas\": [\n" +
-        "        \"urn:unboundid:schemas:favoriteColor\",\n" +
+        "        \"urn:unboundid:schemas:FavoriteColor\",\n" +
         "        \"urn:junit:CoreClass_User:Users\"\n" +
         "    ],\n" +
-        "    \"urn:unboundid:schemas:favoriteColor:FavoriteColor\": {\n" +
+        "    \"urn:unboundid:schemas:FavoriteColor\": {\n" +
         "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
         "    },\n" +
         "    \"userName\": \"user:username\"\n" +
@@ -274,7 +275,7 @@ public class ExtensionsTest
 
     // check the schemas
     Set<String> schemaSet = new HashSet<String>();
-    schemaSet.add("urn:unboundid:schemas:favoriteColor");
+    schemaSet.add("urn:unboundid:schemas:FavoriteColor");
     schemaSet.add("urn:junit:CoreClass_User:Users");
 
     Assert.assertEquals(user.getSchemaUrns(),
@@ -298,7 +299,7 @@ public class ExtensionsTest
     ExtensionClass extensionClass =
         commonScimObject.getExtension(ExtensionClass.class);
     GenericScimResourceObject genericScimResourceObject =
-        commonScimObject.getExtension("urn:unboundid:schemas:favoriteColor");
+        commonScimObject.getExtension("urn:unboundid:schemas:FavoriteColor");
 
     Assert.assertEquals(extensionClass.getFavoriteColor(),
         "extension:favoritecolor");
@@ -370,10 +371,10 @@ public class ExtensionsTest
         "    },\n" +
         "    \"password\": \"user:password\",\n" +
         "    \"schemas\": [\n" +
-        "        \"urn:unboundid:schemas:favoriteColor:FavoriteColor\",\n" +
+        "        \"urn:unboundid:schemas:FavoriteColor\",\n" +
         "        \"urn:junit:CoreClass_User:Users\"\n" +
         "    ],\n" +
-        "    \"urn:unboundid:schemas:favoriteColor\": {\n" +
+        "    \"urn:unboundid:schemas:FavoriteColor\": {\n" +
         "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
         "    },\n" +
         "    \"userName\": \"user:username\"\n" +

@@ -24,7 +24,7 @@ import com.unboundid.scim2.model.BaseScimResourceObject;
 /**
  * This object is returned whenever by SCIM when an error occurs.
  */
-@SchemaInfo(id="urn:ietf:params:scim:api:messages:2.0", name="Error",
+@SchemaInfo(id="urn:ietf:params:scim:api:messages:2.0:ScimError", name="Error",
   description = "Contains errors")
 public class ScimErrorResource extends BaseScimResourceObject
 {

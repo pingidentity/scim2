@@ -33,7 +33,6 @@ import java.beans.Transient;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -565,7 +564,7 @@ public class SchemaUtils
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
     mapper.setTimeZone(TimeZone.getTimeZone("UTC"));
-    mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     return mapper;
@@ -639,23 +638,20 @@ public class SchemaUtils
    */
   public static String getSchemaUrn(final Class cls)
   {
+    // the schemaid is the urn.  Just make sure it
+    // begins with urn: ... the field called name
+    // is just a human friendly name for the object.
     String schemaId =
         SchemaUtils.getSchemaIdFromAnnotation(cls);
-    String schemaName =
-        SchemaUtils.getNameFromSchemaAnnotation(cls);
-    String urn = null;
+
     if ((schemaId == null) || (schemaId.isEmpty()))
     {
-      urn = cls.getCanonicalName();
-    }
-    else
-    {
-      urn = schemaId + ":" + schemaName;
+      schemaId = cls.getCanonicalName();
     }
 
     // if this doesn't appear to be a urn, stick the "urn:" prefix
     // on it, and use it as a urn anyway.
-    return forceToBeUrn(urn);
+    return forceToBeUrn(schemaId);
   }
 
 
@@ -677,7 +673,7 @@ public class SchemaUtils
    * string starts with "urn:" it will be returned as is, however
    * if the string starts with anything else, this method will
    * prepend "urn:".  This is mainly so that if we have a class that
-   * will be used as an extension schema, we will ensure that it's
+   * will be used as an extension schema, we will ensure that its
    * schema will be a urn and distinguishable from all other unmmapped
    * values.
    *
