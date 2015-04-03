@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 public @interface SchemaInfo
 {
   /**
-   * The id for the object.
+   * The id for the object.  This is the complete urn.
    */
   String id() default "urn:unboundid:schemas:broker:2.0";
 
@@ -40,7 +40,8 @@ public @interface SchemaInfo
   String description();
 
   /**
-   * The name for the object.
+   * The name for the object.  This is a human readable
+   * name.
    */
   String name();
 }
