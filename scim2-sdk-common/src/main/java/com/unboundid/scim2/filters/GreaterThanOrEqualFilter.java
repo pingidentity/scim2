@@ -19,7 +19,7 @@ package com.unboundid.scim2.filters;
 
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.Path;
-import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.ScimException;
 
 /**
  * Greater than or equal attribute comparison filter.
@@ -42,7 +42,7 @@ public final class GreaterThanOrEqualFilter extends ComparisonFilter
    * {@inheritDoc}
    */
   public <R, P> R visit(final FilterVisitor<R, P> visitor, final P param)
-      throws SCIMException
+      throws ScimException
   {
     return visitor.visit(this, param);
   }

@@ -17,14 +17,26 @@
 
 package com.unboundid.scim2.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.Path;
 import com.unboundid.scim2.annotations.SchemaProperty;
+import com.unboundid.scim2.exceptions.ScimException;
 import com.unboundid.scim2.schema.SchemaUtils;
+import com.unboundid.scim2.utils.JsonUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -46,7 +58,7 @@ import java.util.Set;
  *
  * {@link com.unboundid.scim2.model.GenericScimResourceObject}
  */
-public class BaseScimResourceObject extends BaseScimObject
+public class BaseScimResourceObject
     implements ScimResource
 {
   @SchemaProperty(description = "Meta information about the SCIM object")
@@ -60,6 +72,9 @@ public class BaseScimResourceObject extends BaseScimObject
 
   @JsonProperty("schemas")
   private Set<String> schemaUrns = new HashSet<String>();
+
+  private final ObjectNode extensionObjectNode =
+      JsonNodeFactory.instance.objectNode();
 
   /**
    * Constructs a new BaseScimResource object, and sets the urn if
@@ -157,34 +172,46 @@ public class BaseScimResourceObject extends BaseScimObject
   /**
    * {@inheritDoc}
    */
-  public void setSchemaUrns(final Set<String> schemaUrns)
+  public void setSchemaUrns(final Collection<String> schemaUrns)
   {
-    this.schemaUrns = schemaUrns;
+    this.schemaUrns = new HashSet<String>(schemaUrns);
   }
 
   /**
-   * Adds an extension object.  In SCIM terms "this" is the CORE
-   * schema object, and the class passed in is the object with the
-   * extension schema.  Note that this will replace the value of an
-   * extension if it already is present in this object.  The caller
-   * can easily check to see if the extension is present by calling
-   * getExtension() prior to adding the extension.
+   * This method is used during json deserialization.  It will be called
+   * in the event that a value is given for an field that is not defined
+   * in the class.
    *
-   * @param extension Object representing the SCIM object that extends
-   *                  this object.
+   * @param key name of the field.
+   * @param value value of the field.
    */
-  public void addExtension(final BaseScimObject extension)
+  @JsonAnySetter
+  protected void setAny(final String key,
+                        final JsonNode value)
   {
-    // check to make sure it's a valid extension object
-    // somewhere around here.
-    String extensionSchemaName = SchemaUtils.getSchemaUrn(extension.getClass());
-    if(extensionSchemaName != null)
+    if(SchemaUtils.isUrn(key) && value.isObject())
     {
-      getSchemaUrns().add(extensionSchemaName);
+      extensionObjectNode.put(key, value);
     }
+  }
 
-    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-    getUnmappedValues().put(extensionSchemaName, mapper.valueToTree(extension));
+  /**
+   * Used to get values that were deserialized from json where there was
+   * no matching field in the class.
+   * @return the value of the field.
+   */
+  @JsonAnyGetter
+  protected Map<String, Object> getAny()
+  {
+    HashMap<String, Object> map =
+        new HashMap<String, Object>(extensionObjectNode.size());
+    Iterator<Map.Entry<String, JsonNode>> i = extensionObjectNode.fields();
+    while(i.hasNext())
+    {
+      Map.Entry<String, JsonNode> field = i.next();
+      map.put(field.getKey(), field.getValue());
+    }
+    return map;
   }
 
   /**
@@ -202,64 +229,273 @@ public class BaseScimResourceObject extends BaseScimObject
     }
   }
 
-  @Override
-  protected void setUnmappedValue(final String key, final Object value)
-  {
-    if(SchemaUtils.isUrn(key))
-    {
-      ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-      getUnmappedValues().put(key, mapper.valueToTree(value));
-    }
-    else
-    {
-      super.setUnmappedValue(key, value);
-    }
-  }
-
   /**
-   * {@inheritDoc}
-   */
-  public <T> T getExtension(final Class<T> cl) throws JsonProcessingException
-  {
-    String extensionSchemaName = SchemaUtils.getSchemaUrn(cl);
-    return getExtension(extensionSchemaName, cl);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public GenericScimResourceObject getExtension(final String schemaId)
-      throws JsonProcessingException
-  {
-    return getExtension(schemaId, GenericScimResourceObject.class);
-  }
-
-  /**
-   * Used internally to share code between the other two getExtensions
-   * methods.  This method will get an extension from unmapped values.
-   * The extension must have been stored with a urn for a key, and
-   * the value must be a json node.  This will be set properly if the
-   * addExtension method was used to add the extension.
+   * Retrieve the value of the attribute specified by the path.
    *
-   * @param schemaId the urn of the extension schema.
-   * @param cl the class to return.
-   * @param <T> the type of the class to return.
-   * @return a deserialized SCIM object.
-   * @throws JsonProcessingException in the case of an error.
+   * @param path The path to the attribute whose value to retrieve.
+   * @param cls The Java class object used to determine the type to return.
+   * @param <T> The generic type parameter of the Java class used to determine
+   *            the type to return.
+   * @return The value of the attribute specified by the path.
+   * @throws JsonProcessingException If the value can not be parsed to the
+   *         type specified by the Java class object.
+   * @throws ScimException If the path is invalid.
+   * @throws IllegalArgumentException If the attribute contains more than one
+   *         value, in which case, the getValues method should be used to
+   *         retrieve all values.
    */
-  private <T> T getExtension(final String schemaId , final Class<T> cl)
-      throws JsonProcessingException
+  public <T> T getExtensionValue(final String path, final Class<T> cls)
+      throws JsonProcessingException, ScimException, IllegalArgumentException
   {
-    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-    Object unmappedValue = getUnmappedValues().get(
-        SchemaUtils.forceToBeUrn(schemaId));
-    if(unmappedValue instanceof JsonNode)
-    {
-      JsonNode jsonNode = (JsonNode)unmappedValue;
-      return mapper.treeToValue(jsonNode, cl);
-    }
-
-    return null;
+    return getExtensionValue(Path.fromString(path), cls);
   }
 
+  /**
+   * Retrieve the value of the attribute specified by the path.
+   *
+   * @param path The path to the attribute whose value to retrieve.
+   * @param cls The Java class object used to determine the type to return.
+   * @param <T> The generic type parameter of the Java class used to determine
+   *            the type to return.
+   * @return The value of the attribute specified by the path.
+   * @throws JsonProcessingException If the value can not be parsed to the
+   *         type specified by the Java class object.
+   * @throws ScimException If the path is invalid.
+   * @throws IllegalArgumentException If the attribute contains more than one
+   *         value, in which case, the getValues method should be used to
+   *         retrieve all values.
+   */
+  public <T> T getExtensionValue(final Path path, final Class<T> cls)
+      throws JsonProcessingException, ScimException, IllegalArgumentException
+  {
+    List<JsonNode> nodes = JsonUtils.getValues(path, extensionObjectNode);
+    if(nodes.isEmpty())
+    {
+      return null;
+    }
+    if(nodes.size() > 1)
+    {
+      throw new IllegalArgumentException("Path references multiple values");
+    }
+    return SchemaUtils.createSCIMCompatibleMapper().treeToValue(
+        nodes.get(0), cls);
+  }
+
+  /**
+   * Retrieve all values of the attribute specified by the path.
+   *
+   * @param path The path to the attribute whose value to retrieve.
+   * @param cls The Java class object used to determine the type to return.
+   * @param <T> The generic type parameter of the Java class used to determine
+   *            the type to return.
+   * @return The values of the attribute specified by the path.
+   * @throws JsonProcessingException If the value can not be parsed to the
+   *         type specified by the Java class object.
+   * @throws ScimException If the path is invalid.
+   */
+  public <T> List<T> getExtensionValues(final String path, final Class<T> cls)
+      throws JsonProcessingException, ScimException
+  {
+    return getExtensionValues(Path.fromString(path), cls);
+  }
+
+  /**
+   * Retrieve all values of the attribute specified by the path.
+   *
+   * @param path The path to the attribute whose value to retrieve.
+   * @param cls The Java class object used to determine the type to return.
+   * @param <T> The generic type parameter of the Java class used to determine
+   *            the type to return.
+   * @return The values of the attribute specified by the path.
+   * @throws JsonProcessingException If the value can not be parsed to the
+   *         type specified by the Java class object.
+   * @throws ScimException If the path is invalid.
+   */
+  public <T> List<T> getExtensionValues(final Path path, final Class<T> cls)
+      throws JsonProcessingException, ScimException
+  {
+    List<JsonNode> nodes = JsonUtils.getValues(path, extensionObjectNode);
+    ArrayList<T> objects = new ArrayList<T>(nodes.size());
+    for(JsonNode node : nodes)
+    {
+      objects.add(
+          SchemaUtils.createSCIMCompatibleMapper().treeToValue(node, cls));
+    }
+    return objects;
+  }
+
+  /**
+   * Set value of the attribute specified by the path, replacing any existing
+   * value(s).
+   *
+   * @param path The path to the attribute whose value to set.
+   * @param object The value to set.
+   * @throws ScimException If the path is invalid.
+   */
+  public void setExtensionValue(final String path, final Object object)
+      throws ScimException
+  {
+    setExtensionValue(Path.fromString(path), object);
+  }
+
+  /**
+   * Set value of the attribute specified by the path, replacing any existing
+   * value(s).
+   *
+   * @param path The path to the attribute whose value to set.
+   * @param object The value to set.
+   * @throws ScimException If the path is invalid.
+   */
+  public void setExtensionValue(final Path path, final Object object)
+      throws ScimException
+  {
+    JsonNode newObjectNode =
+        SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
+    JsonUtils.replaceValue(path, extensionObjectNode, newObjectNode);
+  }
+
+  /**
+   * Set values of the attribute specified by the path, replacing any existing
+   * values.
+   *
+   * @param path The path to the attribute whose value to set.
+   * @param objects The value(s) to set.
+   * @throws ScimException If the path is invalid.
+   */
+  public void setExtensionValues(final String path,
+                                 final Collection<Object> objects)
+      throws ScimException
+  {
+    setExtensionValues(Path.fromString(path), objects);
+  }
+
+  /**
+   * Set values of the attribute specified by the path, replacing any existing
+   * values.
+   *
+   * @param path The path to the attribute whose value to set.
+   * @param object The value(s) to set.
+   * @throws ScimException If the path is invalid.
+   */
+  public void setExtensionValues(final Path path,
+                                 final Collection<Object> object)
+      throws ScimException
+  {
+    JsonNode newObjectNode =
+        SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
+    JsonUtils.replaceValue(path, extensionObjectNode, newObjectNode);
+  }
+
+  /**
+   * Set values of the attribute specified by the path, replacing any existing
+   * values.
+   *
+   * @param path The path to the attribute whose value to set.
+   * @param objects The value(s) to set.
+   * @throws ScimException If the path is invalid.
+   */
+  public void setExtensionValues(final String path, final Object... objects)
+      throws ScimException
+  {
+    setExtensionValues(Path.fromString(path), objects);
+  }
+
+  /**
+   * Set values of the attribute specified by the path, replacing any existing
+   * values.
+   *
+   * @param path The path to the attribute whose value to set.
+   * @param object The value(s) to set.
+   * @throws ScimException If the path is invalid.
+   */
+  public void setExtensionValues(final Path path, final Object... object)
+      throws ScimException
+  {
+    JsonNode newObjectNode =
+        SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
+    JsonUtils.replaceValue(path, extensionObjectNode, newObjectNode);
+  }
+
+  /**
+   * Add values to the multi-valued attribute specified by the path.
+   *
+   * @param path The path to the multi-valued attribute.
+   * @param objects The values to add.
+   * @throws ScimException If the path is invalid.
+   */
+  public void addExtensionValues(final String path, final Collection<?> objects)
+      throws ScimException
+  {
+    addExtensionValues(Path.fromString(path), objects);
+  }
+
+  /**
+   * Add values to the multi-valued attribute specified by the path.
+   *
+   * @param path The path to the multi-valued attribute.
+   * @param objects The values to add.
+   * @throws ScimException If the path is invalid.
+   */
+  public void addExtensionValues(final Path path, final Collection<?> objects)
+      throws ScimException
+  {
+    JsonNode newObjectNode =
+        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+    JsonUtils.addValue(path, extensionObjectNode, newObjectNode);
+  }
+
+  /**
+   * Add values to the multi-valued attribute specified by the path.
+   *
+   * @param path The path to the multi-valued attribute.
+   * @param objects The values to add.
+   * @throws ScimException If the path is invalid.
+   */
+  public void addExtensionValues(final String path, final Object... objects)
+      throws ScimException
+  {
+    addExtensionValues(Path.fromString(path), objects);
+  }
+
+  /**
+   * Add values to the multi-valued attribute specified by the path.
+   *
+   * @param path The path to the multi-valued attribute.
+   * @param objects The values to add.
+   * @throws ScimException If the path is invalid.
+   */
+  public void addExtensionValues(final Path path, final Object... objects)
+      throws ScimException
+  {
+    JsonNode newObjectNode =
+        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+    JsonUtils.addValue(path, extensionObjectNode, newObjectNode);
+  }
+
+  /**
+   * Remove all values of the attribute specified by the path.
+   *
+   * @param path The path to the attribute whose value to remove.
+   * @return The number of values removed.
+   * @throws ScimException If the path is invalid.
+   */
+  public int removeExtensionValues(final String path)
+      throws ScimException
+  {
+    return removeExtensionValues(Path.fromString(path));
+  }
+
+  /**
+   * Remove all values of the attribute specified by the path.
+   *
+   * @param path The path to the attribute whose value to remove.
+   * @return The number of values removed.
+   * @throws ScimException If the path is invalid.
+   */
+  public int removeExtensionValues(final Path path)
+      throws ScimException
+  {
+    List<JsonNode> nodes = JsonUtils.removeValues(path, extensionObjectNode);
+    return nodes.size();
+  }
 }

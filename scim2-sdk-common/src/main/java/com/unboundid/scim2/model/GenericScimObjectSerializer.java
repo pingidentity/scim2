@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.unboundid.scim2.schema.SchemaUtils;
 
 import java.io.IOException;
 
@@ -39,7 +40,7 @@ public class GenericScimObjectSerializer
       final JsonGenerator jgen, final SerializerProvider provider)
       throws IOException
   {
-    ObjectMapper om = new ObjectMapper();
-    om.writeTree(jgen, value.getJsonNode());
+    ObjectMapper om = SchemaUtils.createSCIMCompatibleMapper();
+    om.writeTree(jgen, value.getObjectNode());
   }
 }

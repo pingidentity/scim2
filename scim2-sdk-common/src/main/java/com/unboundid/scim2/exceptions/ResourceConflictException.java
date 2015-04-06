@@ -24,7 +24,7 @@ package com.unboundid.scim2.exceptions;
  *
  * This exception corresponds to HTTP response code 409 CONFLICT.
  */
-public class ResourceConflictException extends SCIMException
+public class ResourceConflictException extends ScimException
 {
   /**
    * Create a new <code>ResourceConflictException</code> from the provided
@@ -33,7 +33,7 @@ public class ResourceConflictException extends SCIMException
    * @param errorMessage  The error message for this SCIM exception.
    */
   public ResourceConflictException(final String errorMessage) {
-    super(409, errorMessage);
+    super(409, null, errorMessage);
   }
 
   /**
@@ -41,13 +41,15 @@ public class ResourceConflictException extends SCIMException
    * information.
    *
    * @param errorMessage  The error message for this SCIM exception.
+   * @param scimType      The SCIM detailed error keyword.
    * @param cause         The cause (which is saved for later retrieval by the
    *                      {@link #getCause()} method).  (A <tt>null</tt> value
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
   public ResourceConflictException(final String errorMessage,
+                                   final String scimType,
                                    final Throwable cause) {
-    super(409, errorMessage, cause);
+    super(409, scimType, errorMessage, cause);
   }
 }

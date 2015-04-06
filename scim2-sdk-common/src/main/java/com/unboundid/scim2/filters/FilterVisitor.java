@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2.filters;
 
-import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.ScimException;
 
 /**
  * An interface for operating on the different types of SCIM filters using the
@@ -31,9 +31,9 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final EqualFilter filter, final P param) throws SCIMException;
+  R visit(final EqualFilter filter, final P param) throws ScimException;
 
   /**
    * Operate on a not equal filter.
@@ -41,10 +41,10 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
   R visit(final NotEqualFilter filter, final P param)
-      throws SCIMException;
+      throws ScimException;
 
   /**
    * Operate on a contains filter.
@@ -52,10 +52,10 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
   R visit(final ContainsFilter filter, final P param)
-      throws SCIMException;
+      throws ScimException;
 
   /**
    * Operate on a starts with filter.
@@ -63,10 +63,10 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
   R visit(final StartsWithFilter filter, final P param)
-      throws SCIMException;
+      throws ScimException;
 
   /**
    * Operate on an ends with filter.
@@ -74,10 +74,10 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
   R visit(final EndsWithFilter filter, final P param)
-      throws SCIMException;
+      throws ScimException;
 
   /**
    * Operate on a present filter.
@@ -85,10 +85,10 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
   R visit(final PresentFilter filter, final P param)
-      throws SCIMException;
+      throws ScimException;
 
   /**
    * Operate on a greater than filter.
@@ -96,10 +96,10 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
   R visit(final GreaterThanFilter filter, final P param)
-      throws SCIMException;
+      throws ScimException;
 
   /**
    * Operate on a greater than or equal filter.
@@ -107,10 +107,10 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
   R visit(final GreaterThanOrEqualFilter filter, final P param)
-      throws SCIMException;
+      throws ScimException;
 
   /**
    * Operate on a less than filter.
@@ -118,10 +118,10 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
   R visit(final LessThanFilter filter, final P param)
-      throws SCIMException;
+      throws ScimException;
 
   /**
    * Operate on a less then or equal filter.
@@ -129,10 +129,10 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
   R visit(final LessThanOrEqualFilter filter, final P param)
-      throws SCIMException;
+      throws ScimException;
 
   /**
    * Operate on a and filter.
@@ -140,9 +140,9 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final AndFilter filter, final P param) throws SCIMException;
+  R visit(final AndFilter filter, final P param) throws ScimException;
 
   /**
    * Operate on a or filter.
@@ -150,9 +150,9 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final OrFilter filter, final P param) throws SCIMException;
+  R visit(final OrFilter filter, final P param) throws ScimException;
 
   /**
    * Operate on a not filter.
@@ -160,9 +160,9 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final NotFilter filter, final P param) throws SCIMException;
+  R visit(final NotFilter filter, final P param) throws ScimException;
 
   /**
    * Operate on a complex mulit-valued attribute value filter.
@@ -170,8 +170,8 @@ public interface FilterVisitor<R, P>
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
    * @return The return value from the operation.
-   * @throws SCIMException If an exception occurs during the operation.
+   * @throws ScimException If an exception occurs during the operation.
    */
   R visit(final ComplexValueFilter filter, final P param)
-      throws SCIMException;
+      throws ScimException;
 }

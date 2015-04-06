@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2;
 
+import com.unboundid.scim2.exceptions.BadRequestException;
 import com.unboundid.scim2.filters.Filter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -36,9 +37,10 @@ public class FilterParsingTestCase
    * Retrieves a set of valid filter strings.
    *
    * @return  A set of valid filter strings.
+   * @throws BadRequestException if the filter string is invalid.
    */
   @DataProvider(name = "testValidFilterStrings")
-  public Object[][] getTestValidFilterStrings()
+  public Object[][] getTestValidFilterStrings() throws BadRequestException
   {
     return new Object[][]
         {
@@ -183,8 +185,6 @@ public class FilterParsingTestCase
   {
     final Filter parsedFilter = Filter.fromString(filterString);
     assertEquals(parsedFilter, expectedFilter);
-//    System.out.println("Parse filter string: " + filterString);
-//    System.out.println("Parsed filter: " + filter);
   }
 
 
@@ -207,10 +207,9 @@ public class FilterParsingTestCase
       fail("Unexpected successful fromString of invalid filter: " +
           filterString);
     }
-    catch (IllegalArgumentException e)
+    catch (BadRequestException e)
     {
-//      System.out.println("Parse invalid filter: " + filterString);
-//      System.out.println("Error message: " + e.getMessage());
+      assertEquals(e.getScimType(), BadRequestException.INVALID_FILTER);
     }
   }
 }

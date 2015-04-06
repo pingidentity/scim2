@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.model.ScimResource;
 import com.unboundid.scim2.model.GenericScimResourceObject;
 import com.unboundid.scim2.model.Meta;
@@ -56,8 +56,8 @@ public class GenericScimResourceObjectTest
   @Test
   public void testBasicParsing() throws Exception
   {
-    JsonNode node = SchemaUtils.createSCIMCompatibleMapper().
-        readTree("{\n" +
+    ObjectNode node = SchemaUtils.createSCIMCompatibleMapper().
+        readValue("{\n" +
             "    \"externalId\": \"user:externalId\",\n" +
             "    \"id\": \"user:id\",\n" +
             "    \"meta\": {\n" +
@@ -82,10 +82,9 @@ public class GenericScimResourceObjectTest
             "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
             "    },\n" +
             "    \"userName\": \"user:username\"\n" +
-            "}");
+            "}", ObjectNode.class);
 
-    GenericScimResourceObject gso = new GenericScimResourceObject();
-    gso.setJsonNode(node);
+    GenericScimResourceObject gso = new GenericScimResourceObject(node);
 
     ScimResource cso = gso;
 
@@ -93,7 +92,7 @@ public class GenericScimResourceObjectTest
     schemaSet.add("urn:unboundid:schemas:baseSchema");
     schemaSet.add("urn:unboundid:schemas:favoriteColor");
 
-    Assert.assertEquals(schemaSet, cso.getSchemaUrns());
+    Assert.assertTrue(cso.getSchemaUrns().containsAll(schemaSet));
     Assert.assertEquals("user:id", cso.getId());
     Assert.assertEquals("user:externalId", cso.getExternalId());
     Meta meta = cso.getMeta();
@@ -108,7 +107,7 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals("1.0", meta.getVersion());
 
     Assert.assertEquals("12W",
-        ((GenericScimResourceObject)cso).getJsonNode().path("shoeSize")
+        ((GenericScimResourceObject)cso).getObjectNode().path("shoeSize")
             .asText());
   }
 }

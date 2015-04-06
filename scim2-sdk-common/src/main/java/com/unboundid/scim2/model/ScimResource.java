@@ -17,10 +17,10 @@
 
 package com.unboundid.scim2.model;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
- * Interface that can be used to access data from all scim objects.
+ * Interface that can be used to access data from all SCIM objects.
  */
 public interface ScimResource
 {
@@ -69,7 +69,7 @@ public interface ScimResource
    *
    * @return the schema urns for this object.
    */
-  Set<String> getSchemaUrns();
+  Collection<String> getSchemaUrns();
 
   /**
    * Sets the schema urns for this object.  This set should contain
@@ -77,32 +77,5 @@ public interface ScimResource
    * extensions.
    * @param schemaUrns a set containing the schema urns for this object.
    */
-  void setSchemaUrns(Set<String> schemaUrns);
-
-  /**
-   * Gets an extension of the type of the class passed in.  The class
-   * passed in must be annotated with the schema's urn.
-   *
-   * @param cl a java class used to determine the type of the extension
-   *           that is returned.
-   * @param <T> the generic parameter of the java Class used to determine
-   *           the type of the extension that is returned.
-   * @return the extension if it exists.
-   * @throws Exception thrown if an error is encountered while locating
-   * the extension or parsing it.
-   */
-  <T> T getExtension(final Class<T> cl)
-      throws Exception;
-
-  /**
-   * Gets an extension with the schema urn passed in and returns it
-   * as a generic SCIM object.
-   *
-   * @param schemaId the urn of the schema of the extension.
-   * @return a generic SCIM object containing the extension values.
-   * @throws Exception thrown if an error is encountered while locating
-   * the extension or parsing it.
-   */
-  GenericScimResourceObject getExtension(final String schemaId)
-      throws Exception;
+  void setSchemaUrns(Collection<String> schemaUrns);
 }

@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2.filters;
 
-import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.ScimException;
 
 /**
  * Not function filter.
@@ -73,7 +73,7 @@ public final class NotFilter extends Filter
    * {@inheritDoc}
    */
   public <R, P> R visit(final FilterVisitor<R, P> visitor, final P param)
-      throws SCIMException
+      throws ScimException
   {
     return visitor.visit(this, param);
   }

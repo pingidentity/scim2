@@ -22,11 +22,6 @@ package com.unboundid.scim2.client;
 import com.unboundid.scim2.client.security.HttpBasicAuthSecurityHandler;
 import com.unboundid.scim2.client.security.OAuthSecurityHandler;
 import com.unboundid.scim2.client.security.OAuthToken;
-import com.unboundid.scim2.exceptions.NotModifiedException;
-import com.unboundid.scim2.exceptions.PreconditionFailedException;
-import com.unboundid.scim2.exceptions.SCIMException;
-import com.unboundid.scim2.exceptions.ScimErrorResource;
-import com.unboundid.scim2.utils.Debug;
 import com.unboundid.scim2.utils.StaticUtils;
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.HttpException;
@@ -39,13 +34,11 @@ import org.apache.http.client.RedirectException;
 import org.apache.wink.client.ClientAuthenticationException;
 import org.apache.wink.client.ClientConfig;
 import org.apache.wink.client.ClientConfigException;
-import org.apache.wink.client.ClientResponse;
 import org.apache.wink.client.ClientRuntimeException;
 import org.apache.wink.client.ClientWebException;
 import org.apache.wink.client.RestClient;
 import org.apache.wink.client.httpclient.ApacheHttpClientConfig;
 
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 
@@ -204,73 +197,6 @@ public class SCIM2Client
     {
       return 500;
     }
-  }
-
-  /**
-   * Extracts the exception message from the root cause of the exception if
-   * possible.
-   *
-   * @param t the original Throwable that was caught. This may be null.
-   * @return the exception message from the root cause of the exception, or
-   *         null if the specified Throwable is null or the message cannot be
-   *         determined.
-   */
-  public String getExceptionMessage(final Throwable t)
-  {
-    if(t == null)
-    {
-      return null;
-    }
-
-    Throwable rootCause = StaticUtils.getRootCause(t);
-    return rootCause.getMessage();
-  }
-
-  /**
-   * Returns a SCIM exception representing the error response.
-   *
-   * @param response  The client response.
-   *
-   * @return  The SCIM exception representing the error response.
-   */
-  public SCIMException createErrorResponseException(
-      final ClientResponse response)
-  {
-    ScimErrorResource scimErrorResource = null;
-    SCIMException scimException = null;
-
-    try
-    {
-      scimErrorResource = response.getEntity(ScimErrorResource.class);
-    }
-    catch (Exception e)
-    {
-      // The response content could not be parsed as a SCIM error
-      // response, which is the case if the response is a more general
-      // HTTP error. It is better to just provide the HTTP response
-      // details in this case.
-      Debug.debugException(e);
-    }
-
-    if(scimErrorResource == null)
-    {
-      scimException = SCIMException.createException(
-          response.getStatusCode(), response.getMessage());
-    }
-
-
-    if(response.getStatusType() == Response.Status.PRECONDITION_FAILED)
-    {
-      scimException = new PreconditionFailedException(
-          scimErrorResource.getDetail());
-    }
-    else if(response.getStatusType() == Response.Status.NOT_MODIFIED)
-    {
-      scimException = new NotModifiedException(
-          scimErrorResource.getDetail());
-    }
-
-    return scimException;
   }
 
   /**

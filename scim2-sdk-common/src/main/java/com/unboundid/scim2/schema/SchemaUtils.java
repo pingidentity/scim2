@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.unboundid.scim2.annotations.SchemaInfo;
 import com.unboundid.scim2.annotations.SchemaProperty;
-import com.unboundid.scim2.model.BaseScimObject;
 
 import javax.lang.model.type.NullType;
 import java.beans.BeanInfo;
@@ -40,7 +39,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Stack;
-import java.util.TimeZone;
 
 /**
  * Utility class with static methods for common schema operations.
@@ -145,14 +143,14 @@ public class SchemaUtils
 
       // if this is a multivalued attribute the real sub attribute class is the
       // the one specified in the annotation, not the list, set, array, etc.
-      if((schemaProperty != null) &&
-          (schemaProperty.multiValueClass() != NullType.class))
+      if((schemaProperty.multiValueClass() != NullType.class))
       {
         propertyCls = schemaProperty.multiValueClass();
       }
 
+      AttributeDefinition.Type type = getAttributeType(propertyCls);
       Collection<AttributeDefinition> subAttributes = null;
-      if(BaseScimObject.class.isAssignableFrom(propertyCls))
+      if(type == AttributeDefinition.Type.COMPLEX)
       {
         // Add this class to the list to allow cycle detection
         classesProcessed.push(cls.getCanonicalName());
@@ -161,7 +159,7 @@ public class SchemaUtils
       }
 
       attributeBuilder.
-          setType(getAttributeType(propertyCls)).
+          setType(type).
           setSubAttributes(subAttributes);
 
       attributes.add(attributeBuilder.build());
@@ -563,9 +561,7 @@ public class SchemaUtils
 
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-    mapper.setTimeZone(TimeZone.getTimeZone("UTC"));
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     return mapper;
   }
@@ -665,7 +661,8 @@ public class SchemaUtils
    */
   public static boolean isUrn(final String string)
   {
-    return string.startsWith("urn:");
+    return string.toLowerCase().startsWith("urn:") &&
+        string.length() > 4;
   }
 
   /**
