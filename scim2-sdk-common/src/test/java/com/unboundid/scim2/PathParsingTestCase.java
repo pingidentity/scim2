@@ -132,7 +132,8 @@ public class PathParsingTestCase
     }
     catch (BadRequestException e)
     {
-      assertEquals(e.getScimType(), BadRequestException.INVALID_PATH);
+      assertEquals(e.getScimError().getScimType(),
+          BadRequestException.INVALID_PATH);
 
     }
   }

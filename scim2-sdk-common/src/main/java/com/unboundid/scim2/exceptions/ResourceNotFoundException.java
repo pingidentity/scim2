@@ -50,4 +50,19 @@ public class ResourceNotFoundException extends ScimException
                                    final Throwable cause) {
     super(404, scimType, errorMessage, cause);
   }
+
+  /**
+   * Create a new <code>ResourceNotFoundException</code> from the provided
+   * information.
+   *
+   * @param scimError     The SCIM error response.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.)
+   */
+  public ResourceNotFoundException(final ScimErrorResource scimError,
+                                   final Throwable cause) {
+    super(scimError, cause);
+  }
 }

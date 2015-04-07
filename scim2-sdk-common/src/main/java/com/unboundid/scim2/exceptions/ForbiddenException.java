@@ -51,4 +51,19 @@ public class ForbiddenException extends ScimException
                             final Throwable cause) {
     super(403, scimType, errorMessage, cause);
   }
+
+  /**
+   * Create a new <code>ForbiddenException</code> from the provided
+   * information.
+   *
+   * @param scimError     The SCIM error response.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.)
+   */
+  public ForbiddenException(final ScimErrorResource scimError,
+                            final Throwable cause) {
+    super(scimError, cause);
+  }
 }

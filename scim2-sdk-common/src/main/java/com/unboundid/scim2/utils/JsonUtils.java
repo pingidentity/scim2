@@ -449,7 +449,7 @@ public class JsonUtils
    *     specified, the attribute and all values are replaced.
    *   </li>
    *   <li>
-   *     If the path targets an attribute that does not exist, threat the
+   *     If the path targets an attribute that does not exist, treat the
    *     operation as an add.
    *   </li>
    *   <li>

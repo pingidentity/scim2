@@ -89,7 +89,6 @@ public class SchemaGenerationTest
         "booleanObjectField", "booleanField", "integerObjectField",
         "integerField", "mutabilityReadWrite", "mutabilityReadOnly",
         "mutabilityWriteOnly", "mutabilityImmutable");
-    addBaseResourceObjectFields(expectedAttributes);
 
     for(AttributeDefinition attribute : schemaDefinition.getAttributes())
     {
@@ -207,7 +206,6 @@ public class SchemaGenerationTest
     List<String> expectedAttributes = makeModifiableList("complexObject",
         "multiValuedString", "multiValuedComplex",
         "multiValuedField_missingType");
-    addBaseResourceObjectFields(expectedAttributes);
 
     for (AttributeDefinition attribute : schemaDefinition.getAttributes())
     {
@@ -248,7 +246,6 @@ public class SchemaGenerationTest
     Assert.assertTrue(subAttributes != null);
     Assert.assertTrue(subAttributes.size() > 0);
     List<String> expectedAttributes = makeModifiableList("stringField_3a");
-    addBaseResourceObjectFields(expectedAttributes);
 
     for(AttributeDefinition subAttribute : subAttributes)
     {
@@ -284,7 +281,6 @@ public class SchemaGenerationTest
     Assert.assertTrue(subAttributes.size() > 0);
     List<String> expectedAttributes = new LinkedList<String>();
     addSubAttributeFields(expectedAttributes);
-    addBaseResourceObjectFields(expectedAttributes);
 
     for(AttributeDefinition subAttribute : subAttributes)
     {
@@ -391,12 +387,6 @@ public class SchemaGenerationTest
   private List<String> makeModifiableList(String ... values)
   {
     return new LinkedList<String>(Arrays.asList(values));
-  }
-
-  private void addBaseResourceObjectFields(List<String> expectedAttributes)
-  {
-    expectedAttributes.addAll(Arrays.asList(
-        "id", "externalId", "meta"));
   }
 
 

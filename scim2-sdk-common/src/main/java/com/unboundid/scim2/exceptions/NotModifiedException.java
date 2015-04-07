@@ -75,6 +75,25 @@ public class NotModifiedException extends ScimException
   }
 
   /**
+   * Create a new <code>NotModifiedException</code> from the provided
+   * information.
+   *
+   * @param scimError     The SCIM error response.
+   * @param version       The current version of the Resource.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.)
+   */
+  public NotModifiedException(final ScimErrorResource scimError,
+                              final String version,
+                              final Throwable cause) {
+    super(scimError, cause);
+    this.version = version;
+  }
+
+
+  /**
    * Retrieves the version of the Resource.
    *
    * @return The current version of the Resource.

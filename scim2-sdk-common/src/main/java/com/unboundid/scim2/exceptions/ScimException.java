@@ -19,16 +19,12 @@ package com.unboundid.scim2.exceptions;
 
 /**
  * This class is the base class for all custom checked exceptions defined in
- * the SCIM SDK.
+ * the SCIM SDK. This is basically an exception wrapper around
+ * ScimErrorResource.
  */
 public class ScimException extends Exception
 {
-  /**
-   * The HTTP status code for this SCIM exception.
-   */
-  private final int statusCode;
-
-  private final String scimType;
+  private final ScimErrorResource scimError;
 
   /**
    * Create a new SCIM exception from the provided information.
@@ -40,10 +36,9 @@ public class ScimException extends Exception
   public ScimException(final int statusCode, final String scimType,
                        final String errorMessage)
   {
-    super(errorMessage);
-
-    this.scimType = scimType;
-    this.statusCode = statusCode;
+    scimError = new ScimErrorResource(statusCode);
+    scimError.setScimType(scimType);
+    scimError.setDetail(errorMessage);
   }
 
 
@@ -63,32 +58,111 @@ public class ScimException extends Exception
                        final String errorMessage,
                        final Throwable cause)
   {
-    super(errorMessage, cause);
+    super(cause);
 
-    this.scimType = scimType;
-    this.statusCode = statusCode;
+    scimError = new ScimErrorResource(statusCode);
+    scimError.setScimType(scimType);
+    scimError.setDetail(errorMessage);
   }
 
 
 
   /**
-   * Retrieve the HTTP status code for this SCIM exception.
+   * Create a new SCIM exception from the provided information.
    *
-   * @return  The HTTP status code for this SCIM exception.
+   * @param scimError     The SCIM Error response.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.)
    */
-  public int getStatusCode()
+  public ScimException(final ScimErrorResource scimError, final Throwable cause)
   {
-    return statusCode;
+    super(cause);
+
+    this.scimError = scimError;
   }
 
   /**
-   * Retrieve the SCIM detailed error keyword.
-   *
-   * @return  The SCIM detailed error keyword.
+   * {@inheritDoc}
    */
-  public String getScimType()
+  @Override
+  public String getMessage()
   {
-    return scimType;
+    return scimError.getDetail();
+  }
+
+  /**
+   * Retrieves the ScimErrorResource wrapped by this exception.
+   *
+   * @return the ScimErrorResource wrapped by this exception.
+   */
+  public ScimErrorResource getScimError()
+  {
+    return scimError;
+  }
+
+  /**
+   * Create the appropriate SCIMException from the provided information.
+   *
+   * @param statusCode    The HTTP status code for this SCIM exception.
+   * @param errorMessage  The error message for this SCIM exception.
+   * @return The appropriate SCIMException from the provided information.
+   */
+  public static ScimException createException(final int statusCode,
+                                              final String errorMessage)
+  {
+    return createException(statusCode, errorMessage, null);
+  }
+
+  /**
+   * Create the appropriate SCIMException from the provided information.
+   *
+   * @param statusCode    The HTTP status code for this SCIM exception.
+   * @param errorMessage  The error message for this SCIM exception.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.)
+   * @return The appropriate SCIMException from the provided information.
+   */
+  public static ScimException createException(final int statusCode,
+                                              final String errorMessage,
+                                              final Exception cause)
+  {
+    ScimErrorResource scimError = new ScimErrorResource(statusCode);
+    scimError.setDetail(errorMessage);
+    return createException(scimError, cause);
+  }
+
+  /**
+   * Create the appropriate SCIMException from a SCIM error response.
+   *
+   * @param scimError     The SCIM error response.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.)
+   * @return The appropriate SCIMException from the provided information.
+   */
+  public static ScimException createException(final ScimErrorResource scimError,
+                                              final Exception cause)
+  {
+    switch(scimError.getStatus())
+    {
+//      case -1  : return new ConnectException(errorMessage);
+      case 304 : return new NotModifiedException(scimError, null, cause);
+      case 400 : return new BadRequestException(scimError, cause);
+      case 401 : return new UnauthorizedException(scimError, cause);
+      case 403 : return new ForbiddenException(scimError, cause);
+      case 404 : return new ResourceNotFoundException(scimError, cause);
+      case 409 : return new ResourceConflictException(scimError, cause);
+      case 412 : return new PreconditionFailedException(scimError, null, cause);
+//      case 413 : return new RequestEntityTooLargeException(errorMessage);
+      case 500 : return new ServerErrorException(scimError, cause);
+//      case 501 : return new UnsupportedOperationException(errorMessage);
+      default : return new ScimException(scimError, cause);
+    }
   }
 
 }

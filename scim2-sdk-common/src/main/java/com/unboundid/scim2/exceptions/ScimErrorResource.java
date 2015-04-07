@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.exceptions;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.annotations.SchemaInfo;
 import com.unboundid.scim2.annotations.SchemaProperty;
 import com.unboundid.scim2.model.BaseScimResourceObject;
@@ -25,7 +27,7 @@ import com.unboundid.scim2.model.BaseScimResourceObject;
  * This object is returned whenever by SCIM when an error occurs.
  */
 @SchemaInfo(id="urn:ietf:params:scim:api:messages:2.0:ScimError", name="Error",
-  description = "Contains errors")
+  description = "SCIM Error Response")
 public class ScimErrorResource extends BaseScimResourceObject
 {
   @SchemaProperty(description = "Type of the SCIM error.")
@@ -34,9 +36,21 @@ public class ScimErrorResource extends BaseScimResourceObject
   @SchemaProperty(description = "Summary of the SCIM error.")
   private String detail = "";
 
-  @SchemaProperty(description = "HTTP Status of the SCIM error.")
-  private Integer status = 200;
+  @SchemaProperty(description = "HTTP Status of the SCIM error.",
+      isRequired = true)
+  private final int status;
 
+  /**
+   * Create a new ScimError with the provided status.
+   *
+   * @param status The HTTP Status of the SCIM error.
+   */
+  @JsonCreator
+  public ScimErrorResource(
+      @JsonProperty(value = "status", required = true) final int status)
+  {
+    this.status = status;
+  }
 
   /**
    * Gets the type of the error.
@@ -83,14 +97,5 @@ public class ScimErrorResource extends BaseScimResourceObject
   public Integer getStatus()
   {
     return status;
-  }
-
-  /**
-   * Sets the HTTP status of the SCIM error.
-   * @param status the HTTP status of the SCIM error.
-   */
-  public void setStatus(final Integer status)
-  {
-    this.status = status;
   }
 }

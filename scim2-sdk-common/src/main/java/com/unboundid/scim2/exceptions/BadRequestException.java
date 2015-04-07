@@ -109,6 +109,21 @@ public class BadRequestException extends ScimException
   }
 
   /**
+   * Create a new <code>BadRequestException</code> from the provided
+   * information.
+   *
+   * @param scimError     The SCIM error response.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.)
+   */
+  public BadRequestException(final ScimErrorResource scimError,
+                             final Throwable cause) {
+    super(scimError, cause);
+  }
+
+  /**
    * Factory method to create a new <code>BadRequestException</code> with the
    * invalidFilter SCIM detailed error keyword.
    *

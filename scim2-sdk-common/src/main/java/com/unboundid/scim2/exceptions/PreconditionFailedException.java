@@ -76,6 +76,24 @@ public class PreconditionFailedException extends ScimException
   }
 
   /**
+   * Create a new <code>PreconditionFailedException</code> from the provided
+   * information.
+   *
+   * @param scimError     The SCIM error response.
+   * @param version       The current version of the Resource.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.)
+   */
+  public PreconditionFailedException(final ScimErrorResource scimError,
+                                     final String version,
+                                     final Throwable cause) {
+    super(scimError, cause);
+    this.version = version;
+  }
+
+  /**
    * Retrieves the current version of the Resource.
    *
    * @return The current version of the Resource.

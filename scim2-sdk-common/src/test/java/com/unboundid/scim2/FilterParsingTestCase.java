@@ -209,7 +209,8 @@ public class FilterParsingTestCase
     }
     catch (BadRequestException e)
     {
-      assertEquals(e.getScimType(), BadRequestException.INVALID_FILTER);
+      assertEquals(e.getScimError().getScimType(),
+          BadRequestException.INVALID_FILTER);
     }
   }
 }

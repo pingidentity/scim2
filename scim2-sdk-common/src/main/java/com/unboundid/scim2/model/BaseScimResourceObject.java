@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.Path;
-import com.unboundid.scim2.annotations.SchemaProperty;
 import com.unboundid.scim2.exceptions.ScimException;
 import com.unboundid.scim2.schema.SchemaUtils;
 import com.unboundid.scim2.utils.JsonUtils;
@@ -61,13 +60,10 @@ import java.util.Set;
 public class BaseScimResourceObject
     implements ScimResource
 {
-  @SchemaProperty(description = "Meta information about the SCIM object")
   private Meta meta;
 
-  @SchemaProperty(description = "The id of the SCIM object")
   private String id;
 
-  @SchemaProperty(description = "The external id of the SCIM object")
   private String externalId;
 
   @JsonProperty("schemas")
