@@ -23,7 +23,7 @@ package com.unboundid.scim2.exceptions;
  * This exception corresponds to HTTP response code
  * 304 NOT MODIFIED.
  */
-public class NotModifiedException extends SCIMException
+public class NotModifiedException extends ScimException
 {
   private final String version;
 
@@ -34,7 +34,7 @@ public class NotModifiedException extends SCIMException
    * @param errorMessage  The error message for this SCIM exception.
    */
   public NotModifiedException(final String errorMessage) {
-    super(304, errorMessage);
+    super(304, null, errorMessage);
     version = null;
   }
 
@@ -50,7 +50,7 @@ public class NotModifiedException extends SCIMException
    */
   public NotModifiedException(final String errorMessage,
                               final Throwable cause) {
-    super(304, errorMessage, cause);
+    super(304, null, errorMessage, cause);
     version = null;
   }
 
@@ -59,6 +59,7 @@ public class NotModifiedException extends SCIMException
    * information.
    *
    * @param errorMessage  The error message for this SCIM exception.
+   * @param scimType      The SCIM detailed error keyword.
    * @param version       The current version of the Resource.
    * @param cause         The cause (which is saved for later retrieval by the
    *                      {@link #getCause()} method).  (A <tt>null</tt> value
@@ -66,11 +67,31 @@ public class NotModifiedException extends SCIMException
    *                      nonexistent or unknown.)
    */
   public NotModifiedException(final String errorMessage,
+                              final String scimType,
                               final String version,
                               final Throwable cause) {
-    super(304, errorMessage, cause);
+    super(304, scimType, errorMessage, cause);
     this.version = version;
   }
+
+  /**
+   * Create a new <code>NotModifiedException</code> from the provided
+   * information.
+   *
+   * @param scimError     The SCIM error response.
+   * @param version       The current version of the Resource.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.)
+   */
+  public NotModifiedException(final ScimErrorResource scimError,
+                              final String version,
+                              final Throwable cause) {
+    super(scimError, cause);
+    this.version = version;
+  }
+
 
   /**
    * Retrieves the version of the Resource.

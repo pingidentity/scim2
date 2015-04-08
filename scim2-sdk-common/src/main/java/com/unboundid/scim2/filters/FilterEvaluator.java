@@ -18,9 +18,10 @@
 package com.unboundid.scim2.filters;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
-import com.unboundid.scim2.exceptions.InvalidResourceException;
-import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.BadRequestException;
+import com.unboundid.scim2.exceptions.ScimException;
 import com.unboundid.scim2.utils.JsonUtils;
 
 import java.util.Date;
@@ -30,7 +31,7 @@ import java.util.List;
  * A filter visitor that will evaluate a filter on a JsonNode and return
  * whether the JsonNode matches the filter.
  */
-public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
+public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
 {
   private static final FilterEvaluator SINGLETON = new FilterEvaluator();
 
@@ -41,10 +42,10 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    * @param jsonNode The JsonNode to evaluate the filter against.
    * @return {@code true} if the JsonNode matches the filter or {@code false}
    * otherwise.
-   * @throws SCIMException If the filter is not valid for matching.
+   * @throws ScimException If the filter is not valid for matching.
    */
-  public static boolean evaluate(final Filter filter, final JsonNode jsonNode)
-      throws SCIMException
+  public static boolean evaluate(final Filter filter, final ObjectNode jsonNode)
+      throws ScimException
   {
     return filter.visit(SINGLETON, jsonNode);
   }
@@ -52,10 +53,10 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final EqualFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final EqualFilter filter, final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     if (filter.getComparisonValue().isNull() && nodes.isEmpty())
     {
@@ -94,10 +95,10 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final NotEqualFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final NotEqualFilter filter, final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     if (filter.getComparisonValue().isNull() && nodes.isEmpty())
     {
@@ -136,10 +137,10 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final ContainsFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final ContainsFilter filter, final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
@@ -157,10 +158,10 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final StartsWithFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final StartsWithFilter filter, final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
@@ -178,10 +179,10 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final EndsWithFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final EndsWithFilter filter, final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
@@ -199,10 +200,10 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final PresentFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final PresentFilter filter, final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
@@ -221,17 +222,18 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final GreaterThanFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final GreaterThanFilter filter, final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
       if (node.isBoolean() || node.isBinary())
       {
-        throw new InvalidResourceException("Greater than filter may not " +
-            "compare boolean or binary attribute values");
+        throw BadRequestException.invalidFilter(
+            "Greater than filter may not compare boolean or binary " +
+                "attribute values");
       }
       if (node.isTextual() && filter.getComparisonValue().isTextual())
       {
@@ -268,17 +270,17 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    * {@inheritDoc}
    */
   public Boolean visit(final GreaterThanOrEqualFilter filter,
-                       final JsonNode object)
-      throws SCIMException
+                       final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
       if (node.isBoolean() || node.isBinary())
       {
-        throw new InvalidResourceException("Greater than filter may not " +
-            "compare boolean or binary attribute values");
+        throw BadRequestException.invalidFilter("Greater than or equal " +
+            "filter may not compare boolean or binary attribute values");
       }
       if (node.isTextual() && filter.getComparisonValue().isTextual())
       {
@@ -314,17 +316,17 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final LessThanFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final LessThanFilter filter, final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
       if (node.isBoolean() || node.isBinary())
       {
-        throw new InvalidResourceException("Greater than filter may not " +
-            "compare boolean or binary attribute values");
+        throw BadRequestException.invalidFilter("Less than or equal " +
+            "filter may not compare boolean or binary attribute values");
       }
       if (node.isTextual() && filter.getComparisonValue().isTextual())
       {
@@ -361,17 +363,17 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    * {@inheritDoc}
    */
   public Boolean visit(final LessThanOrEqualFilter filter,
-                       final JsonNode object)
-      throws SCIMException
+                       final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
       if (node.isBoolean() || node.isBinary())
       {
-        throw new InvalidResourceException("Greater than filter may not " +
-            "compare boolean or binary attribute values");
+        throw BadRequestException.invalidFilter("Less than or equal " +
+            "filter may not compare boolean or binary attribute values");
       }
       if (node.isTextual() && filter.getComparisonValue().isTextual())
       {
@@ -407,8 +409,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final AndFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final AndFilter filter, final ObjectNode object)
+      throws ScimException
   {
     for (Filter combinedFilter : filter.getCombinedFilters())
     {
@@ -423,8 +425,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final OrFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final OrFilter filter, final ObjectNode object)
+      throws ScimException
   {
     for (Filter combinedFilter : filter.getCombinedFilters())
     {
@@ -439,8 +441,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final NotFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final NotFilter filter, final ObjectNode object)
+      throws ScimException
   {
     return !filter.getInvertedFilter().visit(this, object);
   }
@@ -448,14 +450,15 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final ComplexValueFilter filter, final JsonNode object)
-      throws SCIMException
+  public Boolean visit(final ComplexValueFilter filter, final ObjectNode object)
+      throws ScimException
   {
-    List<JsonNode> nodes = JsonUtils.gatherValues(
+    List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
-      if (filter.getValueFilter().visit(this, node))
+      if (node.isObject() &&
+          filter.getValueFilter().visit(this, (ObjectNode)node))
       {
         return true;
       }

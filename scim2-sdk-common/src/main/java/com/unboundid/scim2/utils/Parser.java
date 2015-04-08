@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.Path;
-import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.BadRequestException;
 import com.unboundid.scim2.filters.Filter;
 import com.unboundid.scim2.filters.FilterType;
 
@@ -156,22 +156,12 @@ public class Parser
    * @param filterString   The filter string to parse.
    *
    * @return A parsed SCIM filter.
-   * @throws  SCIMException  If the filter string could not be parsed.
+   * @throws BadRequestException If the filter string could not be parsed.
    */
   public static Filter parseFilter(final String filterString)
-      throws SCIMException
+      throws BadRequestException
   {
-    //  try
-    //{
     return readFilter(new StringReader(filterString.trim()), false);
-    // }
-    //  catch (Exception e)
-    //  {
-    //   Debug.debugException(e);
-    //    throw SCIMException.createException(
-    //       400, MessageFormat.format("Invalid filter ''{0}'': {1}",
-    //           reader.string, e.getMessage()));
-    // }
   }
 
   /**
@@ -180,8 +170,10 @@ public class Parser
    * @param pathString   The path string to parse.
    *
    * @return A parsed SCIM path.
+   * @throws BadRequestException If the path string could not be parsed.
    */
   public static Path parsePath(final String pathString)
+      throws BadRequestException
   {
     return readPath(new StringReader(pathString.trim()));
   }
@@ -202,8 +194,10 @@ public class Parser
    *
    * @return The token at the current position, or {@code null} if the end of
    *         the input has been reached.
+   * @throws BadRequestException If the path string could not be parsed.
    */
   private static String readPathToken(final StringReader reader)
+      throws BadRequestException
   {
     reader.mark(0);
     int c = reader.read();
@@ -216,9 +210,8 @@ public class Parser
         if(reader.pos >= reader.string.length())
         {
           // There is nothing after the period.
-          final String msg = String.format(
+          throw BadRequestException.invalidPath(
               "Unexpected end of path string");
-          throw new IllegalArgumentException(msg);
         }
         // Terminating period. Consume it and return token.
         return b.toString();
@@ -238,7 +231,7 @@ public class Parser
         final String msg = String.format(
             "Unexpected character '%s' at position %d for token starting at %d",
             (char)c, reader.pos - 1, reader.mark);
-        throw new IllegalArgumentException(msg);
+        throw BadRequestException.invalidPath(msg);
       }
       c = reader.read();
     }
@@ -256,8 +249,10 @@ public class Parser
    * @param reader The reader to read the path from.
    *
    * @return The parsed path.
+   * @throws BadRequestException If the path string could not be parsed.
    */
   private static Path readPath(final StringReader reader)
+      throws BadRequestException
   {
     Path path = null;
 
@@ -275,7 +270,7 @@ public class Parser
         {
           final String msg = String.format(
               "Attribute name expected at position %d", reader.mark);
-          throw new IllegalArgumentException(msg);
+          throw BadRequestException.invalidPath(msg);
         }
       }
       else
@@ -283,31 +278,31 @@ public class Parser
         String schemaUrn = null;
         String attributeName = token;
         Filter valueFilter = null;
-        if(path == null &&
-            attributeName.toLowerCase().startsWith("urn:"))
-        {
-          // The attribute name is prefixed with the schema URN.
-
-          // Find the last ":". Everything to the left is the schema URN,
-          // everything on the right is the attribute name.
-          int i = token.lastIndexOf(':');
-          schemaUrn = token.substring(0, i++);
-          attributeName = token.substring(i, token.length());
-          if(attributeName.isEmpty())
-          {
-            // The trailing colon signifies that this is an extension root.
-            return Path.root(schemaUrn);
-          }
-        }
-        if (attributeName.endsWith("["))
-        {
-          // There is a value path.
-          attributeName =
-              attributeName.substring(0, attributeName.length() - 1);
-          valueFilter = readFilter(reader, true);
-        }
         try
         {
+          if(path == null &&
+              attributeName.toLowerCase().startsWith("urn:"))
+          {
+            // The attribute name is prefixed with the schema URN.
+
+            // Find the last ":". Everything to the left is the schema URN,
+            // everything on the right is the attribute name.
+            int i = token.lastIndexOf(':');
+            schemaUrn = token.substring(0, i++);
+            attributeName = token.substring(i, token.length());
+            if(attributeName.isEmpty())
+            {
+              // The trailing colon signifies that this is an extension root.
+              return Path.extension(schemaUrn);
+            }
+          }
+          if (attributeName.endsWith("["))
+          {
+            // There is a value path.
+            attributeName =
+                attributeName.substring(0, attributeName.length() - 1);
+            valueFilter = readFilter(reader, true);
+          }
           if (path == null)
           {
             path = Path.attribute(schemaUrn, attributeName, valueFilter);
@@ -317,13 +312,20 @@ public class Parser
             path = path.sub(attributeName, valueFilter);
           }
         }
+        catch(BadRequestException be)
+        {
+          Debug.debugException(be);
+          final String msg = String.format(
+              "Invalid value filter: %s", be.getMessage());
+          throw BadRequestException.invalidPath(msg);
+        }
         catch(Exception e)
         {
           Debug.debugException(e);
           final String msg = String.format(
               "Invalid attribute name starting at position %d: %s",
               reader.mark, e.getMessage());
-          throw new IllegalArgumentException(msg);
+          throw BadRequestException.invalidPath(msg);
         }
       }
     }
@@ -366,9 +368,11 @@ public class Parser
    *
    * @return The token at the current position, or {@code null} if the end of
    *         the input has been reached.
+   * @throws BadRequestException If the filter string could not be parsed.
    */
   private static String readFilterToken(final StringReader reader,
                                         final boolean isValueFilter)
+      throws BadRequestException
   {
     int c;
     do
@@ -429,7 +433,7 @@ public class Parser
         final String msg = String.format(
             "Unexpected character '%s' at position %d for token starting at %d",
             (char)c, reader.pos - 1, reader.mark);
-        throw new IllegalArgumentException(msg);
+        throw BadRequestException.invalidFilter(msg);
       }
       c = reader.read();
     }
@@ -447,9 +451,11 @@ public class Parser
    * @param reader The reader to read the filter from.
    * @param isValueFilter Whether to read the filter as a value filter.
    * @return The parsed filter.
+   * @throws BadRequestException If the filter string could not be parsed.
    */
   private static Filter readFilter(final StringReader reader,
                                    final boolean isValueFilter)
+      throws BadRequestException
   {
     final Stack<Filter> outputStack = new Stack<Filter>();
     final Stack<String> precedenceStack = new Stack<String>();
@@ -470,15 +476,14 @@ public class Parser
         String nextToken = readFilterToken(reader, isValueFilter);
         if(nextToken == null)
         {
-          final String msg = String.format(
+          throw BadRequestException.invalidFilter(
               "Unexpected end of filter string");
-          throw new IllegalArgumentException(msg);
         }
         if(!nextToken.equals("("))
         {
           final String msg = String.format(
               "Expected '(' at position %d", reader.mark);
-          throw new IllegalArgumentException(msg);
+          throw BadRequestException.invalidFilter(msg);
         }
         precedenceStack.push(token);
       }
@@ -490,7 +495,7 @@ public class Parser
           final String msg =
               String.format("No opening parenthesis matching closing " +
                   "parenthesis at position %d", reader.mark);
-          throw new IllegalArgumentException(msg);
+          throw BadRequestException.invalidFilter(msg);
         }
         if (operator.equalsIgnoreCase(FilterType.NOT.getStringValue()))
         {
@@ -539,13 +544,12 @@ public class Parser
           filterAttribute = Path.fromString(
               token.substring(0, token.length() - 1));
         }
-        catch (final Exception e)
+        catch (final BadRequestException e)
         {
           Debug.debugException(e);
           final String msg = String.format(
-              "Expected an attribute reference at position %d: %s",
-              reader.mark, e.getMessage());
-          throw new IllegalArgumentException(msg);
+              "Invalid attribute: %s",e.getMessage());
+          throw BadRequestException.invalidFilter(msg);
         }
 
         outputStack.push(Filter.hasComplexValue(
@@ -564,13 +568,12 @@ public class Parser
         {
           filterAttribute = Path.fromString(token);
         }
-        catch (final Exception e)
+        catch (final BadRequestException e)
         {
           Debug.debugException(e);
           final String msg = String.format(
-              "Invalid attribute path at position %d: %s",
-              reader.mark, e.getMessage());
-          throw new IllegalArgumentException(msg);
+              "Invalid attribute: %s",e.getMessage());
+          throw BadRequestException.invalidFilter(msg);
         }
 
         String op = readFilterToken(reader, isValueFilter);
@@ -579,7 +582,7 @@ public class Parser
         {
           final String msg = String.format(
               "Unexpected end of filter string");
-          throw new IllegalArgumentException(msg);
+          throw BadRequestException.invalidFilter(msg);
         }
 
         if (op.equalsIgnoreCase(FilterType.PRESENT.getStringValue()))
@@ -626,14 +629,13 @@ public class Parser
             final String msg = String.format(
                 "Invalid comparison value at position %d: %s",
                 reader.mark, e.getMessage());
-            throw new IllegalArgumentException(msg);
+            throw BadRequestException.invalidFilter(msg);
           }
 
           if (valueNode == null)
           {
-            final String msg = String.format(
+            throw BadRequestException.invalidFilter(
                 "Unexpected end of filter string");
-            throw new IllegalArgumentException(msg);
           }
 
           if (op.equalsIgnoreCase(FilterType.EQUAL.getStringValue()))
@@ -676,7 +678,7 @@ public class Parser
             final String msg = String.format(
                 "Unrecognized attribute operator '%s' at position %d. " +
                     "Expected: eq,ne,co,sw,ew,pr,gt,ge,lt,le", op, reader.mark);
-            throw new IllegalArgumentException(msg);
+            throw BadRequestException.invalidFilter(msg);
           }
         }
       }
@@ -685,7 +687,7 @@ public class Parser
         final String msg = String.format(
             "Unexpected character '%s' at position %d", token,
             reader.mark);
-        throw new IllegalArgumentException(msg);
+        throw BadRequestException.invalidFilter(msg);
       }
       previousToken = token;
     }
@@ -694,9 +696,8 @@ public class Parser
 
     if(outputStack.isEmpty())
     {
-      final String msg = String.format(
+      throw BadRequestException.invalidFilter(
           "Unexpected end of filter string");
-      throw new IllegalArgumentException(msg);
     }
     return outputStack.pop();
   }
@@ -708,10 +709,12 @@ public class Parser
    * @param output The stack of output tokens.
    * @param isAtTheEnd Whether the end of the filter string was reached.
    * @return The last operator encountered that signaled the end of the group.
+   * @throws BadRequestException If the filter string could not be parsed.
    */
   private static String closeGrouping(final Stack<String> operators,
                                       final Stack<Filter> output,
                                       final boolean isAtTheEnd)
+      throws BadRequestException
   {
     String operator = null;
     String repeatingOperator = null;
@@ -727,9 +730,8 @@ public class Parser
       {
         if(isAtTheEnd)
         {
-          final String msg = String.format(
+          throw BadRequestException.invalidFilter(
               "Unexpected end of filter string");
-          throw new IllegalArgumentException(msg);
         }
         break;
       }
@@ -741,9 +743,8 @@ public class Parser
       {
         if(output.isEmpty())
         {
-          final String msg = String.format(
+          throw BadRequestException.invalidFilter(
               "Unexpected end of filter string");
-          throw new IllegalArgumentException(msg);
         }
         components.addFirst(output.pop());
         if(repeatingOperator.equalsIgnoreCase(FilterType.AND.getStringValue()))
@@ -759,9 +760,8 @@ public class Parser
       }
       if(output.isEmpty())
       {
-        final String msg = String.format(
+        throw BadRequestException.invalidFilter(
             "Unexpected end of filter string");
-        throw new IllegalArgumentException(msg);
       }
       components.addFirst(output.pop());
     }
@@ -770,9 +770,8 @@ public class Parser
     {
       if(output.isEmpty())
       {
-        final String msg = String.format(
+        throw BadRequestException.invalidFilter(
             "Unexpected end of filter string");
-        throw new IllegalArgumentException(msg);
       }
       components.addFirst(output.pop());
       if(repeatingOperator.equalsIgnoreCase(FilterType.AND.getStringValue()))

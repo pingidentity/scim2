@@ -21,10 +21,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.Path;
-import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.BadRequestException;
+import com.unboundid.scim2.exceptions.ScimException;
 import com.unboundid.scim2.utils.Parser;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -50,11 +50,11 @@ public abstract class Filter
    * @param <R>     The return type of the filter visitor.
    * @param <P>     The optional parameter type accepted by the filter visitor.
    * @return The return type from the filter visitor.
-   * @throws SCIMException The exception thrown from the filter visitor.
+   * @throws ScimException The exception thrown from the filter visitor.
    */
   public abstract <R, P> R visit(final FilterVisitor<R, P> visitor,
                                  final P param)
-      throws SCIMException;
+      throws ScimException;
 
   /**
    * Append the string representation of the filter to the provided buffer.
@@ -198,9 +198,11 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new equality filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath,
                           final Integer filterValue)
+      throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -212,8 +214,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new equality filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final Long filterValue)
+      throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -225,8 +229,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new equality filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final Double filterValue)
+      throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -238,8 +244,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new equality filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final Float filterValue)
+      throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -251,22 +259,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new equality filter.
-   */
-  public static Filter eq(final String attributePath,
-                          final BigDecimal filterValue)
-  {
-    return new EqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
-  }
-
-  /**
-   * Create a new equality filter.
-   *
-   * @param attributePath The path to the attribute to filter by.
-   * @param filterValue   The filter attribute value.
-   * @return A new equality filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final String filterValue)
+      throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(filterValue));
@@ -278,9 +274,11 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new equality filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath,
                           final Boolean filterValue)
+      throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.booleanNode(filterValue));
@@ -292,8 +290,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new equality filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final byte[] filterValue)
+      throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.binaryNode(filterValue));
@@ -305,8 +305,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new equality filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final Date filterValue)
+      throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(
@@ -332,9 +334,11 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new not equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath,
                           final Integer filterValue)
+      throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -346,8 +350,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new not equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final Long filterValue)
+      throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -359,8 +365,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new not equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final Double filterValue)
+      throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -372,8 +380,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new not equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final Float filterValue)
+      throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -385,22 +395,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new not equal filter.
-   */
-  public static Filter ne(final String attributePath,
-                          final BigDecimal filterValue)
-  {
-    return new NotEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
-  }
-
-  /**
-   * Create a new not equal filter.
-   *
-   * @param attributePath The path to the attribute to filter by.
-   * @param filterValue   The filter attribute value.
-   * @return A new not equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final String filterValue)
+      throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(filterValue));
@@ -412,9 +410,11 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new not equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath,
                           final Boolean filterValue)
+      throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.booleanNode(filterValue));
@@ -426,8 +426,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new not equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final byte[] filterValue)
+      throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.binaryNode(filterValue));
@@ -439,8 +441,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new not equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final Date filterValue)
+      throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(
@@ -466,8 +470,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new contains filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter co(final String attributePath, final String filterValue)
+      throws BadRequestException
   {
     return new ContainsFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(filterValue));
@@ -492,8 +498,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new starts with filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter sw(final String attributePath, final String filterValue)
+      throws BadRequestException
   {
     return new StartsWithFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(filterValue));
@@ -518,8 +526,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new starts with filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ew(final String attributePath, final String filterValue)
+      throws BadRequestException
   {
     return new EndsWithFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(filterValue));
@@ -541,8 +551,10 @@ public abstract class Filter
    *
    * @param attributePath The path to the attribute to filter by.
    * @return A new presence filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter pr(final String attributePath)
+      throws BadRequestException
   {
     return new PresentFilter(Path.fromString(attributePath));
   }
@@ -566,9 +578,11 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath,
                           final Integer filterValue)
+      throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -580,8 +594,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath, final Long filterValue)
+      throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -593,8 +609,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath, final Double filterValue)
+      throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -606,8 +624,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath, final Float filterValue)
+      throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -619,22 +639,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than filter.
-   */
-  public static Filter gt(final String attributePath,
-                          final BigDecimal filterValue)
-  {
-    return new GreaterThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
-  }
-
-  /**
-   * Create a new greater than filter.
-   *
-   * @param attributePath The path to the attribute to filter by.
-   * @param filterValue   The filter attribute value.
-   * @return A new greater than filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath, final String filterValue)
+      throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(filterValue));
@@ -646,8 +654,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath, final Date filterValue)
+      throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(
@@ -673,9 +683,11 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath,
                           final Integer filterValue)
+      throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -687,8 +699,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath, final Long filterValue)
+      throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -700,8 +714,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath, final Double filterValue)
+      throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -713,8 +729,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath, final Float filterValue)
+      throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -726,22 +744,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal filter.
-   */
-  public static Filter ge(final String attributePath,
-                          final BigDecimal filterValue)
-  {
-    return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
-  }
-
-  /**
-   * Create a new greater than or equal filter.
-   *
-   * @param attributePath The path to the attribute to filter by.
-   * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath, final String filterValue)
+      throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(filterValue));
@@ -753,8 +759,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath, final Date filterValue)
+      throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(
@@ -780,9 +788,11 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal to filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath,
                           final Integer filterValue)
+      throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -794,8 +804,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal to filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath, final Long filterValue)
+      throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -807,8 +819,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal to filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath, final Double filterValue)
+      throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -820,8 +834,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal to filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath, final Float filterValue)
+      throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -833,22 +849,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal to filter.
-   */
-  public static Filter lt(final String attributePath,
-                          final BigDecimal filterValue)
-  {
-    return new LessThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
-  }
-
-  /**
-   * Create a new less than filter.
-   *
-   * @param attributePath The path to the attribute to filter by.
-   * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal to filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath, final String filterValue)
+      throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(filterValue));
@@ -860,8 +864,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new greater than or equal to filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath, final Date filterValue)
+      throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(
@@ -887,9 +893,11 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new less than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath,
                           final Integer filterValue)
+      throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -901,8 +909,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new less than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Long filterValue)
+      throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -914,8 +924,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new less than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Double filterValue)
+      throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -927,8 +939,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new less than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Float filterValue)
+      throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.numberNode(filterValue));
@@ -940,22 +954,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new less than or equal filter.
-   */
-  public static Filter le(final String attributePath,
-                          final BigDecimal filterValue)
-  {
-    return new LessThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
-  }
-
-  /**
-   * Create a new less than or equal filter.
-   *
-   * @param attributePath The path to the attribute to filter by.
-   * @param filterValue   The filter attribute value.
-   * @return A new less than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final String filterValue)
+      throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(filterValue));
@@ -967,8 +969,10 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
    * @return A new less than or equal filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Date filterValue)
+      throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
         JsonNodeFactory.instance.textNode(
@@ -1004,12 +1008,11 @@ public abstract class Filter
    * @param filter2 The second filter.
    * @param filters Additional filter components.
    * @return A new and filter.
-   * @throws SCIMException if the one or more of the filters is an invalid SCIM
-   *                       filter.
+   * @throws BadRequestException If one of the filters could not be parsed.
    */
   public static Filter and(final String filter1, final String filter2,
                            final String... filters)
-      throws SCIMException
+      throws BadRequestException
   {
     ArrayList<Filter> components =
         new ArrayList<Filter>(filters != null ? 2 + filters.length : 2);
@@ -1054,12 +1057,11 @@ public abstract class Filter
    * @param filter2 The second filter.
    * @param filters Additional filter components.
    * @return A new or filter.
-   * @throws SCIMException if the one or more of the filters is an invalid SCIM
-   *                       filter.
+   * @throws BadRequestException If one of the filters could not be parsed.
    */
   public static Filter or(final String filter1, final String filter2,
                           final String... filters)
-      throws SCIMException
+      throws BadRequestException
   {
     ArrayList<Filter> components =
         new ArrayList<Filter>(filters != null ? 2 + filters.length : 2);
@@ -1123,10 +1125,9 @@ public abstract class Filter
    *
    * @param filter The inverted filter.
    * @return A new not filter.
-   * @throws SCIMException if the inverted filter is an invalid SCIM
-   *                       filter.
+   * @throws BadRequestException If the filter could not be parsed.
    */
-  public static Filter not(final String filter) throws SCIMException
+  public static Filter not(final String filter) throws BadRequestException
   {
     return new NotFilter(fromString(filter));
   }
@@ -1150,9 +1151,11 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param valueFilter   The value filter.
    * @return A new complex multi-valued attribute value filter.
+   * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter hasComplexValue(final String attributePath,
                                        final Filter valueFilter)
+      throws BadRequestException
   {
     return new ComplexValueFilter(Path.fromString(attributePath), valueFilter);
   }
@@ -1163,12 +1166,11 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param valueFilter   The value filter.
    * @return A new complex multi-valued attribute value filter.
-   * @throws SCIMException if the inverted filter is an invalid SCIM
-   *                       filter.
+   * @throws BadRequestException If the path or filter could not be parsed.
    */
   public static Filter hasComplexValue(final String attributePath,
                                        final String valueFilter)
-      throws SCIMException
+      throws BadRequestException
   {
     return new ComplexValueFilter(Path.fromString(attributePath),
         fromString(valueFilter));
@@ -1179,10 +1181,10 @@ public abstract class Filter
    *
    * @param filterString The string representation of the filter expression.
    * @return The parsed filter.
-   * @throws SCIMException If the filter string could not be parsed.
+   * @throws BadRequestException If the filter could not be parsed.
    */
   public static Filter fromString(final String filterString)
-      throws SCIMException
+      throws BadRequestException
   {
     return Parser.parseFilter(filterString);
   }

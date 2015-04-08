@@ -21,14 +21,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unboundid.scim2.annotations.SchemaInfo;
 import com.unboundid.scim2.annotations.SchemaProperty;
-import com.unboundid.scim2.model.BaseScimObject;
+import com.unboundid.scim2.exceptions.ScimException;
 import com.unboundid.scim2.model.BaseScimResourceObject;
-import com.unboundid.scim2.model.ScimResource;
 import com.unboundid.scim2.model.GenericScimResourceObject;
 import com.unboundid.scim2.model.Meta;
 import com.unboundid.scim2.schema.AttributeDefinition;
 import com.unboundid.scim2.schema.SchemaUtils;
-import com.unboundid.scim2.utils.ScimJsonHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -105,7 +104,7 @@ public class ExtensionsTest
     }
   }
 
-  private static class CoreClass_Name extends BaseScimObject
+  private static class CoreClass_Name
   {
     @SchemaProperty(description = "User's first name")
     public String first;
@@ -174,7 +173,7 @@ public class ExtensionsTest
   @SchemaInfo(description = "Class to represent a favorite color",
       id = "urn:unboundid:schemas:FavoriteColor",
       name = "FavoriteColor")
-  private static class ExtensionClass extends BaseScimObject
+  private static class ExtensionClass
   {
     @SchemaProperty(description = "Favorite color")
     private String favoriteColor;
@@ -228,7 +227,8 @@ public class ExtensionsTest
     Assert.assertEquals(
         userNode.path("urn:unboundid:schemas:FavoriteColor").
             path("favoriteColor").asText(),
-        user.getExtension(ExtensionClass.class).getFavoriteColor());
+        user.getExtensionValue(Path.extension(ExtensionClass.class),
+            ExtensionClass.class).getFavoriteColor());
   }
 
   /**
@@ -283,7 +283,8 @@ public class ExtensionsTest
 
     // check the extension values
     Assert.assertEquals(
-        user.getExtension(ExtensionClass.class).getFavoriteColor(),
+        user.getExtensionValue(Path.extension(ExtensionClass.class),
+            ExtensionClass.class).getFavoriteColor(),
         "extension:favoritecolor");
   }
 
@@ -294,19 +295,19 @@ public class ExtensionsTest
   @Test
   public void testGetExtensionAsGenericScimObject() throws Exception
   {
-    ScimResource commonScimObject = getGenericUser();
+    GenericScimResourceObject commonScimObject = getGenericUser();
 
     ExtensionClass extensionClass =
-        commonScimObject.getExtension(ExtensionClass.class);
-    GenericScimResourceObject genericScimResourceObject =
-        commonScimObject.getExtension("urn:unboundid:schemas:FavoriteColor");
+        commonScimObject.getValue(
+            Path.extension(ExtensionClass.class), ExtensionClass.class);
+    Map extensionAttrs =
+        commonScimObject.getValue("urn:unboundid:schemas:FavoriteColor:",
+            Map.class);
 
     Assert.assertEquals(extensionClass.getFavoriteColor(),
         "extension:favoritecolor");
 
-    ScimJsonHelper helper = new ScimJsonHelper(
-        genericScimResourceObject.getJsonNode());
-    Assert.assertEquals(helper.path("favoriteColor").asText(),
+    Assert.assertEquals(extensionAttrs.get("favoriteColor"),
         extensionClass.getFavoriteColor());
   }
 
@@ -315,7 +316,7 @@ public class ExtensionsTest
    * @return a user for tests.
    * @throws URISyntaxException thrown if an error occurs.
    */
-  private CoreClass_User getBasicUser() throws URISyntaxException
+  private CoreClass_User getBasicUser() throws URISyntaxException, ScimException
   {
     CoreClass_Name name = new CoreClass_Name();
     name.setFirst("name:first");
@@ -339,7 +340,8 @@ public class ExtensionsTest
     user.setId("user:id");
     user.setExternalId("user:externalId");
     user.setMeta(meta);
-    user.addExtension(extensionClass);
+    user.setExtensionValue(Path.extension(extensionClass.getClass()),
+        extensionClass);
 
     return user;
   }

@@ -26,7 +26,7 @@ import java.util.Calendar;
 /**
  * Stores metadata about a SCIM object.
  */
-public class Meta extends BaseScimObject
+public final class Meta
 {
   @SchemaProperty(description = "The resource Type",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
@@ -144,5 +144,63 @@ public class Meta extends BaseScimObject
   public void setResourceType(final String resourceType)
   {
     this.resourceType = resourceType;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean equals(final Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass())
+    {
+      return false;
+    }
+
+    Meta meta = (Meta) o;
+
+    if (created != null ? !created.equals(meta.created) : meta.created != null)
+    {
+      return false;
+    }
+    if (lastModified != null ? !lastModified.equals(meta.lastModified) :
+        meta.lastModified != null)
+    {
+      return false;
+    }
+    if (location != null ? !location.equals(meta.location) :
+        meta.location != null)
+    {
+      return false;
+    }
+    if (resourceType != null ? !resourceType.equals(meta.resourceType) :
+        meta.resourceType != null)
+    {
+      return false;
+    }
+    if (version != null ? !version.equals(meta.version) : meta.version != null)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int hashCode()
+  {
+    int result = resourceType != null ? resourceType.hashCode() : 0;
+    result = 31 * result + (created != null ? created.hashCode() : 0);
+    result = 31 * result + (lastModified != null ? lastModified.hashCode() : 0);
+    result = 31 * result + (location != null ? location.hashCode() : 0);
+    result = 31 * result + (version != null ? version.hashCode() : 0);
+    return result;
   }
 }

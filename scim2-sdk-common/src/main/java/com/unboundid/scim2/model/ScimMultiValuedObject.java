@@ -30,9 +30,7 @@ import java.net.URI;
  * @param <T> the type of the value of this object.
  */
 public class ScimMultiValuedObject<T>
-    extends BaseScimResourceObject
 {
-
   /**
    * A string describing the type of this attribute's value.  This should
    * probably be one of the SCIM datatypes.

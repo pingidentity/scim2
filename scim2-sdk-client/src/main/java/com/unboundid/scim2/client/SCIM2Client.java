@@ -22,9 +22,7 @@ package com.unboundid.scim2.client;
 import com.unboundid.scim2.client.security.HttpBasicAuthSecurityHandler;
 import com.unboundid.scim2.client.security.OAuthSecurityHandler;
 import com.unboundid.scim2.client.security.OAuthToken;
-import com.unboundid.scim2.exceptions.NotModifiedException;
-import com.unboundid.scim2.exceptions.PreconditionFailedException;
-import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.ScimException;
 import com.unboundid.scim2.exceptions.ScimErrorResource;
 import com.unboundid.scim2.utils.Debug;
 import com.unboundid.scim2.utils.StaticUtils;
@@ -45,7 +43,6 @@ import org.apache.wink.client.ClientWebException;
 import org.apache.wink.client.RestClient;
 import org.apache.wink.client.httpclient.ApacheHttpClientConfig;
 
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 
@@ -233,11 +230,10 @@ public class SCIM2Client
    *
    * @return  The SCIM exception representing the error response.
    */
-  public SCIMException createErrorResponseException(
+  public ScimException createErrorResponseException(
       final ClientResponse response)
   {
     ScimErrorResource scimErrorResource = null;
-    SCIMException scimException = null;
 
     try
     {
@@ -254,23 +250,11 @@ public class SCIM2Client
 
     if(scimErrorResource == null)
     {
-      scimException = SCIMException.createException(
+      return ScimException.createException(
           response.getStatusCode(), response.getMessage());
     }
 
-
-    if(response.getStatusType() == Response.Status.PRECONDITION_FAILED)
-    {
-      scimException = new PreconditionFailedException(
-          scimErrorResource.getDetail());
-    }
-    else if(response.getStatusType() == Response.Status.NOT_MODIFIED)
-    {
-      scimException = new NotModifiedException(
-          scimErrorResource.getDetail());
-    }
-
-    return scimException;
+    return ScimException.createException(scimErrorResource, null);
   }
 
   /**

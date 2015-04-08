@@ -18,8 +18,9 @@
 package com.unboundid.scim2;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
-import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.ScimException;
 import com.unboundid.scim2.filters.Filter;
 import com.unboundid.scim2.filters.FilterEvaluator;
 import com.unboundid.scim2.schema.SchemaUtils;
@@ -215,13 +216,13 @@ public class FilterEvaluatorTestCase
    *
    * @param filter The filter string to evaluate.
    * @param result The expected result.
-   * @throws SCIMException If the filter string is invalid.
+   * @throws ScimException If the filter string is invalid.
    */
   @Test(dataProvider = "testValidFilterStrings")
   public void testBinaryFilterValue(String filter, boolean result)
-      throws SCIMException
+      throws ScimException
   {
-    assertEquals(FilterEvaluator.evaluate(Filter.fromString(filter), node),
-        result);
+    assertEquals(FilterEvaluator.evaluate(Filter.fromString(filter),
+            (ObjectNode)node), result);
   }
 }

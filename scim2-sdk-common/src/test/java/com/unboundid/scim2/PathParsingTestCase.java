@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2;
 
-import com.unboundid.scim2.filters.Filter;
+import com.unboundid.scim2.exceptions.BadRequestException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -34,9 +34,10 @@ public class PathParsingTestCase
    * Retrieves a set of valid path strings.
    *
    * @return  A set of valid path strings.
+   * @throws BadRequestException if the path string is invalid.
    */
   @DataProvider(name = "testValidPathStrings")
-  public Object[][] getTestValidPathStrings()
+  public Object[][] getTestValidPathStrings() throws BadRequestException
   {
     return new Object[][]
         {
@@ -56,7 +57,7 @@ public class PathParsingTestCase
             // but our path impl is lenient so it may be used with any JSON
             // object.
             new Object[] { "", Path.root() },
-            new Object[] { "urn:extension:", Path.root("urn:extension") },
+            new Object[] { "urn:extension:", Path.extension("urn:extension") },
             new Object[] { "urn:extension:attr[subAttr eq \"78750\"]." +
                 "subAttr[subSub pr].this.is.crazy[type eq \"good\"].deep",
                 Path.attribute("urn:extension", "attr", eq("subAttr", "78750")).
@@ -116,23 +117,24 @@ public class PathParsingTestCase
   /**
    * Tests the {@code fromString} method with an invalid path string.
    *
-   * @param  filterString  The string representation of the path to fromString.
+   * @param  pathString  The string representation of the path to fromString.
    *
    * @throws Exception If the test fails.
    */
   @Test(dataProvider = "testInvalidPathStrings")
-  public void testParseInvalidPath(final String filterString)
+  public void testParseInvalidPath(final String pathString)
       throws Exception
   {
     try
     {
-      Filter.fromString(filterString);
-      fail("Unexpected successful fromString of invalid path: " + filterString);
+      Path.fromString(pathString);
+      fail("Unexpected successful fromString of invalid path: " + pathString);
     }
-    catch (IllegalArgumentException e)
+    catch (BadRequestException e)
     {
-//      System.out.println("Parse invalid path: " + filterString);
-//      System.out.println("Error message: " + e.getMessage());
+      assertEquals(e.getScimError().getScimType(),
+          BadRequestException.INVALID_PATH);
+
     }
   }
 }

@@ -22,7 +22,7 @@ package com.unboundid.scim2.exceptions;
  *
  * This exception corresponds to HTTP response code 404 NOT FOUND.
  */
-public class ResourceNotFoundException extends SCIMException
+public class ResourceNotFoundException extends ScimException
 {
   /**
    * Create a new <code>ResourceNotFoundException</code> from the provided
@@ -31,7 +31,7 @@ public class ResourceNotFoundException extends SCIMException
    * @param errorMessage  The error message for this SCIM exception.
    */
   public ResourceNotFoundException(final String errorMessage) {
-    super(404, errorMessage);
+    super(404, null, errorMessage);
   }
 
   /**
@@ -39,13 +39,30 @@ public class ResourceNotFoundException extends SCIMException
    * information.
    *
    * @param errorMessage  The error message for this SCIM exception.
+   * @param scimType      The SCIM detailed error keyword.
    * @param cause         The cause (which is saved for later retrieval by the
    *                      {@link #getCause()} method).  (A <tt>null</tt> value
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
   public ResourceNotFoundException(final String errorMessage,
+                                   final String scimType,
                                    final Throwable cause) {
-    super(404, errorMessage, cause);
+    super(404, scimType, errorMessage, cause);
+  }
+
+  /**
+   * Create a new <code>ResourceNotFoundException</code> from the provided
+   * information.
+   *
+   * @param scimError     The SCIM error response.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.)
+   */
+  public ResourceNotFoundException(final ScimErrorResource scimError,
+                                   final Throwable cause) {
+    super(scimError, cause);
   }
 }

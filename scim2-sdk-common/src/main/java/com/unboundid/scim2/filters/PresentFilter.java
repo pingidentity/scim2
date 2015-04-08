@@ -18,7 +18,7 @@
 package com.unboundid.scim2.filters;
 
 import com.unboundid.scim2.Path;
-import com.unboundid.scim2.exceptions.SCIMException;
+import com.unboundid.scim2.exceptions.ScimException;
 
 /**
  * Attribute present filter.
@@ -63,7 +63,7 @@ public final class PresentFilter extends Filter
    * {@inheritDoc}
    */
   public <R, P> R visit(final FilterVisitor<R, P> visitor, final P param)
-      throws SCIMException
+      throws ScimException
   {
     return visitor.visit(this, param);
   }

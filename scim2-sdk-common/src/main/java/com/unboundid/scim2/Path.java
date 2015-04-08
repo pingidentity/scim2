@@ -17,7 +17,9 @@
 
 package com.unboundid.scim2;
 
+import com.unboundid.scim2.exceptions.BadRequestException;
 import com.unboundid.scim2.filters.Filter;
+import com.unboundid.scim2.schema.SchemaUtils;
 import com.unboundid.scim2.utils.Parser;
 
 import java.util.ArrayList;
@@ -194,12 +196,25 @@ public final class Path
   }
 
   /**
+   * Whether this path targets the the SCIM resource itself.
+   *
+   * @return {@code true} if this path targets the SCIM resource itself or
+   * {@code false} otherwise.
+   */
+  public boolean isRoot()
+  {
+    return elements.isEmpty();
+  }
+
+  /**
    * Parse a path from its string representation.
    *
    * @param pathString The string representation of the path.
    * @return The parsed path.
+   * @throws BadRequestException if the path string could not be parsed.
    */
   public static Path fromString(final String pathString)
+      throws BadRequestException
   {
     return Parser.parsePath(pathString);
   }
@@ -225,10 +240,9 @@ public final class Path
    * @return The path to the root of the JSON object that contains all the
    * extension attributes of an extension schema.
    */
-  public static Path root(final String extensionSchemaUrn)
+  public static Path extension(final String extensionSchemaUrn)
   {
-    if(!extensionSchemaUrn.startsWith("urn:") ||
-        extensionSchemaUrn.length() <= 4)
+    if(!SchemaUtils.isUrn(extensionSchemaUrn))
     {
       throw new IllegalArgumentException(
           String.format("Invalid extension schema URN: %s",
@@ -236,6 +250,23 @@ public final class Path
     }
     return new Path(Collections.singletonList(
         new Element(extensionSchemaUrn, null)));
+  }
+
+  /**
+   * Creates a path to the root of the JSON object that contains all the
+   * extension attributes of an extension schema defined by the provided class.
+   *
+   * @param extensionClass The the extension class that defines the extension
+   *                       schema.
+   * @param <T> The generic type parameter of the Java class used to represent
+   *            the extension.
+   *
+   * @return The path to the root of the JSON object that contains all the
+   * extension attributes of an extension schema.
+   */
+  public static <T> Path extension(final Class<T> extensionClass)
+  {
+    return extension(SchemaUtils.getSchemaUrn(extensionClass));
   }
 
   /**
@@ -291,8 +322,7 @@ public final class Path
                                final String attribute,
                                final Filter valueFilter)
   {
-    if(schemaUrn != null &&
-        (!schemaUrn.startsWith("urn:") || schemaUrn.length() <= 4))
+    if(schemaUrn != null && !SchemaUtils.isUrn(schemaUrn))
     {
       throw new IllegalArgumentException(
           String.format("Invalid schema URN: %s", schemaUrn));
@@ -315,7 +345,7 @@ public final class Path
    */
   public String getSchemaUrn()
   {
-    if(!elements.isEmpty() && elements.get(0).getAttribute().startsWith("urn:"))
+    if(!elements.isEmpty() && SchemaUtils.isUrn(elements.get(0).getAttribute()))
     {
       return elements.get(0).getAttribute();
     }
@@ -385,7 +415,7 @@ public final class Path
     if(i.hasNext())
     {
       element = i.next();
-      if(element.getAttribute().startsWith("urn:"))
+      if(SchemaUtils.isUrn(element.getAttribute()))
       {
         element.toString(builder);
         if(i.hasNext())
