@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.exceptions;
 
+import com.unboundid.scim2.messages.ErrorResponse;
+
 /**
  * This class is the base class for all custom checked exceptions defined in
  * the SCIM SDK. This is basically an exception wrapper around
@@ -24,7 +26,7 @@ package com.unboundid.scim2.exceptions;
  */
 public class ScimException extends Exception
 {
-  private final ScimErrorResource scimError;
+  private final ErrorResponse scimError;
 
   /**
    * Create a new SCIM exception from the provided information.
@@ -36,7 +38,7 @@ public class ScimException extends Exception
   public ScimException(final int statusCode, final String scimType,
                        final String errorMessage)
   {
-    scimError = new ScimErrorResource(statusCode);
+    scimError = new ErrorResponse(statusCode);
     scimError.setScimType(scimType);
     scimError.setDetail(errorMessage);
   }
@@ -60,7 +62,7 @@ public class ScimException extends Exception
   {
     super(cause);
 
-    scimError = new ScimErrorResource(statusCode);
+    scimError = new ErrorResponse(statusCode);
     scimError.setScimType(scimType);
     scimError.setDetail(errorMessage);
   }
@@ -76,7 +78,7 @@ public class ScimException extends Exception
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
-  public ScimException(final ScimErrorResource scimError, final Throwable cause)
+  public ScimException(final ErrorResponse scimError, final Throwable cause)
   {
     super(cause);
 
@@ -97,7 +99,7 @@ public class ScimException extends Exception
    *
    * @return the ScimErrorResource wrapped by this exception.
    */
-  public ScimErrorResource getScimError()
+  public ErrorResponse getScimError()
   {
     return scimError;
   }
@@ -130,7 +132,7 @@ public class ScimException extends Exception
                                               final String errorMessage,
                                               final Exception cause)
   {
-    ScimErrorResource scimError = new ScimErrorResource(statusCode);
+    ErrorResponse scimError = new ErrorResponse(statusCode);
     scimError.setDetail(errorMessage);
     return createException(scimError, cause);
   }
@@ -145,7 +147,7 @@ public class ScimException extends Exception
    *                      nonexistent or unknown.)
    * @return The appropriate SCIMException from the provided information.
    */
-  public static ScimException createException(final ScimErrorResource scimError,
+  public static ScimException createException(final ErrorResponse scimError,
                                               final Exception cause)
   {
     switch(scimError.getStatus())

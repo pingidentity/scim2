@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.exceptions;
 
+import com.unboundid.scim2.messages.ErrorResponse;
+
 /**
  * Signals the Resource has not changed on the server since last retrieved
  *
@@ -85,7 +87,7 @@ public class NotModifiedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
-  public NotModifiedException(final ScimErrorResource scimError,
+  public NotModifiedException(final ErrorResponse scimError,
                               final String version,
                               final Throwable cause) {
     super(scimError, cause);

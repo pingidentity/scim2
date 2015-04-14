@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.exceptions;
 
+import com.unboundid.scim2.messages.ErrorResponse;
+
 /**
  * Signals an authorization failure from the service provider.
  *
@@ -61,7 +63,7 @@ public class UnauthorizedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
-  public UnauthorizedException(final ScimErrorResource scimError,
+  public UnauthorizedException(final ErrorResponse scimError,
                                final Throwable cause) {
     super(scimError, cause);
   }

@@ -307,7 +307,22 @@ public class JsonUtils
           // Append the new values to the existing ones.
           ArrayNode targetArray = (ArrayNode) node;
           ArrayNode valueArray = (ArrayNode) value;
-          targetArray.addAll(valueArray);
+          for(JsonNode valueNode : valueArray)
+          {
+            boolean valueFound = false;
+            for(JsonNode targetNode : targetArray)
+            {
+              if(valueNode.equals(targetNode))
+              {
+                valueFound = true;
+                break;
+              }
+            }
+            if(!valueFound)
+            {
+              targetArray.add(valueNode);
+            }
+          }
         }
         else
         {

@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.exceptions;
 
+import com.unboundid.scim2.messages.ErrorResponse;
+
 /**
  * Signals the specified version number does not match the resource's latest
  * version number or a Service Provider refused to create a new,
@@ -63,7 +65,7 @@ public class ResourceConflictException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
-  public ResourceConflictException(final ScimErrorResource scimError,
+  public ResourceConflictException(final ErrorResponse scimError,
                                    final Throwable cause) {
     super(scimError, cause);
   }

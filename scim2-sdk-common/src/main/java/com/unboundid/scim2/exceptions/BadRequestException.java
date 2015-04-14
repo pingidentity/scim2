@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.exceptions;
 
+import com.unboundid.scim2.messages.ErrorResponse;
+
 /**
  * Signals an error while looking up resources and attributes.
  *
@@ -118,7 +120,7 @@ public class BadRequestException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
-  public BadRequestException(final ScimErrorResource scimError,
+  public BadRequestException(final ErrorResponse scimError,
                              final Throwable cause) {
     super(scimError, cause);
   }

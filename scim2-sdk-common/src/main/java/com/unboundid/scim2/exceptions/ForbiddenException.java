@@ -18,6 +18,8 @@
 package com.unboundid.scim2.exceptions;
 
 
+import com.unboundid.scim2.messages.ErrorResponse;
+
 /**
  * Signals the server does not support the requested operation.
  *
@@ -62,7 +64,7 @@ public class ForbiddenException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
-  public ForbiddenException(final ScimErrorResource scimError,
+  public ForbiddenException(final ErrorResponse scimError,
                             final Throwable cause) {
     super(scimError, cause);
   }
