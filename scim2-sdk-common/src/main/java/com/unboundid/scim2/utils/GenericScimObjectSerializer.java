@@ -15,32 +15,33 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.model;
+package com.unboundid.scim2.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.unboundid.scim2.model.GenericScimResourceObject;
 import com.unboundid.scim2.schema.SchemaUtils;
 
 import java.io.IOException;
 
 /**
- * Deserializer for the GenericScimObject.
+ * Serializer for generic scim objects.
  */
-public class GenericScimObjectDeserializer
-    extends JsonDeserializer<GenericScimResourceObject>
+public class GenericScimObjectSerializer
+    extends JsonSerializer<GenericScimResourceObject>
 {
+
   /**
    * {@inheritDoc}
    */
   @Override
-  public GenericScimResourceObject deserialize(final JsonParser jp,
-      final DeserializationContext ctxt) throws IOException
+  public void serialize(final GenericScimResourceObject value,
+      final JsonGenerator jgen, final SerializerProvider provider)
+      throws IOException
   {
-    ObjectMapper objectMapper = SchemaUtils.createSCIMCompatibleMapper();
-    ObjectNode objectNode = objectMapper.readValue(jp, ObjectNode.class);
-    return new GenericScimResourceObject(objectNode);
+    ObjectMapper om = SchemaUtils.createSCIMCompatibleMapper();
+    om.writeTree(jgen, value.getObjectNode());
   }
 }

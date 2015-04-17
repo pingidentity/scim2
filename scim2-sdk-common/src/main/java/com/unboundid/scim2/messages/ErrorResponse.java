@@ -15,7 +15,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.exceptions;
+package com.unboundid.scim2.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,9 +26,9 @@ import com.unboundid.scim2.model.BaseScimResourceObject;
 /**
  * This object is returned whenever by SCIM when an error occurs.
  */
-@SchemaInfo(id="urn:ietf:params:scim:api:messages:2.0:ScimError", name="Error",
-  description = "SCIM Error Response")
-public class ScimErrorResource extends BaseScimResourceObject
+@SchemaInfo(id="urn:ietf:params:scim:api:messages:2.0:Error",
+    name="Error Response", description = "SCIM 2.0 Error Response")
+public final class ErrorResponse extends BaseScimResourceObject
 {
   @SchemaProperty(description = "Type of the SCIM error.")
   private String scimType = "";
@@ -46,7 +46,7 @@ public class ScimErrorResource extends BaseScimResourceObject
    * @param status The HTTP Status of the SCIM error.
    */
   @JsonCreator
-  public ScimErrorResource(
+  public ErrorResponse(
       @JsonProperty(value = "status", required = true) final int status)
   {
     this.status = status;

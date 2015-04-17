@@ -29,6 +29,7 @@ import com.unboundid.scim2.utils.JsonUtils;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -480,12 +481,11 @@ public class JsonUtilsTestCase
   /**
    * Test the getValues method.
    *
-   * @throws ScimException If an error occurred.
-   * @throws IOException If an error occurred.
+   * @throws Exception If an error occurred.
    */
   @Test
   public void testGet()
-      throws ScimException, IOException
+      throws Exception
   {
     GenericScimResourceObject gso =
         new GenericScimResourceObject(getTestResource());
@@ -518,7 +518,8 @@ public class JsonUtilsTestCase
         "date",
         Date.class);
     assertEquals(dateResult.size(), 1);
-    assertEquals(dateResult.get(0), ISO8601Utils.parse("2015-02-27T11:28:39Z"));
+    assertEquals(dateResult.get(0),
+        ISO8601Utils.parse("2015-02-27T11:28:39Z", new ParsePosition(0)));
 
 
     List<byte[]> binaryResult = gso.getValues(

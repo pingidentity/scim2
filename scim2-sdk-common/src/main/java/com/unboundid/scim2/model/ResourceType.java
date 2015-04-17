@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.model;
 
+import com.unboundid.scim2.annotations.SchemaInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,15 +31,10 @@ import java.util.List;
  * specified.  The "id" attribute is not required for the resource type
  * resource.
  */
-public class ResourceType
+@SchemaInfo(id="urn:ietf:params:scim:schemas:core:2.0:ResourceType",
+    name="Resource Type", description = "SCIM 2.0 Resource Type Resource")
+public class ResourceType extends BaseScimResourceObject
 {
-  /**
-   * id
-   * The resource type's server unique id.  Often this is the same
-   * value as the "name" attribute.  OPTIONAL.
-   */
-  private String id;
-
   /**
    * name
    * The resource type name.  When applicable service providers MUST
@@ -111,22 +108,12 @@ public class ResourceType
                       final String schema,
                       final List<SchemaExtension> schemaExtensions)
   {
-    this.id = id;
     this.name = name;
     this.description = description;
     this.endpoint = endpoint;
     this.schema = schema;
     this.schemaExtensions = schemaExtensions;
-  }
-
-  /**
-   * Gets the resource type id.
-   *
-   * @return id of the resource type.
-   */
-  public String getId()
-  {
-    return id;
+    setId(id);
   }
 
   /**

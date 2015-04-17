@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.exceptions;
 
+import com.unboundid.scim2.messages.ErrorResponse;
+
 /**
  * Signals server failed to update as Resource changed on the server since last
  * retrieved
@@ -86,7 +88,7 @@ public class PreconditionFailedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
-  public PreconditionFailedException(final ScimErrorResource scimError,
+  public PreconditionFailedException(final ErrorResponse scimError,
                                      final String version,
                                      final Throwable cause) {
     super(scimError, cause);

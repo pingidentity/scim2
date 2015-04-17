@@ -23,7 +23,7 @@ import com.unboundid.scim2.client.security.HttpBasicAuthSecurityHandler;
 import com.unboundid.scim2.client.security.OAuthSecurityHandler;
 import com.unboundid.scim2.client.security.OAuthToken;
 import com.unboundid.scim2.exceptions.ScimException;
-import com.unboundid.scim2.exceptions.ScimErrorResource;
+import com.unboundid.scim2.messages.ErrorResponse;
 import com.unboundid.scim2.utils.Debug;
 import com.unboundid.scim2.utils.StaticUtils;
 import org.apache.http.ConnectionClosedException;
@@ -233,11 +233,11 @@ public class SCIM2Client
   public ScimException createErrorResponseException(
       final ClientResponse response)
   {
-    ScimErrorResource scimErrorResource = null;
+    ErrorResponse scimErrorResource = null;
 
     try
     {
-      scimErrorResource = response.getEntity(ScimErrorResource.class);
+      scimErrorResource = response.getEntity(ErrorResponse.class);
     }
     catch (Exception e)
     {

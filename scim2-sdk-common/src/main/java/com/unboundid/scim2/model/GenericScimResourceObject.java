@@ -26,6 +26,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.Path;
 import com.unboundid.scim2.exceptions.ScimException;
 import com.unboundid.scim2.schema.SchemaUtils;
+import com.unboundid.scim2.utils.GenericScimObjectDeserializer;
+import com.unboundid.scim2.utils.GenericScimObjectSerializer;
 import com.unboundid.scim2.utils.JsonUtils;
 
 import java.util.ArrayList;

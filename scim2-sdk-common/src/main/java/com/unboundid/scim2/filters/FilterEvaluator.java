@@ -24,6 +24,8 @@ import com.unboundid.scim2.exceptions.BadRequestException;
 import com.unboundid.scim2.exceptions.ScimException;
 import com.unboundid.scim2.utils.JsonUtils;
 
+import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.Date;
 import java.util.List;
 
@@ -486,9 +488,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
     {
       try
       {
-        return ISO8601Utils.parse(text);
+        return ISO8601Utils.parse(text, new ParsePosition(0));
       }
-      catch (IllegalArgumentException e)
+      catch (ParseException e)
       {
         // This is not a date after all.
       }

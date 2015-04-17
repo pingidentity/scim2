@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.exceptions;
 
+import com.unboundid.scim2.messages.ErrorResponse;
+
 /**
  * Signals an internal error from the service provider.
  *
@@ -61,7 +63,7 @@ public class ServerErrorException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
-  public ServerErrorException(final ScimErrorResource scimError,
+  public ServerErrorException(final ErrorResponse scimError,
                               final Throwable cause) {
     super(scimError, cause);
   }

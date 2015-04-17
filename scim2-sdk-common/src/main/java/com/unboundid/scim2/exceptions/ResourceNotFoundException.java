@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.exceptions;
 
+import com.unboundid.scim2.messages.ErrorResponse;
+
 /**
  * Signals the specified resource; e.g., User, does not exist.
  *
@@ -61,7 +63,7 @@ public class ResourceNotFoundException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
-  public ResourceNotFoundException(final ScimErrorResource scimError,
+  public ResourceNotFoundException(final ErrorResponse scimError,
                                    final Throwable cause) {
     super(scimError, cause);
   }

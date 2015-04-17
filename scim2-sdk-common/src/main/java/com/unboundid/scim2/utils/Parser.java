@@ -24,6 +24,7 @@ import com.unboundid.scim2.Path;
 import com.unboundid.scim2.exceptions.BadRequestException;
 import com.unboundid.scim2.filters.Filter;
 import com.unboundid.scim2.filters.FilterType;
+import com.unboundid.scim2.schema.SchemaUtils;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -148,7 +149,8 @@ public class Parser
     }
   }
 
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final ObjectMapper OBJECT_MAPPER =
+      SchemaUtils.createSCIMCompatibleMapper();
 
   /**
    * Parse a filter string.
@@ -600,7 +602,7 @@ public class Parser
             // until the end of string.
             reader.mark(0);
             JsonParser parser =
-                OBJECT_MAPPER.getJsonFactory().createJsonParser(reader);
+                OBJECT_MAPPER.getFactory().createParser(reader);
             // The object mapper will return a Java null for JSON null.
             // Have to distinguish between reading a JSON null and encountering
             // the end of string.
@@ -621,8 +623,8 @@ public class Parser
             }
             // Reset back to the beginning of the JSON value.
             reader.reset();
-            // Skip the number of chars consumed by JSON parser + 1.
-            reader.skip(parser.getCurrentLocation().getCharOffset() + 1);
+            // Skip the number of chars consumed by JSON parser.
+            reader.skip(parser.getCurrentLocation().getCharOffset());
           }
           catch (IOException e)
           {
