@@ -18,13 +18,8 @@
 package com.unboundid.scim2.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.Path;
 import com.unboundid.scim2.annotations.SchemaInfo;
 import com.unboundid.scim2.annotations.SchemaProperty;
@@ -32,9 +27,7 @@ import com.unboundid.scim2.exceptions.ScimException;
 import com.unboundid.scim2.model.BaseScimResourceObject;
 import com.unboundid.scim2.model.GenericScimResourceObject;
 import com.unboundid.scim2.schema.SchemaUtils;
-import com.unboundid.scim2.utils.JsonUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -48,11 +41,11 @@ import java.util.List;
     name="Patch Operation", description = "SCIM 2.0 Patch Operation Request")
 public final class PatchRequest
     extends BaseScimResourceObject
-    implements Iterable<PatchRequest.Operation>
+    implements Iterable<PatchOperation>
 {
   @SchemaProperty(description = "Patch Operations")
   @JsonProperty(value = "Operations", required = true)
-  private final List<Operation> operations;
+  private final List<PatchOperation> operations;
 
   /**
    * Create a new Patch Operation Request.
@@ -62,7 +55,7 @@ public final class PatchRequest
   @JsonCreator
   private PatchRequest(
       @JsonProperty(value = "Operations", required = true)
-      final List<Operation> operations)
+      final List<PatchOperation> operations)
   {
     this.operations = operations;
   }
@@ -72,389 +65,7 @@ public final class PatchRequest
    */
   public PatchRequest()
   {
-    this.operations = new LinkedList<Operation>();
-  }
-
-  /**
-   * An individual patch operation.
-   */
-  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-      include = JsonTypeInfo.As.PROPERTY,
-      property = "op")
-  @JsonSubTypes({
-      @JsonSubTypes.Type(value = AddOperation.class, name="add"),
-      @JsonSubTypes.Type(value = RemoveOperation.class, name="remove"),
-      @JsonSubTypes.Type(value = ReplaceOperation.class, name="replace")})
-  public abstract static class Operation
-  {
-    private final String path;
-
-    /**
-     * Create a new patch operation.
-     *
-     * @param path The path targeted by this patch operation.
-     */
-    protected Operation(final String path)
-    {
-      this.path = path;
-    }
-
-    /**
-     * Retrieves the operation type.
-     *
-     * @return The operation type.
-     */
-    @JsonIgnore
-    public abstract PatchOpType getOpType();
-
-    /**
-     * Retrieves the path targeted by this operation.
-     *
-     * @return The path targeted by this operation.
-     */
-    public String getPath()
-    {
-      return path;
-    }
-
-    /**
-     * Retrieve the value of the patch operation.
-     *
-     * @param cls The Java class object used to determine the type to return.
-     * @param <T> The generic type parameter of the Java class used to determine
-     *            the type to return.
-     * @return The value of the patch operation.
-     * @throws JsonProcessingException If the value can not be parsed to the
-     *         type specified by the Java class object.
-     * @throws ScimException If the path is invalid.
-     * @throws IllegalArgumentException If the operation contains more than one
-     *         value, in which case, the getValues method should be used to
-     *         retrieve all values.
-     */
-    public <T> T getValue(final Class<T> cls)
-        throws JsonProcessingException, ScimException, IllegalArgumentException
-    {
-      return null;
-    }
-
-    /**
-     * Retrieve all values of the patch operation.
-     *
-     * @param cls The Java class object used to determine the type to return.
-     * @param <T> The generic type parameter of the Java class used to determine
-     *            the type to return.
-     * @return The values of the patch operation.
-     * @throws JsonProcessingException If the value can not be parsed to the
-     *         type specified by the Java class object.
-     * @throws ScimException If the path is invalid.
-     */
-    public <T> List<T> getValues(final Class<T> cls)
-        throws JsonProcessingException, ScimException
-    {
-      return null;
-    }
-
-    /**
-     * Apply this patch operation to an ObjectNode.
-     *
-     * @param node The ObjectNode to apply this patch operation to.
-     *
-     * @throws ScimException If the patch operation is invalid.
-     */
-    public abstract void apply(final ObjectNode node) throws ScimException;
-  }
-
-  private static final class AddOperation extends Operation
-  {
-    @JsonProperty
-    private final JsonNode value;
-
-    /**
-     * Create a new add patch operation.
-     *
-     * @param path The path targeted by this patch operation.
-     * @param value The value(s) to add.
-     */
-    @JsonCreator
-    public AddOperation(
-        @JsonProperty(value = "path", required = true) final String path,
-        @JsonProperty(value = "value", required = true) final JsonNode value)
-    {
-      super(path);
-      this.value = value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PatchOpType getOpType()
-    {
-      return PatchOpType.ADD;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <T> T getValue(final Class<T> cls)
-        throws JsonProcessingException, ScimException, IllegalArgumentException
-    {
-      if(value.isArray())
-      {
-        throw new IllegalArgumentException("Patch operation contains " +
-            "multiple values");
-      }
-      return SchemaUtils.createSCIMCompatibleMapper().treeToValue(
-                value, cls);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <T> List<T> getValues(final Class<T> cls)
-        throws JsonProcessingException, ScimException
-    {
-      ArrayList<T> objects = new ArrayList<T>(value.size());
-      for(JsonNode node : value)
-      {
-        objects.add(
-            SchemaUtils.createSCIMCompatibleMapper().treeToValue(node, cls));
-      }
-      return objects;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void apply(final ObjectNode node) throws ScimException
-    {
-      JsonUtils.addValue(getPath() == null ? Path.root() :
-          Path.fromString(getPath()), node, value);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object o)
-    {
-      if (this == o)
-      {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass())
-      {
-        return false;
-      }
-
-      AddOperation that = (AddOperation) o;
-      if (getPath() != null ? !getPath().equals(that.getPath()) :
-          that.getPath() != null)
-      {
-        return false;
-      }
-      if (!value.equals(that.value))
-      {
-        return false;
-      }
-
-      return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode()
-    {
-      int result = getPath() != null ? getPath().hashCode() : 0;
-      result = 31 * result + value.hashCode();
-      return result;
-    }
-  }
-
-  private static final class RemoveOperation extends Operation
-  {
-    /**
-     * Create a new remove patch operation.
-     *
-     * @param path The path targeted by this patch operation.
-     */
-    @JsonCreator
-    public RemoveOperation(
-        @JsonProperty(value = "path", required = true) final String path)
-    {
-      super(path);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PatchOpType getOpType()
-    {
-      return PatchOpType.REMOVE;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void apply(final ObjectNode node) throws ScimException
-    {
-      JsonUtils.removeValues(Path.fromString(getPath()), node);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object o)
-    {
-      if (this == o)
-      {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass())
-      {
-        return false;
-      }
-
-      RemoveOperation that = (RemoveOperation) o;
-
-      if (getPath() != null ? !getPath().equals(that.getPath()) :
-          that.getPath() != null)
-      {
-        return false;
-      }
-
-      return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode()
-    {
-      return getPath() != null ? getPath().hashCode() : 0;
-    }
-  }
-
-  private static final class ReplaceOperation extends Operation
-  {
-    @JsonProperty
-    private final JsonNode value;
-
-    /**
-     * Create a new replace patch operation.
-     *
-     * @param path The path targeted by this patch operation.
-     * @param value The value(s) to replace.
-     */
-    @JsonCreator
-    public ReplaceOperation(
-        @JsonProperty(value = "path", required = true) final String path,
-        @JsonProperty(value = "value", required = true) final JsonNode value)
-    {
-      super(path);
-      this.value = value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PatchOpType getOpType()
-    {
-      return PatchOpType.REPLACE;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <T> T getValue(final Class<T> cls)
-        throws JsonProcessingException, ScimException, IllegalArgumentException
-    {
-      if(value.isArray())
-      {
-        throw new IllegalArgumentException("Patch operation contains " +
-            "multiple values");
-      }
-      return SchemaUtils.createSCIMCompatibleMapper().treeToValue(
-                value, cls);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <T> List<T> getValues(final Class<T> cls)
-        throws JsonProcessingException, ScimException
-    {
-      ArrayList<T> objects = new ArrayList<T>(value.size());
-      for(JsonNode node : value)
-      {
-        objects.add(
-            SchemaUtils.createSCIMCompatibleMapper().treeToValue(node, cls));
-      }
-      return objects;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void apply(final ObjectNode node) throws ScimException
-    {
-      JsonUtils.replaceValue(getPath() == null ? Path.root() :
-          Path.fromString(getPath()), node, value);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object o)
-    {
-      if (this == o)
-      {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass())
-      {
-        return false;
-      }
-
-      ReplaceOperation that = (ReplaceOperation) o;
-
-      if (getPath() != null ? !getPath().equals(that.getPath()) :
-          that.getPath() != null)
-      {
-        return false;
-      }
-      if (!value.equals(that.value))
-      {
-        return false;
-      }
-
-      return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode()
-    {
-      int result = getPath() != null ? getPath().hashCode() : 0;
-      result = 31 * result + value.hashCode();
-      return result;
-    }
+    this.operations = new LinkedList<PatchOperation>();
   }
 
   /**
@@ -471,7 +82,7 @@ public final class PatchRequest
   {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
-    return addOperation(new ReplaceOperation(path, newObjectNode));
+    return addOperation(PatchOperation.replace(path, newObjectNode));
   }
 
   /**
@@ -503,7 +114,7 @@ public final class PatchRequest
   {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
-    return addOperation(new ReplaceOperation(path, newObjectNode));
+    return addOperation(PatchOperation.replace(path, newObjectNode));
 
   }
 
@@ -536,7 +147,7 @@ public final class PatchRequest
   {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
-    return addOperation(new ReplaceOperation(path, newObjectNode));
+    return addOperation(PatchOperation.replace(path, newObjectNode));
   }
 
   /**
@@ -567,7 +178,7 @@ public final class PatchRequest
   {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
-    return addOperation(new AddOperation(path, newObjectNode));
+    return addOperation(PatchOperation.add(path, newObjectNode));
 
   }
 
@@ -598,7 +209,7 @@ public final class PatchRequest
   {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
-    return addOperation(new AddOperation(path, newObjectNode));
+    return addOperation(PatchOperation.add(path, newObjectNode));
 
   }
 
@@ -625,7 +236,7 @@ public final class PatchRequest
    */
   public PatchRequest removeValues(final String path)
   {
-    return addOperation(new RemoveOperation(path));
+    return addOperation(PatchOperation.remove(path));
   }
 
   /**
@@ -649,7 +260,7 @@ public final class PatchRequest
    *
    * @return This patch operation request.
    */
-  public PatchRequest addOperation(final Operation op)
+  public PatchRequest addOperation(final PatchOperation op)
   {
     operations.add(op);
     return this;
@@ -660,7 +271,7 @@ public final class PatchRequest
    *
    * @return The individual operations in this patch request.
    */
-  public List<Operation> getOperations()
+  public List<PatchOperation> getOperations()
   {
     return Collections.unmodifiableList(operations);
   }
@@ -669,7 +280,7 @@ public final class PatchRequest
    * {@inheritDoc}
    */
   @Override
-  public Iterator<Operation> iterator()
+  public Iterator<PatchOperation> iterator()
   {
     return getOperations().iterator();
   }
@@ -683,7 +294,7 @@ public final class PatchRequest
    */
   public void apply(final GenericScimResourceObject object) throws ScimException
   {
-    for(Operation operation : this)
+    for(PatchOperation operation : this)
     {
       operation.apply(object.getObjectNode());
     }

@@ -201,7 +201,7 @@ public class JsonUtils
       {
         // Create the missing node as an JSON object node.
         ObjectNode newObjectNode = JsonNodeFactory.instance.objectNode();
-        parent.put(element.getAttribute(), newObjectNode);
+        parent.set(element.getAttribute(), newObjectNode);
         return newObjectNode;
       }
       else if(node.isArray())
@@ -297,7 +297,7 @@ public class JsonUtils
         else
         {
           // Replace the field.
-          parent.put(key, value);
+          parent.set(key, value);
         }
       }
       else if(node.isArray())
@@ -327,13 +327,13 @@ public class JsonUtils
         else
         {
           // Replace the field.
-          parent.put(key, value);
+          parent.set(key, value);
         }
       }
       else
       {
         // Replace the field.
-        parent.put(key, value);
+        parent.set(key, value);
       }
     }
   }

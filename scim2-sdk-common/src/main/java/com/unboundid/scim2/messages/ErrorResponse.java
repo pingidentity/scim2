@@ -28,7 +28,7 @@ import com.unboundid.scim2.model.BaseScimResourceObject;
  */
 @SchemaInfo(id="urn:ietf:params:scim:api:messages:2.0:Error",
     name="Error Response", description = "SCIM 2.0 Error Response")
-public class ErrorResponse extends BaseScimResourceObject
+public final class ErrorResponse extends BaseScimResourceObject
 {
   @SchemaProperty(description = "Type of the SCIM error.")
   private String scimType = "";

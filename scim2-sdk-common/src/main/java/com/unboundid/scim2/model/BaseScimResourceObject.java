@@ -187,7 +187,7 @@ public class BaseScimResourceObject
   {
     if(SchemaUtils.isUrn(key) && value.isObject())
     {
-      extensionObjectNode.put(key, value);
+      extensionObjectNode.set(key, value);
     }
   }
 
