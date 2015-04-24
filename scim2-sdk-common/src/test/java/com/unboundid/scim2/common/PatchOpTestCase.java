@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.Assert.assertEquals;
 
 /**
  * Test cases for patch operation.
