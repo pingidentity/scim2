@@ -81,6 +81,15 @@ public abstract class PatchOperation
      * {@inheritDoc}
      */
     @Override
+    public JsonNode getJsonNode()
+    {
+      return value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <T> T getValue(final Class<T> cls)
         throws JsonProcessingException, ScimException, IllegalArgumentException
     {
@@ -261,6 +270,15 @@ public abstract class PatchOperation
      * {@inheritDoc}
      */
     @Override
+    public JsonNode getJsonNode()
+    {
+      return value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <T> T getValue(final Class<T> cls)
         throws JsonProcessingException, ScimException, IllegalArgumentException
     {
@@ -369,6 +387,18 @@ public abstract class PatchOperation
   public String getPath()
   {
     return path;
+  }
+
+  /**
+   * Retrieve the value or values of the patch operation as a JsonNode.
+   *
+   * @return  The value or values of the patch operation, or {@code null}
+   *          if this operation is a remove operation.
+   */
+  @JsonIgnore
+  public JsonNode getJsonNode()
+  {
+    return null;
   }
 
   /**
