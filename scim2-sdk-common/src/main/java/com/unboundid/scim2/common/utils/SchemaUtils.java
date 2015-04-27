@@ -502,7 +502,7 @@ public class SchemaUtils
    * @param fieldName the name of the field to find.
    * @return the java field.
    */
-  private static Field findField(final Class<?> cls,
+  public static Field findField(final Class<?> cls,
                                  final String fieldName)
   {
     Class<?> currentClass = cls;
