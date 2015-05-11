@@ -704,6 +704,11 @@ public class JsonUtilsTestCase
         Map.class);
     assertEquals(mapResult.size(), 0);
 
+    removed = gso.removeValues("array");
+    assertEquals(removed, 2);
+
+    mapResult = gso.getValues("array", Map.class);
+    assertEquals(mapResult.size(), 0);
   }
 
 

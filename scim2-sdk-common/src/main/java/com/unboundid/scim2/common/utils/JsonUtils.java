@@ -136,6 +136,7 @@ public class JsonUtils
       if(node.isArray())
       {
         ArrayNode arrayNode = (ArrayNode) node;
+
         if(element.getValueFilter() != null)
         {
           arrayNode = filterArray((ArrayNode) node, element.getValueFilter(),
@@ -145,9 +146,10 @@ public class JsonUtils
         {
           values.add(v);
         }
-        if(removeValues && node.size() == 0)
+        if(removeValues &&
+            (element.getValueFilter() == null || node.size() == 0))
         {
-          // There is no more values left after removing the matching values.
+          // There are no more values left after removing the matching values.
           // Just remove the field.
           parent.remove(element.getAttribute());
         }
