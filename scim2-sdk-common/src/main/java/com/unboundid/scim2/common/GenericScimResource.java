@@ -325,12 +325,14 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path The path to the attribute whose value to set.
    * @param object The value to set.
+   * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public void setValue(final String path, final Object object)
+  public GenericScimResource setValue(final String path, final Object object)
       throws ScimException
   {
     setValue(Path.fromString(path), object);
+    return this;
   }
 
   /**
@@ -339,14 +341,16 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path The path to the attribute whose value to set.
    * @param object The value to set.
+   * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public void setValue(final Path path, final Object object)
+  public GenericScimResource setValue(final Path path, final Object object)
       throws ScimException
   {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
     JsonUtils.replaceValue(path, objectNode, newObjectNode);
+    return this;
   }
 
   /**
@@ -355,12 +359,15 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path The path to the attribute whose value to set.
    * @param objects The value(s) to set.
+   * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public void setValues(final String path, final Collection<Object> objects)
+  public GenericScimResource setValues(final String path,
+                                       final Collection<Object> objects)
       throws ScimException
   {
     setValue(Path.fromString(path), objects);
+    return this;
   }
 
   /**
@@ -369,14 +376,17 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path The path to the attribute whose value to set.
    * @param object The value(s) to set.
+   * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public void setValues(final Path path, final Collection<Object> object)
+  public GenericScimResource setValues(final Path path,
+                                       final Collection<Object> object)
       throws ScimException
   {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
     JsonUtils.replaceValue(path, objectNode, newObjectNode);
+    return this;
   }
 
   /**
@@ -385,12 +395,15 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path The path to the attribute whose value to set.
    * @param objects The value(s) to set.
+   * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public void setValues(final String path, final Object... objects)
+  public GenericScimResource setValues(final String path,
+                                       final Object... objects)
       throws ScimException
   {
     setValue(Path.fromString(path), objects);
+    return this;
   }
 
   /**
@@ -399,14 +412,16 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path The path to the attribute whose value to set.
    * @param object The value(s) to set.
+   * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public void setValues(final Path path, final Object... object)
+  public GenericScimResource setValues(final Path path, final Object... object)
       throws ScimException
   {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
     JsonUtils.replaceValue(path, objectNode, newObjectNode);
+    return this;
   }
 
   /**
@@ -414,12 +429,15 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path The path to the multi-valued attribute.
    * @param objects The values to add.
+   * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public void addValues(final String path, final Collection<?> objects)
+  public GenericScimResource addValues(final String path,
+                                       final Collection<?> objects)
       throws ScimException
   {
     addValues(Path.fromString(path), objects);
+    return this;
   }
 
   /**
@@ -427,14 +445,17 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path The path to the multi-valued attribute.
    * @param objects The values to add.
+   * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public void addValues(final Path path, final Collection<?> objects)
+  public GenericScimResource addValues(final Path path,
+                                       final Collection<?> objects)
       throws ScimException
   {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
     JsonUtils.addValue(path, objectNode, newObjectNode);
+    return this;
   }
 
   /**
@@ -442,12 +463,15 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path The path to the multi-valued attribute.
    * @param objects The values to add.
+   * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public void addValues(final String path, final Object... objects)
+  public GenericScimResource addValues(final String path,
+                                       final Object... objects)
       throws ScimException
   {
     addValues(Path.fromString(path), objects);
+    return this;
   }
 
   /**
@@ -455,14 +479,17 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path The path to the multi-valued attribute.
    * @param objects The values to add.
+   * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public void addValues(final Path path, final Object... objects)
+  public GenericScimResource addValues(final Path path,
+                                       final Object... objects)
       throws ScimException
   {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
     JsonUtils.addValue(path, objectNode, newObjectNode);
+    return this;
   }
 
   /**
@@ -490,5 +517,22 @@ public final class GenericScimResource implements ScimResource
   {
     List<JsonNode> nodes = JsonUtils.removeValues(path, objectNode);
     return nodes.size();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString()
+  {
+    try
+    {
+      return SchemaUtils.createSCIMCompatibleMapper().
+          writerWithDefaultPrettyPrinter().writeValueAsString(this);
+    }
+    catch (JsonProcessingException e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 }

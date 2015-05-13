@@ -392,9 +392,9 @@ public class AttributeDefinition
   private String uniqueness;
 
   /**
-   * The reference type of this attribute.
+   * The reference types of this attribute.
    */
-  private String referenceType;
+  private Set<String> referenceTypes;
 
   /**
    * Builder class to build SCIM2Attributes.
@@ -469,7 +469,7 @@ public class AttributeDefinition
     /**
      * The reference type of this attribute.
      */
-    private String referenceType;
+    private Set<String> referenceTypes;
 
     /**
      * Sets the attribute name.
@@ -609,14 +609,14 @@ public class AttributeDefinition
     }
 
     /**
-     * Sets the reference type for the attribute.
+     * Sets the reference types for the attribute.
      *
-     * @param referenceType the reference type for the attribute.
+     * @param referenceTypes the reference type for the attribute.
      * @return this.
      */
-    public Builder setReferenceType(final String referenceType)
+    public Builder setReferenceTypes(final Set<String> referenceTypes)
     {
-      this.referenceType = referenceType;
+      this.referenceTypes = referenceTypes;
       return this;
     }
 
@@ -638,7 +638,7 @@ public class AttributeDefinition
       this.mutability = null;
       this.returned = null;
       this.uniqueness = null;
-      this.referenceType = null;
+      this.referenceTypes = null;
       return this;
     }
 
@@ -663,7 +663,7 @@ public class AttributeDefinition
       attribute.setReturned((returned == null) ? null : returned.getName());
       attribute.setUniqueness(
           (uniqueness == null) ? null : uniqueness.getName());
-      attribute.setReferenceType(referenceType);
+      attribute.setReferenceTypes(referenceTypes);
       return attribute;
     }
   }
@@ -906,23 +906,23 @@ public class AttributeDefinition
   }
 
   /**
-   * Gets the reference type for this attribute.
+   * Gets the reference types for this attribute.
    *
-   * @return the reference type for this attribute.
+   * @return the reference types for this attribute.
    */
-  public String getReferenceType()
+  public Set<String> getReferenceTypes()
   {
-    return referenceType;
+    return referenceTypes;
   }
 
   /**
    * Sets the reference type for this attribute.
    *
-   * @param referenceType the reference type for this attribute.
+   * @param referenceTypes the reference types for this attribute.
    */
-  private void setReferenceType(final String referenceType)
+  private void setReferenceTypes(final Set<String> referenceTypes)
   {
-    this.referenceType = referenceType;
+    this.referenceTypes = referenceTypes;
   }
 
   /**
@@ -958,9 +958,12 @@ public class AttributeDefinition
     builder.append(" isCaseExact: ");
     builder.append(isCaseExact());
     builder.append(System.lineSeparator());
-    for(AttributeDefinition a : getSubAttributes())
+    if(getSubAttributes() != null)
     {
-      builder.append(a.toIndentedString(indent + "  "));
+      for (AttributeDefinition a : getSubAttributes())
+      {
+        builder.append(a.toIndentedString(indent + "  "));
+      }
     }
     return builder.toString();
   }
@@ -1014,8 +1017,8 @@ public class AttributeDefinition
     {
       return false;
     }
-    if (referenceType != null ? !referenceType.equals(that.referenceType) :
-        that.referenceType != null)
+    if (referenceTypes != null ? !referenceTypes.equals(that.referenceTypes) :
+        that.referenceTypes != null)
     {
       return false;
     }
@@ -1061,8 +1064,8 @@ public class AttributeDefinition
     result = 31 * result + (mutability != null ? mutability.hashCode() : 0);
     result = 31 * result + (returned != null ? returned.hashCode() : 0);
     result = 31 * result + (uniqueness != null ? uniqueness.hashCode() : 0);
-    result = 31 * result + (referenceType != null ?
-        referenceType.hashCode() : 0);
+    result = 31 * result + (referenceTypes != null ?
+        referenceTypes.hashCode() : 0);
     return result;
   }
 }

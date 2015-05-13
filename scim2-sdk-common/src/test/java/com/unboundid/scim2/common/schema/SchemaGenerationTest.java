@@ -299,7 +299,7 @@ public class SchemaGenerationTest
       AttributeDefinition.Returned returned,
       AttributeDefinition.Mutability mutability,
       AttributeDefinition.Uniqueness uniqueness, Set canonicalValues,
-      String referenceType)
+      Set referenceType)
   {
     if (mutability == null)
     {
@@ -358,10 +358,10 @@ public class SchemaGenerationTest
     }
 
     Assert.assertEquals(attribute.getCanonicalValues(), canonicalValues);
-    Assert.assertEquals(attribute.getReferenceType(), referenceType);
+    Assert.assertEquals(attribute.getReferenceTypes(), referenceType);
     Assert.assertEquals(attribute.getType(), type.getName());
 
-    attribute.getReferenceType();
+    attribute.getReferenceTypes();
     attribute.getType();
   }
 

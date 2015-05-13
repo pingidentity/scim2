@@ -132,7 +132,7 @@ public class SchemaUtils
       addRequired(attributeBuilder, schemaProperty);
       addReturned(attributeBuilder, schemaProperty);
       addUniqueness(attributeBuilder, schemaProperty);
-      addReferenceType(attributeBuilder, schemaProperty);
+      addReferenceTypes(attributeBuilder, schemaProperty);
       addMutability(attributeBuilder, schemaProperty);
       addMultiValued(attributeBuilder, propertyDescriptor, schemaProperty);
       addCanonicalValues(attributeBuilder, schemaProperty);
@@ -364,7 +364,7 @@ public class SchemaUtils
   }
 
   /**
-   * This method will find the reference type for the attribute, and add
+   * This method will find the reference types for the attribute, and add
    * it to the builder.
    *
    * @param attributeBuilder builder for a scim attribute.
@@ -372,20 +372,21 @@ public class SchemaUtils
    *                       to build an attribute for.
    * @return this.
    */
-  private static AttributeDefinition.Builder addReferenceType(
+  private static AttributeDefinition.Builder addReferenceTypes(
       final AttributeDefinition.Builder attributeBuilder,
       final SchemaProperty schemaProperty)
   {
     if(schemaProperty != null)
     {
-      String referenceType = schemaProperty.referenceType();
-      if(referenceType.isEmpty())
+      String[] referenceType = schemaProperty.referenceTypes();
+      if(referenceType.length == 0)
       {
-        attributeBuilder.setReferenceType(null);
+        attributeBuilder.setReferenceTypes(null);
       }
       else
       {
-        attributeBuilder.setReferenceType(schemaProperty.referenceType());
+        attributeBuilder.setReferenceTypes(
+            new HashSet<String>(Arrays.asList(referenceType)));
       }
     }
 
@@ -531,12 +532,9 @@ public class SchemaUtils
    */
   private static boolean isCollectionOrArray(final Class<?> cls)
   {
-    if(cls.isArray() || Collection.class.isAssignableFrom(cls))
-    {
-      return true;
-    }
+    return (cls.isArray() && byte[].class != cls) ||
+        Collection.class.isAssignableFrom(cls);
 
-    return false;
   }
 
   /**
@@ -566,7 +564,7 @@ public class SchemaUtils
    */
   public static String getSchemaIdFromAnnotation(final Class<?> cls)
   {
-    SchemaInfo schema = (SchemaInfo)cls.getAnnotation(SchemaInfo.class);
+    SchemaInfo schema = cls.getAnnotation(SchemaInfo.class);
     return SchemaUtils.getSchemaIdFromAnnotation(schema);
   }
 

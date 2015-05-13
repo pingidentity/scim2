@@ -61,12 +61,12 @@ public final class SearchRequest extends BaseScimResource
   @SchemaProperty(description = "An integer indicating the 1-based index of " +
       "the first query result")
   @JsonProperty
-  private Long startIndex;
+  private Integer startIndex;
 
   @SchemaProperty(description = "An integer indicating the desired maximum " +
       "number of query results per page")
   @JsonProperty
-  private Long count;
+  private Integer count;
 
   /**
    * Retrieves the list of strings indicating the names of resource attributes
@@ -202,7 +202,7 @@ public final class SearchRequest extends BaseScimResource
    * @return the 1-based index of the first query result or {@code null} if
    * pagination is not required.
    */
-  public Long getStartIndex()
+  public Integer getStartIndex()
   {
     return startIndex;
   }
@@ -214,7 +214,7 @@ public final class SearchRequest extends BaseScimResource
    *
    * @return This search request.
    */
-  public SearchRequest setStartIndex(final Long startIndex)
+  public SearchRequest setStartIndex(final Integer startIndex)
   {
     this.startIndex = startIndex;
     return this;
@@ -226,7 +226,7 @@ public final class SearchRequest extends BaseScimResource
    * @return the desired maximum number of query results per page or
    * {@code null} to not enforce a limit.
    */
-  public Long getCount()
+  public Integer getCount()
   {
     return count;
   }
@@ -238,7 +238,7 @@ public final class SearchRequest extends BaseScimResource
    *
    * @return This search request.
    */
-  public SearchRequest setCount(final Long count)
+  public SearchRequest setCount(final Integer count)
   {
     this.count = count;
     return this;

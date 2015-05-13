@@ -23,6 +23,8 @@ import com.unboundid.scim2.common.annotations.SchemaInfo;
 import com.unboundid.scim2.common.annotations.SchemaProperty;
 import com.unboundid.scim2.common.BaseScimResource;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +35,7 @@ import java.util.List;
  * @param <T> The type of the returned resources.
  */
 @SchemaInfo(id="urn:ietf:params:scim:api:messages:2.0:ListResponse",
-    name="List/Query Response", description = "SCIM 2.0 List Response")
+    name="List Response", description = "SCIM 2.0 List Response")
 public final class ListResponse<T> extends BaseScimResource
     implements Iterable<T>
 {
@@ -91,9 +93,12 @@ public final class ListResponse<T> extends BaseScimResource
    * @param resources A multi-valued list of complex objects containing the
    *                  requested resources.
    */
-  public ListResponse(final List<T> resources)
+  public ListResponse(final Collection<T> resources)
   {
-    this(resources.size(), resources, null, null);
+    this.totalResults = resources.size();
+    this.resources = new ArrayList<T>(resources);
+    this.startIndex = null;
+    this.itemsPerPage = null;
   }
 
   /**

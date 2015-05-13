@@ -18,7 +18,9 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.SchemaInfo;
+import com.unboundid.scim2.common.annotations.SchemaProperty;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,23 +33,19 @@ import java.util.LinkedList;
     name="Schema", description = "SCIM 2.0 Schema Resource")
 public class SchemaResource extends BaseScimResource
 {
-  /**
-   * The schema's human readable name.  When applicable service
-   * providers MUST specify the name specified in the core schema
-   * specification; e.g., "User" or "Group".  OPTIONAL.
-   */
+  @SchemaProperty(description =
+      "The schema's human readable name.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String name;
 
-  /**
-   * The schema's human readable description.  When applicable service
-   * providers MUST specify the description specified in the core
-   * schema specification.  OPTIONAL.
-   */
+  @SchemaProperty(description =
+      "The schema's human readable description.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String description;
 
-  /**
-   * Attributes of the object described by this schema.
-   */
+  @SchemaProperty(description =
+      "Attributes of the object described by this schema.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final Collection<AttributeDefinition> attributes;
 
   /**
@@ -70,8 +68,13 @@ public class SchemaResource extends BaseScimResource
    * @param attributes The schema's attributes.
    */
   @JsonCreator
-  public SchemaResource(final String id,
-                        final String name, final String description,
+  public SchemaResource(@JsonProperty(value = "id", required = true)
+                        final String id,
+                        @JsonProperty(value = "name", required = false)
+                        final String name,
+                        @JsonProperty(value = "description", required = false)
+                        final String description,
+                        @JsonProperty(value = "attributes", required = false)
                         final Collection<AttributeDefinition> attributes)
   {
     super(id);
