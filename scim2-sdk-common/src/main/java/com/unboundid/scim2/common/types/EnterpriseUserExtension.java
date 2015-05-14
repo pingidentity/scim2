@@ -21,8 +21,6 @@ import com.unboundid.scim2.common.AttributeDefinition;
 import com.unboundid.scim2.common.annotations.SchemaInfo;
 import com.unboundid.scim2.common.annotations.SchemaProperty;
 
-import java.util.List;
-
 /**
  * SCIM extension commonly used in representing users that belong to, or act
  * on behalf of a business or enterprise.
@@ -76,9 +74,8 @@ public class EnterpriseUserExtension
   @SchemaProperty(description = "The User's manager.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
-      returned = AttributeDefinition.Returned.DEFAULT,
-      multiValueClass = Manager.class)
-  private List<Manager> manager;
+      returned = AttributeDefinition.Returned.DEFAULT)
+  private Manager manager;
 
   /**
    * Retrieves the numeric or alphanumeric identifier assigned to a person.
@@ -192,22 +189,22 @@ public class EnterpriseUserExtension
   }
 
   /**
-   * Retrieves the User's managers.
+   * Retrieves the User's manager.
    *
-   * @return The User's managers.
+   * @return The User's manager.
    */
-  public List<Manager> getManager()
+  public Manager getManager()
   {
     return manager;
   }
 
   /**
-   * Specifies the User's managers.
+   * Specifies the User's manager.
    *
-   * @param manager The User's managers.
+   * @param manager The User's manager.
    * @return This object.
    */
-  public EnterpriseUserExtension setManager(final List<Manager> manager)
+  public EnterpriseUserExtension setManager(final Manager manager)
   {
     this.manager = manager;
     return this;

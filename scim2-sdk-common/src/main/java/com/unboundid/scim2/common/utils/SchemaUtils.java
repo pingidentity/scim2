@@ -39,7 +39,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Stack;
 
 /**
@@ -147,18 +146,18 @@ public class SchemaUtils
       }
 
       AttributeDefinition.Type type = getAttributeType(propertyCls);
-      Collection<AttributeDefinition> subAttributes = null;
+      attributeBuilder.setType(type);
+
       if(type == AttributeDefinition.Type.COMPLEX)
       {
         // Add this class to the list to allow cycle detection
         classesProcessed.push(cls.getCanonicalName());
-        subAttributes = getAttributes(classesProcessed, propertyCls);
+        Collection<AttributeDefinition> subAttributes =
+            getAttributes(classesProcessed, propertyCls);
+        attributeBuilder.addSubAttributes(subAttributes.toArray(
+            new AttributeDefinition[subAttributes.size()]));
         classesProcessed.pop();
       }
-
-      attributeBuilder.
-          setType(type).
-          setSubAttributes(subAttributes);
 
       attributes.add(attributeBuilder.build());
     }
@@ -306,16 +305,7 @@ public class SchemaUtils
   {
     if(schemaProperty != null)
     {
-      String[] canonicalValues = schemaProperty.canonicalValues();
-      if(canonicalValues.length == 0)
-      {
-        attributeBuilder.setCanonicalValues(null);
-      }
-      else
-      {
-        attributeBuilder.setCanonicalValues(
-            new HashSet<String>(Arrays.asList(canonicalValues)));
-      }
+      attributeBuilder.setCanonicalValues(schemaProperty.canonicalValues());
     }
 
     return attributeBuilder;
@@ -378,16 +368,7 @@ public class SchemaUtils
   {
     if(schemaProperty != null)
     {
-      String[] referenceType = schemaProperty.referenceTypes();
-      if(referenceType.length == 0)
-      {
-        attributeBuilder.setReferenceTypes(null);
-      }
-      else
-      {
-        attributeBuilder.setReferenceTypes(
-            new HashSet<String>(Arrays.asList(referenceType)));
-      }
+      attributeBuilder.addReferenceTypes(schemaProperty.referenceTypes());
     }
 
     return attributeBuilder;

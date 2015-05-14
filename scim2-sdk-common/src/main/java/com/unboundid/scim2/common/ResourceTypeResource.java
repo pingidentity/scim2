@@ -23,7 +23,9 @@ import com.unboundid.scim2.common.annotations.SchemaInfo;
 import com.unboundid.scim2.common.annotations.SchemaProperty;
 
 import java.net.URI;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The "ResourceType" schema specifies the meta-data about a resource
@@ -69,7 +71,7 @@ public class ResourceTypeResource extends BaseScimResource
   @SchemaProperty(description =
       "The resource types primary/base schema URI.",
       referenceTypes = {"uri"},
-      isRequired = true,
+      isRequired = false,
       isCaseExact = true,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
@@ -82,7 +84,7 @@ public class ResourceTypeResource extends BaseScimResource
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
       multiValueClass = SchemaExtension.class)
-  private final List<SchemaExtension> schemaExtensions;
+  private final Collection<SchemaExtension> schemaExtensions;
 
   /**
    * Constructs a new ResourceType with no SchemaExtensions.
@@ -121,18 +123,20 @@ public class ResourceTypeResource extends BaseScimResource
                               @JsonProperty(value = "endpoint",
                                   required = true)
                               final URI endpoint,
-                              @JsonProperty(value = "schema",
-                                  required = true)
+                              @JsonProperty(value = "schema")
                               final URI schema,
                               @JsonProperty("schemaExtensions")
-                              final List<SchemaExtension> schemaExtensions)
+                              final Collection<SchemaExtension>
+                                  schemaExtensions)
   {
     super(id);
     this.name = name;
     this.description = description;
     this.endpoint = endpoint;
     this.schema = schema;
-    this.schemaExtensions = schemaExtensions;
+    this.schemaExtensions = schemaExtensions == null ?
+        null : Collections.unmodifiableList(
+        new ArrayList<SchemaExtension>(schemaExtensions));
   }
 
   /**
@@ -180,7 +184,7 @@ public class ResourceTypeResource extends BaseScimResource
    *
    * @return the schema extensions for the resource type.
    */
-  public List<SchemaExtension> getSchemaExtensions()
+  public Collection<SchemaExtension> getSchemaExtensions()
   {
     return schemaExtensions;
   }

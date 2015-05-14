@@ -174,8 +174,8 @@ public class UserResource extends BaseScimResource
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE,
-      multiValueClass = Im.class)
-  private List<Im> ims;
+      multiValueClass = InstantMessagingAddress.class)
+  private List<InstantMessagingAddress> ims;
 
   @SchemaProperty(description = "URLs of photos of the User.",
       isRequired = false,
@@ -560,7 +560,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The instant messaging addresses for the User.
    */
-  public List<Im> getIms()
+  public List<InstantMessagingAddress> getIms()
   {
     return ims;
   }
@@ -571,7 +571,7 @@ public class UserResource extends BaseScimResource
    * @param ims The instant messaging addresses for the User.
    * @return This object.
    */
-  public UserResource setIms(final List<Im> ims)
+  public UserResource setIms(final List<InstantMessagingAddress> ims)
   {
     this.ims = ims;
     return this;

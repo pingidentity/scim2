@@ -23,7 +23,7 @@ import com.unboundid.scim2.common.annotations.SchemaProperty;
 /**
  * Instant messaging address for the user.
  */
-public class Im
+public class InstantMessagingAddress
 {
   @SchemaProperty(description = "Instant messaging address for the User.",
       isRequired = false,
@@ -78,7 +78,7 @@ public class Im
    * @param value The instant messaging address for the User.
    * @return This object.
    */
-  public Im setValue(final String value)
+  public InstantMessagingAddress setValue(final String value)
   {
     this.value = value;
     return this;
@@ -100,7 +100,7 @@ public class Im
    * @param display The human readable name.
    * @return This object.
    */
-  public Im setDisplay(final String display)
+  public InstantMessagingAddress setDisplay(final String display)
   {
     this.display = display;
     return this;
@@ -122,7 +122,7 @@ public class Im
    * @param type The label indicating the attribute's function.
    * @return This object.
    */
-  public Im setType(final String type)
+  public InstantMessagingAddress setType(final String type)
   {
     this.type = type;
     return this;
@@ -148,7 +148,7 @@ public class Im
    * attribute value for this attribute.
    * @return This object.
    */
-  public Im setPrimary(final Boolean primary)
+  public InstantMessagingAddress setPrimary(final Boolean primary)
   {
     this.primary = primary;
     return this;
@@ -169,7 +169,7 @@ public class Im
       return false;
     }
 
-    Im im = (Im) o;
+    InstantMessagingAddress im = (InstantMessagingAddress) o;
 
     if (value != null ? !value.equals(im.value) : im.value != null)
     {
