@@ -142,10 +142,11 @@ public class JsonUtils
           arrayNode = filterArray((ArrayNode) node, element.getValueFilter(),
               removeValues);
         }
-        for(JsonNode v : arrayNode)
+        if (arrayNode.size() > 0)
         {
-          values.add(v);
+          values.add(arrayNode);
         }
+
         if(removeValues &&
             (element.getValueFilter() == null || node.size() == 0))
         {

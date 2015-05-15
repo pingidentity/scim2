@@ -27,6 +27,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -60,7 +61,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
   {
     List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
-    if (filter.getComparisonValue().isNull() && nodes.isEmpty())
+    if (filter.getComparisonValue().isNull() && isEmpty(nodes))
     {
       // draft-ietf-scim-core-schema section 2.4 states "Unassigned
       // attributes, the null value, or empty array (in the case of
@@ -94,6 +95,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
     return false;
   }
 
+
   /**
    * {@inheritDoc}
    */
@@ -102,7 +104,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
   {
     List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
-    if (filter.getComparisonValue().isNull() && nodes.isEmpty())
+    if (filter.getComparisonValue().isNull() && isEmpty(nodes))
     {
       // draft-ietf-scim-core-schema section 2.4 states "Unassigned
       // attributes, the null value, or empty array (in the case of
@@ -213,7 +215,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
       // attributes, the null value, or empty array (in the case of
       // a multi-valued attribute) SHALL be considered to be
       // equivalent in "state".
-      if (!node.isNull())
+      if (!isEmpty(node))
       {
         return true;
       }
@@ -457,15 +459,44 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
   {
     List<JsonNode> nodes = JsonUtils.getValues(
         filter.getAttributePath(), object);
+
     for (JsonNode node : nodes)
     {
-      if (node.isObject() &&
-          filter.getValueFilter().visit(this, (ObjectNode)node))
+      if (node.isArray())
+      {
+        // filter each element of the array individually
+        Iterator<JsonNode> iterator = node.elements();
+        while (iterator.hasNext())
+        {
+          if (doFilter(iterator.next(), filter))
+          {
+            return true;
+          }
+        }
+      }
+      else if (doFilter(node, filter))
       {
         return true;
       }
     }
     return false;
+  }
+
+
+  /**
+   * Determine if the specified node meets the filter criteria.
+   * @param node  node to filter against
+   * @param filter filter specification
+   * @return true if the filter criteria is met by the node
+   * @throws ScimException if filter cannot be evaluated
+   */
+  private boolean doFilter(
+      final JsonNode node,
+      final ComplexValueFilter filter)
+      throws ScimException
+  {
+    return node.isObject() &&
+        filter.getValueFilter().visit(this, (ObjectNode)node);
   }
 
   /**
@@ -496,5 +527,46 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
       }
     }
     return null;
+  }
+
+
+  /**
+   * Return true if the node is either null or an empty array.
+   * @param node node to examine
+   * @return boolean
+   */
+  private boolean isEmpty(final JsonNode node)
+  {
+    if (node.isArray())
+    {
+      Iterator<JsonNode> iterator = node.elements();
+      while (iterator.hasNext()) {
+        if (!isEmpty(iterator.next()))
+        {
+          return false;
+        }
+      }
+      return true;
+    }
+    else
+    {
+      return node.isNull();
+    }
+  }
+
+  /**
+   * Return true if the specified node list contains nothing
+   * but empty arrays and/or null nodes.
+   * @param nodes list of nodes as returned from JsonUtils.getValues
+   * @return true if the list contains only empty array(s)
+   */
+  private boolean isEmpty(final List<JsonNode> nodes)
+  {
+    for (JsonNode node : nodes) {
+      if (!isEmpty(node)) {
+        return false;
+      }
+    }
+    return true;
   }
 }
