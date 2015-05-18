@@ -512,7 +512,7 @@ public class AttributeDefinition
     private Uniqueness uniqueness;
 
     /**
-     * The reference type of this attribute.
+     * The reference types of this attribute.
      */
     private Collection<String> referenceTypes;
 
@@ -596,13 +596,13 @@ public class AttributeDefinition
     }
 
     /**
-     * Adds a possible cononical values for this attribute.  This
-     * is only relevant for multi-valued attributes.
+     * Adds possible canonical values for this attribute. This is only relevant
+     * for multi-valued attributes.
      *
-     * @param canonicalValues the possible cononical values for this attribute.
+     * @param canonicalValues the possible canonical values for this attribute.
      * @return this.
      */
-    public Builder setCanonicalValues(final String ... canonicalValues)
+    public Builder addCanonicalValues(final String... canonicalValues)
     {
       if(canonicalValues != null && canonicalValues.length > 0)
       {

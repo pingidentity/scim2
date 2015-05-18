@@ -130,7 +130,7 @@ public abstract class AbstractResourceEndpoint<T extends ScimResource>
   }
 
   /**
-   * Service a SCIM know resource retrieve request.
+   * Service a SCIM known resource retrieve request.
    *
    * @param id The ID of the SCIM resource to retrieve.
    * @return The retrieved SCIM resource.

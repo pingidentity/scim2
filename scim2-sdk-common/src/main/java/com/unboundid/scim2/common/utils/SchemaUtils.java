@@ -305,7 +305,7 @@ public class SchemaUtils
   {
     if(schemaProperty != null)
     {
-      attributeBuilder.setCanonicalValues(schemaProperty.canonicalValues());
+      attributeBuilder.addCanonicalValues(schemaProperty.canonicalValues());
     }
 
     return attributeBuilder;
