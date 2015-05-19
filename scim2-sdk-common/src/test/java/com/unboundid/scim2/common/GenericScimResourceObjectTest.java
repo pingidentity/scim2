@@ -89,8 +89,7 @@ public class GenericScimResourceObjectTest
     schemaSet.add("urn:unboundid:schemas:baseSchema");
     schemaSet.add("urn:unboundid:schemas:favoriteColor");
 
-    // TODO:  temporarily disabled due to change in how arrays are returned
-    //Assert.assertTrue(cso.getSchemaUrns().containsAll(schemaSet));
+    Assert.assertTrue(cso.getSchemaUrns().containsAll(schemaSet));
 
     Assert.assertEquals("user:id", cso.getId());
     Assert.assertEquals("user:externalId", cso.getExternalId());

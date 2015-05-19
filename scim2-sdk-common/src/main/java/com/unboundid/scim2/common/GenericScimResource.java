@@ -31,6 +31,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -272,8 +273,21 @@ public final class GenericScimResource implements ScimResource
     {
       throw new IllegalArgumentException("Path references multiple values");
     }
+    JsonNode node = nodes.get(0);
+    if (node.isArray())
+    {
+      if (node.size() == 0)
+      {
+        return null;
+      }
+      if (node.size() > 1)
+      {
+        throw new IllegalArgumentException("Path references multiple values");
+      }
+      node = node.elements().next();
+    }
     return SchemaUtils.createSCIMCompatibleMapper().treeToValue(
-        nodes.get(0), cls);
+        node, cls);
   }
 
   /**
@@ -313,8 +327,21 @@ public final class GenericScimResource implements ScimResource
     ArrayList<T> objects = new ArrayList<T>(nodes.size());
     for(JsonNode node : nodes)
     {
-      objects.add(
-          SchemaUtils.createSCIMCompatibleMapper().treeToValue(node, cls));
+      if (node.isArray())
+      {
+        Iterator<JsonNode> iter = node.elements();
+        while (iter.hasNext())
+        {
+          objects.add(
+              SchemaUtils.createSCIMCompatibleMapper().treeToValue(
+                  iter.next(), cls));
+        }
+      }
+      else
+      {
+        objects.add(
+            SchemaUtils.createSCIMCompatibleMapper().treeToValue(node, cls));
+      }
     }
     return objects;
   }
@@ -489,6 +516,11 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     List<JsonNode> nodes = JsonUtils.removeValues(path, objectNode);
-    return nodes.size();
+    int numRemoved = 0;
+    for (JsonNode node : nodes)
+    {
+      numRemoved += node.isArray() ? node.size() : 1;
+    }
+    return numRemoved;
   }
 }
