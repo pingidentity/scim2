@@ -611,7 +611,7 @@ public class JsonUtilsTestCase
    * @throws ScimException If an error occurred.
    * @throws IOException If an error occurred.
    */
-  @Test(enabled = false)
+  @Test
   public void testGetArray()
       throws ScimException, IOException
   {
@@ -638,7 +638,7 @@ public class JsonUtilsTestCase
    * @throws ScimException If an error occurred.
    * @throws IOException If an error occurred.
    */
-  @Test(enabled = false )
+  @Test
   public void testRemoveDeepNested()
       throws ScimException, IOException
   {
@@ -926,7 +926,7 @@ public class JsonUtilsTestCase
    * @throws ScimException If an error occurred.
    * @throws IOException If an error occurred.
    */
-  @Test(enabled = false)
+  @Test
   public void testSetArray() throws IOException, ScimException
   {
     GenericScimResource gso =
@@ -971,7 +971,7 @@ public class JsonUtilsTestCase
    * @throws ScimException If an error occurred.
    * @throws IOException If an error occurred.
    */
-  @Test(enabled = false)
+  @Test
   public void testAddArray() throws IOException, ScimException
   {
     GenericScimResource gso =
