@@ -276,6 +276,10 @@ public final class GenericScimResource implements ScimResource
     JsonNode node = nodes.get(0);
     if (node.isArray())
     {
+      if (node.size() == 0)
+      {
+        return null;
+      }
       if (node.size() > 1)
       {
         throw new IllegalArgumentException("Path references multiple values");
