@@ -142,10 +142,11 @@ public class JsonUtils
           arrayNode = filterArray((ArrayNode) node, element.getValueFilter(),
               removeValues);
         }
-        for(JsonNode v : arrayNode)
+        if (arrayNode.size() > 0)
         {
-          values.add(v);
+          values.add(arrayNode);
         }
+
         if(removeValues &&
             (element.getValueFilter() == null || node.size() == 0))
         {
@@ -237,17 +238,18 @@ public class JsonUtils
       {
         attributeName = element.getAttribute();
         JsonNode node = parent.path(attributeName);
-        if (!appendValues && node.isArray() &&
-            element.getValueFilter() != null && value.isObject())
+        if (!appendValues && element.getValueFilter() != null)
         {
-          // If the target is an array and there is a value filter, make sure
-          // it matches at least one value.
+          // in replace mode, a value filter requires that the target node
+          // be an array and that we can find matching value(s)
           boolean matchesFound = false;
-          for(JsonNode matchingValues :
-              filterArray((ArrayNode) node, element.getValueFilter(), false))
-          {
-            matchesFound = true;
-            updateValues((ObjectNode)matchingValues, null, value);
+          if (node.isArray() && value.isObject()) {
+
+            for (JsonNode matchingValues : filterArray((ArrayNode) node,
+                element.getValueFilter(), false)) {
+              matchesFound = true;
+              updateValues((ObjectNode) matchingValues, null, value);
+            }
           }
           if(!matchesFound)
           {
