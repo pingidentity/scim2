@@ -342,6 +342,50 @@ public class JsonUtils
     }
   }
 
+  private static class PathExistsVisitor extends NodeVisitor
+  {
+    private boolean pathPresent = false;
+
+    @Override
+    JsonNode visitInnerNode(final ObjectNode parent,
+                            final Path.Element element) throws ScimException
+    {
+      return parent.path(element.getAttribute());
+    }
+
+    @Override
+    void visitLeafNode(final ObjectNode parent,
+                       final Path.Element element) throws ScimException
+    {
+      JsonNode node = parent.path(element.getAttribute());
+      if(! node.isMissingNode())
+      {
+        setPathPresent(true);
+      }
+    }
+
+    /**
+     * Gets the value of pathPresent.  Path present will be set to
+     * true during a traversal if the path was present or false if not.
+     *
+     * @return returns the value of pathPresent
+     */
+    public boolean isPathPresent()
+    {
+      return pathPresent;
+    }
+
+    /**
+     * Sets the value of pathPresent.
+     *
+     * @param pathPresent the new value of pathPresent.
+     */
+    private void setPathPresent(final boolean pathPresent)
+    {
+      this.pathPresent = pathPresent;
+    }
+  }
+
   /**
    * Retrieve all JSON nodes referenced by the provided path. If a path
    * references a JSON array, all nodes the the array will be traversed.
@@ -504,6 +548,27 @@ public class JsonUtils
   {
     UpdatingNodeVisitor visitor = new UpdatingNodeVisitor(value, false);
     traverseValues(visitor, node, 0, path);
+  }
+
+  /**
+   * Checks for the existence of a path.  This will return true if the
+   * path is present (even if the value is null).  This allows the caller
+   * to know if the original json string  had something like
+   * ... "myPath":null ... rather than just leaving the value out of the
+   * json string entirely.
+   *
+   * @param path The path to the attribute.
+   * @param node The JSON object node to search for the path in.
+   * @return true if the path has a value set (even if that value is
+   * set to null), or false if not.
+   * @throws ScimException If an error occurs while traversing the JSON node.
+   */
+  public static boolean pathExists(final Path path,
+                                   final ObjectNode node) throws ScimException
+  {
+    PathExistsVisitor pathExistsVisitor = new PathExistsVisitor();
+    traverseValues(pathExistsVisitor, node, 0, path);
+    return pathExistsVisitor.isPathPresent();
   }
 
   /**
