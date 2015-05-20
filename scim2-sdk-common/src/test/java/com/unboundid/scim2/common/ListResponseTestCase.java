@@ -19,12 +19,11 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -38,11 +37,11 @@ public class ListResponseTestCase
   /**
    * Test list response.
    *
-   * @throws java.io.IOException If an error occurs.
-   * @throws ScimException If an error occurs.
+   * @throws Exception If an error occurs.
    */
   @Test
-  public void testListResponse() throws IOException, ScimException
+  public void testListResponse()
+      throws Exception
   {
     ListResponse<ObjectNode> listResponse =
         SchemaUtils.createSCIMCompatibleMapper().readValue("{  \n" +
@@ -70,12 +69,12 @@ public class ListResponseTestCase
     ArrayList<ResourceTypeResource> resourceTypeList =
         new ArrayList<ResourceTypeResource>();
     resourceTypeList.add(
-        new ResourceTypeResource("urn:test", "test", "test", "/test",
-            "urn:test",
+        new ResourceTypeResource("urn:test", "test", "test", new URI("/test"),
+            new URI("urn:test"),
             Collections.<ResourceTypeResource.SchemaExtension>emptyList()));
     resourceTypeList.add(
-        new ResourceTypeResource("urn:test2", "test2", "test2", "/test2",
-            "urn:test2",
+        new ResourceTypeResource("urn:test2", "test2", "test2",
+            new URI("/test2"), new URI("urn:test2"),
             Collections.<ResourceTypeResource.SchemaExtension>emptyList()));
     ListResponse<ResourceTypeResource> response =
         new ListResponse<ResourceTypeResource>(100, resourceTypeList, 1, 10);

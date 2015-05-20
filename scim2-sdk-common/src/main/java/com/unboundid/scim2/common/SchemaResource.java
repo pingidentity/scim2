@@ -18,11 +18,13 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.SchemaInfo;
+import com.unboundid.scim2.common.annotations.SchemaProperty;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * This represents a SCIM schema.
@@ -31,35 +33,20 @@ import java.util.LinkedList;
     name="Schema", description = "SCIM 2.0 Schema Resource")
 public class SchemaResource extends BaseScimResource
 {
-  /**
-   * The schema's human readable name.  When applicable service
-   * providers MUST specify the name specified in the core schema
-   * specification; e.g., "User" or "Group".  OPTIONAL.
-   */
-  private String name;
+  @SchemaProperty(description =
+      "The schema's human readable name.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private final String name;
 
-  /**
-   * The schema's human readable description.  When applicable service
-   * providers MUST specify the description specified in the core
-   * schema specification.  OPTIONAL.
-   */
-  private String description;
+  @SchemaProperty(description =
+      "The schema's human readable description.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private final String description;
 
-  /**
-   * Attributes of the object described by this schema.
-   */
+  @SchemaProperty(description =
+      "Attributes of the object described by this schema.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final Collection<AttributeDefinition> attributes;
-
-  /**
-   * Create a new Schema resource.
-   *
-   * @param id The schema's ID.
-   */
-  public SchemaResource(final String id)
-  {
-    super(id);
-    this.attributes = new LinkedList<AttributeDefinition>();
-  }
 
   /**
    * Create a new Schema resource.
@@ -70,14 +57,20 @@ public class SchemaResource extends BaseScimResource
    * @param attributes The schema's attributes.
    */
   @JsonCreator
-  public SchemaResource(final String id,
-                        final String name, final String description,
+  public SchemaResource(@JsonProperty(value = "id", required = true)
+                        final String id,
+                        @JsonProperty(value = "name")
+                        final String name,
+                        @JsonProperty(value = "description")
+                        final String description,
+                        @JsonProperty(value = "attributes", required = true)
                         final Collection<AttributeDefinition> attributes)
   {
     super(id);
     this.name = name;
     this.description = description;
-    this.attributes = attributes;
+    this.attributes = Collections.unmodifiableList(
+        new ArrayList<AttributeDefinition>(attributes));
   }
 
   /**
@@ -90,31 +83,12 @@ public class SchemaResource extends BaseScimResource
   }
 
   /**
-   * Sets the name of the SCIM object.
-   * @param name the name of the SCIM object.
-   */
-  public void setName(final String name)
-  {
-    this.name = name;
-  }
-
-  /**
    * Gets the name of the SCIM object from the schema.
    * @return the name of the SCIM object.
    */
   public String getDescription()
   {
     return description;
-  }
-
-  /**
-   * Sets the description of the SCIM object in the schema.
-   *
-   * @param description the description of the SCIM object.
-   */
-  public void setDescription(final String description)
-  {
-    this.description = description;
   }
 
   /**
@@ -125,15 +99,6 @@ public class SchemaResource extends BaseScimResource
   public Collection<AttributeDefinition> getAttributes()
   {
     return Collections.unmodifiableCollection(attributes);
-  }
-
-  /**
-   * Adds an attribute to this schema.
-   * @param attribute attribute to add to this schema.
-   */
-  public void addAttribute(final AttributeDefinition attribute)
-  {
-    attributes.add(attribute);
   }
 
   /**

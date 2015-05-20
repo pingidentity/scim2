@@ -17,8 +17,16 @@
 
 package com.unboundid.scim2.common;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unboundid.scim2.common.annotations.SchemaProperty;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  * An attribute in a schema for a SCIM Object.
@@ -325,76 +333,113 @@ public class AttributeDefinition
 
   }
 
+  @SchemaProperty(description = "The attribute's name.",
+      isRequired = true,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final String name;
 
-  /**
-   * The attribute's name.
-   */
-  private String name;
+  @SchemaProperty(description = "The attribute's data type.",
+      isRequired = true,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final String type;
 
-  /**
-   * The attribute's type.  For the possible values, see:
-   * {@link AttributeDefinition.Type}
-   */
-  private String type;
+  @SchemaProperty(description = "When an attribute is of type \"complex\", " +
+      "\"subAttributes\" defines set of sub-attributes.",
+      isRequired = false,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final Collection<AttributeDefinition> subAttributes;
 
-  /**
-   * The sub-attributes of this attribute.
-   */
-  private Collection<AttributeDefinition> subAttributes;
+  @SchemaProperty(description = "Boolean value indicating the attribute's " +
+      "plurality.",
+      isRequired = true,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final boolean multiValued;
 
-  /**
-   * A boolean value indicating whether or not this attribute can have
-   * multiple values.
-   */
-  private boolean multiValued;
+  @SchemaProperty(description = "The attribute's human readable description.",
+      isRequired = false,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final String description;
 
-  /**
-   * The description of this attribute.
-   */
-  private String description;
+  @SchemaProperty(description = "A Boolean value that specifies if the " +
+      "attribute is required.",
+      isRequired = true,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final boolean required;
 
-  /**
-   * A boolean indicating whether or not this attribute is required
-   * to be present.
-   */
-  private boolean required;
+  @SchemaProperty(description = "A collection of suggested canonical values " +
+      "that MAY be used.",
+      isRequired = false,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE,
+      multiValueClass = String.class)
+  private final Collection<String> canonicalValues;
 
-  /**
-   * A Set of canonical values that this attribute may contain.
-   */
-  private Set<String> canonicalValues;
+  @SchemaProperty(description = "A Boolean value that specifies if the " +
+      "String attribute is case sensitive.",
+      isRequired = false,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final boolean caseExact;
 
-  /**
-   * A boolean indicated whether or not searches for this object will
-   * be case exact.  If true, then this attribute will only be matched
-   * if the case of the value exactly matches the search string's case.
-   */
-  private boolean caseExact;
+  @SchemaProperty(description = "A single keyword indicating the " +
+      "circumstances under which the value of the attribute can be " +
+      "(re)defined.",
+      isRequired = true,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final String mutability;
 
-  /**
-   * This value indicates the mutability constraints of this attribute.
-   * See {@link AttributeDefinition.Mutability}
-   */
-  private String mutability;
+  @SchemaProperty(description = "A single keyword that indicates when an " +
+      "attribute and associated values are returned in response to a GET " +
+      "request or in response to a PUT, POST, or PATCH request.",
+      isRequired = true,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final String returned;
 
-  /**
-   * Indicates the when this attribute will be returned as part of
-   * a scim object.
-   * See {@link AttributeDefinition.Returned}
-   */
-  private String returned;
+  @SchemaProperty(description = "A single keyword value that specifies how " +
+      "the service provider enforces uniqueness of attribute values.",
+      isRequired = false,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final String uniqueness;
 
-  /**
-   * This field represents the uniqueness constraints of this
-   * attribute.
-   * See {@link AttributeDefinition.Uniqueness}
-   */
-  private String uniqueness;
-
-  /**
-   * The reference type of this attribute.
-   */
-  private String referenceType;
+  @SchemaProperty(description = "A multi-valued array of JSON strings that " +
+      "indicate the SCIM resource types that may be referenced.",
+      isRequired = false,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final Collection<String> referenceTypes;
 
   /**
    * Builder class to build SCIM2Attributes.
@@ -437,7 +482,7 @@ public class AttributeDefinition
     /**
      * A Set of canonical values that this attribute may contain.
      */
-    private Set<String> canonicalValues;
+    private Collection<String> canonicalValues;
 
     /**
      * A boolean indicated whether or not searches for this object will
@@ -467,9 +512,9 @@ public class AttributeDefinition
     private Uniqueness uniqueness;
 
     /**
-     * The reference type of this attribute.
+     * The reference types of this attribute.
      */
-    private String referenceType;
+    private Collection<String> referenceTypes;
 
     /**
      * Sets the attribute name.
@@ -501,10 +546,16 @@ public class AttributeDefinition
      * @param subAttributes the sub-attributes of the attribute.
      * @return this.
      */
-    public Builder setSubAttributes(
-        final Collection<AttributeDefinition> subAttributes)
+    public Builder addSubAttributes(final AttributeDefinition ... subAttributes)
     {
-      this.subAttributes = subAttributes;
+      if(subAttributes != null && subAttributes.length > 0)
+      {
+        if (this.subAttributes == null)
+        {
+          this.subAttributes = new LinkedList<AttributeDefinition>();
+        }
+        this.subAttributes.addAll(Arrays.asList(subAttributes));
+      }
       return this;
     }
 
@@ -545,15 +596,22 @@ public class AttributeDefinition
     }
 
     /**
-     * Sets the possible cononical values for this attribute.  This
-     * is only relevant for multi-valued attributes.
+     * Adds possible canonical values for this attribute. This is only relevant
+     * for multi-valued attributes.
      *
-     * @param canonicalValues the possible cononical values for this attribute.
+     * @param canonicalValues the possible canonical values for this attribute.
      * @return this.
      */
-    public Builder setCanonicalValues(final Set<String> canonicalValues)
+    public Builder addCanonicalValues(final String... canonicalValues)
     {
-      this.canonicalValues = canonicalValues;
+      if(canonicalValues != null && canonicalValues.length > 0)
+      {
+        if (this.canonicalValues == null)
+        {
+          this.canonicalValues = new HashSet<String>();
+        }
+        this.canonicalValues.addAll(Arrays.asList(canonicalValues));
+      }
       return this;
     }
 
@@ -609,14 +667,21 @@ public class AttributeDefinition
     }
 
     /**
-     * Sets the reference type for the attribute.
+     * Adds reference types for the attribute.
      *
-     * @param referenceType the reference type for the attribute.
+     * @param referenceTypes the reference types for the attribute.
      * @return this.
      */
-    public Builder setReferenceType(final String referenceType)
+    public Builder addReferenceTypes(final String ... referenceTypes)
     {
-      this.referenceType = referenceType;
+      if(referenceTypes != null && referenceTypes.length > 0)
+      {
+        if (this.referenceTypes == null)
+        {
+          this.referenceTypes = new HashSet<String>();
+        }
+        this.referenceTypes.addAll(Arrays.asList(referenceTypes));
+      }
       return this;
     }
 
@@ -638,7 +703,7 @@ public class AttributeDefinition
       this.mutability = null;
       this.returned = null;
       this.uniqueness = null;
-      this.referenceType = null;
+      this.referenceTypes = null;
       return this;
     }
 
@@ -649,31 +714,88 @@ public class AttributeDefinition
      */
     public AttributeDefinition build()
     {
-      AttributeDefinition attribute = new AttributeDefinition();
-      attribute.setName(name);
-      attribute.setType((type == null) ? null : type.getName());
-      attribute.setSubAttributes(subAttributes);
-      attribute.setMultiValued(multiValued);
-      attribute.setDescription(description);
-      attribute.setRequired(required);
-      attribute.setCanonicalValues(canonicalValues);
-      attribute.setCaseExact(caseExact);
-      attribute.setMutability(
-          (mutability == null) ? null : mutability.getName());
-      attribute.setReturned((returned == null) ? null : returned.getName());
-      attribute.setUniqueness(
-          (uniqueness == null) ? null : uniqueness.getName());
-      attribute.setReferenceType(referenceType);
-      return attribute;
+      return new AttributeDefinition(
+          name,
+          (type == null) ? null : type.getName(),
+          subAttributes,
+          multiValued,
+          description,
+          required,
+          canonicalValues,
+          caseExact,
+          (mutability == null) ? null : mutability.getName(),
+          (returned == null) ? null : returned.getName(),
+          (uniqueness == null) ? null : uniqueness.getName(),
+          referenceTypes);
     }
   }
 
   /**
-   * Default constructor.  Used mainly for deserialization from JSON
+   * Create a new Attribute Definition.
+   *
+   * @param name The attribute's name.
+   * @param type The attribute's data type.
+   * @param subAttributes The sub-attributes of the attribute.
+   * @param multiValued A boolean indicating if the attribute is multi-valued.
+   * @param description The description of this attribute.
+   * @param required A boolean indicating whether or not this attribute is
+   *                 required to be present.
+   * @param canonicalValues A Set of canonical values that this attribute may
+   *                        contain.
+   * @param caseExact A boolean indicated whether or not searches for this
+   *                  object will be case exact.
+   * @param mutability This value indicates the mutability constraints of this
+   *                   attribute.
+   * @param returned Indicates the when this attribute will be returned as part
+   *                 of a scim object.
+   * @param uniqueness This field represents the uniqueness constraints of this
+   *                   attribute.
+   * @param referenceTypes The reference type of this attribute.
    */
-  public AttributeDefinition()
+  @JsonCreator
+  AttributeDefinition(@JsonProperty(value = "name", required = true)
+                      final String name,
+                      @JsonProperty(value = "type", required = true)
+                      final String type,
+                      @JsonProperty(value = "subAttributes")
+                      final Collection<AttributeDefinition> subAttributes,
+                      @JsonProperty(value = "multiValued", required = true)
+                      final boolean multiValued,
+                      @JsonProperty(value = "description")
+                      final String description,
+                      @JsonProperty(value = "required", required = true)
+                      final boolean required,
+                      @JsonProperty(value = "canonicalValues")
+                      final Collection<String> canonicalValues,
+                      @JsonProperty(value = "caseExact")
+                      final boolean caseExact,
+                      @JsonProperty(value = "mutability",  required = true)
+                      final String mutability,
+                      @JsonProperty(value = "returned", required = true)
+                      final String returned,
+                      @JsonProperty(value = "uniqueness")
+                      final String uniqueness,
+                      @JsonProperty(value = "referenceTypes")
+                      final Collection<String> referenceTypes)
   {
-
+    this.name = name;
+    this.type = type;
+    this.subAttributes = subAttributes == null ?
+        null : Collections.unmodifiableList(
+        new ArrayList<AttributeDefinition>(subAttributes));
+    this.multiValued = multiValued;
+    this.description = description;
+    this.required = required;
+    this.canonicalValues = canonicalValues == null ?
+        null : Collections.unmodifiableList(
+        new ArrayList<String>(canonicalValues));
+    this.caseExact = caseExact;
+    this.mutability = mutability;
+    this.returned = returned;
+    this.uniqueness = uniqueness;
+    this.referenceTypes = referenceTypes == null ?
+        null : Collections.unmodifiableList(
+        new ArrayList<String>(referenceTypes));
   }
 
   /**
@@ -688,17 +810,6 @@ public class AttributeDefinition
   }
 
   /**
-   * Sets whether or not the attribute is multivalued.
-   *
-   * @param multiValued true if the attribute is multivalues, or false
-   *    if it is not.
-   */
-  private void setMultiValued(final boolean multiValued)
-  {
-    this.multiValued = multiValued;
-  }
-
-  /**
    * Gets the type of the value for this attribute.
    *
    * @return type of the value for this attribute.
@@ -706,16 +817,6 @@ public class AttributeDefinition
   public String getType()
   {
     return type;
-  }
-
-  /**
-   * Sets the type of the value for this attribute.
-   *
-   * @param type the type of the value for this attribute.
-   */
-  private void setType(final String type)
-  {
-    this.type = type;
   }
 
   /**
@@ -729,17 +830,6 @@ public class AttributeDefinition
   }
 
   /**
-   * Sets a boolean indicating if this attribute requires a value or not.
-   *
-   * @param required a boolean indicating if this attribute requires a
-   *                 value or not.
-   */
-  private void setRequired(final boolean required)
-  {
-    this.required = required;
-  }
-
-  /**
    * Is the attribute's value case sensitive.
    *
    * @return true if the attributes value is case sensitive, or false
@@ -748,19 +838,6 @@ public class AttributeDefinition
   public boolean isCaseExact()
   {
     return caseExact;
-  }
-
-
-  /**
-   * Sets a boolean indicating whether or not the attribute's value should
-   * be treated as case sensitive.
-   *
-   * @param caseExact a boolean indicating whether or not the attribute's
-   *                  value should be treated as case sensitive.
-   */
-  private void setCaseExact(final boolean caseExact)
-  {
-    this.caseExact = caseExact;
   }
 
   /**
@@ -774,16 +851,6 @@ public class AttributeDefinition
   }
 
   /**
-   * Sets the name of the attribute.
-   *
-   * @param name the name of the attribute.
-   */
-  private void setName(final String name)
-  {
-    this.name = name;
-  }
-
-  /**
    * Gets the description of the attribute.
    *
    * @return the description of the attribute.
@@ -791,16 +858,6 @@ public class AttributeDefinition
   public String getDescription()
   {
     return description;
-  }
-
-  /**
-   * Sets the description of this attribute.
-   *
-   * @param description the discription of this attribute.
-   */
-  private void setDescription(final String description)
-  {
-    this.description = description;
   }
 
   /**
@@ -814,35 +871,13 @@ public class AttributeDefinition
   }
 
   /**
-   * Sets the sub-attributes of this attribute.
-   *
-   * @param subAttributes the sub-attributes of this attribute.
-   */
-  private void setSubAttributes(
-      final Collection<AttributeDefinition> subAttributes)
-  {
-    this.subAttributes = subAttributes;
-  }
-
-  /**
    * Gets the canonical values of the attribute.
    *
    * @return the canonical values of the attribute.
    */
-  public Set<String> getCanonicalValues()
+  public Collection<String> getCanonicalValues()
   {
     return canonicalValues;
-  }
-
-  /**
-   * Sets the canonical values of the attribute.
-   *
-   * @param canonicalValues a set containing the possible
-   *                        canonical values.
-   */
-  private void setCanonicalValues(final Set<String> canonicalValues)
-  {
-    this.canonicalValues = canonicalValues;
   }
 
   /**
@@ -856,16 +891,6 @@ public class AttributeDefinition
   }
 
   /**
-   * Sets the mutability constraint for this attribute.
-   *
-   * @param mutability the mutability constraint for this attribute.
-   */
-  private void setMutability(final String mutability)
-  {
-    this.mutability = mutability;
-  }
-
-  /**
    * Gets the return constraint for this attribute.
    *
    * @return the return constraint for this attribute.
@@ -873,16 +898,6 @@ public class AttributeDefinition
   public String getReturned()
   {
     return returned;
-  }
-
-  /**
-   * Sets the return constraint for this attribute.
-   *
-   * @param returned the return constraint for this attribute.
-   */
-  private void setReturned(final String returned)
-  {
-    this.returned = returned;
   }
 
   /**
@@ -896,33 +911,13 @@ public class AttributeDefinition
   }
 
   /**
-   * Sets the Uniqueness constraint fo this attribute.
+   * Gets the reference types for this attribute.
    *
-   * @param uniqueness the Uniqueness constraint fo this attribute.
+   * @return the reference types for this attribute.
    */
-  private void setUniqueness(final String uniqueness)
+  public Collection<String> getReferenceTypes()
   {
-    this.uniqueness = uniqueness;
-  }
-
-  /**
-   * Gets the reference type for this attribute.
-   *
-   * @return the reference type for this attribute.
-   */
-  public String getReferenceType()
-  {
-    return referenceType;
-  }
-
-  /**
-   * Sets the reference type for this attribute.
-   *
-   * @param referenceType the reference type for this attribute.
-   */
-  private void setReferenceType(final String referenceType)
-  {
-    this.referenceType = referenceType;
+    return referenceTypes;
   }
 
   /**
@@ -958,9 +953,12 @@ public class AttributeDefinition
     builder.append(" isCaseExact: ");
     builder.append(isCaseExact());
     builder.append(System.lineSeparator());
-    for(AttributeDefinition a : getSubAttributes())
+    if(getSubAttributes() != null)
     {
-      builder.append(a.toIndentedString(indent + "  "));
+      for (AttributeDefinition a : getSubAttributes())
+      {
+        builder.append(a.toIndentedString(indent + "  "));
+      }
     }
     return builder.toString();
   }
@@ -1014,8 +1012,8 @@ public class AttributeDefinition
     {
       return false;
     }
-    if (referenceType != null ? !referenceType.equals(that.referenceType) :
-        that.referenceType != null)
+    if (referenceTypes != null ? !referenceTypes.equals(that.referenceTypes) :
+        that.referenceTypes != null)
     {
       return false;
     }
@@ -1061,8 +1059,8 @@ public class AttributeDefinition
     result = 31 * result + (mutability != null ? mutability.hashCode() : 0);
     result = 31 * result + (returned != null ? returned.hashCode() : 0);
     result = 31 * result + (uniqueness != null ? uniqueness.hashCode() : 0);
-    result = 31 * result + (referenceType != null ?
-        referenceType.hashCode() : 0);
+    result = 31 * result + (referenceTypes != null ?
+        referenceTypes.hashCode() : 0);
     return result;
   }
 }

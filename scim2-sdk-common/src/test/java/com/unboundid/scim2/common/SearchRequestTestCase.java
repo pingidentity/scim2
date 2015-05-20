@@ -59,8 +59,8 @@ public class SearchRequestTestCase
     assertEquals(searchRequest.getFilter(), "displayName sw \"smith\"");
     assertEquals(searchRequest.getSortBy(), null);
     assertEquals(searchRequest.getSortOrder(), null);
-    assertEquals(searchRequest.getStartIndex(), new Long(1));
-    assertEquals(searchRequest.getCount(), new Long(10));
+    assertEquals(searchRequest.getStartIndex(), new Integer(1));
+    assertEquals(searchRequest.getCount(), new Integer(10));
 
     searchRequest = SchemaUtils.createSCIMCompatibleMapper().
         readValue("{\n" +
@@ -86,8 +86,8 @@ public class SearchRequestTestCase
         setFilter("userName eq \"test\"").
         setSortBy("name.lastName").
         setSortOrder(SortOrder.ASCENDING).
-        setStartIndex(5L).
-        setCount(100L);
+        setStartIndex(5).
+        setCount(100);
 
     String serialized = SchemaUtils.createSCIMCompatibleMapper().
         writeValueAsString(searchRequest);

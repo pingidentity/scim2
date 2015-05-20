@@ -66,9 +66,9 @@ public @interface SchemaProperty
       default AttributeDefinition.Uniqueness.NONE;
 
   /**
-   * The reference type for the attribute.
+   * The reference types for the attribute.
    */
-  String referenceType() default "";
+  String[] referenceTypes() default {};
 
   /**
    * The mutability constraint for the attribute.

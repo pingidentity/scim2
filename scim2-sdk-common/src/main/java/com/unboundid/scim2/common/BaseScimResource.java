@@ -20,6 +20,7 @@ package com.unboundid.scim2.common;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -56,6 +57,7 @@ import java.util.Set;
  *
  * {@link GenericScimResource}
  */
+@JsonPropertyOrder({ "schemas", "id", "externalId" })
 public abstract class BaseScimResource
     implements ScimResource
 {
@@ -93,8 +95,7 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Gets metadata about the object.
-   * @return <code>Meta</code> containing metadata about the object.
+   * {@inheritDoc}
    */
   @Override
   public Meta getMeta()
@@ -103,8 +104,7 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Sets metadata for the object.
-   * @param meta <code>Meta</code> containing metadata for the object.
+   * {@inheritDoc}
    */
   @Override
   public void setMeta(final Meta meta)
@@ -113,8 +113,7 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Gets the id of the object.
-   * @return the id of the object.
+   * {@inheritDoc}
    */
   @Override
   public String getId()
@@ -123,8 +122,7 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Sets the id of the object.
-   * @param id The object's id.
+   * {@inheritDoc}
    */
   @Override
   public void setId(final String id)
@@ -133,8 +131,7 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Gets the objects external id.
-   * @return The external id of the object.
+   * {@inheritDoc}
    */
   @Override
   public String getExternalId()
@@ -143,8 +140,7 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Sets the object's external id.
-   * @param externalId The external id of the object.
+   * {@inheritDoc}
    */
   @Override
   public void setExternalId(final String externalId)
@@ -553,5 +549,22 @@ public abstract class BaseScimResource
     result = 31 * result + (extensionObjectNode != null ?
         extensionObjectNode.hashCode() : 0);
     return result;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString()
+  {
+    try
+    {
+      return SchemaUtils.createSCIMCompatibleMapper().
+          writerWithDefaultPrettyPrinter().writeValueAsString(this);
+    }
+    catch (JsonProcessingException e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 }

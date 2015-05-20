@@ -19,6 +19,7 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unboundid.scim2.common.AttributeDefinition;
 import com.unboundid.scim2.common.annotations.SchemaInfo;
 import com.unboundid.scim2.common.annotations.SchemaProperty;
 import com.unboundid.scim2.common.BaseScimResource;
@@ -30,13 +31,16 @@ import com.unboundid.scim2.common.BaseScimResource;
     name="Error Response", description = "SCIM 2.0 Error Response")
 public final class ErrorResponse extends BaseScimResource
 {
-  @SchemaProperty(description = "Type of the SCIM error.")
-  private String scimType = "";
+  @SchemaProperty(description = "A SCIM detailed error keyword.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private String scimType;
 
-  @SchemaProperty(description = "Summary of the SCIM error.")
-  private String detail = "";
+  @SchemaProperty(description = "A detailed, human readable message.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private String detail;
 
-  @SchemaProperty(description = "HTTP Status of the SCIM error.",
+  @SchemaProperty(description = "The HTTP status code.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final int status;
 

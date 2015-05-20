@@ -130,7 +130,7 @@ public class SCIM2Client
    * <p>
    * Note this method can return -1 for the special case in which the
    * service provider could not be reached at all.
-   * <p>>
+   * <p>
    *
    * @param t the Exception instance to analyze
    * @return the most appropriate HTTP status code
