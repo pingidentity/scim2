@@ -121,7 +121,7 @@ public class JsonUtils
       JsonNode node = parent.path(element.getAttribute());
       if(node.isArray() && element.getValueFilter() != null)
       {
-        return filterArray((ArrayNode)node, element.getValueFilter(), false);
+        return filterArray((ArrayNode) node, element.getValueFilter(), false);
       }
       return node;
     }
@@ -350,7 +350,12 @@ public class JsonUtils
     JsonNode visitInnerNode(final ObjectNode parent,
                             final Path.Element element) throws ScimException
     {
-      return parent.path(element.getAttribute());
+      JsonNode node = parent.path(element.getAttribute());
+      if(node.isArray() && element.getValueFilter() != null)
+      {
+        return filterArray((ArrayNode) node, element.getValueFilter(), false);
+      }
+      return node;
     }
 
     @Override
@@ -358,7 +363,18 @@ public class JsonUtils
                        final Path.Element element) throws ScimException
     {
       JsonNode node = parent.path(element.getAttribute());
-      if(! node.isMissingNode())
+      if(node.isArray() && element.getValueFilter() != null)
+      {
+        node = filterArray((ArrayNode) node, element.getValueFilter(), false);
+      }
+
+      if(node.isArray())
+      {
+        if(((ArrayNode)node).size() > 0)
+        {
+          setPathPresent(true);
+        }
+      } else if(! node.isMissingNode())
       {
         setPathPresent(true);
       }

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
@@ -1028,40 +1029,106 @@ public class JsonUtilsTestCase
         JsonUtils.pathExists(path, resource.getObjectNode()), shouldExist);
   }
 
-  /**
-   * Data provider for pathExists tests.
-   *
-   * @return an array of array of Objects to use for the test.
-   */
+    /**
+     * Data provider for pathExists tests.
+     *
+     * @return an array of array of Objects to use for the test.
+     * @throws Exception can be thrown by Path/Filter classes
+     */
   @DataProvider(name = "pathExistsDataProvider")
-  public Object[][] getPathExistsParams()
+  public Object[][] getPathExistsParams() throws Exception
   {
+    String jsonString =
+        "{  \n" +
+        "   \"list\":[  \n" +
+        "      {  \n" +
+        "         \"id\":1,\n" +
+        "         \"address\":{  \n" +
+        "            \"l1\":\"Id 1, Line 1\",\n" +
+        "            \"l2\":\"Id 1, Line 2\",\n" +
+        "            \"l3\":\"Id 1, Line 3\"\n" +
+        "         }\n" +
+        "      },\n" +
+        "      {  \n" +
+        "         \"id\":2,\n" +
+        "         \"address\":{  \n" +
+        "            \"l1\":\"Id 2, Line 1\",\n" +
+        "            \"l2\":\"Id 2, Line 2\",\n" +
+        "            \"l3\":\"Id 2, Line 3\"\n" +
+        "         }\n" +
+        "      },\n" +
+        "      {  \n" +
+        "         \"id\":3,\n" +
+        "         \"address\":{  \n" +
+        "            \"l1\":\"Id 3, Line 1\", \n" +
+        "            \"l2\":\"Id 3, Line 2\", \n" +
+        "            \"nullValue\":null \n " +
+        "         }\n" +
+        "      }\n" +
+        "   ],\n" +
+        "   \"simpleString\":\"present\", \n" +
+        "   \"nullValue\":null, \n" +
+        "   \"singleComplex\":{ \n" +
+        "         \"id\":3,\n" +
+        "         \"address\":{  \n" +
+        "            \"l1\":\"Id 3, Line 1\", \n " +
+        "            \"l2\":\"Id 3, Line 2\", \n " +
+        "            \"nullValue\":null \n " +
+        "         }\n" +
+        "      }\n" +
+        "}";
+
     return new Object[][] {
-      {
-        "{}", Path.attribute("simpleString"), false
-      },
-      {
-        "{\"simpleString\":\"present\"}", Path.attribute("simpleString"), true
-      },
-      {
-        "{\"nullValue\":null}", Path.attribute("nullValue"), true
-      },
-      {
-        "{\"l1\":{\"l2\":{\"l3String\":\"aString\"}}}",
-        Path.attribute("l1").sub("l2").sub("l3String"), true
-      },
-      {
-        "{\"l1\":{\"l2\":{}}}",
-        Path.attribute("l1").sub("l2").sub("l3Missing"), false
-      },
-      {
-        "{\"l1\":{\"l2\":{\"l3String\":\"aString\"}}}",
-        Path.attribute("missing"), false
-      },
-      {
-        "{\"l1\":{\"l2\":{\"l3Null\":null}}}",
-        Path.attribute("l1").sub("l2").sub("l3Null"), true
-      }
+        {
+            "{}", Path.attribute("simpleString"), false
+        },
+        {
+            jsonString, Path.attribute("simpleString"), true
+        },
+        {
+            jsonString, Path.attribute("nullValue"), true
+        },
+        {
+            jsonString,
+            Path.attribute("singleComplex").sub("address").sub("l1"), true
+        },
+        {
+            jsonString,
+            Path.attribute("singleComplex").sub("address").sub("l3"), false
+        },
+        {
+            jsonString,
+            Path.attribute("missing"), false
+        },
+        {
+            jsonString,
+            Path.attribute("singleComplex").sub("address").sub("nullValue"),
+            true
+        },
+        {
+            jsonString,
+            Path.attribute("list", Filter.eq("id", 2)), true
+        },
+        {
+            jsonString,
+            Path.attribute("list", Filter.eq("id", "5")), false
+        },
+        {
+            jsonString,
+            Path.attribute("list", Filter.eq("id", 2)).sub("address").sub("l2"),
+            true
+        },
+        {
+            jsonString,
+            Path.attribute("list", Filter.eq("id", 3)).sub("address").sub("l3"),
+            false
+        },
+        {
+            jsonString,
+            Path.attribute(
+                "list", Filter.eq("id", 3)).sub("address").sub("nullValue"),
+            true
+        }
     };
   }
 }
