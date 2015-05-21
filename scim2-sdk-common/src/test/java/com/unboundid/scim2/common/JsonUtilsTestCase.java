@@ -20,11 +20,15 @@ package com.unboundid.scim2.common;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -869,7 +873,7 @@ public class JsonUtilsTestCase
     assertEquals(gso.getValues("complex.array.array.string",
             String.class).get(1), "new");
     assertEquals(gso.getValues("complex.array.array.string",
-            String.class).get(2), "string");
+        String.class).get(2), "string");
     assertEquals(gso.getValues("complex.array.array.string",
             String.class).get(3), "new");
 
@@ -910,7 +914,7 @@ public class JsonUtilsTestCase
     gso.setValue("complex.array[id eq \"2\"].complex", meta);
 
     assertNotEquals(gso.getValues("complex.array.complex",
-            ArrayValue.class).get(0), value0);
+        ArrayValue.class).get(0), value0);
     assertEquals(gso.getValues("complex.array.complex",
             ArrayValue.class).get(1), value1);
 
@@ -961,7 +965,7 @@ public class JsonUtilsTestCase
     gso.setValues(Path.attribute("urn:some:extension", "attribute"),
         meta1, meta2);
     assertEquals(gso.getValues(Path.attribute("urn:some:extension",
-            "attribute"), ArrayValue.class), values);
+        "attribute"), ArrayValue.class), values);
   }
 
 
@@ -1004,5 +1008,127 @@ public class JsonUtilsTestCase
         meta1);
     assertEquals(gso.getValues("complex.array", ArrayValue.class).get(3),
         meta2);
+  }
+
+  /**
+   * Tests that the pathExists method works in a variety of situations.
+   *
+   * @param jsonString the string representation of the json to check.
+   * @param path the path to check the existence of.
+   * @param shouldExist true if it should exist, false if not.
+   * @throws Exception thrown in case of an error.
+   */
+  @Test(dataProvider = "pathExistsDataProvider")
+  public void testPathExists(String jsonString, Path path, boolean shouldExist)
+      throws Exception
+  {
+    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
+    GenericScimResource resource =
+        mapper.readValue(jsonString, GenericScimResource.class);
+    Assert.assertEquals(
+        JsonUtils.pathExists(path, resource.getObjectNode()), shouldExist);
+  }
+
+    /**
+     * Data provider for pathExists tests.
+     *
+     * @return an array of array of Objects to use for the test.
+     * @throws Exception can be thrown by Path/Filter classes
+     */
+  @DataProvider(name = "pathExistsDataProvider")
+  public Object[][] getPathExistsParams() throws Exception
+  {
+    String jsonString =
+        "{  \n" +
+        "   \"list\":[  \n" +
+        "      {  \n" +
+        "         \"id\":1,\n" +
+        "         \"address\":{  \n" +
+        "            \"l1\":\"Id 1, Line 1\",\n" +
+        "            \"l2\":\"Id 1, Line 2\",\n" +
+        "            \"l3\":\"Id 1, Line 3\"\n" +
+        "         }\n" +
+        "      },\n" +
+        "      {  \n" +
+        "         \"id\":2,\n" +
+        "         \"address\":{  \n" +
+        "            \"l1\":\"Id 2, Line 1\",\n" +
+        "            \"l2\":\"Id 2, Line 2\",\n" +
+        "            \"l3\":\"Id 2, Line 3\"\n" +
+        "         }\n" +
+        "      },\n" +
+        "      {  \n" +
+        "         \"id\":3,\n" +
+        "         \"address\":{  \n" +
+        "            \"l1\":\"Id 3, Line 1\", \n" +
+        "            \"l2\":\"Id 3, Line 2\", \n" +
+        "            \"nullValue\":null \n " +
+        "         }\n" +
+        "      }\n" +
+        "   ],\n" +
+        "   \"simpleString\":\"present\", \n" +
+        "   \"nullValue\":null, \n" +
+        "   \"singleComplex\":{ \n" +
+        "         \"id\":3,\n" +
+        "         \"address\":{  \n" +
+        "            \"l1\":\"Id 3, Line 1\", \n " +
+        "            \"l2\":\"Id 3, Line 2\", \n " +
+        "            \"nullValue\":null \n " +
+        "         }\n" +
+        "      }\n" +
+        "}";
+
+    return new Object[][] {
+        {
+            "{}", Path.attribute("simpleString"), false
+        },
+        {
+            jsonString, Path.attribute("simpleString"), true
+        },
+        {
+            jsonString, Path.attribute("nullValue"), true
+        },
+        {
+            jsonString,
+            Path.attribute("singleComplex").sub("address").sub("l1"), true
+        },
+        {
+            jsonString,
+            Path.attribute("singleComplex").sub("address").sub("l3"), false
+        },
+        {
+            jsonString,
+            Path.attribute("missing"), false
+        },
+        {
+            jsonString,
+            Path.attribute("singleComplex").sub("address").sub("nullValue"),
+            true
+        },
+        {
+            jsonString,
+            Path.attribute("list", Filter.eq("id", 2)), true
+        },
+        {
+            jsonString,
+            Path.attribute("list", Filter.eq("id", "5")), false
+        },
+        {
+            jsonString,
+            Path.attribute("list", Filter.eq("id", 2)).sub("address").sub("l2"),
+            true
+        },
+        {
+            jsonString,
+            Path.attribute("list", Filter.eq("id", 3)).sub("address").sub("l3"),
+            false
+        },
+        {
+            jsonString,
+            Path.attribute(
+                "list", Filter.eq("id", 3)).sub("address").sub("nullValue"),
+            true
+        }
+    };
   }
 }
