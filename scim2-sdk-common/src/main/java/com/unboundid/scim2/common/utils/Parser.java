@@ -581,9 +581,8 @@ public class Parser
 
         if(op == null)
         {
-          final String msg = String.format(
+          throw BadRequestException.invalidFilter(
               "Unexpected end of filter string");
-          throw BadRequestException.invalidFilter(msg);
         }
 
         if (op.equalsIgnoreCase(FilterType.PRESENT.getStringValue()))

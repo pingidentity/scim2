@@ -49,7 +49,7 @@ public enum SortOrder
      * @param stringValue The lower case string value for this operation type.
      */
     @JsonCreator
-    private SortOrder(final String stringValue)
+    SortOrder(final String stringValue)
     {
       this.stringValue = stringValue;
     }

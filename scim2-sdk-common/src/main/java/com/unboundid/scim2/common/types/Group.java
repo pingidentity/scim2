@@ -19,7 +19,7 @@ package com.unboundid.scim2.common.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URI;
 
@@ -28,7 +28,7 @@ import java.net.URI;
  */
 public class Group
 {
-  @SchemaProperty(description = "The identifier of the User's group.",
+  @Attribute(description = "The identifier of the User's group.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -36,7 +36,7 @@ public class Group
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
-  @SchemaProperty(description = "The URI of the corresponding Group " +
+  @Attribute(description = "The URI of the corresponding Group " +
       "resource to which the user belongs",
       isRequired = false,
       referenceTypes = { "User", "Group" },
@@ -46,7 +46,7 @@ public class Group
   @JsonProperty("$ref")
   private URI ref;
 
-  @SchemaProperty(description = "A human readable name, primarily used for " +
+  @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
       isCaseExact = false,
@@ -55,7 +55,7 @@ public class Group
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
-  @SchemaProperty(description = "A label indicating the attribute's " +
+  @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'direct' or 'indirect'.",
       isRequired = false,
       isCaseExact = false,

@@ -18,14 +18,14 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 /**
  * The components of the user's real name.
  */
 public class Name
 {
-  @SchemaProperty(description = "The full name, including all middle " +
+  @Attribute(description = "The full name, including all middle " +
       "names, titles, and suffixes as appropriate, formatted for display " +
       "(e.g., Ms. Barbara J Jensen, III.).",
       isRequired = false,
@@ -35,7 +35,7 @@ public class Name
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String formatted;
 
-  @SchemaProperty(description = "The family name of the User, or Last " +
+  @Attribute(description = "The family name of the User, or Last " +
       "Name in most Western languages (e.g. Jensen given the full name Ms. " +
       "Barbara J Jensen, III.).",
       isRequired = false,
@@ -45,7 +45,7 @@ public class Name
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String familyName;
 
-  @SchemaProperty(description = "The given name of the User, or First Name " +
+  @Attribute(description = "The given name of the User, or First Name " +
       "in most Western languages (e.g. Barbara given the full name Ms. " +
       "Barbara J Jensen, III.).",
       isRequired = false,
@@ -55,7 +55,7 @@ public class Name
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String givenName;
 
-  @SchemaProperty(description = "The middle name(s) of the User (e.g. " +
+  @Attribute(description = "The middle name(s) of the User (e.g. " +
       "Robert given the full name Ms. Barbara J Jensen, III.).",
       isRequired = false,
       isCaseExact = false,
@@ -64,7 +64,7 @@ public class Name
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String middleName;
 
-  @SchemaProperty(description = "The honorific prefix(es) of the User, or " +
+  @Attribute(description = "The honorific prefix(es) of the User, or " +
       "Title in most Western languages (e.g., Ms. given the full name " +
       "Ms. Barbara J Jensen, III.).",
       isRequired = false,
@@ -74,7 +74,7 @@ public class Name
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String honorificPrefix;
 
-  @SchemaProperty(description = "The honorific suffix(es) of the User, or " +
+  @Attribute(description = "The honorific suffix(es) of the User, or " +
       "Suffix in most Western languages (e.g., III. given the full name " +
       "Ms. Barbara J Jensen, III.)",
       isRequired = false,

@@ -19,7 +19,7 @@ package com.unboundid.scim2.common.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URI;
 
@@ -29,7 +29,7 @@ import java.net.URI;
  */
 public class Manager
 {
-  @SchemaProperty(description = "The id of the SCIM resource representing " +
+  @Attribute(description = "The id of the SCIM resource representing " +
       "the User's manager.",
       isRequired = true,
       isCaseExact = false,
@@ -38,7 +38,7 @@ public class Manager
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
-  @SchemaProperty(description = "The URI of the SCIM resource representing " +
+  @Attribute(description = "The URI of the SCIM resource representing " +
       "the User's manager.",
       isRequired = true,
       isCaseExact = false,
@@ -49,7 +49,7 @@ public class Manager
   @JsonProperty("$ref")
   private URI ref;
 
-  @SchemaProperty(description = "The displayName of the User's manager.",
+  @Attribute(description = "The displayName of the User's manager.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,

@@ -19,7 +19,7 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -333,7 +333,7 @@ public class AttributeDefinition
 
   }
 
-  @SchemaProperty(description = "The attribute's name.",
+  @Attribute(description = "The attribute's name.",
       isRequired = true,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -341,7 +341,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final String name;
 
-  @SchemaProperty(description = "The attribute's data type.",
+  @Attribute(description = "The attribute's data type.",
       isRequired = true,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -349,7 +349,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final String type;
 
-  @SchemaProperty(description = "When an attribute is of type \"complex\", " +
+  @Attribute(description = "When an attribute is of type \"complex\", " +
       "\"subAttributes\" defines set of sub-attributes.",
       isRequired = false,
       isCaseExact = false,
@@ -358,7 +358,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final Collection<AttributeDefinition> subAttributes;
 
-  @SchemaProperty(description = "Boolean value indicating the attribute's " +
+  @Attribute(description = "Boolean value indicating the attribute's " +
       "plurality.",
       isRequired = true,
       isCaseExact = false,
@@ -367,7 +367,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final boolean multiValued;
 
-  @SchemaProperty(description = "The attribute's human readable description.",
+  @Attribute(description = "The attribute's human readable description.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -375,7 +375,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final String description;
 
-  @SchemaProperty(description = "A Boolean value that specifies if the " +
+  @Attribute(description = "A Boolean value that specifies if the " +
       "attribute is required.",
       isRequired = true,
       isCaseExact = false,
@@ -384,7 +384,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final boolean required;
 
-  @SchemaProperty(description = "A collection of suggested canonical values " +
+  @Attribute(description = "A collection of suggested canonical values " +
       "that MAY be used.",
       isRequired = false,
       isCaseExact = false,
@@ -394,7 +394,7 @@ public class AttributeDefinition
       multiValueClass = String.class)
   private final Collection<String> canonicalValues;
 
-  @SchemaProperty(description = "A Boolean value that specifies if the " +
+  @Attribute(description = "A Boolean value that specifies if the " +
       "String attribute is case sensitive.",
       isRequired = false,
       isCaseExact = false,
@@ -403,7 +403,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final boolean caseExact;
 
-  @SchemaProperty(description = "A single keyword indicating the " +
+  @Attribute(description = "A single keyword indicating the " +
       "circumstances under which the value of the attribute can be " +
       "(re)defined.",
       isRequired = true,
@@ -413,7 +413,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final String mutability;
 
-  @SchemaProperty(description = "A single keyword that indicates when an " +
+  @Attribute(description = "A single keyword that indicates when an " +
       "attribute and associated values are returned in response to a GET " +
       "request or in response to a PUT, POST, or PATCH request.",
       isRequired = true,
@@ -423,7 +423,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final String returned;
 
-  @SchemaProperty(description = "A single keyword value that specifies how " +
+  @Attribute(description = "A single keyword value that specifies how " +
       "the service provider enforces uniqueness of attribute values.",
       isRequired = false,
       isCaseExact = false,
@@ -432,13 +432,14 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final String uniqueness;
 
-  @SchemaProperty(description = "A multi-valued array of JSON strings that " +
+  @Attribute(description = "A multi-valued array of JSON strings that " +
       "indicate the SCIM resource types that may be referenced.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
-      uniqueness = AttributeDefinition.Uniqueness.NONE)
+      uniqueness = AttributeDefinition.Uniqueness.NONE,
+      multiValueClass = String.class)
   private final Collection<String> referenceTypes;
 
   /**

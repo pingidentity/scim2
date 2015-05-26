@@ -17,55 +17,55 @@
 
 package com.unboundid.scim2.common.schema.testobjects;
 
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.AttributeDefinition;
 
 /**
  * Test class.
  */
-@SchemaInfo(id="urn:id:TestObject1",
+@Schema(id="urn:id:TestObject1",
     description = "description:TestObject1", name = "name:TestObject1")
 public class TestObject2 extends BaseScimResource
 {
-  @SchemaProperty(description = "description:stringField",
+  @Attribute(description = "description:stringField",
       isCaseExact = true, isRequired = true)
   private String stringField;
 
-  @SchemaProperty(description = "description:booleanObjectField",
+  @Attribute(description = "description:booleanObjectField",
       isCaseExact = true, isRequired = false,
       returned = AttributeDefinition.Returned.REQUEST)
   private Boolean booleanObjectField;
 
-  @SchemaProperty(description = "description:booleanField",
+  @Attribute(description = "description:booleanField",
       isCaseExact = false, isRequired = false,
       returned = AttributeDefinition.Returned.NEVER)
   private boolean booleanField;
 
-  @SchemaProperty(description = "description:integerObjectField",
+  @Attribute(description = "description:integerObjectField",
       isCaseExact = false, isRequired = true,
       returned = AttributeDefinition.Returned.DEFAULT)
   private Integer integerObjectField;
 
-  @SchemaProperty(description = "description:integerField",
+  @Attribute(description = "description:integerField",
       isCaseExact = true, isRequired = true,
       returned = AttributeDefinition.Returned.ALWAYS)
   private int integerField;
 
-  @SchemaProperty(description = "description:mutabilityImmutable",
+  @Attribute(description = "description:mutabilityImmutable",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private String mutabilityImmutable;
 
-  @SchemaProperty(description = "description:mutabilityReadWrite",
+  @Attribute(description = "description:mutabilityReadWrite",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private String mutabilityReadWrite;
 
-  @SchemaProperty(description = "description:mutabilityWriteOnly",
+  @Attribute(description = "description:mutabilityWriteOnly",
       mutability = AttributeDefinition.Mutability.WRITE_ONLY)
   private String mutabilityWriteOnly;
 
-  @SchemaProperty(description = "description:mutabilityReadOnly",
+  @Attribute(description = "description:mutabilityReadOnly",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String mutabilityReadOnly;
 

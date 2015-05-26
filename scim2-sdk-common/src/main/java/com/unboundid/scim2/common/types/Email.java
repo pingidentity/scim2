@@ -18,14 +18,14 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 /**
  * E-mail address for the user.
  */
 public class Email
 {
-  @SchemaProperty(description = "E-mail addresses for the user. The value\n" +
+  @Attribute(description = "E-mail addresses for the user. The value\n" +
       "SHOULD be canonicalized by the Service Provider, e.g.\n" +
       "bjensen@example.com instead of bjensen@EXAMPLE.COM. Canonical Type\n" +
       "values of work, home, and other.",
@@ -36,7 +36,7 @@ public class Email
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
-  @SchemaProperty(description = "A human readable name, primarily used for " +
+  @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
       isCaseExact = false,
@@ -45,7 +45,7 @@ public class Email
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
-  @SchemaProperty(description = "A label indicating the attribute's " +
+  @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'work' or 'home'.",
       isRequired = false,
       isCaseExact = false,
@@ -55,7 +55,7 @@ public class Email
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
-  @SchemaProperty(description = "A Boolean value indicating the 'primary' " +
+  @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute, e.g., the " +
       "preferred mailing address or primary e-mail address. The primary " +
       "attribute value 'true' MUST appear no more than once.",

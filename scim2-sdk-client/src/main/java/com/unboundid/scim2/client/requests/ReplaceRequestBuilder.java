@@ -1,0 +1,99 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License (GPLv2 only)
+ * or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see <http://www.gnu.org/licenses>.
+ */
+
+package com.unboundid.scim2.client.requests;
+
+import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.exceptions.ScimException;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+
+import static com.unboundid.scim2.client.ScimService.MEDIA_TYPE_SCIM_TYPE;
+
+/**
+ * A builder for SCIM replace requests.
+ */
+public final class ReplaceRequestBuilder<T extends ScimResource>
+    extends ResourceReturningRequestBuilder<ReplaceRequestBuilder<T>>
+{
+  private final T resource;
+  private String version;
+
+  /**
+   * Create a new replace request builder.
+   *
+   * @param target The WebTarget to PUT.
+   * @param resource The SCIM resource to replace.
+   */
+  public ReplaceRequestBuilder(final WebTarget target, final T resource)
+  {
+    super(target);
+    this.resource = resource;
+  }
+
+  /**
+   * Replace the resource only if the resource has not been modified from the
+   * resource provided.
+   *
+   * @return This builder.
+   */
+  public ReplaceRequestBuilder<T> ifMatch()
+  {
+    version = getResourceVersion(resource);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  Invocation.Builder buildRequest()
+  {
+    Invocation.Builder request = super.buildRequest();
+    if(version != null)
+    {
+      request.header(HttpHeaders.IF_MATCH, version);
+    }
+    return request;
+  }
+
+  /**
+   * Invoke the SCIM replace request.
+   *
+   * @return The successfully replaced SCIM resource.
+   * @throws ScimException If an error occurred.
+   */
+  @SuppressWarnings("unchecked")
+  public T invoke() throws ScimException
+  {
+    Response response = buildRequest().put(
+        Entity.entity(resource, MEDIA_TYPE_SCIM_TYPE));
+    if(response.getStatusInfo().getFamily() ==
+        Response.Status.Family.SUCCESSFUL)
+    {
+      return (T) response.readEntity(resource.getClass());
+    }
+    else
+    {
+      throw toScimException(response);
+    }
+  }
+}

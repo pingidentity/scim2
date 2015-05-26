@@ -17,31 +17,31 @@
 
 package com.unboundid.scim2.common.schema.testobjects;
 
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.ScimMultiValuedObject;
 
 import java.util.List;
 
-@SchemaInfo(id="urn:com.unboundid:schemas:TestObject3",
+@Schema(id="urn:com.unboundid:schemas:TestObject3",
     description = "description:TestObject3", name = "TestObject3")
 public class TestObject3 extends BaseScimResource
 {
-  @SchemaProperty(description = "description:complexObject")
+  @Attribute(description = "description:complexObject")
   private TestObject3_a complexObject;
 
-  @SchemaProperty(description = "description:multiValuedString",
+  @Attribute(description = "description:multiValuedString",
       multiValueClass = TestObject3_b.class,
       canonicalValues = {"one", "two", "three"})
   private List<ScimMultiValuedObject<String>> multiValuedString;
 
-  @SchemaProperty(description = "description:multiValuedComplex",
+  @Attribute(description = "description:multiValuedComplex",
       multiValueClass = TestObject3_c.class,
       canonicalValues = {"a", "b", "c"})
   private List<TestObject3_c> multiValuedComplex;
 
-  @SchemaProperty(description = "description:multiValuedField_missingType",
+  @Attribute(description = "description:multiValuedField_missingType",
       multiValueClass = TestObject3_d.class,
       canonicalValues = {"one", "two", "three"})
   private List<TestObject3_d> multiValuedField_missingType;

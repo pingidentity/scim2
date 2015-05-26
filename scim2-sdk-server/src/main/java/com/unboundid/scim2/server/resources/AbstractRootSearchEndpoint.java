@@ -30,8 +30,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import java.util.Arrays;
-
 import static com.unboundid.scim2.server.ApiConstants.*;
 
 /**
@@ -93,32 +91,16 @@ public abstract class AbstractRootSearchEndpoint
       @QueryParam(QUERY_PARAMETER_SORT_BY)
       final String sortBy,
       @QueryParam(QUERY_PARAMETER_SORT_ORDER)
-      final String sortOrder,
+      final SortOrder sortOrder,
       @QueryParam(QUERY_PARAMETER_PAGE_START_INDEX)
       final Integer pageStartIndex,
       @QueryParam(QUERY_PARAMETER_PAGE_SIZE)
       final Integer pageSize)
       throws ScimException
   {
-    final SearchRequest searchRequest = new SearchRequest();
-    if(attributes != null)
-    {
-      searchRequest.setAttributes(Arrays.asList(attributes.split(",")));
-    }
-    if(excludedAttributes != null)
-    {
-      searchRequest.setExcludedAttributes(
-          Arrays.asList(excludedAttributes.split(",")));
-    }
-    searchRequest.setFilter(filterString);
-    searchRequest.setSortBy(sortBy);
-    if(sortOrder != null)
-    {
-      searchRequest.setSortOrder(SortOrder.valueOf(sortOrder));
-    }
-    searchRequest.setStartIndex(pageStartIndex);
-    searchRequest.setCount(pageSize);
-
+    final SearchRequest searchRequest = new SearchRequest(
+        attributes, excludedAttributes, filterString, sortBy,
+        sortOrder, pageStartIndex, pageSize);
     return search(searchRequest);
   }
 

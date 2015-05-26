@@ -44,8 +44,12 @@ import static com.unboundid.scim2.server.ApiConstants.QUERY_PARAMETER_FILTER;
  * An abstract JAX-RS resource class for servicing the Schemas
  * endpoint.
  */
+@ResourceType(
+    description = "SCIM 2.0 Schema",
+    name = "Schema",
+    schema = SchemaResource.class)
 @Path("Schemas")
-public class SchemasEndpoint
+public class SchemasEndpoint extends AbstractEndpoint
 {
   @Context
   private Application application;
@@ -61,7 +65,7 @@ public class SchemasEndpoint
    */
   @GET
   @Produces(MEDIA_TYPE_SCIM)
-  public ListResponse<SchemaResource> getSchemas(
+  public ListResponse<SchemaResource> search(
       @QueryParam(QUERY_PARAMETER_FILTER) final String filterString)
       throws ScimException
   {
@@ -70,7 +74,12 @@ public class SchemasEndpoint
       throw new ForbiddenException("Filtering not allowed");
     }
 
-    return new ListResponse<SchemaResource>(getSchemas());
+    Set<SchemaResource> schemas = getSchemas();
+    for(SchemaResource schema : schemas)
+    {
+      setResourceTypeAndLocation(schema);
+    }
+    return new ListResponse<SchemaResource>(schemas);
   }
 
   /**
@@ -83,7 +92,7 @@ public class SchemasEndpoint
   @Path("{id}")
   @GET
   @Produces(MEDIA_TYPE_SCIM)
-  public SchemaResource getSchema(@PathParam("id") final String id)
+  public SchemaResource get(@PathParam("id") final String id)
       throws ScimException
   {
     for(SchemaResource schema : getSchemas())
@@ -92,6 +101,7 @@ public class SchemasEndpoint
           schema.getName() : schema.getId();
       if (idOrName.equalsIgnoreCase(id))
       {
+        setResourceTypeAndLocation(schema);
         return schema;
       }
     }
@@ -113,11 +123,22 @@ public class SchemasEndpoint
         new HashSet<SchemaResource>();
     for(Class<?> resourceClass : application.getClasses())
     {
-      getSchemas(resourceClass, schemas);
+      if(!ResourceTypesEndpoint.class.isAssignableFrom(resourceClass) &&
+          !SchemasEndpoint.class.isAssignableFrom(resourceClass) &&
+          !AbstractServiceProviderConfigEndpoint.class.isAssignableFrom(
+              resourceClass))
+      {
+        getSchemas(resourceClass, schemas);
+      }
     }
-    for(Object resourceSingleton : application.getSingletons())
+    for(Object resourceInstance : application.getSingletons())
     {
-      getSchemas(resourceSingleton.getClass(), schemas);
+      if(!(resourceInstance instanceof ResourceTypesEndpoint) &&
+          !(resourceInstance instanceof SchemasEndpoint) &&
+          !(resourceInstance instanceof AbstractServiceProviderConfigEndpoint))
+      {
+        getSchemas(resourceInstance.getClass(), schemas);
+      }
     }
 
     return schemas;

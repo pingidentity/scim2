@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  */
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface SchemaInfo
+public @interface Schema
 {
   /**
    * The id for the object.  This is the complete urn.

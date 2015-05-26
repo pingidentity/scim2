@@ -18,7 +18,7 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URI;
 
@@ -34,7 +34,7 @@ public class ScimMultiValuedObject<T>
    * A string describing the type of this attribute's value.  This should
    * probably be one of the SCIM datatypes.
    */
-  @SchemaProperty(
+  @Attribute(
       description = "The type for this multi-valued attribute's value.")
   String type;
 
@@ -43,28 +43,28 @@ public class ScimMultiValuedObject<T>
    * multi-valued object.  Only one of the attribute values in a list
    * should have this boolean set to true.
    */
-  @SchemaProperty(description =
+  @Attribute(description =
       "Boolean to indicate if this is the primary value.")
   boolean primary;
 
   /**
    * The display name for this value.  For example:  "Work phone number".
    */
-  @SchemaProperty(description = "The display name of the sub attribute.",
+  @Attribute(description = "The display name of the sub attribute.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   String display;
 
   /**
    * The actual value of this occurrence of a multi-valued attribute.
    */
-  @SchemaProperty(description = "The actual value of the sub attribute.")
+  @Attribute(description = "The actual value of the sub attribute.")
   T value;
 
   /**
    * The URI of the value if it is a reference.  If the value is not a
    * reference, this should not be set.
    */
-  @SchemaProperty(description = "The URI of the value if it is a reference.")
+  @Attribute(description = "The URI of the value if it is a reference.")
   @JsonProperty("$ref")
   URI ref;
 

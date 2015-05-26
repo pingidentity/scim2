@@ -19,8 +19,8 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,23 +29,24 @@ import java.util.Collections;
 /**
  * This represents a SCIM schema.
  */
-@SchemaInfo(id="urn:ietf:params:scim:schemas:core:2.0:Schema",
+@Schema(id="urn:ietf:params:scim:schemas:core:2.0:Schema",
     name="Schema", description = "SCIM 2.0 Schema Resource")
 public class SchemaResource extends BaseScimResource
 {
-  @SchemaProperty(description =
+  @Attribute(description =
       "The schema's human readable name.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String name;
 
-  @SchemaProperty(description =
+  @Attribute(description =
       "The schema's human readable description.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
-  @SchemaProperty(description =
+  @Attribute(description =
       "Attributes of the object described by this schema.",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      multiValueClass = AttributeDefinition.class)
   private final Collection<AttributeDefinition> attributes;
 
   /**

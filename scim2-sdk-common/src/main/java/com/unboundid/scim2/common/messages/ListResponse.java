@@ -19,8 +19,8 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
 
 import java.util.ArrayList;
@@ -34,28 +34,28 @@ import java.util.List;
  *
  * @param <T> The type of the returned resources.
  */
-@SchemaInfo(id="urn:ietf:params:scim:api:messages:2.0:ListResponse",
+@Schema(id="urn:ietf:params:scim:api:messages:2.0:ListResponse",
     name="List Response", description = "SCIM 2.0 List Response")
 public final class ListResponse<T> extends BaseScimResource
     implements Iterable<T>
 {
-  @SchemaProperty(description = "The total number of results returned by the " +
+  @Attribute(description = "The total number of results returned by the " +
       "list or query operation")
   @JsonProperty(value = "totalResults", required = true)
   private final int totalResults;
 
 
-  @SchemaProperty(description = "A multi-valued list of complex objects " +
+  @Attribute(description = "A multi-valued list of complex objects " +
       "containing the requested resources")
   @JsonProperty(value = "Resources", required = true)
   private final List<T> resources;
 
-  @SchemaProperty(description = "The 1-based index of hte first result in " +
+  @Attribute(description = "The 1-based index of hte first result in " +
       "the current set of list results")
   @JsonProperty("startIndex")
   private final Integer startIndex;
 
-  @SchemaProperty(description = "The number of resources returned in a list " +
+  @Attribute(description = "The number of resources returned in a list " +
       "response page")
   @JsonProperty("itemsPerPage")
   private final Integer itemsPerPage;
@@ -72,7 +72,7 @@ public final class ListResponse<T> extends BaseScimResource
    *                     page.
    */
   @JsonCreator
-  private ListResponse(@JsonProperty(value="totalResults", required = true)
+  public ListResponse(@JsonProperty(value="totalResults", required = true)
                       final int totalResults,
                       @JsonProperty(value = "Resources", required = true)
                       final List<T> resources,
@@ -99,26 +99,6 @@ public final class ListResponse<T> extends BaseScimResource
     this.resources = new ArrayList<T>(resources);
     this.startIndex = null;
     this.itemsPerPage = null;
-  }
-
-  /**
-   * Create a new List Response.
-   *
-   * @param totalResults The total number of results returned.
-   * @param resources A multi-valued list of complex objects containing the
-   *                  requested resources
-   * @param startIndex The 1-based index of hte first result in the current
-   *                   set of list results
-   * @param itemsPerPage The number of resources returned in a list response
-   *                     page.
-   */
-  public ListResponse(final int totalResults,
-                      final List<T> resources,
-                      final int startIndex,
-                      final int itemsPerPage)
-  {
-    this(totalResults, resources, new Integer(startIndex),
-        new Integer(itemsPerPage));
   }
 
   /**

@@ -19,8 +19,8 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URL;
 import java.util.Collections;
@@ -38,7 +38,7 @@ import java.util.List;
  * resources, the "id" attribute is not required for the Service
  * Provider configuration resource.
  **/
-@SchemaInfo(id="urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig",
+@Schema(id="urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig",
     name="Service Provider Config",
     description = "SCIM 2.0 Service Provider Config Resource")
 public class ServiceProviderConfigResource extends BaseScimResource
@@ -48,7 +48,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    */
   public static class Patch
   {
-    @SchemaProperty(description = "Boolean value specifying whether the " +
+    @Attribute(description = "Boolean value specifying whether the " +
         "operation is supported.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
@@ -118,19 +118,19 @@ public class ServiceProviderConfigResource extends BaseScimResource
    */
   public static class Bulk
   {
-    @SchemaProperty(description = "Boolean value specifying whether the " +
+    @Attribute(description = "Boolean value specifying whether the " +
         "operation is supported.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
     private final boolean supported;
 
-    @SchemaProperty(description = "An integer value specifying the maximum " +
+    @Attribute(description = "An integer value specifying the maximum " +
         "number of operations.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
     private final int maxOperations;
 
-    @SchemaProperty(description = "An integer value specifying the maximum " +
+    @Attribute(description = "An integer value specifying the maximum " +
         "payload size in bytes.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
@@ -242,13 +242,13 @@ public class ServiceProviderConfigResource extends BaseScimResource
    */
   public static class Filter
   {
-    @SchemaProperty(description = "Boolean value specifying whether the " +
+    @Attribute(description = "Boolean value specifying whether the " +
         "operation is supported.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
     private final boolean supported;
 
-    @SchemaProperty(description = "Integer value specifying the maximum " +
+    @Attribute(description = "Integer value specifying the maximum " +
         "number of resources returned in a response.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
@@ -341,7 +341,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    */
   public static class ChangePassword
   {
-    @SchemaProperty(description = "Boolean value specifying whether the " +
+    @Attribute(description = "Boolean value specifying whether the " +
         "operation is supported.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
@@ -413,7 +413,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    */
   public static class Sort
   {
-    @SchemaProperty(description = "Boolean value specifying whether the " +
+    @Attribute(description = "Boolean value specifying whether the " +
         "operation is supported.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
@@ -484,7 +484,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    */
   public static class ETag
   {
-    @SchemaProperty(description = "Boolean value specifying whether the " +
+    @Attribute(description = "Boolean value specifying whether the " +
         "operation is supported.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
@@ -555,28 +555,28 @@ public class ServiceProviderConfigResource extends BaseScimResource
    */
   public static class AuthenticationScheme
   {
-    @SchemaProperty(description = "The common authentication scheme name; " +
+    @Attribute(description = "The common authentication scheme name; " +
         "e.g., HTTP Basic.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
     private final String name;
 
-    @SchemaProperty(description = "A description of the Authentication Scheme.",
+    @Attribute(description = "A description of the Authentication Scheme.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
     private final String description;
 
-    @SchemaProperty(description = "An HTTP addressable URL pointing to the " +
+    @Attribute(description = "An HTTP addressable URL pointing to the " +
         "Authentication Scheme's specification.",
         mutability = AttributeDefinition.Mutability.READ_ONLY)
     private final URL specUrl;
 
-    @SchemaProperty(description = "An HTTP addressable URL pointing to the " +
+    @Attribute(description = "An HTTP addressable URL pointing to the " +
         "Authentication Scheme's usage documentation.",
         mutability = AttributeDefinition.Mutability.READ_ONLY)
     private final URL documentationUrl;
 
-    @SchemaProperty(description = "A label indicating the authentication " +
+    @Attribute(description = "A label indicating the authentication " +
         "scheme type; e.g., \"oauth\" or \"oauth2\".",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true,
@@ -584,7 +584,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
             "httpdigest" } )
     private final String type;
 
-    @SchemaProperty(description = "A Boolean value indicating whether this " +
+    @Attribute(description = "A Boolean value indicating whether this " +
         "authentication scheme is preferred.",
         mutability = AttributeDefinition.Mutability.READ_ONLY,
         isRequired = true)
@@ -754,47 +754,47 @@ public class ServiceProviderConfigResource extends BaseScimResource
     }
   }
 
-  @SchemaProperty(description = "An HTTP addressable URL pointing to the " +
+  @Attribute(description = "An HTTP addressable URL pointing to the " +
       "service provider's human consumable help documentation.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String documentationUrl;
 
-  @SchemaProperty(description = "A complex type that specifies PATCH " +
+  @Attribute(description = "A complex type that specifies PATCH " +
       "configuration options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final Patch patch;
 
-  @SchemaProperty(description = "A complex type that specifies Bulk " +
+  @Attribute(description = "A complex type that specifies Bulk " +
       "configuration options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final Bulk bulk;
 
-  @SchemaProperty(description = "A complex type that specifies FILTER options.",
+  @Attribute(description = "A complex type that specifies FILTER options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final Filter filter;
 
-  @SchemaProperty(description = "A complex type that specifies Change " +
+  @Attribute(description = "A complex type that specifies Change " +
       "Password configuration options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final ChangePassword changePassword;
 
-  @SchemaProperty(description = "A complex type that specifies Sort " +
+  @Attribute(description = "A complex type that specifies Sort " +
       "configuration options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final Sort sort;
 
-  @SchemaProperty(description = "A complex type that specifies Etag " +
+  @Attribute(description = "A complex type that specifies Etag " +
       "configuration options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final ETag etag;
 
-  @SchemaProperty(description = "A complex type that specifies supported " +
+  @Attribute(description = "A complex type that specifies supported " +
       "Authentication Scheme properties.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)

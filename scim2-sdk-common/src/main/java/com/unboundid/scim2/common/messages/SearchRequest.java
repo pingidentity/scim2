@@ -17,56 +17,150 @@
 
 package com.unboundid.scim2.common.messages;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Class representing a SCIM 2.0 search request.
  */
-@SchemaInfo(id="urn:ietf:params:scim:api:messages:2.0:SearchRequest",
+@Schema(id="urn:ietf:params:scim:api:messages:2.0:SearchRequest",
     name="Search Operation", description = "SCIM 2.0 Search Request")
 public final class SearchRequest extends BaseScimResource
 {
-  @SchemaProperty(description = "A multi-valued list of strings indicating " +
+  private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
+
+  @Attribute(description = "A multi-valued list of strings indicating " +
       "the names of resource attributes to return in the response overriding " +
       "the set of attributes that would be returned by default")
   @JsonProperty
-  private List<String> attributes;
+  private final List<String> attributes;
 
-  @SchemaProperty(description = "A mulit-valued list of strings indicating " +
+  @Attribute(description = "A mulit-valued list of strings indicating " +
       "the names of resource attributes to be removed from the default set " +
       "of attributes to return")
   @JsonProperty
-  private List<String> excludedAttributes;
+  private final List<String> excludedAttributes;
 
-  @SchemaProperty(description = "The filter string used to request a subset " +
+  @Attribute(description = "The filter string used to request a subset " +
       "of resources")
   @JsonProperty
-  private String filter;
+  private final String filter;
 
-  @SchemaProperty(description = "A string indicating the attribute whose " +
+  @Attribute(description = "A string indicating the attribute whose " +
       "value shall be used to order the returned responses")
   @JsonProperty
-  private String sortBy;
+  private final String sortBy;
 
-  @SchemaProperty(description = "A string indicating the order in which the " +
+  @Attribute(description = "A string indicating the order in which the " +
       "sortBy parameter is applied")
   @JsonProperty
-  private SortOrder sortOrder;
+  private final SortOrder sortOrder;
 
-  @SchemaProperty(description = "An integer indicating the 1-based index of " +
+  @Attribute(description = "An integer indicating the 1-based index of " +
       "the first query result")
   @JsonProperty
-  private Integer startIndex;
+  private final Integer startIndex;
 
-  @SchemaProperty(description = "An integer indicating the desired maximum " +
+  @Attribute(description = "An integer indicating the desired maximum " +
       "number of query results per page")
   @JsonProperty
-  private Integer count;
+  private final Integer count;
+
+  /**
+   * Create a new SearchRequest.
+   *
+   * @param attributes the list of strings indicating the names of resource
+   *                   attributes to return in the response overriding the set
+   *                   of attributes that would be returned by default.
+   * @param excludedAttributes the list of strings indicating the names of
+   *                           resource attributes to be removed from the
+   *                           default set of attributes to return.
+   * @param filter the filter string used to request a subset of resources.
+   * @param sortBy the string indicating the attribute whose value shall be used
+   *               to order the returned responses.
+   * @param sortOrder the order in which the sortBy parameter is applied.
+   * @param startIndex the 1-based index of the first query result.
+   * @param count the desired maximum number of query results per page.
+   */
+  @JsonCreator
+  public SearchRequest(@JsonProperty("attributes")
+                       final List<String> attributes,
+                       @JsonProperty("excludedAttributes")
+                       final List<String> excludedAttributes,
+                       @JsonProperty("filter")
+                       final String filter,
+                       @JsonProperty("sortBy")
+                       final String sortBy,
+                       @JsonProperty("sortOrder")
+                       final SortOrder sortOrder,
+                       @JsonProperty("startIndex")
+                       final Integer startIndex,
+                       @JsonProperty("count")
+                       final Integer count)
+  {
+    this.attributes = attributes;
+    this.excludedAttributes = excludedAttributes;
+    this.filter = filter;
+    this.sortBy = sortBy;
+    this.sortOrder = sortOrder;
+    this.startIndex = startIndex;
+    this.count = count;
+  }
+
+  /**
+   * Create a new SearchRequest.
+   *
+   * @param attributes the comma separated string indicating the names of
+   *                   resource attributes to return in the response overriding
+   *                   the set of attributes that would be returned by default.
+   * @param excludedAttributes the comma separated string indicating the names
+   *                           of resource attributes to be removed from the
+   *                           default set of attributes to return.
+   * @param filter the filter string used to request a subset of resources.
+   * @param sortBy the string indicating the attribute whose value shall be used
+   *               to order the returned responses.
+   * @param sortOrder the order in which the sortBy parameter is applied.
+   * @param startIndex the 1-based index of the first query result.
+   * @param count the desired maximum number of query results per page.
+   */
+  public SearchRequest(final String attributes,
+                       final String excludedAttributes,
+                       final String filter,
+                       final String sortBy,
+                       final SortOrder sortOrder,
+                       final Integer startIndex,
+                       final Integer count)
+  {
+    if(attributes != null)
+    {
+      this.attributes = Arrays.asList(SEPARATOR.split(attributes.trim()));
+    }
+    else
+    {
+      this.attributes = null;
+    }
+    if(excludedAttributes != null)
+    {
+      this.excludedAttributes = Arrays.asList(
+          SEPARATOR.split(excludedAttributes.trim()));
+    }
+    else
+    {
+      this.excludedAttributes = null;
+    }
+    this.filter = filter;
+    this.sortBy = sortBy;
+    this.sortOrder = sortOrder;
+    this.startIndex = startIndex;
+    this.count = count;
+  }
 
   /**
    * Retrieves the list of strings indicating the names of resource attributes
@@ -82,21 +176,6 @@ public final class SearchRequest extends BaseScimResource
   }
 
   /**
-   * Sets the list of strings indicating the names of resource attributes
-   * to return in the response overriding the set of attributes that would be
-   * returned by default.
-   *
-   * @param attributes The list of strings indicating the names of resource
-   *                   attributes to return.
-   * @return This search request.
-   */
-  public SearchRequest setAttributes(final List<String> attributes)
-  {
-    this.attributes = attributes;
-    return this;
-  }
-
-  /**
    * Retrieves the list of strings indicating the names of resource attributes
    * to be removed from the default set of attributes to return.
    *
@@ -109,21 +188,6 @@ public final class SearchRequest extends BaseScimResource
   }
 
   /**
-   * Sets the list of strings indicating the names of resource attributes
-   * to be removed from the default set of attributes to return.
-   *
-   * @param excludedAttributes The list of strings indicating the names of
-   *                           resource attributes to be removed.
-   * @return This search request.
-   */
-  public SearchRequest setExcludedAttributes(
-      final List<String> excludedAttributes)
-  {
-    this.excludedAttributes = excludedAttributes;
-    return this;
-  }
-
-  /**
    * Retrieves the filter string used to request a subset of resources.
    *
    * @return The filter string used to request a subset of resources.
@@ -131,18 +195,6 @@ public final class SearchRequest extends BaseScimResource
   public String getFilter()
   {
     return filter;
-  }
-
-  /**
-   * Sets the filter string used to request a subset of resources.
-   *
-   * @param filter The filter string used to request a subset of resources.
-   * @return This search request.
-   */
-  public SearchRequest setFilter(final String filter)
-  {
-    this.filter = filter;
-    return this;
   }
 
   /**
@@ -158,21 +210,6 @@ public final class SearchRequest extends BaseScimResource
   }
 
   /**
-   * Sets the string indicating the attribute whose value shall be used to
-   * order the returned responses.
-   *
-   * @param sortBy the string indicating the attribute whose value shall be used
-   *               to order the returned responses.
-   *
-   * @return This search request.
-   */
-  public SearchRequest setSortBy(final String sortBy)
-  {
-    this.sortBy = sortBy;
-    return this;
-  }
-
-  /**
    * Retrieves the order in which the sortBy parameter is applied.
    *
    * @return the order in which the sortBy parameter is applied or {@code null}
@@ -181,19 +218,6 @@ public final class SearchRequest extends BaseScimResource
   public SortOrder getSortOrder()
   {
     return sortOrder;
-  }
-
-  /**
-   * Sets the order in which the sortBy parameter is applied.
-   *
-   * @param sortOrder the order in which the sortBy parameter is applied.
-   *
-   * @return This search request.
-   */
-  public SearchRequest setSortOrder(final SortOrder sortOrder)
-  {
-    this.sortOrder = sortOrder;
-    return this;
   }
 
   /**
@@ -208,19 +232,6 @@ public final class SearchRequest extends BaseScimResource
   }
 
   /**
-   * Sets the 1-based index of the first query result.
-   *
-   * @param startIndex the 1-based index of the first query result.
-   *
-   * @return This search request.
-   */
-  public SearchRequest setStartIndex(final Integer startIndex)
-  {
-    this.startIndex = startIndex;
-    return this;
-  }
-
-  /**
    * Retrieves the desired maximum number of query results per page.
    *
    * @return the desired maximum number of query results per page or
@@ -229,19 +240,6 @@ public final class SearchRequest extends BaseScimResource
   public Integer getCount()
   {
     return count;
-  }
-
-  /**
-   * Sets the desired maximum number of query results per page.
-   *
-   * @param count the desired maximum number of query results per page.
-   *
-   * @return This search request.
-   */
-  public SearchRequest setCount(final Integer count)
-  {
-    this.count = count;
-    return this;
   }
 
   /**

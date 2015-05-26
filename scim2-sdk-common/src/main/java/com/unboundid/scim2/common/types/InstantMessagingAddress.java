@@ -18,14 +18,14 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 /**
  * Instant messaging address for the user.
  */
 public class InstantMessagingAddress
 {
-  @SchemaProperty(description = "Instant messaging address for the User.",
+  @Attribute(description = "Instant messaging address for the User.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -33,7 +33,7 @@ public class InstantMessagingAddress
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
-  @SchemaProperty(description = "A human readable name, primarily used for " +
+  @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
       isCaseExact = false,
@@ -42,7 +42,7 @@ public class InstantMessagingAddress
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
-  @SchemaProperty(description = "A label indicating the attribute's " +
+  @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'aim', 'gtalk', 'mobile' etc.",
       isRequired = false,
       isCaseExact = false,
@@ -53,7 +53,7 @@ public class InstantMessagingAddress
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
-  @SchemaProperty(description = "A Boolean value indicating the 'primary' " +
+  @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute, e.g., the " +
       "preferred messenger or primary messenger. The primary attribute " +
       "value 'true' MUST appear no more than once.",
