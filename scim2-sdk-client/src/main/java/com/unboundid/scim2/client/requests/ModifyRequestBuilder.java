@@ -121,15 +121,27 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     @SuppressWarnings("unchecked")
     public T invoke() throws ScimException
     {
+      return (T) invoke(resource.getClass());
+    }
+
+    /**
+     * Invoke the SCIM modify request.
+     *
+     * @param <C> The type of object to return.
+     * @param cls The Java class object used to determine the type to return.
+     * @return The successfully modified SCIM resource.
+     * @throws ScimException If an error occurred.
+     */
+    public <C> C invoke(final Class<C> cls) throws ScimException
+    {
       PatchRequest patchRequest = new PatchRequest(operations);
       Response response = buildRequest().method("PATCH",
           Entity.entity(patchRequest, MEDIA_TYPE_SCIM_TYPE));
-      if(response.getStatusInfo().getFamily() ==
+      if (response.getStatusInfo().getFamily() ==
           Response.Status.Family.SUCCESSFUL)
       {
-        return (T) response.readEntity(resource.getClass());
-      }
-      else
+        return response.readEntity(cls);
+      } else
       {
         throw toScimException(response);
       }

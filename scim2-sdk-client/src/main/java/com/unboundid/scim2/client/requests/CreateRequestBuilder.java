@@ -56,12 +56,25 @@ public final class CreateRequestBuilder<T extends ScimResource>
   @SuppressWarnings("unchecked")
   public T invoke() throws ScimException
   {
+    return (T) invoke(resource.getClass());
+  }
+
+  /**
+   * Invoke the SCIM create request.
+   *
+   * @param <C> The type of object to return.
+   * @param cls The Java class object used to determine the type to return.
+   * @return The successfully modified SCIM resource.
+   * @throws ScimException If an error occurred.
+   */
+  public <C> C invoke(final Class<C> cls) throws ScimException
+  {
     Response response = buildRequest().post(
         Entity.entity(resource, MEDIA_TYPE_SCIM_TYPE));
     if(response.getStatusInfo().getFamily() ==
         Response.Status.Family.SUCCESSFUL)
     {
-      return (T) response.readEntity(resource.getClass());
+      return response.readEntity(cls);
     }
     else
     {
