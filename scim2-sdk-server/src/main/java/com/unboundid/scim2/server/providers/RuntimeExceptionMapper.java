@@ -33,8 +33,8 @@ import javax.ws.rs.ext.Provider;
  * SCIM ErrorResponses.
  */
 @Provider
-public class WebApplicationExceptionMapper implements
-    ExceptionMapper<WebApplicationException>
+public class RuntimeExceptionMapper implements
+    ExceptionMapper<RuntimeException>
 {
   @Context
   private Request request;
@@ -42,7 +42,7 @@ public class WebApplicationExceptionMapper implements
   /**
    * {@inheritDoc}
    */
-  public Response toResponse(final WebApplicationException exception)
+  public Response toResponse(final RuntimeException exception)
   {
     ErrorResponse errorResponse;
 
@@ -52,9 +52,15 @@ public class WebApplicationExceptionMapper implements
       errorResponse = new ErrorResponse(501);
       errorResponse.setDetail(request.getMethod() + " not supported");
     }
+    else if(exception instanceof WebApplicationException)
+    {
+      errorResponse = new ErrorResponse(
+          ((WebApplicationException)exception).getResponse().getStatus());
+      errorResponse.setDetail(exception.getMessage());
+    }
     else
     {
-      errorResponse = new ErrorResponse(exception.getResponse().getStatus());
+      errorResponse = new ErrorResponse(500);
       errorResponse.setDetail(exception.getMessage());
     }
 

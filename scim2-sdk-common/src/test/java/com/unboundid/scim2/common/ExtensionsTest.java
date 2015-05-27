@@ -19,8 +19,8 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.Assert;
@@ -39,18 +39,18 @@ import java.util.Set;
 @Test
 public class ExtensionsTest
 {
-  @SchemaInfo(description = "Class to represent users",
+  @Schema(description = "Class to represent users",
       id = "urn:junit:CoreClass_User:Users",
     name = "Users")
   private static class CoreClass_User extends BaseScimResource
   {
-    @SchemaProperty(description = "A user's username")
+    @Attribute(description = "A user's username")
     private String userName;
 
-    @SchemaProperty(description = "The name of the user")
+    @Attribute(description = "The name of the user")
     private CoreClass_Name name;
 
-    @SchemaProperty(description = "The user's password",
+    @Attribute(description = "The user's password",
         mutability = AttributeDefinition.Mutability.WRITE_ONLY)
     private String password;
 
@@ -102,13 +102,13 @@ public class ExtensionsTest
 
   private static class CoreClass_Name
   {
-    @SchemaProperty(description = "User's first name")
+    @Attribute(description = "User's first name")
     public String first;
 
-    @SchemaProperty(description = "User's middle name")
+    @Attribute(description = "User's middle name")
     public String middle;
 
-    @SchemaProperty(description = "User's last name")
+    @Attribute(description = "User's last name")
     public String last;
 
     /**
@@ -166,12 +166,12 @@ public class ExtensionsTest
     }
   }
 
-  @SchemaInfo(description = "Class to represent a favorite color",
+  @Schema(description = "Class to represent a favorite color",
       id = "urn:unboundid:schemas:FavoriteColor",
       name = "FavoriteColor")
   private static class ExtensionClass
   {
-    @SchemaProperty(description = "Favorite color")
+    @Attribute(description = "Favorite color")
     private String favoriteColor;
 
     /**

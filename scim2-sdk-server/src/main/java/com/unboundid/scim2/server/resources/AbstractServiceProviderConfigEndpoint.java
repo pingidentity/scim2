@@ -19,6 +19,7 @@ package com.unboundid.scim2.server.resources;
 
 import com.unboundid.scim2.common.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.server.annotations.ResourceType;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,8 +31,13 @@ import static com.unboundid.scim2.server.ApiConstants.MEDIA_TYPE_SCIM;
  * An abstract JAX-RS resource class for servicing the Service Provider Config
  * endpoint.
  */
+@ResourceType(
+    description = "SCIM 2.0 Service Provider Config",
+    name = "ServiceProviderConfig",
+    schema = ServiceProviderConfigResource.class)
 @Path("ServiceProviderConfig")
 public abstract class AbstractServiceProviderConfigEndpoint
+    extends AbstractEndpoint
 {
   /**
    * Service request to retrieve the Service Provider Config.
@@ -41,6 +47,20 @@ public abstract class AbstractServiceProviderConfigEndpoint
    */
   @GET
   @Produces(MEDIA_TYPE_SCIM)
+  public ServiceProviderConfigResource get() throws ScimException
+  {
+    ServiceProviderConfigResource serviceProviderConfig =
+        getServiceProviderConfig();
+    setResourceTypeAndLocation(serviceProviderConfig);
+    return serviceProviderConfig;
+  }
+
+  /**
+   * Retrieve the current service provider config.
+   *
+   * @return The current service provider config.
+   * @throws ScimException if an error occurs.
+   */
   public abstract ServiceProviderConfigResource getServiceProviderConfig()
       throws ScimException;
 }

@@ -18,18 +18,18 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 /**
  * SCIM extension commonly used in representing users that belong to, or act
  * on behalf of a business or enterprise.
  */
-@SchemaInfo(id="urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
+@Schema(id="urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
     name="EnterpriseUser", description = "Enterprise User")
 public class EnterpriseUserExtension
 {
-  @SchemaProperty(description = "Numeric or alphanumeric identifier assigned " +
+  @Attribute(description = "Numeric or alphanumeric identifier assigned " +
       "to a person, typically based on order of hire or association with " +
       "an organization.",
       isRequired = false,
@@ -39,7 +39,7 @@ public class EnterpriseUserExtension
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String employeeNumber;
 
-  @SchemaProperty(description = "Identifies the name of a cost center.",
+  @Attribute(description = "Identifies the name of a cost center.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -47,7 +47,7 @@ public class EnterpriseUserExtension
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String costCenter;
 
-  @SchemaProperty(description = "Identifies the name of an organization.",
+  @Attribute(description = "Identifies the name of an organization.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -55,7 +55,7 @@ public class EnterpriseUserExtension
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String organization;
 
-  @SchemaProperty(description = "Identifies the name of a division.",
+  @Attribute(description = "Identifies the name of a division.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -63,7 +63,7 @@ public class EnterpriseUserExtension
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String division;
 
-  @SchemaProperty(description = "Identifies the name of a department.",
+  @Attribute(description = "Identifies the name of a department.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -71,7 +71,7 @@ public class EnterpriseUserExtension
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String department;
 
-  @SchemaProperty(description = "The User's manager.",
+  @Attribute(description = "The User's manager.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT)

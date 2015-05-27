@@ -18,7 +18,7 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.util.Arrays;
 
@@ -27,7 +27,7 @@ import java.util.Arrays;
  */
 public class X509Certificate
 {
-  @SchemaProperty(description = "The value of a X509 certificate.",
+  @Attribute(description = "The value of a X509 certificate.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -35,7 +35,7 @@ public class X509Certificate
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private byte[] value;
 
-  @SchemaProperty(description = "A human readable name, primarily used for " +
+  @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
       isCaseExact = false,
@@ -44,7 +44,7 @@ public class X509Certificate
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
-  @SchemaProperty(description = "A label indicating the attribute's " +
+  @Attribute(description = "A label indicating the attribute's " +
       "function.",
       isRequired = false,
       isCaseExact = false,
@@ -53,7 +53,7 @@ public class X509Certificate
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
-  @SchemaProperty(description = "A Boolean value indicating the 'primary' " +
+  @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute. The primary " +
       "attribute value 'true' MUST appear no more than once.",
       isRequired = false,

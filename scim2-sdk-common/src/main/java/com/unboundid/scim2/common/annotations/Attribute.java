@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
  */
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.FIELD)
-public @interface SchemaProperty
+public @interface Attribute
 {
   /**
    * Determines if the attribute value is case sensitive.

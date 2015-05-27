@@ -36,13 +36,6 @@ import java.io.IOException;
 @Path("/Users")
 public class TestResourceEndpoint extends AbstractResourceEndpoint<UserResource>
 {
-  private static UserResource USER;
-  static
-  {
-    USER = new UserResource().setUserName("test");
-    USER.setId("123");
-  }
-
   @Override
   public ListResponseStreamingOutput<UserResource> search(
       final SearchRequest searchRequest) throws ScimException
@@ -53,17 +46,23 @@ public class TestResourceEndpoint extends AbstractResourceEndpoint<UserResource>
       public void write(final ListResponseWriter<UserResource> os)
           throws IOException
       {
-        os.resource(USER);
+        UserResource resource = new UserResource().setUserName("test");
+        resource.setId("123");
+        setResourceTypeAndLocation(resource);
+        os.resource(resource);
       }
     };
   }
 
   @Override
-  public UserResource get(final String id) throws ScimException
+  public UserResource retrieve(final String id) throws ScimException
   {
-    if(id.equals(USER.getId()))
+    if(id.equals("123"))
     {
-      return USER;
+      UserResource resource = new UserResource().setUserName("test");
+      resource.setId("123");
+      setResourceTypeAndLocation(resource);
+      return resource;
     }
     return null;
   }

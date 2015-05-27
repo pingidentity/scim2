@@ -20,8 +20,8 @@ package com.unboundid.scim2.common.utils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.AttributeDefinition;
 import com.unboundid.scim2.common.SchemaResource;
 
@@ -112,11 +112,11 @@ public class SchemaUtils
 
       Field field = findField(cls, propertyDescriptor.getName());
 
-      SchemaProperty schemaProperty = null;
+      Attribute schemaProperty = null;
       if((field != null)
-          && (field.isAnnotationPresent(SchemaProperty.class)))
+          && (field.isAnnotationPresent(Attribute.class)))
       {
-        schemaProperty = field.getAnnotation(SchemaProperty.class);
+        schemaProperty = field.getAnnotation(Attribute.class);
       }
 
       // Only generate schema for annotated fields.
@@ -197,7 +197,7 @@ public class SchemaUtils
   private static AttributeDefinition.Builder addMultiValued(
       final AttributeDefinition.Builder attributeBuilder,
       final PropertyDescriptor propertyDescriptor,
-      final SchemaProperty schemaProperty)
+      final Attribute schemaProperty)
   {
     Class<?> multiValuedClass = schemaProperty.multiValueClass();
     boolean multiValued = !multiValuedClass.equals(NullType.class);
@@ -238,7 +238,7 @@ public class SchemaUtils
    */
   private static AttributeDefinition.Builder addDescription(
       final AttributeDefinition.Builder attributeBuilder,
-      final SchemaProperty schemaProperty)
+      final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -259,7 +259,7 @@ public class SchemaUtils
    */
   private static AttributeDefinition.Builder addCaseExact(
       final AttributeDefinition.Builder attributeBuilder,
-      final SchemaProperty schemaProperty)
+      final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -280,7 +280,7 @@ public class SchemaUtils
    */
   private static AttributeDefinition.Builder addRequired(
       final AttributeDefinition.Builder attributeBuilder,
-      final SchemaProperty schemaProperty)
+      final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -301,7 +301,7 @@ public class SchemaUtils
    */
   private static AttributeDefinition.Builder addCanonicalValues(
       final AttributeDefinition.Builder attributeBuilder,
-      final SchemaProperty schemaProperty)
+      final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -322,7 +322,7 @@ public class SchemaUtils
    */
   private static AttributeDefinition.Builder addReturned(
       final AttributeDefinition.Builder attributeBuilder,
-      final SchemaProperty schemaProperty)
+      final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -343,7 +343,7 @@ public class SchemaUtils
    */
   private static AttributeDefinition.Builder addUniqueness(
       final AttributeDefinition.Builder attributeBuilder,
-      final SchemaProperty schemaProperty)
+      final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -364,7 +364,7 @@ public class SchemaUtils
    */
   private static AttributeDefinition.Builder addReferenceTypes(
       final AttributeDefinition.Builder attributeBuilder,
-      final SchemaProperty schemaProperty)
+      final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -385,7 +385,7 @@ public class SchemaUtils
    */
   private static AttributeDefinition.Builder addMutability(
       final AttributeDefinition.Builder attributeBuilder,
-      final SchemaProperty schemaProperty)
+      final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -462,7 +462,7 @@ public class SchemaUtils
   public static SchemaResource getSchema(final Class<?> cls)
       throws IntrospectionException
   {
-    SchemaInfo schemaAnnotation = cls.getAnnotation(SchemaInfo.class);
+    Schema schemaAnnotation = cls.getAnnotation(Schema.class);
 
     // Only generate schema for annotated classes.
     if(schemaAnnotation == null)
@@ -545,7 +545,7 @@ public class SchemaUtils
    */
   public static String getSchemaIdFromAnnotation(final Class<?> cls)
   {
-    SchemaInfo schema = cls.getAnnotation(SchemaInfo.class);
+    Schema schema = cls.getAnnotation(Schema.class);
     return SchemaUtils.getSchemaIdFromAnnotation(schema);
   }
 
@@ -557,7 +557,7 @@ public class SchemaUtils
    * @return the id of the schema, or null if it was not provided.
    */
   private static String getSchemaIdFromAnnotation(
-      final SchemaInfo schemaAnnotation)
+      final Schema schemaAnnotation)
   {
     if(schemaAnnotation != null)
     {
@@ -576,7 +576,7 @@ public class SchemaUtils
    */
   public static String getNameFromSchemaAnnotation(final Class<?> cls)
   {
-    SchemaInfo schema = (SchemaInfo)cls.getAnnotation(SchemaInfo.class);
+    Schema schema = (Schema)cls.getAnnotation(Schema.class);
     return SchemaUtils.getNameFromSchemaAnnotation(schema);
   }
 
@@ -587,7 +587,7 @@ public class SchemaUtils
    * @return the name of the schema or a generated name.
    */
   private static String getNameFromSchemaAnnotation(
-      final SchemaInfo schemaAnnotation)
+      final Schema schemaAnnotation)
   {
     if(schemaAnnotation != null)
     {

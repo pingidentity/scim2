@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2.common;
 
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URI;
 import java.util.Calendar;
@@ -27,23 +27,23 @@ import java.util.Calendar;
  */
 public final class Meta
 {
-  @SchemaProperty(description = "The resource Type",
+  @Attribute(description = "The resource Type",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String resourceType;
 
-  @SchemaProperty(description = "Date and time the resource was created",
+  @Attribute(description = "Date and time the resource was created",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private Calendar created;
 
-  @SchemaProperty(description = "Date and time the resource was last modified",
+  @Attribute(description = "Date and time the resource was last modified",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private Calendar lastModified;
 
-  @SchemaProperty(description = "The location (URI) of the resource",
+  @Attribute(description = "The location (URI) of the resource",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private URI location;
 
-  @SchemaProperty(description = "The version of the resource",
+  @Attribute(description = "The version of the resource",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String version;
 

@@ -41,7 +41,7 @@ public class TestServiceProviderConfigEndpoint
               new ServiceProviderConfigResource.Filter(true, 200),
               new ServiceProviderConfigResource.ChangePassword(true),
               new ServiceProviderConfigResource.Sort(true),
-              new ServiceProviderConfigResource.ETag(true),
+              new ServiceProviderConfigResource.ETag(false),
               Collections.singletonList(
                   new ServiceProviderConfigResource.AuthenticationScheme(
                       "Basic", "HTTP BASIC", null, null, "httpbasic", true)));

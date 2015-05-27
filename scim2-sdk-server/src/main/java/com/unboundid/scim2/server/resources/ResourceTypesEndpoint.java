@@ -22,7 +22,6 @@ import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ListResponse;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.server.annotations.ResourceType;
 
 import javax.ws.rs.GET;
@@ -32,11 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static com.unboundid.scim2.server.ApiConstants.MEDIA_TYPE_SCIM;
@@ -46,8 +41,12 @@ import static com.unboundid.scim2.server.ApiConstants.QUERY_PARAMETER_FILTER;
  * An abstract JAX-RS resource class for servicing the Resource Types
  * endpoint.
  */
+@ResourceType(
+    description = "SCIM 2.0 Resource Type",
+    name = "ResourceType",
+    schema = ResourceTypeResource.class)
 @Path("ResourceTypes")
-public class ResourceTypesEndpoint
+public class ResourceTypesEndpoint extends AbstractEndpoint
 {
   @Context
   private Application application;
@@ -63,7 +62,7 @@ public class ResourceTypesEndpoint
    */
   @GET
   @Produces(MEDIA_TYPE_SCIM)
-  public ListResponse<ResourceTypeResource> getResourceTypes(
+  public ListResponse<ResourceTypeResource> search(
       @QueryParam(QUERY_PARAMETER_FILTER) final String filterString)
       throws ScimException
   {
@@ -72,7 +71,12 @@ public class ResourceTypesEndpoint
       throw new ForbiddenException("Filtering not allowed");
     }
 
-    return new ListResponse<ResourceTypeResource>(getResourceTypes());
+    Set<ResourceTypeResource> resourceTypes = getResourceTypes();
+    for(ResourceTypeResource resourceType : resourceTypes)
+    {
+      setResourceTypeAndLocation(resourceType);
+    }
+    return new ListResponse<ResourceTypeResource>(resourceTypes);
   }
 
   /**
@@ -85,7 +89,7 @@ public class ResourceTypesEndpoint
   @Path("{id}")
   @GET
   @Produces(MEDIA_TYPE_SCIM)
-  public ResourceTypeResource getResourceType(@PathParam("id") final String id)
+  public ResourceTypeResource get(@PathParam("id") final String id)
       throws ScimException
   {
     for(ResourceTypeResource resourceType : getResourceTypes())
@@ -94,6 +98,7 @@ public class ResourceTypesEndpoint
           resourceType.getName() : resourceType.getId();
       if (idOrName.equalsIgnoreCase(id))
       {
+        setResourceTypeAndLocation(resourceType);
         return resourceType;
       }
     }
@@ -116,81 +121,34 @@ public class ResourceTypesEndpoint
         new HashSet<ResourceTypeResource>();
     for(Class<?> resourceClass : application.getClasses())
     {
-      ResourceTypeResource resourceType = getResourceType(resourceClass);
-      if(resourceType != null)
+      if(!ResourceTypesEndpoint.class.isAssignableFrom(resourceClass) &&
+          !SchemasEndpoint.class.isAssignableFrom(resourceClass) &&
+          !AbstractServiceProviderConfigEndpoint.class.isAssignableFrom(
+              resourceClass))
       {
-        resourceTypes.add(resourceType);
+        ResourceTypeResource resourceType = getResourceType(resourceClass);
+        if (resourceType != null)
+        {
+          resourceTypes.add(resourceType);
+        }
       }
     }
 
     for(Object resourceInstance : application.getSingletons())
     {
-      ResourceTypeResource resourceType =
-          getResourceType(resourceInstance.getClass());
-      if(resourceType != null)
+      if(!(resourceInstance instanceof ResourceTypesEndpoint) &&
+          !(resourceInstance instanceof SchemasEndpoint) &&
+          !(resourceInstance instanceof AbstractServiceProviderConfigEndpoint))
       {
-        resourceTypes.add(resourceType);
+        ResourceTypeResource resourceType =
+            getResourceType(resourceInstance.getClass());
+        if (resourceType != null)
+        {
+          resourceTypes.add(resourceType);
+        }
       }
     }
 
     return resourceTypes;
-  }
-
-  /**
-   * Generate a ResourceType definition from a JAX-RS resource class annotated
-   * with the ResourceType annotation.
-   *
-   * @param cls The JAX-RS resource class.
-   * @return The generated ResourceType definition.
-   */
-  public static ResourceTypeResource getResourceType(final Class<?> cls)
-  {
-    ResourceType resourceType = cls.getAnnotation(ResourceType.class);
-    Path path = cls.getAnnotation(Path.class);
-
-    if(resourceType != null && path != null)
-    {
-      try
-      {
-        String schema = SchemaUtils.getSchemaIdFromAnnotation(
-            resourceType.schema());
-        List<ResourceTypeResource.SchemaExtension> schemaExtensions = null;
-        if (resourceType.optionalSchemaExtensions().length > 0 ||
-            resourceType.requiredSchemaExtensions().length > 0)
-        {
-          schemaExtensions =
-              new ArrayList<ResourceTypeResource.SchemaExtension>(
-                  resourceType.optionalSchemaExtensions().length +
-                      resourceType.requiredSchemaExtensions().length);
-
-          for (Class<?> optionalSchemaExtension :
-              resourceType.optionalSchemaExtensions())
-          {
-            String schemaId =
-                SchemaUtils.getSchemaIdFromAnnotation(optionalSchemaExtension);
-            schemaExtensions.add(new ResourceTypeResource.SchemaExtension(
-                new URI(schemaId), false));
-          }
-
-          for (Class<?> requiredSchemaExtension :
-              resourceType.requiredSchemaExtensions())
-          {
-            String schemaId =
-                SchemaUtils.getSchemaIdFromAnnotation(requiredSchemaExtension);
-            schemaExtensions.add(new ResourceTypeResource.SchemaExtension(
-                new URI(schemaId), true));
-          }
-        }
-
-        return new ResourceTypeResource(resourceType.name(),
-            resourceType.name(), resourceType.description(),
-            new URI(path.value()), new URI(schema), schemaExtensions);
-      }
-      catch(URISyntaxException e)
-      {
-        throw new RuntimeException(e);
-      }
-    }
-    return null;
   }
 }

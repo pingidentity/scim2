@@ -20,7 +20,6 @@ package com.unboundid.scim2.common;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
-import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.annotations.Test;
@@ -302,11 +301,7 @@ public class PatchOpTestCase
     patchOp.apply(scimResource);
     assertEquals(scimResource.getObjectNode(), postPatchResource);
 
-    PatchRequest constructed = new PatchRequest();
-    for(PatchOperation op : patchOp)
-    {
-      constructed.addOperation(op);
-    }
+    PatchRequest constructed = new PatchRequest(patchOp.getOperations());
 
     assertEquals(constructed, patchOp);
 

@@ -19,8 +19,8 @@ package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.AttributeDefinition;
 import com.unboundid.scim2.common.BaseScimResource;
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URL;
 import java.util.List;
@@ -30,11 +30,11 @@ import java.util.List;
  * for "User" is identified using the URI:
  * "urn:ietf:params:scim:schemas:core:2.0:User".
  */
-@SchemaInfo(id="urn:ietf:params:scim:schemas:core:2.0:User",
+@Schema(id="urn:ietf:params:scim:schemas:core:2.0:User",
     name="User", description = "User Account")
 public class UserResource extends BaseScimResource
 {
-  @SchemaProperty(description = "Unique identifier for the User typically " +
+  @Attribute(description = "Unique identifier for the User typically " +
       "used by the user to directly authenticate to the service provider.",
       isRequired = true,
       isCaseExact = false,
@@ -43,14 +43,14 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.SERVER)
   private String userName;
 
-  @SchemaProperty(description = "The components of the user's real name.",
+  @Attribute(description = "The components of the user's real name.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private Name name;
 
-  @SchemaProperty(description = "The name of the User, suitable for display " +
+  @Attribute(description = "The name of the User, suitable for display " +
       "to end-users. The name SHOULD be the full name of the User being " +
       "described if known.",
       isRequired = false,
@@ -60,7 +60,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String displayName;
 
-  @SchemaProperty(description = "The casual way to address the user in real " +
+  @Attribute(description = "The casual way to address the user in real " +
       "life, e.g.'Bob' or 'Bobby' instead of 'Robert'. This attribute SHOULD " +
       "NOT be used to represent a User's username " +
       "(e.g., bjensen or mpepperidge)",
@@ -71,7 +71,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String nickName;
 
-  @SchemaProperty(description = "A fully qualified URL to a page " +
+  @Attribute(description = "A fully qualified URL to a page " +
       "representing the User's online profile",
       isRequired = false,
       referenceTypes = { "external" },
@@ -80,7 +80,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private URL profileUrl;
 
-  @SchemaProperty(description = "The user's title, such as \"Vice " +
+  @Attribute(description = "The user's title, such as \"Vice " +
       "President\".",
       isRequired = false,
       isCaseExact = false,
@@ -89,7 +89,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String title;
 
-  @SchemaProperty(description = "Used to identify the organization to user " +
+  @Attribute(description = "Used to identify the organization to user " +
       "relationship. Typical values used might be 'Contractor', 'Employee', " +
       "'Intern', 'Temp', 'External', and 'Unknown' but any value may be used.",
       isRequired = false,
@@ -99,7 +99,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String userType;
 
-  @SchemaProperty(description = "Indicates the User's preferred written or " +
+  @Attribute(description = "Indicates the User's preferred written or " +
       "spoken language.  Generally used for selecting a localized User " +
       "interface. e.g., 'en_US' specifies the language English and country US.",
       isRequired = false,
@@ -109,7 +109,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String preferredLanguage;
 
-  @SchemaProperty(description = "Used to indicate the User's default " +
+  @Attribute(description = "Used to indicate the User's default " +
       "location for purposes of localizing items such as currency, date time " +
       "format, numerical representations, etc.",
       isRequired = false,
@@ -119,7 +119,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String locale;
 
-  @SchemaProperty(description = "The User's time zone in the 'Olson' " +
+  @Attribute(description = "The User's time zone in the 'Olson' " +
       "timezone database format; e.g.,'America/Los_Angeles'",
       isRequired = false,
       isCaseExact = false,
@@ -128,7 +128,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String timezone;
 
-  @SchemaProperty(description = "A Boolean value indicating the User's " +
+  @Attribute(description = "A Boolean value indicating the User's " +
       "administrative status.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -136,7 +136,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private Boolean active;
 
-  @SchemaProperty(description = "The User's clear text password. This " +
+  @Attribute(description = "The User's clear text password. This " +
       "attribute is intended to be used as a means to specify an initial " +
       "password when creating a new User or to reset an existing User's " +
       "password.",
@@ -147,7 +147,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String password;
 
-  @SchemaProperty(description = "E-mail addresses for the user. The value " +
+  @Attribute(description = "E-mail addresses for the user. The value " +
       "SHOULD be canonicalized by the Service Provider, e.g., " +
       "bjensen@example.com instead of bjensen@EXAMPLE.COM. Canonical Type " +
       "values of work, home, and other.",
@@ -158,7 +158,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = Email.class)
   private List<Email> emails;
 
-  @SchemaProperty(description = "Phone numbers for the User.  The value " +
+  @Attribute(description = "Phone numbers for the User.  The value " +
       "SHOULD be canonicalized by the Service Provider according to format " +
       "in RFC3966 e.g., 'tel:+1-201-555-0123'.  Canonical Type values of " +
       "work, home, mobile, fax, pager and other.",
@@ -169,7 +169,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = PhoneNumber.class)
   private List<PhoneNumber> phoneNumbers;
 
-  @SchemaProperty(description = "Instant messaging addresses for the User.",
+  @Attribute(description = "Instant messaging addresses for the User.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT,
@@ -177,7 +177,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = InstantMessagingAddress.class)
   private List<InstantMessagingAddress> ims;
 
-  @SchemaProperty(description = "URLs of photos of the User.",
+  @Attribute(description = "URLs of photos of the User.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT,
@@ -185,7 +185,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = Photo.class)
   private List<Photo> photos;
 
-  @SchemaProperty(description = "Physical mailing addresses for this User.",
+  @Attribute(description = "Physical mailing addresses for this User.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT,
@@ -193,7 +193,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = Address.class)
   private List<Address> addresses;
 
-  @SchemaProperty(description = "A list of groups that the user belongs to, " +
+  @Attribute(description = "A list of groups that the user belongs to, " +
       "either thorough direct membership, nested groups, or dynamically " +
       "calculated.",
       isRequired = false,
@@ -201,21 +201,21 @@ public class UserResource extends BaseScimResource
       multiValueClass = Group.class)
   private List<Group> groups;
 
-  @SchemaProperty(description = "A list of entitlements for the User that " +
+  @Attribute(description = "A list of entitlements for the User that " +
       "represent a thing the User has.",
       isRequired = false,
       returned = AttributeDefinition.Returned.DEFAULT,
       multiValueClass = Entitlement.class)
   private List<Entitlement> entitlements;
 
-  @SchemaProperty(description = "A list of roles for the User that " +
+  @Attribute(description = "A list of roles for the User that " +
       "collectively represent who the User is; e.g., 'Student', 'Faculty'.",
       isRequired = false,
       returned = AttributeDefinition.Returned.DEFAULT,
       multiValueClass = Role.class)
   private List<Role> roles;
 
-  @SchemaProperty(description = "A list of certificates issued to the User.",
+  @Attribute(description = "A list of certificates issued to the User.",
       isRequired = false,
       returned = AttributeDefinition.Returned.DEFAULT,
       multiValueClass = X509Certificate.class)

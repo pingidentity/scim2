@@ -36,8 +36,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import java.util.Arrays;
-
 import static com.unboundid.scim2.server.ApiConstants.*;
 
 /**
@@ -45,6 +43,7 @@ import static com.unboundid.scim2.server.ApiConstants.*;
  * type.
  */
 public abstract class AbstractResourceEndpoint<T extends ScimResource>
+    extends AbstractEndpoint
 {
   /**
    * Service a SCIM list/query operation using GET. The default implementation
@@ -82,32 +81,16 @@ public abstract class AbstractResourceEndpoint<T extends ScimResource>
       @QueryParam(QUERY_PARAMETER_SORT_BY)
       final String sortBy,
       @QueryParam(QUERY_PARAMETER_SORT_ORDER)
-      final String sortOrder,
+      final SortOrder sortOrder,
       @QueryParam(QUERY_PARAMETER_PAGE_START_INDEX)
       final Integer pageStartIndex,
       @QueryParam(QUERY_PARAMETER_PAGE_SIZE)
       final Integer pageSize)
       throws ScimException
   {
-    final SearchRequest searchRequest = new SearchRequest();
-    if(attributes != null)
-    {
-      searchRequest.setAttributes(Arrays.asList(attributes.split(",")));
-    }
-    if(excludedAttributes != null)
-    {
-      searchRequest.setExcludedAttributes(
-          Arrays.asList(excludedAttributes.split(",")));
-    }
-    searchRequest.setFilter(filterString);
-    searchRequest.setSortBy(sortBy);
-    if(sortOrder != null)
-    {
-      searchRequest.setSortOrder(SortOrder.valueOf(sortOrder));
-    }
-    searchRequest.setStartIndex(pageStartIndex);
-    searchRequest.setCount(pageSize);
-
+    final SearchRequest searchRequest = new SearchRequest(
+        attributes, excludedAttributes, filterString, sortBy,
+        sortOrder, pageStartIndex, pageSize);
     return search(searchRequest);
   }
 
@@ -139,7 +122,8 @@ public abstract class AbstractResourceEndpoint<T extends ScimResource>
   @Path("{id}")
   @GET
   @Produces(MEDIA_TYPE_SCIM)
-  public abstract T get(@PathParam("id") final String id) throws ScimException;
+  public abstract T retrieve(@PathParam("id") final String id)
+      throws ScimException;
 
   /**
    * Service a SCIM modify request using PUT. The default implementation will
@@ -154,7 +138,7 @@ public abstract class AbstractResourceEndpoint<T extends ScimResource>
   @PUT
   @Consumes(MEDIA_TYPE_SCIM)
   @Produces(MEDIA_TYPE_SCIM)
-  public T modify(@PathParam("id") final String id, final T resource)
+  public T replace(@PathParam("id") final String id, final T resource)
       throws ScimException
   {
     throw new NotImplementedException("PUT not supported");

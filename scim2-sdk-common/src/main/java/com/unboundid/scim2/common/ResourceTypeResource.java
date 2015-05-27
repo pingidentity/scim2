@@ -19,8 +19,8 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unboundid.scim2.common.annotations.SchemaInfo;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -36,11 +36,11 @@ import java.util.Collections;
  * specified.  The "id" attribute is not required for the resource type
  * resource.
  */
-@SchemaInfo(id="urn:ietf:params:scim:schemas:core:2.0:ResourceType",
+@Schema(id="urn:ietf:params:scim:schemas:core:2.0:ResourceType",
     name="Resource Type", description = "SCIM 2.0 Resource Type Resource")
 public class ResourceTypeResource extends BaseScimResource
 {
-  @SchemaProperty(description = "The resource type name.",
+  @Attribute(description = "The resource type name.",
       isRequired = true,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -48,7 +48,7 @@ public class ResourceTypeResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final String name;
 
-  @SchemaProperty(description =
+  @Attribute(description =
       "The resource type's human readable description.",
       isRequired = false,
       isCaseExact = false,
@@ -57,7 +57,7 @@ public class ResourceTypeResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final String description;
 
-  @SchemaProperty(description =
+  @Attribute(description =
       "The resource type's HTTP addressable endpoint relative to the Base " +
           "URL; e.g., \"/Users\".",
       referenceTypes = {"uri"},
@@ -68,7 +68,7 @@ public class ResourceTypeResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final URI endpoint;
 
-  @SchemaProperty(description =
+  @Attribute(description =
       "The resource types primary/base schema URI.",
       referenceTypes = {"uri"},
       isRequired = false,
@@ -78,7 +78,7 @@ public class ResourceTypeResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final URI schema;
 
-  @SchemaProperty(description =
+  @Attribute(description =
       "A list of URIs of the resource type's schema extensions.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -196,7 +196,7 @@ public class ResourceTypeResource extends BaseScimResource
    */
   public static class SchemaExtension
   {
-    @SchemaProperty(description =
+    @Attribute(description =
         "The URI of a schema extension.",
         isRequired = true,
         isCaseExact = true,
@@ -206,7 +206,7 @@ public class ResourceTypeResource extends BaseScimResource
         referenceTypes = {"uri"} )
     private URI schema;
 
-    @SchemaProperty(description =
+    @Attribute(description =
         "A Boolean value that specifies whether the schema extension is " +
             "required for the resource type. If true, a resource of this " +
             "type MUST include this schema extension and include any " +

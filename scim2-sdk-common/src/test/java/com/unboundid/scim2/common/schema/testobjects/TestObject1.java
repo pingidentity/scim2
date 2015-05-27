@@ -17,9 +17,9 @@
 
 package com.unboundid.scim2.common.schema.testobjects;
 
-import com.unboundid.scim2.common.annotations.SchemaInfo;
+import com.unboundid.scim2.common.annotations.Schema;
 
-@SchemaInfo(id="urn:id:junit",
+@Schema(id="urn:id:junit",
   description = "description:TestObject1", name = "name:TestObject1")
 public class TestObject1
 {

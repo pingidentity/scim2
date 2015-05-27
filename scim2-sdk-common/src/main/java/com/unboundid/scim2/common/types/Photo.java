@@ -18,7 +18,7 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URL;
 
@@ -27,7 +27,7 @@ import java.net.URL;
  */
 public class Photo
 {
-  @SchemaProperty(description = "URL of a photo of the User.",
+  @Attribute(description = "URL of a photo of the User.",
       isRequired = false,
       referenceTypes = { "external" },
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -35,7 +35,7 @@ public class Photo
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private URL value;
 
-  @SchemaProperty(description = "A human readable name, primarily used for " +
+  @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
       isCaseExact = false,
@@ -44,7 +44,7 @@ public class Photo
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
-  @SchemaProperty(description = "A label indicating the attribute's " +
+  @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'photo' or 'thumbnail'.",
       isRequired = false,
       isCaseExact = false,
@@ -54,7 +54,7 @@ public class Photo
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
-  @SchemaProperty(description = "A Boolean value indicating the 'primary' " +
+  @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute, e.g., the " +
       "preferred messenger or primary messenger. The primary attribute " +
       "value 'true' MUST appear no more than once.",

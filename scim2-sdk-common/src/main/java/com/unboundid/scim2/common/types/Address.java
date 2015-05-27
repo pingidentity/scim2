@@ -18,14 +18,14 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.SchemaProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 
 /**
  * Address for the user.
  */
 public class Address
 {
-  @SchemaProperty(description = "The full mailing address, formatted for " +
+  @Attribute(description = "The full mailing address, formatted for " +
       "display or use with a mailing label. This attribute MAY " +
       "contain newlines.",
       isRequired = false,
@@ -35,7 +35,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String formatted;
 
-  @SchemaProperty(description = "The full street address component, which " +
+  @Attribute(description = "The full street address component, which " +
       "may include house number, street name, PO BOX, and multi-line " +
       "extended street address information. This attribute MAY contain " +
       "newlines.",
@@ -46,7 +46,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String streetAddress;
 
-  @SchemaProperty(description = "The city or locality component.",
+  @Attribute(description = "The city or locality component.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -54,7 +54,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String locality;
 
-  @SchemaProperty(description = "The state or region component.",
+  @Attribute(description = "The state or region component.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -62,7 +62,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String region;
 
-  @SchemaProperty(description = "The zipcode or postal code component.",
+  @Attribute(description = "The zipcode or postal code component.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -70,7 +70,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String postalCode;
 
-  @SchemaProperty(description = "The country name component.",
+  @Attribute(description = "The country name component.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -78,7 +78,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String country;
 
-  @SchemaProperty(description = "A label indicating the attribute's " +
+  @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'work' or 'home'.",
       isRequired = false,
       isCaseExact = false,
@@ -88,7 +88,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
-  @SchemaProperty(description = "A Boolean value indicating the 'primary' " +
+  @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute, e.g., the " +
       "preferred address. The primary attribute value 'true' MUST appear " +
       "no more than once.",

@@ -17,11 +17,18 @@
 
 package com.unboundid.scim2.server;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.exceptions.ServerErrorException;
+import com.unboundid.scim2.common.messages.PatchOperation;
+import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.UserResource;
+import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.resources.AbstractResourceEndpoint;
 
@@ -31,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by boli on 5/12/15.
+ * Test JAX-RS SCIM resource endpoint that has a per request lifecycle.
  */
 @ResourceType(
     description = "Singleton User Account",
@@ -57,6 +64,7 @@ public class TestSingletonResourceEndpoint
       {
         for(UserResource user : users.values())
         {
+          setResourceTypeAndLocation(user);
           os.resource(user);
         }
         os.itemsPerPage(users.size());
@@ -66,13 +74,14 @@ public class TestSingletonResourceEndpoint
   }
 
   @Override
-  public UserResource get(final String id) throws ScimException
+  public UserResource retrieve(final String id) throws ScimException
   {
     UserResource found = users.get(id);
     if(found == null)
     {
       throw new ResourceNotFoundException("No resource with ID " + id);
     }
+    setResourceTypeAndLocation(found);
     return found;
   }
 
@@ -81,6 +90,7 @@ public class TestSingletonResourceEndpoint
   {
     resource.setId(String.valueOf(resource.hashCode()));
     users.put(resource.getId(), resource);
+    setResourceTypeAndLocation(resource);
     return resource;
   }
 
@@ -92,5 +102,46 @@ public class TestSingletonResourceEndpoint
     {
       throw new ResourceNotFoundException("No resource with ID " + id);
     }
+  }
+
+  @Override
+  public UserResource replace(final String id, final UserResource resource)
+      throws ScimException
+  {
+    if(!users.containsKey(id))
+    {
+      throw new ResourceNotFoundException("No resource with ID " + id);
+    }
+    users.put(id, resource);
+    setResourceTypeAndLocation(resource);
+    return resource;
+  }
+
+  @Override
+  public UserResource modify(final String id, final PatchRequest patchRequest)
+      throws ScimException
+  {
+    UserResource found = users.get(id);
+    if(found == null)
+    {
+      throw new ResourceNotFoundException("No resource with ID " + id);
+    }
+    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
+    ObjectNode node = mapper.valueToTree(found);
+    for(PatchOperation operation : patchRequest)
+    {
+      operation.apply(node);
+    }
+    UserResource patchedFound = null;
+    try
+    {
+      patchedFound = mapper.treeToValue(node, UserResource.class);
+    }
+    catch (JsonProcessingException e)
+    {
+      throw new ServerErrorException(e.getMessage(), null, e);
+    }
+    users.put(id, patchedFound);
+    return patchedFound;
   }
 }

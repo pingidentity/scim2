@@ -80,14 +80,9 @@ public class SearchRequestTestCase
     assertEquals(searchRequest.getStartIndex(), null);
     assertEquals(searchRequest.getCount(), null);
 
-    searchRequest = new SearchRequest();
-    searchRequest.setAttributes(Arrays.asList("displayName", "userName")).
-        setExcludedAttributes(Arrays.asList("addresses")).
-        setFilter("userName eq \"test\"").
-        setSortBy("name.lastName").
-        setSortOrder(SortOrder.ASCENDING).
-        setStartIndex(5).
-        setCount(100);
+    searchRequest = new SearchRequest("displayName, userName",
+        "addresses", "userName eq \"test\"", "name.lastName",
+        SortOrder.ASCENDING, 5, 100);
 
     String serialized = SchemaUtils.createSCIMCompatibleMapper().
         writeValueAsString(searchRequest);
