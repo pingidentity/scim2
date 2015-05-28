@@ -27,6 +27,9 @@
     <name>UnboundID SCIM 2 SDK Client</name>
 
     <properties>
+        <build.product.name>${project.name}</build.product.name>
+        <build.product.short.name>${project.artifactId}</build.product.short.name>
+        <build.version>${project.version}</build.version>
     </properties>
 
     <build>
@@ -110,6 +113,82 @@
                             <attach>false</attach>
                             <appendAssemblyId>false</appendAssemblyId>
                             <finalName>sonatype-bundle</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <id>create-revision-number</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-timestamp</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>create-timestamp</goal>
+                        </goals>
+                        <configuration>
+                            <timestampFormat>yyyy-MM-dd HH:mm:ss</timestampFormat>
+                            <timestampPropertyName>build.timestamp</timestampPropertyName>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <target>
+                                <echo message="create version class" />
+                                <copy todir="target/java-gen">
+                                    <fileset dir="src/main/stubs" />
+                                    <globmapper from="*.java.stub" to="*.java" />
+                                    <filterset>
+                                        <filter token="PRODUCT_NAME" value="${build.product.name}" />
+                                        <filter token="SHORT_NAME" value="${build.product.short.name}" />
+                                        <filter token="VERSION" value="${build.version}" />
+                                        <filter token="BUILD_TIMESTAMP" value="${build.timestamp}" />
+                                        <filter token="GIT_PATH" value="${scmBranch}" />
+                                        <filter token="GIT_REVISION" value="${buildNumber}" />
+                                    </filterset>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/java-gen</source>
+                            </sources>
                         </configuration>
                     </execution>
                 </executions>
