@@ -212,7 +212,7 @@ public class UserResourceTestCase
 
     EnterpriseUserExtension enterpriseUserExtension =
         userResource.getExtensionValue(
-            Path.extension(EnterpriseUserExtension.class),
+            Path.root(EnterpriseUserExtension.class),
             EnterpriseUserExtension.class);
 
     assertNotNull(enterpriseUserExtension);

@@ -265,9 +265,8 @@ public class Parser
       {
         // the only time this is allowed to occur is if the previous attribute
         // had a value filter, in which case, consume the token and move on.
-        if(path == null || path.getElements().isEmpty() ||
-            path.getElements().get(
-                path.getElements().size()-1).getValueFilter() == null)
+        if(path == null || path.size() == 0 ||
+            path.getElement(path.size()-1).getValueFilter() == null)
         {
           final String msg = String.format(
               "Attribute name expected at position %d", reader.mark);
@@ -294,7 +293,7 @@ public class Parser
             if(attributeName.isEmpty())
             {
               // The trailing colon signifies that this is an extension root.
-              return Path.extension(schemaUrn);
+              return Path.root(schemaUrn);
             }
           }
           if (attributeName.endsWith("["))
@@ -306,12 +305,10 @@ public class Parser
           }
           if (path == null)
           {
-            path = Path.attribute(schemaUrn, attributeName, valueFilter);
+            path = schemaUrn == null ? Path.root() : Path.root(schemaUrn);
           }
-          else
-          {
-            path = path.sub(attributeName, valueFilter);
-          }
+
+          path = path.attribute(attributeName, valueFilter);
         }
         catch(BadRequestException be)
         {

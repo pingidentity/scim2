@@ -42,30 +42,32 @@ public class PathParsingTestCase
     return new Object[][]
         {
             new Object[] { "attr",
-                Path.attribute("attr") },
+                Path.root().attribute("attr") },
             new Object[] { "urn:extension:attr",
-                Path.attribute("urn:extension", "attr") },
+                Path.root("urn:extension").attribute("attr") },
             new Object[] { "attr.subAttr",
-                Path.attribute("attr").sub("subAttr") },
+                Path.root().attribute("attr").attribute("subAttr") },
             new Object[] { "attr[subAttr eq \"78750\"].subAttr",
-                Path.attribute("attr", eq("subAttr", "78750")).sub("subAttr") },
+                Path.root().attribute("attr", eq("subAttr", "78750")).
+                    attribute("subAttr") },
             new Object[] { "urn:extension:attr[subAttr eq \"78750\"].subAttr",
-                Path.attribute("urn:extension", "attr",
-                    eq("subAttr", "78750")).sub("subAttr") },
+                Path.root("urn:extension").attribute("attr",
+                    eq("subAttr", "78750")).attribute("subAttr") },
 
             // The following does not technically conform to the SCIM spec
             // but our path impl is lenient so it may be used with any JSON
             // object.
             new Object[] { "", Path.root() },
-            new Object[] { "urn:extension:", Path.extension("urn:extension") },
+            new Object[] { "urn:extension:", Path.root("urn:extension") },
             new Object[] { "urn:extension:attr[subAttr eq \"78750\"]." +
                 "subAttr[subSub pr].this.is.crazy[type eq \"good\"].deep",
-                Path.attribute("urn:extension", "attr", eq("subAttr", "78750")).
-                    sub("subAttr", pr("subSub")).
-                    sub("this").
-                    sub("is").
-                    sub("crazy", eq("type", "good")).
-                    sub("deep") },
+                Path.root("urn:extension").
+                    attribute("attr", eq("subAttr", "78750")).
+                    attribute("subAttr", pr("subSub")).
+                    attribute("this").
+                    attribute("is").
+                    attribute("crazy", eq("type", "good")).
+                    attribute("deep") },
 
         };
   }

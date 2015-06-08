@@ -136,7 +136,7 @@ public abstract class Filter
    * this filter is not a comparison filter or a value filter for complex
    * multi-valued attributes.
    *
-   * @return The attribute or sub-attribute to filter by
+   * @return The attribute or attribute-attribute to filter by
    */
   public Path getAttributePath()
   {

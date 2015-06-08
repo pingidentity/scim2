@@ -317,9 +317,9 @@ public class SchemaGenerationTest
     }
 
     Assert.assertEquals(attribute.getDescription(), description);
-    Assert.assertEquals(attribute.getMutability(), mutability.getName());
-    Assert.assertEquals(attribute.getReturned(), returned.getName());
-    Assert.assertEquals(attribute.getUniqueness(), uniqueness.getName());
+    Assert.assertEquals(attribute.getMutability(), mutability);
+    Assert.assertEquals(attribute.getReturned(), returned);
+    Assert.assertEquals(attribute.getUniqueness(), uniqueness);
 
     switch(multivalued)
     {
@@ -359,7 +359,7 @@ public class SchemaGenerationTest
 
     Assert.assertEquals(attribute.getCanonicalValues(), canonicalValues);
     Assert.assertEquals(attribute.getReferenceTypes(), referenceType);
-    Assert.assertEquals(attribute.getType(), type.getName());
+    Assert.assertEquals(attribute.getType(), type);
 
     attribute.getReferenceTypes();
     attribute.getType();

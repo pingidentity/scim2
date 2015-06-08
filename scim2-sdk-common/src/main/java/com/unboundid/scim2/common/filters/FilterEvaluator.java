@@ -19,14 +19,10 @@ package com.unboundid.scim2.common.filters;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -71,23 +67,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
     }
     for (JsonNode node : nodes)
     {
-      if (node.isTextual() && filter.getComparisonValue().isTextual())
-      {
-        Date dateValue = dateValue(node);
-        Date compareDateValue = dateValue(filter.getComparisonValue());
-        if (dateValue != null && compareDateValue != null)
-        {
-          if (dateValue.compareTo(compareDateValue) == 0)
-          {
-            return true;
-          }
-        } else if (node.textValue().equalsIgnoreCase(
-            filter.getComparisonValue().textValue()))
-        {
-          return true;
-        }
-      }
-      if (node.equals(filter.getComparisonValue()))
+      if (JsonUtils.compareTo(node, filter.getComparisonValue()) == 0)
       {
         return true;
       }
@@ -114,23 +94,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
     }
     for (JsonNode node : nodes)
     {
-      if (node.isTextual() && filter.getComparisonValue().isTextual())
-      {
-        Date dateValue = dateValue(node);
-        Date compareDateValue = dateValue(filter.getComparisonValue());
-        if (dateValue != null && compareDateValue != null)
-        {
-          if (dateValue.compareTo(compareDateValue) == 0)
-          {
-            return false;
-          }
-        } else if (node.textValue().equalsIgnoreCase(
-            filter.getComparisonValue().textValue()))
-        {
-          return false;
-        }
-      }
-      if (node.equals(filter.getComparisonValue()))
+      if (JsonUtils.compareTo(node, filter.getComparisonValue()) == 0)
       {
         return false;
       }
@@ -239,32 +203,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
             "Greater than filter may not compare boolean or binary " +
                 "attribute values");
       }
-      if (node.isTextual() && filter.getComparisonValue().isTextual())
+      if (JsonUtils.compareTo(node, filter.getComparisonValue()) > 0)
       {
-        Date dateValue = dateValue(node);
-        Date compareDateValue = dateValue(filter.getComparisonValue());
-        if (dateValue != null && compareDateValue != null)
-        {
-          if (dateValue.compareTo(compareDateValue) > 0)
-          {
-            return true;
-          }
-        } else if (node.textValue().compareToIgnoreCase(
-            filter.getComparisonValue().textValue()) > 0)
-        {
-          return true;
-        }
-      }
-      if (node.isNumber() && filter.getComparisonValue().isNumber())
-      {
-        if ((node.isFloatingPointNumber() ?
-            node.doubleValue() : node.longValue()) >
-            (filter.getComparisonValue().isFloatingPointNumber() ?
-                filter.getComparisonValue().doubleValue() :
-                filter.getComparisonValue().longValue()))
-        {
-          return true;
-        }
+        return true;
       }
     }
     return false;
@@ -286,32 +227,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
         throw BadRequestException.invalidFilter("Greater than or equal " +
             "filter may not compare boolean or binary attribute values");
       }
-      if (node.isTextual() && filter.getComparisonValue().isTextual())
+      if (JsonUtils.compareTo(node, filter.getComparisonValue()) >= 0)
       {
-        Date dateValue = dateValue(node);
-        Date compareDateValue = dateValue(filter.getComparisonValue());
-        if (dateValue != null && compareDateValue != null)
-        {
-          if (dateValue.compareTo(compareDateValue) >= 0)
-          {
-            return true;
-          }
-        } else if (node.textValue().compareToIgnoreCase(
-            filter.getComparisonValue().textValue()) >= 0)
-        {
-          return true;
-        }
-      }
-      if (node.isNumber() && filter.getComparisonValue().isNumber())
-      {
-        if ((node.isFloatingPointNumber() ?
-            node.doubleValue() : node.longValue()) >=
-            (filter.getComparisonValue().isFloatingPointNumber() ?
-                filter.getComparisonValue().doubleValue() :
-                filter.getComparisonValue().longValue()))
-        {
-          return true;
-        }
+        return true;
       }
     }
     return false;
@@ -332,32 +250,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
         throw BadRequestException.invalidFilter("Less than or equal " +
             "filter may not compare boolean or binary attribute values");
       }
-      if (node.isTextual() && filter.getComparisonValue().isTextual())
+      if (JsonUtils.compareTo(node, filter.getComparisonValue()) < 0)
       {
-        Date dateValue = dateValue(node);
-        Date compareDateValue = dateValue(filter.getComparisonValue());
-        if (dateValue != null && compareDateValue != null)
-        {
-          if (dateValue.compareTo(compareDateValue) < 0)
-          {
-            return true;
-          }
-        } else if (node.textValue().compareToIgnoreCase(
-            filter.getComparisonValue().textValue()) < 0)
-        {
-          return true;
-        }
-      }
-      if (node.isNumber() && filter.getComparisonValue().isNumber())
-      {
-        if ((node.isFloatingPointNumber() ?
-            node.doubleValue() : node.longValue()) <
-            (filter.getComparisonValue().isFloatingPointNumber() ?
-                filter.getComparisonValue().doubleValue() :
-                filter.getComparisonValue().longValue()))
-        {
-          return true;
-        }
+        return true;
       }
     }
     return false;
@@ -379,32 +274,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
         throw BadRequestException.invalidFilter("Less than or equal " +
             "filter may not compare boolean or binary attribute values");
       }
-      if (node.isTextual() && filter.getComparisonValue().isTextual())
+      if (JsonUtils.compareTo(node, filter.getComparisonValue()) <= 0)
       {
-        Date dateValue = dateValue(node);
-        Date compareDateValue = dateValue(filter.getComparisonValue());
-        if (dateValue != null && compareDateValue != null)
-        {
-          if (dateValue.compareTo(compareDateValue) <= 0)
-          {
-            return true;
-          }
-        } else if (node.textValue().compareToIgnoreCase(
-            filter.getComparisonValue().textValue()) <= 0)
-        {
-          return true;
-        }
-      }
-      if (node.isNumber() && filter.getComparisonValue().isNumber())
-      {
-        if ((node.isFloatingPointNumber() ?
-            node.doubleValue() : node.longValue()) <=
-            (filter.getComparisonValue().isFloatingPointNumber() ?
-                filter.getComparisonValue().doubleValue() :
-                filter.getComparisonValue().longValue()))
-        {
-          return true;
-        }
+        return true;
       }
     }
     return false;
@@ -468,13 +340,13 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
         Iterator<JsonNode> iterator = node.elements();
         while (iterator.hasNext())
         {
-          if (doFilter(iterator.next(), filter))
+          if (matchValueFilter(iterator.next(), filter.getValueFilter()))
           {
             return true;
           }
         }
       }
-      else if (doFilter(node, filter))
+      else if (matchValueFilter(node, filter.getValueFilter()))
       {
         return true;
       }
@@ -486,47 +358,30 @@ public class FilterEvaluator implements FilterVisitor<Boolean, ObjectNode>
   /**
    * Determine if the specified node meets the filter criteria.
    * @param node  node to filter against
-   * @param filter filter specification
+   * @param valueFilter filter specification
    * @return true if the filter criteria is met by the node
    * @throws ScimException if filter cannot be evaluated
    */
-  private boolean doFilter(
+  public boolean matchValueFilter(
       final JsonNode node,
-      final ComplexValueFilter filter)
+      final Filter valueFilter)
       throws ScimException
   {
-    return node.isObject() &&
-        filter.getValueFilter().visit(this, (ObjectNode)node);
-  }
-
-  /**
-   * Try to parse out a date from a JSON text node.
-   *
-   * @param node The JSON node to parse.
-   *
-   * @return A parsed date instance or {@code null} if the text is not an
-   * ISO8601 formatted date and time string.
-   */
-  private Date dateValue(final JsonNode node)
-  {
-    String text = node.textValue().trim();
-    if (text.length() >= 19 &&
-        Character.isDigit(text.charAt(0)) &&
-        Character.isDigit(text.charAt(1)) &&
-        Character.isDigit(text.charAt(2)) &&
-        Character.isDigit(text.charAt(3)) &&
-        text.charAt(4) == '-')
+    if(node.isObject())
     {
-      try
-      {
-        return ISO8601Utils.parse(text, new ParsePosition(0));
-      }
-      catch (ParseException e)
-      {
-        // This is not a date after all.
-      }
+      return valueFilter.visit(this, (ObjectNode) node);
     }
-    return null;
+    else if(valueFilter.isComparisonFilter() &&
+        valueFilter.getAttributePath().size() == 1 &&
+        valueFilter.getAttributePath().getElement(0).
+            getAttribute().equals("value"))
+    {
+      // Special case for using filters like attr[value eq "value"] to match
+      // simple multi-valued attributes whose value is ust an array of
+      // values (ie. "attr":["value", "value2"])
+      return node.equals(valueFilter.getComparisonValue());
+    }
+    return false;
   }
 
 

@@ -20,6 +20,7 @@ package com.unboundid.scim2.common;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,7 +86,7 @@ public class AttributeDefinition
      * Constructs an attribute type object.
      * @param name the name (used in SCIM schemas) of the object.
      */
-    private Type(final String name)
+    Type(final String name)
     {
       this.name = name;
     }
@@ -159,7 +160,7 @@ public class AttributeDefinition
      *
      * @param name the name of the mutability constraint.
      */
-    private Mutability(final String name)
+    Mutability(final String name)
     {
       this.name = name;
     }
@@ -181,8 +182,11 @@ public class AttributeDefinition
      *
      * @param name the name of the mutability constraint.
      * @return the enum value for the given name.
+     * @throws BadRequestException if the name of the mutability constraint is
+     *                             invalid.
      */
     public static Mutability fromName(final String name)
+        throws BadRequestException
     {
       for(Mutability mutability : Mutability.values())
       {
@@ -192,7 +196,8 @@ public class AttributeDefinition
         }
       }
 
-      throw new RuntimeException("Unknown SCIM mutability constraint");
+      throw BadRequestException.invalidSyntax(
+          "Unknown SCIM mutability constraint");
     }
 
   }
@@ -233,7 +238,7 @@ public class AttributeDefinition
      *
      * @param name the name of the return constraint.
      */
-    private Returned(final String name)
+    Returned(final String name)
     {
       this.name = name;
     }
@@ -255,8 +260,11 @@ public class AttributeDefinition
      *
      * @param name the name of the return constraint.
      * @return the enum value for the given name.
+     * @throws BadRequestException if the name of the return constraint is
+     *                             invalid.
      */
     public static Returned fromName(final String name)
+        throws BadRequestException
     {
       for(Returned returned : Returned.values())
       {
@@ -266,7 +274,7 @@ public class AttributeDefinition
         }
       }
 
-      throw new RuntimeException("Unknown SCIM return constraint");
+      throw BadRequestException.invalidSyntax("Unknown SCIM return constraint");
     }
 
   }
@@ -295,7 +303,7 @@ public class AttributeDefinition
      *
      * @param name the name of the uniqueness constraint.
      */
-    private Uniqueness(final String name)
+    Uniqueness(final String name)
     {
       this.name = name;
     }
@@ -317,8 +325,11 @@ public class AttributeDefinition
      *
      * @param name the name of the uniqueness constraint.
      * @return the enum value for the given name.
+     * @throws BadRequestException if the name of the uniqueness constraint is
+     *                             invalid.
      */
     public static Uniqueness fromName(final String name)
+        throws BadRequestException
     {
       for(Uniqueness uniqueness : Uniqueness.values())
       {
@@ -328,7 +339,8 @@ public class AttributeDefinition
         }
       }
 
-      throw new RuntimeException("Unknown SCIM uniquenessConstraint");
+      throw BadRequestException.invalidSyntax(
+          "Unknown SCIM uniquenessConstraint");
     }
 
   }
@@ -347,10 +359,10 @@ public class AttributeDefinition
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE)
-  private final String type;
+  private final Type type;
 
   @Attribute(description = "When an attribute is of type \"complex\", " +
-      "\"subAttributes\" defines set of sub-attributes.",
+      "\"subAttributes\" defines set of attribute-attributes.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -411,7 +423,7 @@ public class AttributeDefinition
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE)
-  private final String mutability;
+  private final Mutability mutability;
 
   @Attribute(description = "A single keyword that indicates when an " +
       "attribute and associated values are returned in response to a GET " +
@@ -421,7 +433,7 @@ public class AttributeDefinition
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE)
-  private final String returned;
+  private final Returned returned;
 
   @Attribute(description = "A single keyword value that specifies how " +
       "the service provider enforces uniqueness of attribute values.",
@@ -430,7 +442,7 @@ public class AttributeDefinition
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE)
-  private final String uniqueness;
+  private final Uniqueness uniqueness;
 
   @Attribute(description = "A multi-valued array of JSON strings that " +
       "indicate the SCIM resource types that may be referenced.",
@@ -459,7 +471,7 @@ public class AttributeDefinition
     private Type type;
 
     /**
-     * The sub-attributes of this attribute.
+     * The attribute-attributes of this attribute.
      */
     private Collection<AttributeDefinition> subAttributes;
 
@@ -542,9 +554,9 @@ public class AttributeDefinition
     }
 
     /**
-     * Sets the sub-attributes of the attribute.
+     * Sets the attribute-attributes of the attribute.
      *
-     * @param subAttributes the sub-attributes of the attribute.
+     * @param subAttributes the attribute-attributes of the attribute.
      * @return this.
      */
     public Builder addSubAttributes(final AttributeDefinition ... subAttributes)
@@ -717,16 +729,16 @@ public class AttributeDefinition
     {
       return new AttributeDefinition(
           name,
-          (type == null) ? null : type.getName(),
+          type,
           subAttributes,
           multiValued,
           description,
           required,
           canonicalValues,
           caseExact,
-          (mutability == null) ? null : mutability.getName(),
-          (returned == null) ? null : returned.getName(),
-          (uniqueness == null) ? null : uniqueness.getName(),
+          mutability,
+          returned,
+          uniqueness,
           referenceTypes);
     }
   }
@@ -736,7 +748,7 @@ public class AttributeDefinition
    *
    * @param name The attribute's name.
    * @param type The attribute's data type.
-   * @param subAttributes The sub-attributes of the attribute.
+   * @param subAttributes The attribute-attributes of the attribute.
    * @param multiValued A boolean indicating if the attribute is multi-valued.
    * @param description The description of this attribute.
    * @param required A boolean indicating whether or not this attribute is
@@ -757,7 +769,7 @@ public class AttributeDefinition
   AttributeDefinition(@JsonProperty(value = "name", required = true)
                       final String name,
                       @JsonProperty(value = "type", required = true)
-                      final String type,
+                      final Type type,
                       @JsonProperty(value = "subAttributes")
                       final Collection<AttributeDefinition> subAttributes,
                       @JsonProperty(value = "multiValued", required = true)
@@ -771,11 +783,11 @@ public class AttributeDefinition
                       @JsonProperty(value = "caseExact")
                       final boolean caseExact,
                       @JsonProperty(value = "mutability",  required = true)
-                      final String mutability,
+                      final Mutability mutability,
                       @JsonProperty(value = "returned", required = true)
-                      final String returned,
+                      final Returned returned,
                       @JsonProperty(value = "uniqueness")
-                      final String uniqueness,
+                      final Uniqueness uniqueness,
                       @JsonProperty(value = "referenceTypes")
                       final Collection<String> referenceTypes)
   {
@@ -815,7 +827,7 @@ public class AttributeDefinition
    *
    * @return type of the value for this attribute.
    */
-  public String getType()
+  public Type getType()
   {
     return type;
   }
@@ -886,7 +898,7 @@ public class AttributeDefinition
    *
    * @return the mutability constraint for this attribute.
    */
-  public String getMutability()
+  public Mutability getMutability()
   {
     return mutability;
   }
@@ -896,7 +908,7 @@ public class AttributeDefinition
    *
    * @return the return constraint for this attribute.
    */
-  public String getReturned()
+  public Returned getReturned()
   {
     return returned;
   }
@@ -906,7 +918,7 @@ public class AttributeDefinition
    *
    * @return the Uniqueness constraint fo this attribute.
    */
-  public String getUniqueness()
+  public Uniqueness getUniqueness()
   {
     return uniqueness;
   }
