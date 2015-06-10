@@ -89,8 +89,7 @@ public class JsonUtils
       while(i.hasNext())
       {
         JsonNode node = i.next();
-        if(node.isObject() &&
-            FilterEvaluator.evaluate(valueFilter, (ObjectNode)node))
+        if(FilterEvaluator.evaluate(valueFilter, node))
         {
           matchingArray.add(node);
           if(removeMatching)
@@ -252,12 +251,23 @@ public class JsonUtils
           // in replace mode, a value filter requires that the target node
           // be an array and that we can find matching value(s)
           boolean matchesFound = false;
-          if (node.isArray() && value.isObject()) {
-
-            for (JsonNode matchingValues : filterArray((ArrayNode) node,
-                element.getValueFilter(), false)) {
-              matchesFound = true;
-              updateValues((ObjectNode) matchingValues, null, value);
+          if (node.isArray())
+          {
+            for(int i = 0; i < node.size(); i++)
+            {
+              if(FilterEvaluator.evaluate(
+                  element.getValueFilter(), node.get(i)))
+              {
+                matchesFound = true;
+                if(node.get(i).isObject() && value.isObject())
+                {
+                  updateValues((ObjectNode) node.get(i), null, value);
+                }
+                else
+                {
+                  ((ArrayNode) node).set(i, value);
+                }
+              }
             }
           }
           if(!matchesFound)
@@ -379,7 +389,7 @@ public class JsonUtils
 
       if(node.isArray())
       {
-        if(((ArrayNode)node).size() > 0)
+        if(node.size() > 0)
         {
           setPathPresent(true);
         }
@@ -447,7 +457,7 @@ public class JsonUtils
    *   <li>
    *     If the path targets a complex attribute (an attribute whose value is
    *     a JSON Object), the value must be a JSON object containing the
-   *     set of attribute-attributes to be added to the complex value.
+   *     set of sub-attributes to be added to the complex value.
    *   </li>
    *   <li>
    *     If the path targets a multi-valued attribute (an attribute whose value
@@ -543,7 +553,7 @@ public class JsonUtils
    *   <li>
    *     If the path targets a complex attribute (an attribute whose value is
    *     a JSON Object), the value must be a JSON object containing the
-   *     set of attribute-attributes to be replaced in the complex value.
+   *     set of sub-attributes to be replaced in the complex value.
    *   </li>
    *   <li>
    *     If the path targets a multi-valued attribute and a value filter is
@@ -552,9 +562,9 @@ public class JsonUtils
    *   </li>
    *   <li>
    *     If the path targets a complex multi-valued attribute with a value
-   *     filter and a specific attribute-attribute
+   *     filter and a specific sub-attribute
    *     (e.g. "addresses[type eq "work"].streetAddress"), the matching
-   *     attribute-attribute of all matching records is replaced.
+   *     sub-attribute of all matching records is replaced.
    *   </li>
    *   <li>
    *     If the path targets a multi-valued attribute for which a value filter
@@ -941,7 +951,7 @@ public class JsonUtils
   {
     if (value.isValueNode())
     {
-      // Use the implicit "value" attribute-attribute to reference this value.
+      // Use the implicit "value" sub-attribute to reference this value.
       return Filter.eq(Path.root().attribute("value"), (ValueNode) value);
     }
     if (value.isObject())

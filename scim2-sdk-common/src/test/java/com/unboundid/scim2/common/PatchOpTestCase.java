@@ -142,14 +142,27 @@ public class PatchOpTestCase
             "        ],\n" +
             "        \"nickname2\":\"Babs\"\n" +
             "      }\n" +
-            "    }\n" +
+            "    },\n" +
+            "    {  \n" +
+            "      \"op\":\"remove\",\n" +
+            "      \"path\":\"schemas[" +
+            "value eq \\\"urn:ubid:custom:schema1\\\"]\"\n" +
+            "    },\n" +
+            "    {  \n" +
+            "      \"op\":\"replace\",\n" +
+            "      \"path\":\"schemas[" +
+            "value eq \\\"urn:ubid:custom:schema2\\\"]\",\n" +
+            "      \"value\":\"urn:ubid:custom:schema3\"\n" +
+            "    }" +
             "  ]\n" +
             "}", PatchRequest.class);
 
     JsonNode prePatchResource = SchemaUtils.createSCIMCompatibleMapper().
         readTree("{  \n" +
             "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:schemas:core:2.0:User\"\n" +
+            "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
+            "    \"urn:ubid:custom:schema1\",\n" +
+            "    \"urn:ubid:custom:schema2\"\n" +
             "  ],\n" +
             "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
             "  \"userName\":\"bjensen@example.com\",\n" +
@@ -220,7 +233,8 @@ public class PatchOpTestCase
     JsonNode postPatchResource = SchemaUtils.createSCIMCompatibleMapper().
         readTree("{  \n" +
             "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:schemas:core:2.0:User\"\n" +
+            "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
+            "    \"urn:ubid:custom:schema3\"\n" +
             "  ],\n" +
             "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
             "  \"userName\":\"bjensen@example.com\",\n" +

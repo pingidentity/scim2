@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.common;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.filters.Filter;
@@ -32,13 +33,15 @@ import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.annotations.Test;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 /**
- * Created by boli on 6/2/15.
+ * Test the SCIM resource diff utility.
  */
 public class DiffTestCase
 {
@@ -79,6 +82,14 @@ public class DiffTestCase
     ObjectNode replaceValue = mapper.createObjectNode();
     replaceValue.put("userType", "manager");
     assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
+
+    List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
+    for(PatchOperation op : d2)
+    {
+      op.apply(source);
+    }
+    removeNullNodes(target);
+    assertEquals(source, target);
   }
 
   /**
@@ -108,6 +119,14 @@ public class DiffTestCase
     List<PatchOperation> d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 0);
 
+    List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
+    for(PatchOperation op : d2)
+    {
+      op.apply(source);
+    }
+    removeNullNodes(target);
+    assertEquals(source, target);
+
     // - added
     source = mapper.getNodeFactory().objectNode();
     target = mapper.getNodeFactory().objectNode();
@@ -118,6 +137,14 @@ public class DiffTestCase
     assertEquals(d.size(), 1);
     assertTrue(d.contains(PatchOperation.add(null,
         mapper.getNodeFactory().objectNode().set("name",name))));
+
+    d2 = JsonUtils.diff(source, target, true);
+    for(PatchOperation op : d2)
+    {
+      op.apply(source);
+    }
+    removeNullNodes(target);
+    assertEquals(source, target);
 
     // - removed
     source = mapper.getNodeFactory().objectNode();
@@ -130,7 +157,15 @@ public class DiffTestCase
     assertEquals(d.size(), 1);
     assertTrue(d.contains(PatchOperation.remove("name")));
 
-    // - removed a attribute-attribute
+    d2 = JsonUtils.diff(source, target, true);
+    for(PatchOperation op : d2)
+    {
+      op.apply(source);
+    }
+    removeNullNodes(target);
+    assertEquals(source, target);
+
+    // - removed a sub-attribute
     source = mapper.getNodeFactory().objectNode();
     target = mapper.getNodeFactory().objectNode();
 
@@ -140,6 +175,14 @@ public class DiffTestCase
     d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 1);
     assertTrue(d.contains(PatchOperation.remove("name.honorificSuffix")));
+
+    d2 = JsonUtils.diff(source, target, true);
+    for(PatchOperation op : d2)
+    {
+      op.apply(source);
+    }
+    removeNullNodes(target);
+    assertEquals(source, target);
 
     // - updated
     source = mapper.getNodeFactory().objectNode();
@@ -154,6 +197,14 @@ public class DiffTestCase
     replaceValue.putObject("name").put("familyName", "Johnson");
     assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
 
+    d2 = JsonUtils.diff(source, target, true);
+    for(PatchOperation op : d2)
+    {
+      op.apply(source);
+    }
+    removeNullNodes(target);
+    assertEquals(source, target);
+
     // - non-asserted
     source = mapper.getNodeFactory().objectNode();
     target = mapper.getNodeFactory().objectNode();
@@ -165,6 +216,14 @@ public class DiffTestCase
 
     d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 0);
+
+    d2 = JsonUtils.diff(source, target, true);
+    for(PatchOperation op : d2)
+    {
+      op.apply(source);
+    }
+    removeNullNodes(target);
+    assertEquals(source, target);
   }
 
   /**
@@ -232,6 +291,37 @@ public class DiffTestCase
     addValue.putArray("phones").add(phone1).add(phone2);
     addValue.putArray("photos").add(photo3);
     assertTrue(d.contains(PatchOperation.add(null, addValue)));
+
+    List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
+    for(PatchOperation op : d2)
+    {
+      op.apply(source);
+    }
+    removeNullNodes(target);
+
+    // Have to compare photos explicitly since ordering of array values doesn't
+    // matter.
+    JsonNode sourcePhotos = source.remove("photos");
+    JsonNode targetPhotos = target.remove("photos");
+    assertEquals(sourcePhotos.size(), targetPhotos.size());
+    for(JsonNode sourceValue : sourcePhotos)
+    {
+      boolean found = false;
+      for(JsonNode targetValue : targetPhotos)
+      {
+        if(sourceValue.equals(targetValue))
+        {
+          found = true;
+          break;
+        }
+      }
+      if(!found)
+      {
+        fail("Source photo value " + sourceValue +
+            " not in target photo array " + targetPhotos);
+      }
+    }
+    assertEquals(source, target);
   }
 
   /**
@@ -395,5 +485,227 @@ public class DiffTestCase
     addValue.putArray("phones").add(phone1).add(phone2);
     addValue.putArray("photos").add(photo3);
     assertTrue(d.contains(PatchOperation.add(null, addValue)));
+
+    List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
+    for(PatchOperation op : d2)
+    {
+      op.apply(source);
+    }
+    removeNullNodes(target);
+    assertEquals(source, target);
+  }
+
+  /**
+   * Test comparison against 1st null object.
+   *
+   * @throws Exception
+   *           if an error occurs.
+   */
+  @Test
+  public void testDiffNullObject1() throws Exception
+  {
+    // *** singular ***
+    ObjectNode source = null;
+    ObjectNode target = mapper.getNodeFactory().objectNode();
+
+    // - unchanged
+    target.put("userName", "bjensen");
+    target.put("nickName", "bjj3");
+    target.put("title", "hot shot");
+    target.put("userType", "employee");
+
+    try
+    {
+      List<PatchOperation> d = JsonUtils.diff(source, target, false);
+      fail("Expected NullPointerException");
+    } catch (NullPointerException e)
+    {
+      // pass
+    }
+  }
+
+  /**
+   * Test comparison against 2nd null object.
+   *
+   * @throws Exception
+   *           if an error occurs.
+   */
+  @Test
+  public void testDiffNullObject2() throws Exception
+  {
+    // *** singular ***
+    ObjectNode source = mapper.getNodeFactory().objectNode();
+    ObjectNode target = null;
+
+    // - unchanged
+    source.put("userName", "bjensen");
+    source.put("nickName", "bjj3");
+    source.put("title", "hot shot");
+    source.put("userType", "employee");
+
+    try
+    {
+      List<PatchOperation> d = JsonUtils.diff(source, target, false);
+      fail("Expected NullPointerException");
+    } catch (NullPointerException e)
+    {
+      // pass
+    }
+  }
+
+  /**
+   * Test comparison of null objects.
+   *
+   * @throws Exception
+   *           if an error occurs.
+   */
+  @Test
+  public void testDiffNullObjects() throws Exception
+  {
+    // *** singular ***
+    ObjectNode source = null;
+    ObjectNode target = null;
+
+    try
+    {
+      List<PatchOperation> d = JsonUtils.diff(source, target, false);
+      fail("Expected NullPointerException");
+    } catch (NullPointerException e)
+    {
+      // pass
+    }
+
+    try
+    {
+      List<PatchOperation> d = JsonUtils.diff(source, target, true);
+      fail("Expected NullPointerException");
+    } catch (NullPointerException e)
+    {
+      // pass
+    }
+  }
+
+  /**
+   * Test comparison of same object with itself.
+   *
+   * @throws Exception
+   *           if an error occurs.
+   */
+  @Test
+  public void testDiffSameObject() throws Exception
+  {
+    // *** singular ***
+    ObjectNode source = mapper.getNodeFactory().objectNode();
+    ObjectNode target = source;
+
+    // - unchanged
+    source.put("userName", "bjensen");
+    source.put("nickName", "bjj3");
+    source.put("title", "hot shot");
+    source.put("userType", "employee");
+
+    List<PatchOperation> d = JsonUtils.diff(source, target, false);
+    assertEquals(d.size(), 0);
+  }
+
+  /**
+   * Test comparison of empty objects.
+   *
+   * @throws Exception
+   *           if an error occurs.
+   */
+  @Test
+  public void testDiffEmptyObjects() throws Exception
+  {
+    // *** singular ***
+    ObjectNode source = mapper.getNodeFactory().objectNode();
+    ObjectNode target = mapper.getNodeFactory().objectNode();
+
+    List<PatchOperation> d = JsonUtils.diff(source, target, false);
+    assertEquals(d.size(), 0);
+  }
+
+  /**
+   * Test comparison of objects with equal attributes.
+   *
+   * @throws Exception
+   *           if an error occurs.
+   */
+  @Test
+  public void testDiffNoChanges() throws Exception
+  {
+    // *** singular ***
+    ObjectNode source = mapper.getNodeFactory().objectNode();
+    ObjectNode target = mapper.getNodeFactory().objectNode();
+
+    source.put("userName", "bjensen");
+    target.put("userName", "bjensen");
+    source.put("nickName", "bjj3");
+    target.put("nickName", "bjj3");
+    source.put("title", "hot shot");
+    target.put("title", "hot shot");
+    source.put("userType", "employee");
+    target.put("userType", "employee");
+
+    List<PatchOperation> d = JsonUtils.diff(source, target, false);
+    assertEquals(d.size(), 0);
+  }
+
+  /**
+   * Test comparison of objects removing all attributes.
+   *
+   * @throws Exception
+   *           if an error occurs.
+   */
+  @Test
+  public void testRemoveAll() throws Exception
+  {
+    // *** singular ***
+    ObjectNode source = mapper.getNodeFactory().objectNode();
+    ObjectNode target = mapper.getNodeFactory().objectNode();
+
+    // - unchanged
+    source.put("userName", "bjensen");
+    target.putNull("userName");
+    source.put("nickName", "bjj3");
+    target.putNull("nickName");
+    source.put("title", "hot shot");
+    target.putNull("title");
+    source.put("userType", "employee");
+    target.putArray("userType");
+
+    List<PatchOperation> d = JsonUtils.diff(source, target, false);
+    assertEquals(d.size(), 4);
+    assertTrue(d.contains(PatchOperation.remove("userName")));
+    assertTrue(d.contains(PatchOperation.remove("nickName")));
+    assertTrue(d.contains(PatchOperation.remove("title")));
+    assertTrue(d.contains(PatchOperation.remove("userType")));
+
+    target = mapper.getNodeFactory().objectNode();
+    List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
+    for(PatchOperation op : d2)
+    {
+      op.apply(source);
+    }
+    removeNullNodes(target);
+    assertEquals(source, target);
+  }
+
+  private void removeNullNodes(JsonNode object)
+  {
+    Iterator<JsonNode> i = object.elements();
+    while(i.hasNext())
+    {
+      JsonNode field = i.next();
+      if(field.isNull() ||
+          (field.isArray() && field.size() == 0))
+      {
+        i.remove();
+      }
+      else
+      {
+        removeNullNodes(field);
+      }
+    }
   }
 }

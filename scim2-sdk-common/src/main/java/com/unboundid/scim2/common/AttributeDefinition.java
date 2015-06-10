@@ -362,7 +362,7 @@ public class AttributeDefinition
   private final Type type;
 
   @Attribute(description = "When an attribute is of type \"complex\", " +
-      "\"subAttributes\" defines set of attribute-attributes.",
+      "\"subAttributes\" defines set of sub-attributes.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -471,7 +471,7 @@ public class AttributeDefinition
     private Type type;
 
     /**
-     * The attribute-attributes of this attribute.
+     * The sub-attributes of this attribute.
      */
     private Collection<AttributeDefinition> subAttributes;
 
@@ -554,9 +554,9 @@ public class AttributeDefinition
     }
 
     /**
-     * Sets the attribute-attributes of the attribute.
+     * Sets the sub-attributes of the attribute.
      *
-     * @param subAttributes the attribute-attributes of the attribute.
+     * @param subAttributes the sub-attributes of the attribute.
      * @return this.
      */
     public Builder addSubAttributes(final AttributeDefinition ... subAttributes)
@@ -748,7 +748,7 @@ public class AttributeDefinition
    *
    * @param name The attribute's name.
    * @param type The attribute's data type.
-   * @param subAttributes The attribute-attributes of the attribute.
+   * @param subAttributes The sub-attributes of the attribute.
    * @param multiValued A boolean indicating if the attribute is multi-valued.
    * @param description The description of this attribute.
    * @param required A boolean indicating whether or not this attribute is
