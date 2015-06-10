@@ -50,14 +50,14 @@ public class ScimMultiValuedObject<T>
   /**
    * The display name for this value.  For example:  "Work phone number".
    */
-  @Attribute(description = "The display name of the sub attribute.",
+  @Attribute(description = "The display name of the attribute attribute.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   String display;
 
   /**
    * The actual value of this occurrence of a multi-valued attribute.
    */
-  @Attribute(description = "The actual value of the sub attribute.")
+  @Attribute(description = "The actual value of the attribute attribute.")
   T value;
 
   /**

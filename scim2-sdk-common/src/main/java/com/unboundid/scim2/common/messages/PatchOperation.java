@@ -448,6 +448,23 @@ public abstract class PatchOperation
   public abstract void apply(final ObjectNode node) throws ScimException;
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString()
+  {
+    try
+    {
+      return SchemaUtils.createSCIMCompatibleMapper().
+          writerWithDefaultPrettyPrinter().writeValueAsString(this);
+    }
+    catch (JsonProcessingException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.

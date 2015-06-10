@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.SchemaUtils;
@@ -33,7 +35,7 @@ import java.util.List;
  * values to get or set when manipulating SCIM resources using the
  * GenericScimResourceObject class.
  */
-public final class Path
+public final class Path implements Iterable<Path.Element>
 {
   private static Path ROOT = new Path(Collections.<Element>emptyList());
 
@@ -161,7 +163,7 @@ public final class Path
    * @return A new path to a sub-attribute of the attribute referenced by this
    * path.
    */
-  public Path sub(final String attribute)
+  public Path attribute(final String attribute)
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.add(new Element(attribute, null));
@@ -178,7 +180,7 @@ public final class Path
    * @return A new path to a sub-attribute of the attribute referenced by this
    * path.
    */
-  public Path sub(final String attribute, final Filter valueFilter)
+  public Path attribute(final String attribute, final Filter valueFilter)
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.add(new Element(attribute, valueFilter));
@@ -186,24 +188,63 @@ public final class Path
   }
 
   /**
-   * Retrieve the list of all element of this path in order from the root.
+   * Creates a new path to the parent of the attribute referenced by this path.
    *
-   * @return The list of all element of this path in order from the root.
+   * @return A new path to the parent of the attribute referenced by this path
+   *         or {@code null} if this path is a root path.
    */
-  public List<Element> getElements()
+  public Path parent()
   {
-    return elements;
+    if(isRoot())
+    {
+      return null;
+    }
+    return new Path(elements.subList(0, elements.size() - 1));
   }
 
   /**
-   * Whether this path targets the the SCIM resource itself.
+   * {@inheritDoc}
+   */
+  public Iterator<Element> iterator()
+  {
+    return elements.iterator();
+  }
+
+  /**
+   * Retrieves the path element at the specified index.
    *
-   * @return {@code true} if this path targets the SCIM resource itself or
-   * {@code false} otherwise.
+   * @param index The index of the path element to retrieve.
+   * @return The path element at the index.
+   * @throws IndexOutOfBoundsException if the index is out of range
+   *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+   */
+  public Element getElement(final int index) throws IndexOutOfBoundsException
+  {
+    return elements.get(index);
+  }
+
+  /**
+   * Whether this path targets the root of the JSON object that represents the
+   * SCIM resource or an schema extension.
+   *
+   * @return {@code true} if this path targets the root of the JSON object that
+   * represents the SCIM resource or an schema extension or {@code false}
+   * otherwise.
    */
   public boolean isRoot()
   {
-    return elements.isEmpty();
+    return elements.isEmpty() || elements.size() == 1 &&
+        SchemaUtils.isUrn(elements.get(0).getAttribute());
+  }
+
+  /**
+   * Retrieves the number of elements in this path.
+   *
+   * @return the number of elements in this path.
+   */
+  public int size()
+  {
+    return elements.size();
   }
 
   /**
@@ -213,6 +254,7 @@ public final class Path
    * @return The parsed path.
    * @throws BadRequestException if the path string could not be parsed.
    */
+  @JsonCreator
   public static Path fromString(final String pathString)
       throws BadRequestException
   {
@@ -235,21 +277,21 @@ public final class Path
    * Creates a path to the root of the JSON object that contains all the
    * extension attributes of an extension schema.
    *
-   * @param extensionSchemaUrn The the extension schema URN.
+   * @param extensionSchema The the extension schema URN.
    *
    * @return The path to the root of the JSON object that contains all the
    * extension attributes of an extension schema.
    */
-  public static Path extension(final String extensionSchemaUrn)
+  public static Path root(final String extensionSchema)
   {
-    if(!SchemaUtils.isUrn(extensionSchemaUrn))
+    if(!SchemaUtils.isUrn(extensionSchema))
     {
       throw new IllegalArgumentException(
           String.format("Invalid extension schema URN: %s",
-              extensionSchemaUrn));
+              extensionSchema));
     }
     return new Path(Collections.singletonList(
-        new Element(extensionSchemaUrn, null)));
+        new Element(extensionSchema, null)));
   }
 
   /**
@@ -264,76 +306,9 @@ public final class Path
    * @return The path to the root of the JSON object that contains all the
    * extension attributes of an extension schema.
    */
-  public static <T> Path extension(final Class<T> extensionClass)
+  public static <T> Path root(final Class<T> extensionClass)
   {
-    return extension(SchemaUtils.getSchemaUrn(extensionClass));
-  }
-
-  /**
-   * Creates a path to a core attribute.
-   *
-   * @param attribute The name of the core attribute.
-   *
-   * @return The path to a core attribute.
-   */
-  public static Path attribute(final String attribute)
-  {
-    return attribute(null, attribute, null);
-  }
-
-  /**
-   * Creates a path to an extension attribute.
-   *
-   * @param schemaUrn The URN of the extensions schema.
-   * @param attribute The name of the extension attribute.
-   *
-   * @return The path to a core attribute.
-   */
-  public static Path attribute(final String schemaUrn,
-                               final String attribute)
-  {
-    return attribute(schemaUrn, attribute, null);
-  }
-
-  /**
-   * Creates a path to a sub-set of values of a core attribute.
-   *
-   * @param attribute The name of the core attribute.
-   * @param valueFilter The value filter.
-   *
-   * @return The path to a sub-set of values of a core attribute.
-   */
-  public static Path attribute(final String attribute,
-                               final Filter valueFilter)
-  {
-    return attribute(null, attribute, valueFilter);
-  }
-
-  /**
-   * Creates a path to a sub-set of values of an extension attribute.
-   *
-   * @param schemaUrn The URN of the extensions schema.
-   * @param attribute The name of the extension attribute.
-   * @param valueFilter The value filter.
-   *
-   * @return The path to a sub-set of values of an extension attribute.
-   */
-  public static Path attribute(final String schemaUrn,
-                               final String attribute,
-                               final Filter valueFilter)
-  {
-    if(schemaUrn != null && !SchemaUtils.isUrn(schemaUrn))
-    {
-      throw new IllegalArgumentException(
-          String.format("Invalid schema URN: %s", schemaUrn));
-    }
-    ArrayList<Element> elements = new ArrayList<Element>(2);
-    if(schemaUrn != null)
-    {
-      elements.add(new Element(schemaUrn, null));
-    }
-    elements.add(new Element(attribute, valueFilter));
-    return new Path(elements);
+    return root(SchemaUtils.getSchemaUrn(extensionClass));
   }
 
   /**
@@ -343,7 +318,7 @@ public final class Path
    * @return The extension schema URN of the extension attribute referenced by
    * this path or {@code null} if this path references a core attribute.
    */
-  public String getSchemaUrn()
+  public String getExtensionSchema()
   {
     if(!elements.isEmpty() && SchemaUtils.isUrn(elements.get(0).getAttribute()))
     {
@@ -390,6 +365,7 @@ public final class Path
    * {@inheritDoc}
    */
   @Override
+  @JsonValue
   public String toString()
   {
     final StringBuilder builder = new StringBuilder();

@@ -21,16 +21,25 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.filters.FilterEvaluator;
+import com.unboundid.scim2.common.messages.PatchOperation;
 
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
 
 /**
  * Utility methods to manipulate JSON nodes using paths.
@@ -80,8 +89,7 @@ public class JsonUtils
       while(i.hasNext())
       {
         JsonNode node = i.next();
-        if(node.isObject() &&
-            FilterEvaluator.evaluate(valueFilter, (ObjectNode)node))
+        if(FilterEvaluator.evaluate(valueFilter, node))
         {
           matchingArray.add(node);
           if(removeMatching)
@@ -243,12 +251,23 @@ public class JsonUtils
           // in replace mode, a value filter requires that the target node
           // be an array and that we can find matching value(s)
           boolean matchesFound = false;
-          if (node.isArray() && value.isObject()) {
-
-            for (JsonNode matchingValues : filterArray((ArrayNode) node,
-                element.getValueFilter(), false)) {
-              matchesFound = true;
-              updateValues((ObjectNode) matchingValues, null, value);
+          if (node.isArray())
+          {
+            for(int i = 0; i < node.size(); i++)
+            {
+              if(FilterEvaluator.evaluate(
+                  element.getValueFilter(), node.get(i)))
+              {
+                matchesFound = true;
+                if(node.get(i).isObject() && value.isObject())
+                {
+                  updateValues((ObjectNode) node.get(i), null, value);
+                }
+                else
+                {
+                  ((ArrayNode) node).set(i, value);
+                }
+              }
             }
           }
           if(!matchesFound)
@@ -370,7 +389,7 @@ public class JsonUtils
 
       if(node.isArray())
       {
-        if(((ArrayNode)node).size() > 0)
+        if(node.size() > 0)
         {
           setPathPresent(true);
         }
@@ -588,6 +607,406 @@ public class JsonUtils
   }
 
   /**
+   * Compares two JsonNodes for order. Nodes containing datetime and numerical
+   * values are ordered accordingly. Otherwise, the values' string
+   * representation will be compared lexicographically.
+   *
+   * @param n1 the first node to be compared.
+   * @param n2 the second node to be compared.
+   * @return a negative integer, zero, or a positive integer as the
+   *         first argument is less than, equal to, or greater than the second.
+   */
+  public static int compareTo(final JsonNode n1, final JsonNode n2)
+  {
+    if (n1.isTextual() && n2.isTextual())
+    {
+      Date d1 = dateValue(n1);
+      Date d2 = dateValue(n2);
+      if (d1 != null && d2 != null)
+      {
+        return d1.compareTo(d2);
+      }
+      else
+      {
+        return n1.textValue().compareToIgnoreCase(n2.textValue());
+      }
+    }
+
+    if (n1.isNumber() && n2.isNumber())
+    {
+      if(n1.isFloatingPointNumber() || n2.isFloatingPointNumber())
+      {
+        return Double.compare(n1.doubleValue(), n2.doubleValue());
+      }
+
+      return Long.compare(n1.longValue(), n2.longValue());
+    }
+
+    // Compare everything else lexicographically
+    return n1.asText().compareTo(n2.asText());
+  }
+
+  /**
+   * Generates a list of patch operations that can be applied to the source
+   * node in order to make it match the target node.
+   *
+   * @param source The source node for which the set of modifications should
+   *               be generated.
+   * @param target The target node, which is what the source node should
+   *               look like if the returned modifications are applied.
+   * @param removeMissing Whether to remove fields that are missing in the
+   *                      target node.
+   * @return A diff with modifications that can be applied to the source
+   *         resource in order to make it match the target resource.
+   */
+  public static List<PatchOperation> diff(
+      final ObjectNode source, final ObjectNode target,
+      final boolean removeMissing)
+  {
+    List<PatchOperation> ops = new LinkedList<PatchOperation>();
+    ObjectNode targetToAdd = target.deepCopy();
+    ObjectNode targetToReplace = target.deepCopy();
+    diff(Path.root(), source, targetToAdd, targetToReplace, ops, removeMissing);
+    if(targetToReplace.size() > 0)
+    {
+      ops.add(PatchOperation.replace(null, targetToReplace));
+    }
+    if(targetToAdd.size() > 0)
+    {
+      ops.add(PatchOperation.add(null, targetToAdd));
+    }
+    return ops;
+  }
+
+  /**
+   * Internal diff that is used to recursively diff source and target object
+   * nodes.
+   *
+   * @param parentPath The path to the source object node.
+   * @param source The source node.
+   * @param targetToAdd The target node that will be modified to only contain
+   *                    the fields to add.
+   * @param targetToReplace The target node that will be modified to only
+   *                        contain the fields to replace.
+   * @param operations The list of operations to append.
+   * @param removeMissing Whether to remove fields that are missing in the
+   *                      target node.
+   */
+  private static void diff(final Path parentPath,
+                           final ObjectNode source,
+                           final ObjectNode targetToAdd,
+                           final ObjectNode targetToReplace,
+                           final List<PatchOperation> operations,
+                           final boolean removeMissing)
+  {
+    // First iterate through the source fields and compare it to the target
+    Iterator<Map.Entry<String, JsonNode>> si = source.fields();
+    while (si.hasNext())
+    {
+      Map.Entry<String, JsonNode> sourceField = si.next();
+      Path path = parentPath.attribute(sourceField.getKey());
+      JsonNode sourceValue = sourceField.getValue();
+      JsonNode targetValueToAdd = targetToAdd.remove(sourceField.getKey());
+      JsonNode targetValueToReplace =
+          targetToReplace == targetToAdd ? targetValueToAdd :
+              targetToReplace.remove(sourceField.getKey());
+      if (targetValueToAdd == null)
+      {
+        if(removeMissing)
+        {
+          operations.add(PatchOperation.remove(path.toString()));
+        }
+        continue;
+      }
+      if (sourceValue.getNodeType() == targetValueToAdd.getNodeType())
+      {
+        // Value present in both and they are of the same type.
+        if (sourceValue.isObject())
+        {
+          // Recursively diff the object node.
+          diff(path,
+              (ObjectNode) sourceValue, (ObjectNode) targetValueToAdd,
+              (ObjectNode) targetValueToReplace, operations, removeMissing);
+          // Include the object node if there are fields to add or replace.
+          if (targetValueToAdd.size() > 0)
+          {
+            targetToAdd.set(sourceField.getKey(), targetValueToAdd);
+          }
+          if (targetValueToReplace.size() > 0)
+          {
+            targetToReplace.set(sourceField.getKey(), targetValueToReplace);
+          }
+        } else if (sourceValue.isArray())
+        {
+          if (targetValueToAdd.size() == 0)
+          {
+            // Explicitly clear all attribute values.
+            operations.add(PatchOperation.remove(path.toString()));
+          } else
+          {
+            // Go through each value and try to individually patch them first
+            // instead of replacing all values.
+            List<PatchOperation> targetOpToRemoveOrReplace =
+                new LinkedList<PatchOperation>();
+            boolean replaceAllValues = false;
+            for(JsonNode sv : sourceValue)
+            {
+              JsonNode tv = removeMatchingValue(sv,
+                  (ArrayNode) targetValueToAdd);
+              Filter valueFilter = generateValueFilter(sv);
+              if(valueFilter == null)
+              {
+                replaceAllValues = true;
+                Debug.debug(Level.WARNING, DebugType.OTHER,
+                    "Performing full replace of target " +
+                        "array node " + path + " since the it is not " +
+                        "possible to generate a value filter to uniquely " +
+                        "identify the value " + sv.toString());
+                break;
+              }
+              Path valuePath = parentPath.attribute(
+                  sourceField.getKey(), valueFilter);
+              if(tv != null)
+              {
+                // The value is in both source and target arrays.
+                if (sv.isObject() && tv.isObject())
+                {
+                  // Recursively diff the object node.
+                  diff(valuePath, (ObjectNode) sv, (ObjectNode) tv,
+                      (ObjectNode) tv, operations, removeMissing);
+                  if (tv.size() > 0)
+                  {
+                    targetOpToRemoveOrReplace.add(
+                        PatchOperation.replace(valuePath.toString(), tv));
+                  }
+                }
+              }
+              else
+              {
+                targetOpToRemoveOrReplace.add(
+                    PatchOperation.remove(valuePath.toString()));
+              }
+            }
+            if (!replaceAllValues && targetValueToReplace.size() <=
+                targetValueToAdd.size() + targetOpToRemoveOrReplace.size())
+            {
+              // We are better off replacing the entire array.
+              Debug.debug(Level.INFO, DebugType.OTHER,
+                  "Performing full replace of target " +
+                      "array node " + path + " since the " +
+                      "array (" + targetValueToReplace.size() + ") " +
+                      "is smaller than removing and " +
+                      "replacing (" + targetOpToRemoveOrReplace.size() + ") " +
+                      "then adding (" + targetValueToAdd.size() + ")  " +
+                      "the values individually");
+              replaceAllValues = true;
+              targetToReplace.set(sourceField.getKey(), targetValueToReplace);
+
+            }
+            if(replaceAllValues)
+            {
+              targetToReplace.set(sourceField.getKey(), targetValueToReplace);
+            }
+            else
+            {
+              if (!targetOpToRemoveOrReplace.isEmpty())
+              {
+                operations.addAll(targetOpToRemoveOrReplace);
+              }
+              if (targetValueToAdd.size() > 0)
+              {
+                targetToAdd.set(sourceField.getKey(), targetValueToAdd);
+              }
+            }
+          }
+        } else
+        {
+          // They are value nodes.
+          if (!sourceValue.equals(targetValueToAdd))
+          {
+            // Just replace with the target value.
+            targetToReplace.set(sourceField.getKey(), targetValueToReplace);
+          }
+        }
+      } else
+      {
+        // Value parent in both but they are of different types.
+        if (targetValueToAdd.isNull() ||
+            (targetValueToAdd.isArray() && targetValueToAdd.size() == 0))
+        {
+          // Explicitly clear attribute value.
+          operations.add(PatchOperation.remove(path.toString()));
+        } else
+        {
+          // Just replace with the target value.
+          targetToReplace.set(sourceField.getKey(), targetValueToReplace);
+        }
+      }
+    }
+
+    if(targetToAdd != targetToReplace)
+    {
+      // Now iterate through the fields in targetToReplace and remove any that
+      // are not in the source. These new fields should only be in targetToAdd
+      Iterator<String> ri = targetToReplace.fieldNames();
+      while (ri.hasNext())
+      {
+        if (!source.has(ri.next()))
+        {
+          ri.remove();
+        }
+      }
+    }
+  }
+
+  /**
+   * Removes the value from an ArrayNode that matches the provided node.
+   *
+   * @param sourceValue The sourceValue node to match.
+   * @param targetValues The ArrayNode containing the values to remove from.
+   * @return The matching value that was removed or {@code null} if no matching
+   *         value was found.
+   */
+  private static JsonNode removeMatchingValue(final JsonNode sourceValue,
+                                              final ArrayNode targetValues)
+  {
+    if(sourceValue.isObject())
+    {
+      // Find a target value that has the most fields in common with the source
+      // and have identical values. Common fields that are also one of the
+      // SCIM standard multi-value sub-attributes (ie. type, value, etc...) have
+      // a higher weight when determining the best matching value.
+      TreeMap<Integer, Integer> matchScoreToIndex =
+          new TreeMap<Integer, Integer>();
+      for(int i = 0; i < targetValues.size(); i++)
+      {
+        JsonNode targetValue = targetValues.get(i);
+        if(targetValue.isObject())
+        {
+          int matchScore = 0;
+          Iterator<String> si = sourceValue.fieldNames();
+          while(si.hasNext())
+          {
+            String field = si.next();
+            if(sourceValue.get(field).equals(targetValue.path(field)))
+            {
+              if(field.equals("value") || field.equals("$ref"))
+              {
+                // These fields have the highest chance of having unique values.
+                matchScore += 3;
+              }
+              else if(field.equals("type") || field.equals("display"))
+              {
+                // These fields should mostly be unique.
+                matchScore += 2;
+              }
+              else if(field.equals("primary"))
+              {
+                // This field will definitely not be unique.
+                matchScore += 0;
+              }
+              else
+              {
+                // Not one of the normative fields. Use the default weight.
+                matchScore += 1;
+              }
+            }
+          }
+          if(matchScore > 0)
+          {
+            matchScoreToIndex.put(matchScore, i);
+          }
+        }
+      }
+      if(!matchScoreToIndex.isEmpty())
+      {
+        return targetValues.remove(matchScoreToIndex.lastEntry().getValue());
+      }
+    }
+    else
+    {
+      // Find an exact match
+      for(int i = 0; i < targetValues.size(); i++)
+      {
+        if(sourceValue.equals(targetValues.get(i)))
+        {
+          return targetValues.remove(i);
+        }
+      }
+    }
+
+    // Can't find a match at all.
+    return null;
+  }
+
+  /**
+   * Generate a value filter that may be used to uniquely identify this value
+   * in an array node.
+   *
+   * @param value The value to generate a filter from.
+   * @return The value filter or {@code null} if a value filter can not be used
+   *         to uniquely identify the node.
+   */
+  private static Filter generateValueFilter(final JsonNode value)
+  {
+    if (value.isValueNode())
+    {
+      // Use the implicit "value" sub-attribute to reference this value.
+      return Filter.eq(Path.root().attribute("value"), (ValueNode) value);
+    }
+    if (value.isObject())
+    {
+      List<Filter> filters = new ArrayList<Filter>(value.size());
+      Iterator<Map.Entry<String, JsonNode>> fieldsIterator = value.fields();
+      while (fieldsIterator.hasNext())
+      {
+        Map.Entry<String, JsonNode> field = fieldsIterator.next();
+        if (!field.getValue().isValueNode())
+        {
+          // We can't nest value filters.
+          return null;
+        }
+        filters.add(Filter.eq(Path.root().attribute(field.getKey()),
+            (ValueNode) field.getValue()));
+      }
+      return Filter.and(filters);
+    }
+
+    // We can't uniquely identify this value with a filter.
+    return null;
+  }
+
+  /**
+   * Try to parse out a date from a JSON text node.
+   *
+   * @param node The JSON node to parse.
+   *
+   * @return A parsed date instance or {@code null} if the text is not an
+   * ISO8601 formatted date and time string.
+   */
+  private static Date dateValue(final JsonNode node)
+  {
+    String text = node.textValue().trim();
+    if (text.length() >= 19 &&
+        Character.isDigit(text.charAt(0)) &&
+        Character.isDigit(text.charAt(1)) &&
+        Character.isDigit(text.charAt(2)) &&
+        Character.isDigit(text.charAt(3)) &&
+        text.charAt(4) == '-')
+    {
+      try
+      {
+        return ISO8601Utils.parse(text, new ParsePosition(0));
+      }
+      catch (ParseException e)
+      {
+        // This is not a date after all.
+      }
+    }
+    return null;
+  }
+
+  /**
    * Internal method to recursively gather values based on path.
    *
    * @param nodeVisitor The NodeVisitor to use to handle the traversed nodes.
@@ -603,8 +1022,8 @@ public class JsonUtils
                                      final Path path)
       throws ScimException
   {
-    Path.Element element = path.isRoot() ? null : path.getElements().get(index);
-    if(index < path.getElements().size() - 1)
+    Path.Element element = path.size() == 0 ? null : path.getElement(index);
+    if(index < path.size() - 1)
     {
       JsonNode child = nodeVisitor.visitInnerNode(node, element);
       if(child.isArray())

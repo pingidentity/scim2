@@ -57,10 +57,10 @@ import java.util.List;
 @JsonSerialize(using = GenericScimObjectSerializer.class)
 public final class GenericScimResource implements ScimResource
 {
-  private static final Path SCHEMAS = Path.attribute("schemas");
-  private static final Path ID = Path.attribute("id");
-  private static final Path EXTERNAL_ID = Path.attribute("externalId");
-  private static final Path META = Path.attribute("meta");
+  private static final Path SCHEMAS = Path.root().attribute("schemas");
+  private static final Path ID = Path.root().attribute("id");
+  private static final Path EXTERNAL_ID = Path.root().attribute("externalId");
+  private static final Path META = Path.root().attribute("meta");
 
   private final ObjectNode objectNode;
 

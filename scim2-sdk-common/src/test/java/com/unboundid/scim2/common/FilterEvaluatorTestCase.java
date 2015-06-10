@@ -18,7 +18,6 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
@@ -208,6 +207,10 @@ public class FilterEvaluatorTestCase
             new Object[] { "meta.created lt \"" +
                 ISO8601Utils.format(new Date(date.getTime() - 1000), false,
                     TimeZone.getTimeZone("CST")) + "\"", false },
+            new Object[] { "schemas[value eq " +
+                "\"urn:unboundid:schemas:baseSchema\"]", true },
+            new Object[] { "schemas[value eq " +
+                "\"urn:unboundid:schemas:something\"]", false },
         };
   }
 
@@ -219,10 +222,10 @@ public class FilterEvaluatorTestCase
    * @throws ScimException If the filter string is invalid.
    */
   @Test(dataProvider = "testValidFilterStrings")
-  public void testBinaryFilterValue(String filter, boolean result)
+  public void testFilter(String filter, boolean result)
       throws ScimException
   {
-    assertEquals(FilterEvaluator.evaluate(Filter.fromString(filter),
-            (ObjectNode)node), result);
+    assertEquals(FilterEvaluator.evaluate(Filter.fromString(filter), node),
+        result);
   }
 }

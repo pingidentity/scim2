@@ -877,9 +877,10 @@ public class JsonUtilsTestCase
     assertEquals(gso.getValues("complex.array.array.string",
             String.class).get(3), "new");
 
-    gso.setValue(Path.attribute("urn:some:extension", "attribute"),
+    gso.setValue(Path.root("urn:some:extension").attribute("attribute"),
         "extensionValue");
-    assertEquals(gso.getValue(Path.attribute("urn:some:extension", "attribute"),
+    assertEquals(gso.getValue(
+        Path.root("urn:some:extension").attribute("attribute"),
         String.class), "extensionValue");
   }
 
@@ -918,8 +919,8 @@ public class JsonUtilsTestCase
     assertEquals(gso.getValues("complex.array.complex",
             ArrayValue.class).get(1), value1);
 
-    gso.setValue(Path.extension("urn:some:extension"), meta);
-    assertEquals(gso.getValue(Path.extension("urn:some:extension"),
+    gso.setValue(Path.root("urn:some:extension"), meta);
+    assertEquals(gso.getValue(Path.root("urn:some:extension"),
         ArrayValue.class), meta);
   }
 
@@ -962,10 +963,11 @@ public class JsonUtilsTestCase
     assertEquals(gso.getValues("complex.array", ArrayValue.class).get(1),
         value1);
 
-    gso.setValues(Path.attribute("urn:some:extension", "attribute"),
+    gso.setValues(Path.root("urn:some:extension").attribute("attribute"),
         meta1, meta2);
-    assertEquals(gso.getValues(Path.attribute("urn:some:extension",
-        "attribute"), ArrayValue.class), values);
+    assertEquals(gso.getValues(
+        Path.root("urn:some:extension").attribute("attribute"),
+        ArrayValue.class), values);
   }
 
 
@@ -1080,53 +1082,59 @@ public class JsonUtilsTestCase
 
     return new Object[][] {
         {
-            "{}", Path.attribute("simpleString"), false
+            "{}", Path.root().attribute("simpleString"), false
         },
         {
-            jsonString, Path.attribute("simpleString"), true
+            jsonString, Path.root().attribute("simpleString"), true
         },
         {
-            jsonString, Path.attribute("nullValue"), true
-        },
-        {
-            jsonString,
-            Path.attribute("singleComplex").sub("address").sub("l1"), true
+            jsonString, Path.root().attribute("nullValue"), true
         },
         {
             jsonString,
-            Path.attribute("singleComplex").sub("address").sub("l3"), false
+            Path.root().attribute("singleComplex").attribute("address").
+                attribute("l1"), true
         },
         {
             jsonString,
-            Path.attribute("missing"), false
+            Path.root().attribute("singleComplex").attribute("address").
+                attribute("l3"), false
         },
         {
             jsonString,
-            Path.attribute("singleComplex").sub("address").sub("nullValue"),
+            Path.root().attribute("missing"), false
+        },
+        {
+            jsonString,
+            Path.root().attribute("singleComplex").attribute("address").
+                attribute("nullValue"),
             true
         },
         {
             jsonString,
-            Path.attribute("list", Filter.eq("id", 2)), true
+            Path.root().attribute("list", Filter.eq("id", 2)), true
         },
         {
             jsonString,
-            Path.attribute("list", Filter.eq("id", "5")), false
+            Path.root().attribute("list", Filter.eq("id", "5")), false
         },
         {
             jsonString,
-            Path.attribute("list", Filter.eq("id", 2)).sub("address").sub("l2"),
+            Path.root().attribute("list", Filter.eq("id", 2)).
+                attribute("address").attribute("l2"),
             true
         },
         {
             jsonString,
-            Path.attribute("list", Filter.eq("id", 3)).sub("address").sub("l3"),
+            Path.root().attribute("list", Filter.eq("id", 3)).
+                attribute("address").attribute("l3"),
             false
         },
         {
             jsonString,
-            Path.attribute(
-                "list", Filter.eq("id", 3)).sub("address").sub("nullValue"),
+            Path.root().attribute(
+                "list", Filter.eq("id", 3)).attribute("address").
+                attribute("nullValue"),
             true
         }
     };

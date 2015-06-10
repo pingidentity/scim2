@@ -223,7 +223,7 @@ public class ExtensionsTest
     Assert.assertEquals(
         userNode.path("urn:unboundid:schemas:FavoriteColor").
             path("favoriteColor").asText(),
-        user.getExtensionValue(Path.extension(ExtensionClass.class),
+        user.getExtensionValue(Path.root(ExtensionClass.class),
             ExtensionClass.class).getFavoriteColor());
   }
 
@@ -279,7 +279,7 @@ public class ExtensionsTest
 
     // check the extension values
     Assert.assertEquals(
-        user.getExtensionValue(Path.extension(ExtensionClass.class),
+        user.getExtensionValue(Path.root(ExtensionClass.class),
             ExtensionClass.class).getFavoriteColor(),
         "extension:favoritecolor");
   }
@@ -295,7 +295,7 @@ public class ExtensionsTest
 
     ExtensionClass extensionClass =
         commonScimObject.getValue(
-            Path.extension(ExtensionClass.class), ExtensionClass.class);
+            Path.root(ExtensionClass.class), ExtensionClass.class);
     Map extensionAttrs =
         commonScimObject.getValue("urn:unboundid:schemas:FavoriteColor:",
             Map.class);
@@ -336,7 +336,7 @@ public class ExtensionsTest
     user.setId("user:id");
     user.setExternalId("user:externalId");
     user.setMeta(meta);
-    user.setExtensionValue(Path.extension(extensionClass.getClass()),
+    user.setExtensionValue(Path.root(extensionClass.getClass()),
         extensionClass);
 
     return user;
