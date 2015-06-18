@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
@@ -58,13 +59,27 @@ public abstract class PatchOperation
      *
      * @param path The path targeted by this patch operation.
      * @param value The value(s) to add.
+     * @throws JsonMappingException If an value is not valid.
      */
     @JsonCreator
     private AddOperation(
-        @JsonProperty(value = "path", required = true) final String path,
+        @JsonProperty(value = "path") final Path path,
         @JsonProperty(value = "value", required = true) final JsonNode value)
+        throws JsonMappingException
     {
       super(path);
+      if(value == null || value.isNull() ||
+           ((value.isArray() || value.isObject()) && value.size() == 0))
+       {
+         throw new JsonMappingException(
+             "value field must not be null or an empty container");
+       }
+      if(path == null && !value.isObject())
+      {
+        throw new JsonMappingException(
+            "value field must be a JSON object containing the attributes to " +
+                "add");
+      }
       this.value = value;
     }
 
@@ -83,7 +98,7 @@ public abstract class PatchOperation
     @Override
     public JsonNode getJsonNode()
     {
-      return value;
+      return value.deepCopy();
     }
 
     /**
@@ -125,7 +140,7 @@ public abstract class PatchOperation
     public void apply(final ObjectNode node) throws ScimException
     {
       JsonUtils.addValue(getPath() == null ? Path.root() :
-          Path.fromString(getPath()), node, value);
+          getPath(), node, value);
     }
 
     /**
@@ -175,12 +190,19 @@ public abstract class PatchOperation
      * Create a new remove patch operation.
      *
      * @param path The path targeted by this patch operation.
+     * @throws JsonMappingException If an path is null.
      */
     @JsonCreator
     private RemoveOperation(
-        @JsonProperty(value = "path", required = true) final String path)
+        @JsonProperty(value = "path", required = true) final Path path)
+        throws JsonMappingException
     {
       super(path);
+      if(path == null)
+      {
+        throw new JsonMappingException(
+            "path field must not be null");
+      }
     }
 
     /**
@@ -198,7 +220,7 @@ public abstract class PatchOperation
     @Override
     public void apply(final ObjectNode node) throws ScimException
     {
-      JsonUtils.removeValues(Path.fromString(getPath()), node);
+      JsonUtils.removeValues(getPath(), node);
     }
 
     /**
@@ -247,13 +269,27 @@ public abstract class PatchOperation
      *
      * @param path The path targeted by this patch operation.
      * @param value The value(s) to replace.
+     * @throws JsonMappingException If an value is not valid.
      */
     @JsonCreator
     private ReplaceOperation(
-        @JsonProperty(value = "path", required = true) final String path,
+        @JsonProperty(value = "path") final Path path,
         @JsonProperty(value = "value", required = true) final JsonNode value)
+        throws JsonMappingException
     {
       super(path);
+      if(value == null || value.isNull() ||
+           ((value.isArray() || value.isObject()) && value.size() == 0))
+       {
+         throw new JsonMappingException(
+             "value field must not be null or an empty container");
+       }
+      if(path == null && !value.isObject())
+      {
+        throw new JsonMappingException(
+            "value field must be a JSON object containing the attributes to " +
+                "replace");
+      }
       this.value = value;
     }
 
@@ -272,7 +308,7 @@ public abstract class PatchOperation
     @Override
     public JsonNode getJsonNode()
     {
-      return value;
+      return value.deepCopy();
     }
 
     /**
@@ -314,7 +350,7 @@ public abstract class PatchOperation
     public void apply(final ObjectNode node) throws ScimException
     {
       JsonUtils.replaceValue(getPath() == null ? Path.root() :
-          Path.fromString(getPath()), node, value);
+          getPath(), node, value);
     }
 
     /**
@@ -359,14 +395,14 @@ public abstract class PatchOperation
     }
   }
 
-  private final String path;
+  private final Path path;
 
   /**
    * Create a new patch operation.
    *
    * @param path The path targeted by this patch operation.
    */
-  PatchOperation(final String path)
+  PatchOperation(final Path path)
   {
     this.path = path;
   }
@@ -384,7 +420,7 @@ public abstract class PatchOperation
    *
    * @return The path targeted by this operation.
    */
-  public String getPath()
+  public Path getPath()
   {
     return path;
   }
@@ -472,9 +508,16 @@ public abstract class PatchOperation
    *
    * @return The new add patch operation.
    */
-  public static PatchOperation add(final String path, final JsonNode value)
+  public static PatchOperation add(final Path path, final JsonNode value)
   {
-    return new AddOperation(path, value);
+    try
+    {
+      return new AddOperation(path, value);
+    }
+    catch (JsonMappingException e)
+    {
+      throw new IllegalArgumentException(e);
+    }
   }
 
   /**
@@ -485,9 +528,16 @@ public abstract class PatchOperation
    *
    * @return The new replace patch operation.
    */
-  public static PatchOperation replace(final String path, final JsonNode value)
+  public static PatchOperation replace(final Path path, final JsonNode value)
   {
-    return new ReplaceOperation(path, value);
+    try
+    {
+      return new ReplaceOperation(path, value);
+    }
+    catch (JsonMappingException e)
+    {
+      throw new IllegalArgumentException(e);
+    }
   }
 
   /**
@@ -497,8 +547,15 @@ public abstract class PatchOperation
    *
    * @return The new delete patch operation.
    */
-  public static PatchOperation remove(final String path)
+  public static PatchOperation remove(final Path path)
   {
-    return new RemoveOperation(path);
+    try
+    {
+      return new RemoveOperation(path);
+    }
+    catch (JsonMappingException e)
+    {
+      throw new IllegalArgumentException(e);
+    }
   }
 }

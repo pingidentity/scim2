@@ -396,6 +396,6 @@ public class SchemaGenerationTest
   private void addSubAttributeFields(List<String> expectedAttributes)
   {
     expectedAttributes.addAll(Arrays.asList(
-        "type", "primary", "display", "value", "ref"));
+        "type", "primary", "display", "value", "$ref"));
   }
 }

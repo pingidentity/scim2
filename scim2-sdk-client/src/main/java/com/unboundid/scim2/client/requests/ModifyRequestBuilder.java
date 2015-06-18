@@ -211,12 +211,12 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @param object The value to set.
    *
    * @return This patch operation request.
+   * @throws ScimException If the path is invalid.
    */
   public T replaceValue(final String path, final Object object)
+      throws ScimException
   {
-    JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
-    return addOperation(PatchOperation.replace(path, newObjectNode));
+    return replaceValue(Path.fromString(path), object);
   }
 
   /**
@@ -230,7 +230,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T replaceValue(final Path path, final Object object)
   {
-    return replaceValue(path.toString(), object);
+    JsonNode newObjectNode =
+        SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
+    return addOperation(PatchOperation.replace(path, newObjectNode));
   }
 
   /**
@@ -241,13 +243,12 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @param objects The value(s) to set.
    *
    * @return This patch operation request.
+   * @throws ScimException If the path is invalid.
    */
   public T replaceValues(final String path, final Collection<Object> objects)
+      throws ScimException
   {
-    JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
-    return addOperation(PatchOperation.replace(path, newObjectNode));
-
+    return replaceValues(Path.fromString(path), objects);
   }
 
   /**
@@ -261,20 +262,6 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T replaceValues(final Path path, final Collection<Object> objects)
   {
-    return replaceValues(path.toString(), objects);
-  }
-
-  /**
-   * Set values of the attribute specified by the path, replacing any existing
-   * values.
-   *
-   * @param path The path to the attribute whose value to set.
-   * @param objects The value(s) to set.
-   *
-   * @return This patch operation request.
-   */
-  public T replaceValues(final String path, final Object... objects)
-  {
     JsonNode newObjectNode =
         SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
     return addOperation(PatchOperation.replace(path, newObjectNode));
@@ -288,10 +275,29 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @param objects The value(s) to set.
    *
    * @return This patch operation request.
+   * @throws ScimException If the path is invalid.
+   */
+  public T replaceValues(final String path, final Object... objects)
+      throws ScimException
+  {
+    return replaceValues(Path.fromString(path), objects);
+
+  }
+
+  /**
+   * Set values of the attribute specified by the path, replacing any existing
+   * values.
+   *
+   * @param path The path to the attribute whose value to set.
+   * @param objects The value(s) to set.
+   *
+   * @return This patch operation request.
    */
   public T replaceValues(final Path path, final Object... objects)
   {
-    return replaceValues(path.toString(), objects);
+    JsonNode newObjectNode =
+        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+    return addOperation(PatchOperation.replace(path, newObjectNode));
   }
 
   /**
@@ -301,13 +307,12 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @param objects The values to add.
    *
    * @return This patch operation request.
+   * @throws ScimException If the path is invalid.
    */
   public T addValues(final String path, final Collection<?> objects)
+      throws ScimException
   {
-    JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
-    return addOperation(PatchOperation.add(path, newObjectNode));
-
+    return addValues(Path.fromString(path), objects);
   }
 
   /**
@@ -320,7 +325,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T addValues(final Path path, final Collection<?> objects)
   {
-    return addValues(path.toString(), objects);
+    JsonNode newObjectNode =
+        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+    return addOperation(PatchOperation.add(path, newObjectNode));
   }
 
   /**
@@ -330,12 +337,13 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @param objects The values to add.
    *
    * @return This patch operation request.
+   * @throws ScimException If the path is invalid.
    */
   public T addValues(final String path, final Object... objects)
+      throws ScimException
   {
-    JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
-    return addOperation(PatchOperation.add(path, newObjectNode));
+    return addValues(Path.fromString(path), objects);
+
 
   }
 
@@ -349,7 +357,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T addValues(final Path path, final Object... objects)
   {
-    return addValues(path.toString(), objects);
+    JsonNode newObjectNode =
+        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+    return addOperation(PatchOperation.add(path, newObjectNode));
   }
 
   /**
@@ -358,10 +368,13 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @param path The path to the attribute whose value to remove.
 
    * @return This patch operation request.
+   * @throws ScimException If the path is invalid.
    */
   public T removeValues(final String path)
+      throws ScimException
   {
-    return addOperation(PatchOperation.remove(path));
+    return removeValues(Path.fromString(path));
+
   }
 
   /**
@@ -375,7 +388,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
   public T removeValues(final Path path)
       throws ScimException
   {
-    return removeValues(path.toString());
+    return addOperation(PatchOperation.remove(path));
   }
 
   /**
