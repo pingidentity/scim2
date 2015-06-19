@@ -426,7 +426,9 @@ public abstract class PatchOperation
   }
 
   /**
-   * Retrieve the value or values of the patch operation as a JsonNode.
+   * Retrieve the value or values of the patch operation as a JsonNode. The
+   * returned JsonNode is a copy so it may be altered without altering this
+   * operation.
    *
    * @return  The value or values of the patch operation, or {@code null}
    *          if this operation is a remove operation.
