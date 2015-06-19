@@ -18,8 +18,10 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.unboundid.scim2.common.Meta;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.AttributeDefinition;
@@ -46,6 +48,69 @@ import java.util.Stack;
  */
 public class SchemaUtils
 {
+  /**
+   * The attribute definition for the SCIM 2.0 standard schemas attribute.
+   */
+  public static final AttributeDefinition SCHEMAS_ATTRIBUTE_DEFINITION;
+
+  /**
+   * The attribute definition for the SCIM 2.0 standard id attribute.
+   */
+  public static final AttributeDefinition ID_ATTRIBUTE_DEFINITION;
+
+  /**
+   * The attribute definition for the SCIM 2.0 standard externalId attribute.
+   */
+  public static final AttributeDefinition EXTERNAL_ID_ATTRIBUTE_DEFINITION;
+
+  /**
+   * The attribute definition for the SCIM 2.0 standard meta attribute.
+   */
+  public static final AttributeDefinition META_ATTRIBUTE_DEFINITION;
+
+  static
+  {
+    AttributeDefinition.Builder builder = new AttributeDefinition.Builder();
+    builder.setType(AttributeDefinition.Type.STRING);
+    builder.setName("schemas");
+    builder.setRequired(true);
+    builder.setCaseExact(true);
+    builder.setMultiValued(true);
+    builder.setMutability(AttributeDefinition.Mutability.READ_WRITE);
+    builder.setReturned(AttributeDefinition.Returned.ALWAYS);
+    SCHEMAS_ATTRIBUTE_DEFINITION = builder.build();
+
+    builder = new AttributeDefinition.Builder();
+    builder.setType(AttributeDefinition.Type.STRING);
+    builder.setName("id");
+    builder.setCaseExact(true);
+    builder.setMutability(AttributeDefinition.Mutability.READ_ONLY);
+    builder.setReturned(AttributeDefinition.Returned.ALWAYS);
+    ID_ATTRIBUTE_DEFINITION = builder.build();
+
+    builder = new AttributeDefinition.Builder();
+    builder.setType(AttributeDefinition.Type.STRING);
+    builder.setName("externalId");
+    builder.setCaseExact(true);
+    builder.setMutability(AttributeDefinition.Mutability.READ_WRITE);
+    EXTERNAL_ID_ATTRIBUTE_DEFINITION = builder.build();
+
+    builder = new AttributeDefinition.Builder();
+    builder.setType(AttributeDefinition.Type.COMPLEX);
+    builder.setName("meta");
+    builder.setMutability(AttributeDefinition.Mutability.READ_ONLY);
+    try
+    {
+      Collection<AttributeDefinition> subAttributes = getAttributes(Meta.class);
+      builder.addSubAttributes(subAttributes.toArray(
+          new AttributeDefinition[subAttributes.size()]));
+    }
+    catch (IntrospectionException e)
+    {
+      throw new RuntimeException(e);
+    }
+    META_ATTRIBUTE_DEFINITION = builder.build();
+  }
 
   /**
    * Gets property descriptors for the given class.
@@ -112,11 +177,19 @@ public class SchemaUtils
 
       Field field = findField(cls, propertyDescriptor.getName());
 
+      if(field == null)
+      {
+        continue;
+      }
       Attribute schemaProperty = null;
-      if((field != null)
-          && (field.isAnnotationPresent(Attribute.class)))
+      JsonProperty jsonProperty = null;
+      if(field.isAnnotationPresent(Attribute.class))
       {
         schemaProperty = field.getAnnotation(Attribute.class);
+      }
+      if(field.isAnnotationPresent(JsonProperty.class))
+      {
+        jsonProperty = field.getAnnotation(JsonProperty.class);
       }
 
       // Only generate schema for annotated fields.
@@ -125,7 +198,7 @@ public class SchemaUtils
         continue;
       }
 
-      addName(attributeBuilder, propertyDescriptor);
+      addName(attributeBuilder, propertyDescriptor, jsonProperty);
       addDescription(attributeBuilder, schemaProperty);
       addCaseExact(attributeBuilder, schemaProperty);
       addRequired(attributeBuilder, schemaProperty);
@@ -172,13 +245,23 @@ public class SchemaUtils
    * @param attributeBuilder builder for a scim attribute.
    * @param propertyDescriptor property descriptor for the field to build
    *                           the attribute for.
+   * @param jsonProperty the Jackson JsonProperty annotation for the field.
    * @return this.
    */
   private static AttributeDefinition.Builder addName(
       final AttributeDefinition.Builder attributeBuilder,
-      final PropertyDescriptor propertyDescriptor)
+      final PropertyDescriptor propertyDescriptor,
+      final JsonProperty jsonProperty)
   {
-    attributeBuilder.setName(propertyDescriptor.getName());
+    if(jsonProperty != null &&
+        !jsonProperty.value().equals(JsonProperty.USE_DEFAULT_NAME))
+    {
+      attributeBuilder.setName(jsonProperty.value());
+    }
+    else
+    {
+      attributeBuilder.setName(propertyDescriptor.getName());
+    }
 
     return attributeBuilder;
   }
@@ -440,10 +523,10 @@ public class SchemaUtils
     {
       return AttributeDefinition.Type.DATETIME;
     }
-//    else if(What?)
-//    {
-//      return Attribute.Type.BINARY;
-//    }
+    else if((cls == byte[].class))
+    {
+      return AttributeDefinition.Type.BINARY;
+    }
     else
     {
       return AttributeDefinition.Type.COMPLEX;

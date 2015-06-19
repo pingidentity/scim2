@@ -78,7 +78,8 @@ public class DiffTestCase
 
     assertTrue(d.contains(PatchOperation.add(null,
         mapper.getNodeFactory().objectNode().put("nickName","bjj3"))));
-    assertTrue(d.contains(PatchOperation.remove("title")));
+    assertTrue(d.contains(PatchOperation.remove(
+        Path.root().attribute("title"))));
     ObjectNode replaceValue = mapper.createObjectNode();
     replaceValue.put("userType", "manager");
     assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
@@ -155,7 +156,8 @@ public class DiffTestCase
 
     d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 1);
-    assertTrue(d.contains(PatchOperation.remove("name")));
+    assertTrue(d.contains(PatchOperation.remove(
+        Path.root().attribute("name"))));
 
     d2 = JsonUtils.diff(source, target, true);
     for(PatchOperation op : d2)
@@ -174,7 +176,8 @@ public class DiffTestCase
 
     d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 1);
-    assertTrue(d.contains(PatchOperation.remove("name.honorificSuffix")));
+    assertTrue(d.contains(PatchOperation.remove(
+        Path.root().attribute("name").attribute("honorificSuffix"))));
 
     d2 = JsonUtils.diff(source, target, true);
     for(PatchOperation op : d2)
@@ -280,10 +283,10 @@ public class DiffTestCase
     List<PatchOperation> d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 4);
 
-    assertTrue(d.contains(PatchOperation.remove("ims")));
+    assertTrue(d.contains(PatchOperation.remove(Path.root().attribute("ims"))));
     assertTrue(d.contains(PatchOperation.remove(
         Path.root().attribute("photos",
-            Filter.eq("value", thumbnail)).toString())));
+            Filter.eq("value", thumbnail)))));
     ObjectNode replaceValue = mapper.createObjectNode();
     replaceValue.putArray("entitlements").add(entitlement3);
     assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
@@ -454,30 +457,30 @@ public class DiffTestCase
     List<PatchOperation> d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 7);
 
-    assertTrue(d.contains(PatchOperation.remove("ims")));
+    assertTrue(d.contains(PatchOperation.remove(Path.root().attribute("ims"))));
     assertTrue(d.contains(PatchOperation.remove(
         Path.root().attribute("photos",
             Filter.fromString("value eq \"http://photo6\" and " +
                 "display eq \"Photo 6\" and " +
                 "type eq \"photo6\" and " +
-                "primary eq false")).attribute("display").toString())));
+                "primary eq false")).attribute("display"))));
     assertTrue(d.contains(PatchOperation.replace(
         Path.root().attribute("photos",
             Filter.fromString("value eq \"http://photo4\" and " +
                 "type eq \"photo4\" and " +
-                "primary eq true")).toString(),
+                "primary eq true")),
         mapper.createObjectNode().put("primary", false))));
     assertTrue(d.contains(PatchOperation.replace(
         Path.root().attribute("photos",
             Filter.fromString("value eq \"http://photo5\" and " +
                 "type eq \"photo5\" and " +
-                "primary eq false")).toString(),
+                "primary eq false")),
         mapper.createObjectNode().put("display", "Photo 5"))));
     assertTrue(d.contains(PatchOperation.remove(
         Path.root().attribute("photos",
             Filter.fromString("value eq \"http://thumbnail1\" and " +
                 "type eq \"thumbnail\" and " +
-                "primary eq true")).toString())));
+                "primary eq true")))));
     ObjectNode replaceValue = mapper.createObjectNode();
     replaceValue.putArray("entitlements").add(entitlement3);
     assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
@@ -676,10 +679,14 @@ public class DiffTestCase
 
     List<PatchOperation> d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 4);
-    assertTrue(d.contains(PatchOperation.remove("userName")));
-    assertTrue(d.contains(PatchOperation.remove("nickName")));
-    assertTrue(d.contains(PatchOperation.remove("title")));
-    assertTrue(d.contains(PatchOperation.remove("userType")));
+    assertTrue(d.contains(PatchOperation.remove(
+        Path.root().attribute("userName"))));
+    assertTrue(d.contains(PatchOperation.remove(
+        Path.root().attribute("nickName"))));
+    assertTrue(d.contains(PatchOperation.remove(
+        Path.root().attribute("title"))));
+    assertTrue(d.contains(PatchOperation.remove(
+        Path.root().attribute("userType"))));
 
     target = mapper.getNodeFactory().objectNode();
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);

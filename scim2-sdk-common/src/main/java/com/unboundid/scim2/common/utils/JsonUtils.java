@@ -714,7 +714,7 @@ public class JsonUtils
       {
         if(removeMissing)
         {
-          operations.add(PatchOperation.remove(path.toString()));
+          operations.add(PatchOperation.remove(path));
         }
         continue;
       }
@@ -741,7 +741,7 @@ public class JsonUtils
           if (targetValueToAdd.size() == 0)
           {
             // Explicitly clear all attribute values.
-            operations.add(PatchOperation.remove(path.toString()));
+            operations.add(PatchOperation.remove(path));
           } else
           {
             // Go through each value and try to individually patch them first
@@ -777,14 +777,14 @@ public class JsonUtils
                   if (tv.size() > 0)
                   {
                     targetOpToRemoveOrReplace.add(
-                        PatchOperation.replace(valuePath.toString(), tv));
+                        PatchOperation.replace(valuePath, tv));
                   }
                 }
               }
               else
               {
                 targetOpToRemoveOrReplace.add(
-                    PatchOperation.remove(valuePath.toString()));
+                    PatchOperation.remove(valuePath));
               }
             }
             if (!replaceAllValues && targetValueToReplace.size() <=
@@ -835,7 +835,7 @@ public class JsonUtils
             (targetValueToAdd.isArray() && targetValueToAdd.size() == 0))
         {
           // Explicitly clear attribute value.
-          operations.add(PatchOperation.remove(path.toString()));
+          operations.add(PatchOperation.remove(path));
         } else
         {
           // Just replace with the target value.
