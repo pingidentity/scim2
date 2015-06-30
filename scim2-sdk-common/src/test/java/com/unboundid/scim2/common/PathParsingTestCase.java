@@ -53,6 +53,10 @@ public class PathParsingTestCase
             new Object[] { "urn:extension:attr[subAttr eq \"78750\"].subAttr",
                 Path.root("urn:extension").attribute("attr",
                     eq("subAttr", "78750")).attribute("subAttr") },
+            new Object[] { "urn:ietf:params:scim:schemas:extension:" +
+                "enterprise:2.0:User:employeeNumber",
+                Path.root("urn:ietf:params:scim:schemas:extension:" +
+                    "enterprise:2.0:User").attribute("employeeNumber") },
 
             // The following does not technically conform to the SCIM spec
             // but our path impl is lenient so it may be used with any JSON
