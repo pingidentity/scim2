@@ -176,7 +176,96 @@ public class Parser
   public static Path parsePath(final String pathString)
       throws BadRequestException
   {
-    return readPath(new StringReader(pathString.trim()));
+    if(pathString == null)
+    {
+      return Path.root();
+    }
+
+    final String trimmedPathString = pathString.trim();
+    if(trimmedPathString.isEmpty())
+    {
+      return Path.root();
+    }
+
+    Path path = Path.root();
+    StringReader reader = new StringReader(trimmedPathString);
+    if(trimmedPathString.toLowerCase().startsWith("urn:"))
+    {
+      // The attribute name is prefixed with the schema URN.
+
+      // Find the last ":". Everything to the left is the schema URN,
+      // everything on the right is the attribute name.
+      int i = trimmedPathString.lastIndexOf(':');
+      String schemaUrn = trimmedPathString.substring(0, i++);
+      String attributeName =
+          trimmedPathString.substring(i, trimmedPathString.length());
+      try
+      {
+        path = Path.root(schemaUrn);
+      }
+      catch(IllegalArgumentException e)
+      {
+        throw BadRequestException.invalidPath(e.getMessage());
+      }
+      if(attributeName.isEmpty())
+      {
+        // The trailing colon signifies that this is an extension root.
+        return path;
+      }
+      reader = new StringReader(attributeName);
+    }
+
+    String token;
+
+    while ((token = readPathToken(reader)) != null)
+    {
+      if (token.isEmpty())
+      {
+        // the only time this is allowed to occur is if the previous attribute
+        // had a value filter, in which case, consume the token and move on.
+        if(path.isRoot() ||
+            path.getElement(path.size()-1).getValueFilter() == null)
+        {
+          final String msg = String.format(
+              "Attribute name expected at position %d", reader.mark);
+          throw BadRequestException.invalidPath(msg);
+        }
+      }
+      else
+      {
+        String attributeName = token;
+        Filter valueFilter = null;
+        try
+        {
+          if (attributeName.endsWith("["))
+          {
+            // There is a value path.
+            attributeName =
+                attributeName.substring(0, attributeName.length() - 1);
+            valueFilter = readFilter(reader, true);
+          }
+
+          path = path.attribute(attributeName, valueFilter);
+        }
+        catch(BadRequestException be)
+        {
+          Debug.debugException(be);
+          final String msg = String.format(
+              "Invalid value filter: %s", be.getMessage());
+          throw BadRequestException.invalidPath(msg);
+        }
+        catch(Exception e)
+        {
+          Debug.debugException(e);
+          final String msg = String.format(
+              "Invalid attribute name starting at position %d: %s",
+              reader.mark, e.getMessage());
+          throw BadRequestException.invalidPath(msg);
+        }
+      }
+    }
+
+    return path;
   }
 
   /**
@@ -206,7 +295,7 @@ public class Parser
     StringBuilder b = new StringBuilder();
     while(c > 0)
     {
-      if (c == '.' && !b.toString().endsWith(":"))
+      if (c == '.')
       {
         if(reader.pos >= reader.string.length())
         {
@@ -223,7 +312,7 @@ public class Parser
         b.append((char)c);
         return b.toString();
       }
-      if (c == '-' || c == '_' || c == ':' || Character.isLetterOrDigit(c))
+      if (c == '-' || c == '_' || c == '$' || Character.isLetterOrDigit(c))
       {
         b.append((char)c);
       }
@@ -242,97 +331,6 @@ public class Parser
       return b.toString();
     }
     return null;
-  }
-
-  /**
-   * Read a path from the reader.
-   *
-   * @param reader The reader to read the path from.
-   *
-   * @return The parsed path.
-   * @throws BadRequestException If the path string could not be parsed.
-   */
-  private static Path readPath(final StringReader reader)
-      throws BadRequestException
-  {
-    Path path = null;
-
-    String token;
-
-    while ((token = readPathToken(reader)) != null)
-    {
-      if (token.isEmpty())
-      {
-        // the only time this is allowed to occur is if the previous attribute
-        // had a value filter, in which case, consume the token and move on.
-        if(path == null || path.size() == 0 ||
-            path.getElement(path.size()-1).getValueFilter() == null)
-        {
-          final String msg = String.format(
-              "Attribute name expected at position %d", reader.mark);
-          throw BadRequestException.invalidPath(msg);
-        }
-      }
-      else
-      {
-        String schemaUrn = null;
-        String attributeName = token;
-        Filter valueFilter = null;
-        try
-        {
-          if(path == null &&
-              attributeName.toLowerCase().startsWith("urn:"))
-          {
-            // The attribute name is prefixed with the schema URN.
-
-            // Find the last ":". Everything to the left is the schema URN,
-            // everything on the right is the attribute name.
-            int i = token.lastIndexOf(':');
-            schemaUrn = token.substring(0, i++);
-            attributeName = token.substring(i, token.length());
-            if(attributeName.isEmpty())
-            {
-              // The trailing colon signifies that this is an extension root.
-              return Path.root(schemaUrn);
-            }
-          }
-          if (attributeName.endsWith("["))
-          {
-            // There is a value path.
-            attributeName =
-                attributeName.substring(0, attributeName.length() - 1);
-            valueFilter = readFilter(reader, true);
-          }
-          if (path == null)
-          {
-            path = schemaUrn == null ? Path.root() : Path.root(schemaUrn);
-          }
-
-          path = path.attribute(attributeName, valueFilter);
-        }
-        catch(BadRequestException be)
-        {
-          Debug.debugException(be);
-          final String msg = String.format(
-              "Invalid value filter: %s", be.getMessage());
-          throw BadRequestException.invalidPath(msg);
-        }
-        catch(Exception e)
-        {
-          Debug.debugException(e);
-          final String msg = String.format(
-              "Invalid attribute name starting at position %d: %s",
-              reader.mark, e.getMessage());
-          throw BadRequestException.invalidPath(msg);
-        }
-      }
-    }
-
-    if(path == null)
-    {
-      return Path.root();
-    }
-    return path;
   }
 
   /**
