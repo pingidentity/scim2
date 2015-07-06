@@ -21,11 +21,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.unboundid.scim2.common.Meta;
+import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
-import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.SchemaResource;
+import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.SchemaResource;
 
 import javax.lang.model.type.NullType;
 import java.beans.BeanInfo;

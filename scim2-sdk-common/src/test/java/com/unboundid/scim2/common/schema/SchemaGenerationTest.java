@@ -18,8 +18,8 @@
 package com.unboundid.scim2.common.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unboundid.scim2.common.AttributeDefinition;
-import com.unboundid.scim2.common.SchemaResource;
+import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.schema.testobjects.TestObject1;
 import com.unboundid.scim2.common.schema.testobjects.TestObject2;
 import com.unboundid.scim2.common.schema.testobjects.TestObject3;

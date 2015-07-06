@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 

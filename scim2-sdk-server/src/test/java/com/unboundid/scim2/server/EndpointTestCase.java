@@ -19,11 +19,11 @@ package com.unboundid.scim2.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unboundid.scim2.client.ScimService;
-import com.unboundid.scim2.common.Meta;
-import com.unboundid.scim2.common.ResourceTypeResource;
-import com.unboundid.scim2.common.SchemaResource;
+import com.unboundid.scim2.common.types.Meta;
+import com.unboundid.scim2.common.types.ResourceTypeResource;
+import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.ScimResource;
-import com.unboundid.scim2.common.ServiceProviderConfigResource;
+import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;

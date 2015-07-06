@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2.server.resources;
 
-import com.unboundid.scim2.common.ServiceProviderConfigResource;
+import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.server.annotations.ResourceType;
 

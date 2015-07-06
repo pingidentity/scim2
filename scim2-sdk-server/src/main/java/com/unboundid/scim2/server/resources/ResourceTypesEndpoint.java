@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2.server.resources;
 
-import com.unboundid.scim2.common.ResourceTypeResource;
+import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -31,6 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,7 +72,7 @@ public class ResourceTypesEndpoint extends AbstractEndpoint
       throw new ForbiddenException("Filtering not allowed");
     }
 
-    Set<ResourceTypeResource> resourceTypes = getResourceTypes();
+    Collection<ResourceTypeResource> resourceTypes = getResourceTypes();
     for(ResourceTypeResource resourceType : resourceTypes)
     {
       setResourceTypeAndLocation(resourceType);
@@ -115,7 +116,8 @@ public class ResourceTypesEndpoint extends AbstractEndpoint
    * @return All resource types defined at the service provider.
    * @throws ScimException If an error occurs.
    */
-  public Set<ResourceTypeResource> getResourceTypes() throws ScimException
+  public Collection<ResourceTypeResource> getResourceTypes()
+      throws ScimException
   {
     Set<ResourceTypeResource> resourceTypes =
         new HashSet<ResourceTypeResource>();

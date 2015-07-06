@@ -17,8 +17,8 @@
 
 package com.unboundid.scim2.server.resources;
 
-import com.unboundid.scim2.common.Meta;
-import com.unboundid.scim2.common.ResourceTypeResource;
+import com.unboundid.scim2.common.types.Meta;
+import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.server.annotations.ResourceType;

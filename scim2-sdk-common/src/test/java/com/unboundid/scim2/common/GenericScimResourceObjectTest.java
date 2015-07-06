@@ -18,6 +18,7 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;

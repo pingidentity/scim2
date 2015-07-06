@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common;
 
+import com.unboundid.scim2.common.types.Meta;
+
 import java.util.Collection;
 
 /**
