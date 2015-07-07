@@ -434,6 +434,78 @@ public class SchemaEnforcerTestCase
 
     // Make sure the ObjectNode wasn't modified during the check.
     assertEquals(userResource, copyUserResource);
+
+    // Check modify
+    String patchRequestStr =
+        "{  \n" +
+            "  \"op\":\"add\",\n" +
+            "  \"value\":{  \n" +
+            "    \"password\":\"password\",\n" +
+            "    \"name\":{  \n" +
+            "      \"givenName\":\"Barbara\",\n" +
+            "      \"familyName\":\"Jensen\",\n" +
+            "      \"formatted\":\"Barbara Ann Jensen\"\n" +
+            "    },\n" +
+            "    \"emails\":[  \n" +
+            "      {  \n" +
+            "        \"value\":\"bjensen@example.com\",\n" +
+            "        \"type\":\"work\"\n" +
+            "      },\n" +
+            "      {  \n" +
+            "        \"value\":\"babs@jensen.org\",\n" +
+            "        \"type\":\"home\"\n" +
+            "      }\n" +
+            "    ],\n" +
+            "    \"urn:ietf:params:scim:schemas:extension:" +
+            "enterprise:2.0:User\":{  \n" +
+            "      \"employeeNumber\":\"701984\"\n" +
+            "    },\n" +
+            "    \"addresses\":[  \n" +
+            "      {  \n" +
+            "        \"type\":\"work\",\n" +
+            "        \"streetAddress\":\"13809 Research Blvd\",\n" +
+            "        \"locality\":\"Austin\",\n" +
+            "        \"region\":\"TX\",\n" +
+            "        \"postalCode\":\"78750\",\n" +
+            "        \"country\":\"USA\",\n" +
+            "        \"formatted\":\"13809 Research Blvd\\n" +
+            "Austin, TX 78750 USA\",\n" +
+            "        \"primary\":true\n" +
+            "      },\n" +
+            "      {  \n" +
+            "        \"type\":\"home\",\n" +
+            "        \"streetAddress\":\"456 Hollywood Blvd\",\n" +
+            "        \"locality\":\"Hollywood\",\n" +
+            "        \"region\":\"CA\",\n" +
+            "        \"postalCode\":\"91608\",\n" +
+            "        \"country\":\"USA\",\n" +
+            "        \"formatted\":\"456 Hollywood Blvd\\n" +
+            "Hollywood, CA 91608 USA\"\n" +
+            "      }\n" +
+            "    ]\n" +
+            "  }\n" +
+            "}";
+
+    PatchOperation operation =
+        mapper.readValue(patchRequestStr, PatchOperation.class);
+
+    results = checker.checkModify(
+        Collections.singleton(operation), userResource);
+
+    // Make sure there are no issues.
+    assertTrue(results.getMutabilityIssues().isEmpty(),
+        results.getMutabilityIssues().toString());
+    assertTrue(results.getPathIssues().isEmpty(),
+        results.getPathIssues().toString());
+    assertTrue(results.getSyntaxIssues().isEmpty(),
+        results.getSyntaxIssues().toString());
+
+    // Make sure the patch operation wasn't modified during the check.
+    assertEquals(operation,
+        mapper.readValue(patchRequestStr, PatchOperation.class));
+
+    // Make sure the ObjectNode wasn't modified during the check.
+    assertEquals(userResource, copyUserResource);
   }
 
   /**

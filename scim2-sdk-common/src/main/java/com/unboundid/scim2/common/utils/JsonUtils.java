@@ -189,7 +189,7 @@ public class JsonUtils
     private UpdatingNodeVisitor(final JsonNode value,
                                 final boolean appendValues)
     {
-      this.value = value;
+      this.value = value.deepCopy();
       this.appendValues = appendValues;
     }
 
