@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2.server.resources;
 
-import com.unboundid.scim2.common.SchemaResource;
+import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -34,6 +34,7 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 
 import java.beans.IntrospectionException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -74,7 +75,7 @@ public class SchemasEndpoint extends AbstractEndpoint
       throw new ForbiddenException("Filtering not allowed");
     }
 
-    Set<SchemaResource> schemas = getSchemas();
+    Collection<SchemaResource> schemas = getSchemas();
     for(SchemaResource schema : schemas)
     {
       setResourceTypeAndLocation(schema);
@@ -117,7 +118,7 @@ public class SchemasEndpoint extends AbstractEndpoint
    * @return All schemas defined at the service provider.
    * @throws ScimException If an error occurs.
    */
-  public Set<SchemaResource> getSchemas() throws ScimException
+  public Collection<SchemaResource> getSchemas() throws ScimException
   {
     Set<SchemaResource> schemas =
         new HashSet<SchemaResource>();

@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;

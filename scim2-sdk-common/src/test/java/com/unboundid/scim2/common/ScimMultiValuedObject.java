@@ -19,6 +19,7 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.net.URI;
 

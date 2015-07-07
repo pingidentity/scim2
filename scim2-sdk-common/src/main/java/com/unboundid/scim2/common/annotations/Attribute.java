@@ -18,7 +18,7 @@
 package com.unboundid.scim2.common.annotations;
 
 
-import com.unboundid.scim2.common.AttributeDefinition;
+import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import javax.lang.model.type.NullType;
 import java.lang.annotation.ElementType;

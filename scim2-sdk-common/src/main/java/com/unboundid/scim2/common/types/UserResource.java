@@ -17,7 +17,6 @@
 
 package com.unboundid.scim2.common.types;
 
-import com.unboundid.scim2.common.AttributeDefinition;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
