@@ -59,6 +59,7 @@
         <module>scim2-sdk-server</module>
 
         <module>scim2-sdk-client</module>
+        <module>scim2-broker-model</module>
     </modules>
 
     <build>
