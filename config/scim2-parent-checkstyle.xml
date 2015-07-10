@@ -38,7 +38,7 @@
     <property name="cacheFile" value="${cacheFile}"/>
     <!-- Ensure that all methods have Javadoc documentation. -->
     <module name="JavadocMethod">
-      <property name="scope"                       value="private" />
+      <property name="scope"                       value="protected" />
       <property name="allowUndeclaredRTE"          value="false"   />
       <property name="allowMissingParamTags"       value="false"   />
       <property name="allowMissingThrowsTags"      value="false"   />
