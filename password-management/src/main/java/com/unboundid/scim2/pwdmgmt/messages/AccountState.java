@@ -15,9 +15,11 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.pwdmgmt;
+package com.unboundid.scim2.pwdmgmt.messages;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.unboundid.scim2.common.utils.JsonRefBeanSerializer;
+import com.unboundid.scim2.common.types.JsonReference;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Schema;

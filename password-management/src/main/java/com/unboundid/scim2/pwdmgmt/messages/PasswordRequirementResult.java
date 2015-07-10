@@ -15,7 +15,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.pwdmgmt;
+package com.unboundid.scim2.pwdmgmt.messages;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;

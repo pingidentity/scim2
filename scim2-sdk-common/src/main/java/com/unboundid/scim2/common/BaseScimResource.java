@@ -98,7 +98,6 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  @Override
   public Meta getMeta()
   {
     return meta;
@@ -107,7 +106,6 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  @Override
   public void setMeta(final Meta meta)
   {
     this.meta = meta;
@@ -116,7 +114,6 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  @Override
   public String getId()
   {
     return id;
@@ -125,7 +122,6 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  @Override
   public void setId(final String id)
   {
     this.id = id;
@@ -134,7 +130,6 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  @Override
   public String getExternalId()
   {
     return externalId;
@@ -143,7 +138,6 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  @Override
   public void setExternalId(final String externalId)
   {
     this.externalId = externalId;

@@ -15,7 +15,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.pwdmgmt;
+package com.unboundid.scim2.pwdmgmt.messages;
 
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;

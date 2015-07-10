@@ -15,12 +15,12 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.pwdmgmt;
+package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.types.JsonReference;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

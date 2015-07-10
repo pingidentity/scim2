@@ -15,7 +15,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.pwdmgmt;
+package com.unboundid.scim2.common.types;
 
 /**
  * This class can be used in a bean that is converted to json.  If

@@ -22,9 +22,9 @@
         <groupId>com.unboundid.product.scim2</groupId>
         <version>1.1.1-SNAPSHOT</version>
     </parent>
-    <artifactId>scim2-broker-model</artifactId>
+    <artifactId>password-management</artifactId>
     <packaging>jar</packaging>
-    <name>UnboundID SCIM 2 Identity Broker Model</name>
+    <name>UnboundID SCIM 2 password managbement model classes</name>
 
     <properties>
         <build.product.name>${project.name}</build.product.name>
