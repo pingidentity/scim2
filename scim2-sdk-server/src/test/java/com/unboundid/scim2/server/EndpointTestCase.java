@@ -84,6 +84,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     config.register(ResourceTypesEndpoint.class);
     config.register(SchemasEndpoint.class);
 
+    config.register(TestAuthenticatedSubjectAliasFilter.class);
     config.register(TestServiceProviderConfigEndpoint.class);
     config.register(TestResourceEndpoint.class);
     config.register(new TestSingletonResourceEndpoint());
@@ -285,6 +286,21 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
             invoke(UserResource.class);
 
     assertEquals(returnedUsers.getTotalResults(), 1);
+  }
+
+  /**
+   * Test the authentication subject alias filter.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testGetMe() throws ScimException
+  {
+    ScimService scimService = new ScimService(target());
+    UserResource user =
+        scimService.retrieve(ScimService.ME_ALIAS, UserResource.class);
+    assertEquals(user.getId(), "123");
+    assertEquals(user.getMeta().getResourceType(), "User");
   }
 
   /**

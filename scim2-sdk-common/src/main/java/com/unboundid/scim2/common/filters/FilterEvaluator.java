@@ -24,8 +24,10 @@ import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * A filter visitor that will evaluate a filter on a JsonNode and return
@@ -373,7 +375,24 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     }
     if(jsonNode.isObject())
     {
-      return JsonUtils.getValues(path, (ObjectNode) jsonNode);
+      List<JsonNode> nodes = JsonUtils.getValues(path, (ObjectNode) jsonNode);
+      ArrayList<JsonNode> flattenedNodes =
+          new ArrayList<JsonNode>(nodes.size());
+      for(JsonNode node : nodes)
+      {
+        if (node.isArray())
+        {
+          for(JsonNode child : node)
+          {
+            flattenedNodes.add(child);
+          }
+        }
+        else
+        {
+          flattenedNodes.add(node);
+        }
+      }
+      return flattenedNodes;
     }
     if(jsonNode.isValueNode() && path.equals(VALUE_PATH))
     {
