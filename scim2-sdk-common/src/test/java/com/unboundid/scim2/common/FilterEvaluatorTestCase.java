@@ -209,6 +209,8 @@ public class FilterEvaluatorTestCase
                     TimeZone.getTimeZone("CST")) + "\"", false },
             new Object[] { "schemas[value eq " +
                 "\"urn:unboundid:schemas:baseSchema\"]", true },
+            new Object[] { "schemas eq " +
+                "\"urn:unboundid:schemas:baseSchema\"", true },
             new Object[] { "schemas[value eq " +
                 "\"urn:unboundid:schemas:something\"]", false },
         };

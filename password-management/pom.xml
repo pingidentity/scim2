@@ -24,7 +24,7 @@
     </parent>
     <artifactId>password-management</artifactId>
     <packaging>jar</packaging>
-    <name>UnboundID SCIM 2 password managbement model classes</name>
+    <name>UnboundID SCIM 2 SDK Password Management</name>
 
     <properties>
         <build.product.name>${project.name}</build.product.name>

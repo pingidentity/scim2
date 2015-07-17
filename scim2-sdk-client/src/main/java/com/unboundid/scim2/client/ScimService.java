@@ -49,6 +49,11 @@ public class ScimService
   public static final String MEDIA_TYPE_SCIM = "application/scim+json";
 
   /**
+   * The authenticated subject alias.
+   */
+  public static final URI ME_ALIAS = URI.create("/Me");
+
+  /**
    * The SCIM media type.
    */
   public static final MediaType MEDIA_TYPE_SCIM_TYPE =
