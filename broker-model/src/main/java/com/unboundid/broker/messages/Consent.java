@@ -33,7 +33,7 @@ import java.util.List;
     "consent for an application to access identity data.",
     id = "urn:unboundid:schemas:broker:2.0:consent",
     name = "Consent")
-public class Consent extends BaseScimResource
+public final class Consent extends BaseScimResource
 {
   public static class Builder
   {
@@ -41,23 +41,50 @@ public class Consent extends BaseScimResource
     private List<Scope> scopes;
     private Calendar lastModified;
 
-    public Builder setScopes(List<Scope> scopes)
+    /**
+     * Sets the scopes for this consent.
+     *
+     * @param scopes the scopes for this consent.
+     * @return this
+     */
+    public Builder setScopes(final List<Scope> scopes)
     {
       this.scopes = scopes;
       return this;
     }
 
-    public Builder setApplication(Application application)
+    /**
+     * Sets the application for this consent.
+     *
+     * @param application the application for this consent.
+     * @return this
+     */
+    public Builder setApplication(final Application application)
     {
       this.application = application;
       return this;
     }
 
-    public void setLastModified(Calendar lastModified)
+    /**
+     * Sets the lastModified attribute of the meta attribute
+     *                     for this consent.
+     *
+     * @param lastModified the lastModified attribute of the meta attribute
+     *                     for this consent.
+     * @return this
+     */
+    public Builder setLastModified(final Calendar lastModified)
     {
       this.lastModified = lastModified;
+      return this;
     }
 
+    /**
+     * Builds a new Consent object.
+     *
+     * @return a new consent object created from the attributes set on this
+     * builder.
+     */
     public Consent build()
     {
       if(lastModified == null)
@@ -82,7 +109,7 @@ public class Consent extends BaseScimResource
     this(new Builder());
   }
 
-  private Consent(Builder builder)
+  private Consent(final Builder builder)
   {
     this.application = builder.application;
     Meta meta  = new Meta();
@@ -93,11 +120,21 @@ public class Consent extends BaseScimResource
         (builder.scopes == null) ? new ArrayList<Scope>() : builder.scopes);
   }
 
+  /**
+   * Gets the application for this consent.
+   *
+   * @return the application for this consent.
+   */
   public Application getApplication()
   {
     return application;
   }
 
+  /**
+   * Gets the scopes for this consent.
+   *
+   * @return the scopes for this consent.
+   */
   public List<Scope> getScopes()
   {
     return scopes;
