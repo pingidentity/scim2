@@ -150,7 +150,6 @@ public final class Scope extends BaseScimResource
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final String description;
 
-  // TODO: should change this to an enum ... at least in the builder
   @Attribute(description = "Consent (Granted, Denied, Revoked).",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final ConsentAction consent;
