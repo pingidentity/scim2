@@ -19,14 +19,10 @@ package com.unboundid.broker.messages;
 
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
-import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.net.URL;
 
-@Schema(description = "Applications using identity data.",
-    id = "urn:unboundid:schemas:broker:2.0:application",
-    name = "Application")
 public final class Application extends BaseScimResource
 {
   public static class Builder

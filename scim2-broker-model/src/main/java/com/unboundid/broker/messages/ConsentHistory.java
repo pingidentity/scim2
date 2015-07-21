@@ -36,7 +36,7 @@ import java.util.List;
     "history of a user giving consent for an application to access " +
     "identity data.",
     id = "urn:unboundid:schemas:broker:2.0:consentHistory",
-    name = "Consent")
+    name = "ConsentHistory")
 public final class ConsentHistory extends BaseScimResource
 {
   public static class Builder
@@ -44,7 +44,7 @@ public final class ConsentHistory extends BaseScimResource
     private Application application;
     private List<Scope> scopes;
     private Calendar created;
-    private String eventId;
+    private String id;
 
     /**
      * Sets the scopes for the consent history.
@@ -84,14 +84,14 @@ public final class ConsentHistory extends BaseScimResource
     }
 
     /**
-     * Sets the event id for the consent history.
+     * Sets the id for the consent history.
      *
-     * @param eventId the event id for the consent history.
+     * @param id the id for the consent history.
      * @return this.
      */
-    public Builder setEventId(final String eventId)
+    public Builder setId(final String id)
     {
-      this.eventId = eventId;
+      this.id = id;
       return this;
     }
 
@@ -118,10 +118,6 @@ public final class ConsentHistory extends BaseScimResource
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final List<Scope> scopes;
 
-  @Attribute(description = "The event id for the consent history entry.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
-  private final String eventId;
-
   // private no-arg constructor for Jackson
   private ConsentHistory()
   {
@@ -131,7 +127,7 @@ public final class ConsentHistory extends BaseScimResource
   private ConsentHistory(final Builder builder)
   {
     this.application = builder.application;
-    this.eventId = builder.eventId;
+    this.setId(builder.id);
     Meta meta  = new Meta();
     meta.setCreated(builder.created);
     setMeta(meta);
@@ -158,16 +154,6 @@ public final class ConsentHistory extends BaseScimResource
   public List<Scope> getScopes()
   {
     return scopes;
-  }
-
-  /**
-   * Gets the event id for this consent history entry.
-   *
-   * @return the event id for this consent history entry.
-   */
-  public String getEventId()
-  {
-    return eventId;
   }
 }
 

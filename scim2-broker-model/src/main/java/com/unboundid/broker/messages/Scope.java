@@ -19,81 +19,33 @@ package com.unboundid.broker.messages;
 
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
-import com.unboundid.scim2.common.annotations.Schema;
-import com.unboundid.scim2.common.exceptions.ServerErrorException;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
 /**
  * Contains information about scopes.
  */
-@Schema(description = "Scope of identity data.",
-    id = "urn:unboundid:schemas:broker:2.0:scope",
-    name = "Scope")
 public final class Scope extends BaseScimResource
 {
-  public enum ConsentAction
-  {
-    /**
-     * Consent has been granted by the user.
-     */
-    Granted(1),
+  /**
+   * Consent string constant used to show that the user has granted consent.
+   */
+  public static String CONSENT_GRANTED = "granted";
 
-    /**
-     * Consent has been denied by the user.
-     */
-    Denied(0),
+  /**
+   * Consent string constant used to show that the user has denied consent.
+   */
+  public static String CONSENT_DENIED = "denied";
 
-    // TODO DAN:  check this value is correct
-    /**
-     * Consent has been revoked.
-     */
-    Revoked(-1);
-
-    private final Integer id;
-
-    ConsentAction(final Integer id)
-    {
-      this.id = id;
-    }
-
-    /**
-     * Returns the id (numeric value) of this consent action.
-     *
-     * @return the id (numeric value) of this consent action.
-     */
-    public Integer getId()
-    {
-      return id;
-    }
-
-    /**
-     * Gets the enum value for the specified id (numeric value).
-     *
-     * @param id the numeric value of the consent action.
-     * @return the consent action corresponding to the id provided.
-     * @throws ServerErrorException if the id provided does not exist.
-     */
-    public static ConsentAction getForInteger(final Integer id)
-        throws ServerErrorException
-    {
-      for(ConsentAction consentAction : ConsentAction.values())
-      {
-        if(consentAction.getId() == id)
-        {
-          return consentAction;
-        }
-      }
-
-      throw new ServerErrorException(
-          "Unknown consent action id found: '" + id + "'");
-    }
-  }
+  /**
+   * Consent string constant used to show that the consent was revoked.
+   */
+  public static String CONSENT_REVOKED = "revoked";
 
   public static class Builder
   {
     private String name;
     private String description;
-    private ConsentAction consent;
+    private String consent;
 
     /**
      * Sets the name of this scope.
@@ -125,7 +77,7 @@ public final class Scope extends BaseScimResource
      * @param consent the consent action for this scope.
      * @return this.
      */
-    public Builder setConsent(final ConsentAction consent)
+    public Builder setConsent(final String consent)
     {
       this.consent = consent;
       return this;
@@ -152,7 +104,7 @@ public final class Scope extends BaseScimResource
 
   @Attribute(description = "Consent (Granted, Denied, Revoked).",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
-  private final ConsentAction consent;
+  private final String consent;
 
   // private no-arg constructor for Jackson
   private Scope()
@@ -192,7 +144,7 @@ public final class Scope extends BaseScimResource
    *
    * @return the consent action for this scope.
    */
-  public ConsentAction getConsent()
+  public String getConsent()
   {
     return consent;
   }
