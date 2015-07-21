@@ -40,6 +40,7 @@ public final class Consent extends BaseScimResource
     private Application application;
     private List<Scope> scopes;
     private Calendar lastModified;
+    private String id;
 
     /**
      * Sets the scopes for this consent.
@@ -80,6 +81,17 @@ public final class Consent extends BaseScimResource
     }
 
     /**
+     * Sets the id of the consent.
+     *
+     * @param id the id of the consent (this should be set to the
+     *           application name).
+     */
+    public void setId(final String id)
+    {
+      this.id = id;
+    }
+
+    /**
      * Builds a new Consent object.
      *
      * @return a new consent object created from the attributes set on this
@@ -115,6 +127,7 @@ public final class Consent extends BaseScimResource
     Meta meta  = new Meta();
     meta.setLastModified(builder.lastModified);
     setMeta(meta);
+    setId(builder.id);
 
     scopes = Collections.unmodifiableList(
         (builder.scopes == null) ? new ArrayList<Scope>() : builder.scopes);
