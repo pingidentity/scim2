@@ -107,27 +107,27 @@ public final class Application
 
   @Attribute(description = "The name of the application authorized " +
       "by the consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String name;
 
   @Attribute(description = "The description of the application authorized " +
       "by the consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
   @Attribute(description = "The reference to the page of the application " +
       "authorized by the consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final URL url;
 
   @Attribute(description = "The reference to icon of the application " +
       "authorized by the consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final URL iconUrl;
 
   @Attribute(description = "The name of the application authorized " +
       "by the consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String emailAddress;
 
   // private no-arg constructor for Jackson

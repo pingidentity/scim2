@@ -94,15 +94,15 @@ public final class Scope
   }
 
   @Attribute(description = "The name of the scope.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String name;
 
   @Attribute(description = "The description of the scope.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
   @Attribute(description = "Consent (Granted, Denied, Revoked).",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final String consent;
 
   // private no-arg constructor for Jackson

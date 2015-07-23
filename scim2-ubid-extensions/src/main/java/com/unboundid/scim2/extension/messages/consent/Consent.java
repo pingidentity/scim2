@@ -113,7 +113,7 @@ public final class Consent extends BaseScimResource
   private final Application application;
 
   @Attribute(description = "The scopes for this consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final List<Scope> scopes;
 
   // private no-arg constructor for Jackson

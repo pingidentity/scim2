@@ -111,11 +111,11 @@ public final class ConsentHistory extends BaseScimResource
   }
 
   @Attribute(description = "The application for this consent history entry.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final Application application;
 
   @Attribute(description = "The scopes for this consent history entry.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final List<Scope> scopes;
 
   // private no-arg constructor for Jackson

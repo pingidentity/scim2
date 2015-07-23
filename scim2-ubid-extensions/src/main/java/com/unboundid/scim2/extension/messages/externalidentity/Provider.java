@@ -104,16 +104,16 @@ public final class Provider
   private final String name;
 
   @Attribute(description = "The description of the IDP.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
   @Attribute(description = "The reference to icon of the IDP.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private URL iconUrl;
 
   @Attribute(description = "The IDP type. May be one of:  " +
       "'oidc', 'facebook', or 'googlePlus'.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String type;
 
 

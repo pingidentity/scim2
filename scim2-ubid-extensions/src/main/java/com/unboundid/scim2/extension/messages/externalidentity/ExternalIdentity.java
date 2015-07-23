@@ -155,12 +155,12 @@ public final class ExternalIdentity extends BaseScimResource
 
   @Attribute(description = "The user ID at the provider. If not available, " +
       "the user is not linked to any external identities at the provider.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String providerUserId;
 
   @Attribute(description = "The access token issued by the provider that " +
       "may be used to retrieve additional data.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String accessToken;
 
   @Attribute(description = "The refresh token issued by the provider that " +
