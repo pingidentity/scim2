@@ -15,16 +15,15 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.broker.messages;
+package com.unboundid.scim2.extension.messages.consent;
 
-import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
 /**
  * Contains information about scopes.
  */
-public final class Scope extends BaseScimResource
+public final class Scope
 {
   /**
    * Consent string constant used to show that the user has granted consent.
@@ -148,4 +147,52 @@ public final class Scope extends BaseScimResource
   {
     return consent;
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean equals(final Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass())
+    {
+      return false;
+    }
+
+    Scope scope = (Scope) o;
+
+    if (name != null ? !name.equals(scope.name) :
+        scope.name != null)
+    {
+      return false;
+    }
+
+    if (description != null ? !description.equals(scope.description) :
+        scope.description != null)
+    {
+      return false;
+    }
+
+    return !(consent != null ? !consent.equals(scope.consent) :
+        scope.consent != null);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int hashCode()
+  {
+    int result = name != null ? name.hashCode() : 0;
+    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + (consent != null ? consent.hashCode() : 0);
+    return result;
+  }
+
 }

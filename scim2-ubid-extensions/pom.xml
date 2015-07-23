@@ -24,7 +24,7 @@
     </parent>
     <artifactId>scim2-ubid-extensions</artifactId>
     <packaging>jar</packaging>
-    <name>UnboundID Identity Broker data model classes</name>
+    <name>UnboundID SCIM2 extension classes</name>
 
     <properties>
         <build.product.name>${project.name}</build.product.name>
