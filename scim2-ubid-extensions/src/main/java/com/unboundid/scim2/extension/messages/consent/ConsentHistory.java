@@ -15,7 +15,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.broker.messages;
+package com.unboundid.scim2.extension.messages.consent;
 
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
@@ -111,11 +111,11 @@ public final class ConsentHistory extends BaseScimResource
   }
 
   @Attribute(description = "The application for this consent history entry.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final Application application;
 
   @Attribute(description = "The scopes for this consent history entry.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final List<Scope> scopes;
 
   // private no-arg constructor for Jackson

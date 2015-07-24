@@ -15,16 +15,16 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.broker.messages;
+package com.unboundid.scim2.extension.messages.consent;
 
-import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.net.URL;
 
-public final class Application extends BaseScimResource
+public final class Application
 {
+
   public static class Builder
   {
     private String name;
@@ -107,27 +107,27 @@ public final class Application extends BaseScimResource
 
   @Attribute(description = "The name of the application authorized " +
       "by the consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String name;
 
   @Attribute(description = "The description of the application authorized " +
       "by the consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
   @Attribute(description = "The reference to the page of the application " +
       "authorized by the consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final URL url;
 
   @Attribute(description = "The reference to icon of the application " +
       "authorized by the consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final URL iconUrl;
 
   @Attribute(description = "The name of the application authorized " +
       "by the consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String emailAddress;
 
   // private no-arg constructor for Jackson
@@ -193,5 +193,63 @@ public final class Application extends BaseScimResource
   public String getEmailAddress()
   {
     return emailAddress;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean equals(final Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass())
+    {
+      return false;
+    }
+
+    Application that = (Application) o;
+
+    if (name != null ? !name.equals(that.name) : that.name != null)
+    {
+      return false;
+    }
+
+    if (description != null ? !description.equals(that.description) :
+        that.description != null)
+    {
+      return false;
+    }
+
+    if (url != null ? !url.equals(that.url) : that.url != null)
+    {
+      return false;
+    }
+
+    if (iconUrl != null ? !iconUrl.equals(that.iconUrl) : that.iconUrl != null)
+    {
+      return false;
+    }
+
+    return !(emailAddress != null ? !emailAddress.equals(that.emailAddress) :
+        that.emailAddress != null);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int hashCode()
+  {
+    int result = name != null ? name.hashCode() : 0;
+    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + (url != null ? url.hashCode() : 0);
+    result = 31 * result + (iconUrl != null ? iconUrl.hashCode() : 0);
+    result = 31 * result + (emailAddress != null ? emailAddress.hashCode() : 0);
+    return result;
   }
 }

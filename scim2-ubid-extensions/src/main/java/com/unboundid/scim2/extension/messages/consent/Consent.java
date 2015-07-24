@@ -15,7 +15,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.broker.messages;
+package com.unboundid.scim2.extension.messages.consent;
 
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
@@ -35,6 +35,7 @@ import java.util.List;
     name = "Consent")
 public final class Consent extends BaseScimResource
 {
+
   public static class Builder
   {
     private Application application;
@@ -112,7 +113,7 @@ public final class Consent extends BaseScimResource
   private final Application application;
 
   @Attribute(description = "The scopes for this consent.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final List<Scope> scopes;
 
   // private no-arg constructor for Jackson
@@ -152,5 +153,52 @@ public final class Consent extends BaseScimResource
   {
     return scopes;
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean equals(final Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass())
+    {
+      return false;
+    }
+
+    if (!super.equals(o))
+    {
+      return false;
+    }
+
+    Consent consent = (Consent) o;
+
+    if (application != null ? !application.equals(consent.application) :
+        consent.application != null)
+    {
+      return false;
+    }
+
+    return !(scopes != null ? !scopes.equals(consent.scopes) :
+        consent.scopes != null);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int hashCode()
+  {
+    int result = super.hashCode();
+    result = 31 * result + (application != null ? application.hashCode() : 0);
+    result = 31 * result + (scopes != null ? scopes.hashCode() : 0);
+    return result;
+  }
+
 }
 
