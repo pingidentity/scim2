@@ -160,7 +160,7 @@ public final class ExternalIdentity extends BaseScimResource
 
   @Attribute(description = "The access token issued by the provider that " +
       "may be used to retrieve additional data.",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final String accessToken;
 
   @Attribute(description = "The refresh token issued by the provider that " +

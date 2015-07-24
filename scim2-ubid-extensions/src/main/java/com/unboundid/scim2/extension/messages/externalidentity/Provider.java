@@ -107,7 +107,7 @@ public final class Provider
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
-  @Attribute(description = "The reference to icon of the IDP.",
+  @Attribute(description = "The reference to the icon of the IDP.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private URL iconUrl;
 
