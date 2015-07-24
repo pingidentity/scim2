@@ -115,10 +115,10 @@ public abstract class AbstractEndpoint
     if(meta == null)
     {
       meta = new Meta();
-      scimResource.setMeta(meta);
     }
     meta.setLocation(locationBuilder.build(endpointParamValues));
     meta.setResourceType(resourceType);
+    scimResource.setMeta(meta);
   }
 
   /**
