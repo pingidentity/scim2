@@ -367,7 +367,8 @@ public class AttributeDefinition
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
-      uniqueness = AttributeDefinition.Uniqueness.NONE)
+      uniqueness = AttributeDefinition.Uniqueness.NONE,
+      multiValueClass = AttributeDefinition.class)
   private final Collection<AttributeDefinition> subAttributes;
 
   @Attribute(description = "Boolean value indicating the attribute's " +
@@ -508,14 +509,14 @@ public class AttributeDefinition
      * This value indicates the mutability constraints of this attribute.
      * See {@link AttributeDefinition.Mutability}
      */
-    private Mutability mutability;
+    private Mutability mutability = Mutability.READ_WRITE;
 
     /**
      * Indicates the when this attribute will be returned as part of
      * a scim object.
      * See {@link AttributeDefinition.Returned}
      */
-    private Returned returned;
+    private Returned returned = Returned.DEFAULT;
 
     /**
      * This field represents the uniqueness constraints of this

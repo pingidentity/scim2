@@ -20,11 +20,13 @@ package com.unboundid.scim2.common;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
+import com.unboundid.scim2.common.utils.AttributeSet;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 
 import static org.testng.Assert.assertEquals;
 
@@ -73,15 +75,17 @@ public class SearchRequestTestCase
 
     assertEquals(searchRequest.getAttributes(), null);
     assertEquals(searchRequest.getExcludedAttributes(),
-        Arrays.asList("displayName", "userName"));
+        new LinkedHashSet<String>(Arrays.asList("displayName", "userName")));
     assertEquals(searchRequest.getFilter(), null);
     assertEquals(searchRequest.getSortBy(), "name.lastName");
     assertEquals(searchRequest.getSortOrder(), SortOrder.DESCENDING);
     assertEquals(searchRequest.getStartIndex(), null);
     assertEquals(searchRequest.getCount(), null);
 
-    searchRequest = new SearchRequest("displayName, userName",
-        "addresses", "userName eq \"test\"", "name.lastName",
+    searchRequest = new SearchRequest(
+        AttributeSet.fromString("displayName, userName"),
+        AttributeSet.fromString("addresses"),
+        "userName eq \"test\"", "name.lastName",
         SortOrder.ASCENDING, 5, 100);
 
     String serialized = SchemaUtils.createSCIMCompatibleMapper().

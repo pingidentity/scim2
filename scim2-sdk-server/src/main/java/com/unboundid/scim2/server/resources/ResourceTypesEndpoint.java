@@ -17,12 +17,15 @@
 
 package com.unboundid.scim2.server.resources;
 
+import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
-import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.server.annotations.ResourceType;
+import com.unboundid.scim2.server.utils.ResourcePreparer;
+import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
+import com.unboundid.scim2.server.utils.SimpleSearchResults;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -31,12 +34,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.unboundid.scim2.server.ApiConstants.MEDIA_TYPE_SCIM;
-import static com.unboundid.scim2.server.ApiConstants.QUERY_PARAMETER_FILTER;
+import static com.unboundid.scim2.common.utils.ApiConstants.*;
 
 /**
  * An abstract JAX-RS resource class for servicing the Resource Types
@@ -45,10 +48,15 @@ import static com.unboundid.scim2.server.ApiConstants.QUERY_PARAMETER_FILTER;
 @ResourceType(
     description = "SCIM 2.0 Resource Type",
     name = "ResourceType",
-    schema = ResourceTypeResource.class)
+    schema = ResourceTypeResource.class,
+    discoverable = false)
 @Path("ResourceTypes")
-public class ResourceTypesEndpoint extends AbstractEndpoint
+public class ResourceTypesEndpoint
 {
+  private static final ResourceTypeDefinition RESOURCE_TYPE_DEFINITION =
+      ResourceTypeDefinition.fromJaxRsResource(
+          ResourceTypesEndpoint.class);
+
   @Context
   private Application application;
 
@@ -58,13 +66,15 @@ public class ResourceTypesEndpoint extends AbstractEndpoint
    *
    * @param filterString The filter string used to request a subset of
    *                     resources. Will throw 403 Forbidden if specified.
+   * @param uriInfo UriInfo of the request.
    * @return All resource types in a ListResponse container.
    * @throws ScimException If an error occurs.
    */
   @GET
   @Produces(MEDIA_TYPE_SCIM)
-  public ListResponse<ResourceTypeResource> search(
-      @QueryParam(QUERY_PARAMETER_FILTER) final String filterString)
+  public SimpleSearchResults<ResourceTypeResource> search(
+      @QueryParam(QUERY_PARAMETER_FILTER) final String filterString,
+      @Context final UriInfo uriInfo)
       throws ScimException
   {
     if(filterString != null)
@@ -72,25 +82,29 @@ public class ResourceTypesEndpoint extends AbstractEndpoint
       throw new ForbiddenException("Filtering not allowed");
     }
 
-    Collection<ResourceTypeResource> resourceTypes = getResourceTypes();
-    for(ResourceTypeResource resourceType : resourceTypes)
+    SimpleSearchResults<ResourceTypeResource> results =
+        new SimpleSearchResults<ResourceTypeResource>(
+            RESOURCE_TYPE_DEFINITION, uriInfo);
+    for(ResourceTypeResource resourceType : getResourceTypes())
     {
-      setResourceTypeAndLocation(resourceType);
+      results.add(resourceType);
     }
-    return new ListResponse<ResourceTypeResource>(resourceTypes);
+    return results;
   }
 
   /**
    * Service SCIM request to retrieve a resource type by ID.
    *
    * @param id The ID of the resource type to retrieve.
+   * @param uriInfo UriInfo of the request.
    * @return The retrieved resource type.
    * @throws ScimException If an error occurs.
    */
   @Path("{id}")
   @GET
   @Produces(MEDIA_TYPE_SCIM)
-  public ResourceTypeResource get(@PathParam("id") final String id)
+  public ScimResource get(@PathParam("id") final String id,
+                          @Context final UriInfo uriInfo)
       throws ScimException
   {
     for(ResourceTypeResource resourceType : getResourceTypes())
@@ -99,8 +113,10 @@ public class ResourceTypesEndpoint extends AbstractEndpoint
           resourceType.getName() : resourceType.getId();
       if (idOrName.equalsIgnoreCase(id))
       {
-        setResourceTypeAndLocation(resourceType);
-        return resourceType;
+        ResourcePreparer<ResourceTypeResource> resourcePreparer =
+            new ResourcePreparer<ResourceTypeResource>(
+                RESOURCE_TYPE_DEFINITION, uriInfo);
+        return resourcePreparer.trimRetrievedResource(resourceType);
       }
     }
 
@@ -123,31 +139,23 @@ public class ResourceTypesEndpoint extends AbstractEndpoint
         new HashSet<ResourceTypeResource>();
     for(Class<?> resourceClass : application.getClasses())
     {
-      if(!ResourceTypesEndpoint.class.isAssignableFrom(resourceClass) &&
-          !SchemasEndpoint.class.isAssignableFrom(resourceClass) &&
-          !AbstractServiceProviderConfigEndpoint.class.isAssignableFrom(
-              resourceClass))
+      ResourceTypeDefinition resourceTypeDefinition =
+          ResourceTypeDefinition.fromJaxRsResource(resourceClass);
+      if(resourceTypeDefinition != null &&
+          resourceTypeDefinition.isDiscoverable())
       {
-        ResourceTypeResource resourceType = getResourceType(resourceClass);
-        if (resourceType != null)
-        {
-          resourceTypes.add(resourceType);
-        }
+        resourceTypes.add(resourceTypeDefinition.toScimResource());
       }
     }
 
     for(Object resourceInstance : application.getSingletons())
     {
-      if(!(resourceInstance instanceof ResourceTypesEndpoint) &&
-          !(resourceInstance instanceof SchemasEndpoint) &&
-          !(resourceInstance instanceof AbstractServiceProviderConfigEndpoint))
+      ResourceTypeDefinition resourceTypeDefinition =
+          ResourceTypeDefinition.fromJaxRsResource(resourceInstance.getClass());
+      if(resourceTypeDefinition != null &&
+          resourceTypeDefinition.isDiscoverable())
       {
-        ResourceTypeResource resourceType =
-            getResourceType(resourceInstance.getClass());
-        if (resourceType != null)
-        {
-          resourceTypes.add(resourceType);
-        }
+        resourceTypes.add(resourceTypeDefinition.toScimResource());
       }
     }
 

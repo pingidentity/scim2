@@ -39,27 +39,26 @@ public class TestServiceProviderConfigEndpoint
     extends AbstractServiceProviderConfigEndpoint
 {
   /**
-   * A static canned config.
-   */
-  public static ServiceProviderConfigResource CONFIG =
-          new ServiceProviderConfigResource("https://doc",
-              new PatchConfig(true),
-              new BulkConfig(true, 100, 1000),
-              new FilterConfig(true, 200),
-              new ChangePasswordConfig(true),
-              new SortConfig(true),
-              new ETagConfig(false),
-              Collections.singletonList(
-                  new AuthenticationScheme(
-                      "Basic", "HTTP BASIC", null, null, "httpbasic", true)));
-
-  /**
    * {@inheritDoc}
    */
   @Override
   public ServiceProviderConfigResource getServiceProviderConfig()
       throws ScimException
   {
-    return CONFIG;
+    return create();
+  }
+
+  public static ServiceProviderConfigResource create()
+  {
+    return new ServiceProviderConfigResource("https://doc",
+        new PatchConfig(true),
+        new BulkConfig(true, 100, 1000),
+        new FilterConfig(true, 200),
+        new ChangePasswordConfig(true),
+        new SortConfig(true),
+        new ETagConfig(false),
+        Collections.singletonList(
+            new AuthenticationScheme(
+                "Basic", "HTTP BASIC", null, null, "httpbasic", true)));
   }
 }

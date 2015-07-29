@@ -17,14 +17,23 @@
 
 package com.unboundid.scim2.server;
 
+import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.common.exceptions.ScimException;
-import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.types.UserResource;
-import com.unboundid.scim2.server.resources.AbstractResourceEndpoint;
+import com.unboundid.scim2.server.utils.ResourcePreparer;
+import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
+import com.unboundid.scim2.server.utils.SimpleSearchResults;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import java.io.IOException;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
+import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 
 /**
  * A per resource life cycle Resource Endpoint implementation.
@@ -34,36 +43,44 @@ import java.io.IOException;
     name = "User",
     schema = UserResource.class)
 @Path("/Users")
-public class TestResourceEndpoint extends AbstractResourceEndpoint<UserResource>
+public class TestResourceEndpoint
 {
-  @Override
-  public ListResponseStreamingOutput<UserResource> search(
-      final SearchRequest searchRequest) throws ScimException
+  private static final ResourceTypeDefinition RESOURCE_TYPE_DEFINITION =
+      ResourceTypeDefinition.fromJaxRsResource(
+          TestResourceEndpoint.class);
+
+  @GET
+  @Produces(MEDIA_TYPE_SCIM)
+  public SimpleSearchResults<UserResource> search(
+      @Context final UriInfo uriInfo) throws ScimException
   {
-    return new ListResponseStreamingOutput<UserResource>()
-    {
-      @Override
-      public void write(final ListResponseWriter<UserResource> os)
-          throws IOException
-      {
-        UserResource resource = new UserResource().setUserName("test");
-        resource.setId("123");
-        setResourceTypeAndLocation(resource);
-        os.resource(resource);
-      }
-    };
+    UserResource resource = new UserResource().setUserName("test");
+    resource.setId("123");
+
+    SimpleSearchResults<UserResource> results =
+        new SimpleSearchResults<UserResource>(
+            RESOURCE_TYPE_DEFINITION, uriInfo);
+    results.add(resource);
+
+    return results;
   }
 
-  @Override
-  public UserResource retrieve(final String id) throws ScimException
+  @Path("{id}")
+  @GET
+  @Produces(MEDIA_TYPE_SCIM)
+  public ScimResource retrieve(
+      @PathParam("id") final String id, @Context final UriInfo uriInfo)
+      throws ScimException
   {
     if(id.equals("123"))
     {
       UserResource resource = new UserResource().setUserName("test");
       resource.setId("123");
-      setResourceTypeAndLocation(resource);
-      return resource;
+
+      ResourcePreparer<UserResource> resourcePreparer =
+          new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);
+      return resourcePreparer.trimRetrievedResource(resource);
     }
-    return null;
+    throw new ResourceNotFoundException("No resource with ID " + id);
   }
 }

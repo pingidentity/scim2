@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
-import com.unboundid.scim2.common.filters.FilterEvaluator;
+import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;

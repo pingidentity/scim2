@@ -19,61 +19,72 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
 
 /**
- * Created by boli on 4/14/15.
+ * The order in which the sortBy parameter is applied.
  */
 public enum SortOrder
 {
   /**
-     * The add operation type.
-     */
-    ASCENDING("ascending"),
+   * The ascending sort order.
+   */
+  ASCENDING("ascending"),
 
 
-    /**
-     * The replace operation type.
-     */
-    DESCENDING("descending");
+  /**
+   * The descending sort order.
+   */
+  DESCENDING("descending");
 
 
-    /**
-     * The lower case string value for this operation type.
-     */
-    private String stringValue;
+  /**
+   * The lower case string value for this sort order.
+   */
+  private String name;
 
 
-    /**
-     * Creates a new operation type with the provided string value.
-     *
-     * @param stringValue The lower case string value for this operation type.
-     */
-    @JsonCreator
-    SortOrder(final String stringValue)
+  /**
+   * SortOrder enum private constructor.
+   *
+   * @param name the name of the sort order.
+   */
+  SortOrder(final String name)
+  {
+    this.name = name;
+  }
+
+  /**
+   * Gets the name of the sort order.
+   *
+   * @return the name of the sort order.
+   */
+  @JsonValue
+  public String getName()
+  {
+    return name;
+  }
+
+  /**
+   * finds the sort order by name.
+   *
+   * @param name the name of the mutability constraint.
+   * @return the enum value for the given name.
+   * @throws BadRequestException if the name of the sort order is invalid.
+   */
+  @JsonCreator
+  public static SortOrder fromName(final String name)
+      throws BadRequestException
+  {
+    for(SortOrder mutability : SortOrder.values())
     {
-      this.stringValue = stringValue;
+      if(mutability.getName().equals(name))
+      {
+        return mutability;
+      }
     }
 
-
-    /**
-     * Retrieves the lower case string value for this operation type.
-     *
-     * @return The lower case string value for this operation type.
-     */
-    public String getStringValue()
-    {
-      return stringValue;
-    }
-
-
-    /**
-     * Retrieves a string representation of this operation type.
-     *
-     * @return A string representation of this operation type.
-     */
-    @JsonValue
-    public String toString()
-    {
-      return getStringValue();
-    }
+    throw BadRequestException.invalidSyntax(
+        "Unknown sort order value " + name);
+  }
 }

@@ -160,7 +160,8 @@ public class SchemaUtils
       throws IntrospectionException
   {
     String className = cls.getCanonicalName();
-    if(classesProcessed.contains(className))
+    if(!cls.isAssignableFrom(AttributeDefinition.class) &&
+        classesProcessed.contains(className))
     {
       throw new RuntimeException("Cycles detected in Schema");
     }
@@ -172,6 +173,14 @@ public class SchemaUtils
 
     for(PropertyDescriptor propertyDescriptor : propertyDescriptors)
     {
+      if(propertyDescriptor.getName().equals("subAttributes") &&
+          cls.isAssignableFrom(AttributeDefinition.class) &&
+          classesProcessed.contains(className))
+      {
+        // Skip second nesting of subAttributes the second time around
+        // since there is no subAttributes of subAttributes in SCIM.
+        continue;
+      }
       AttributeDefinition.Builder attributeBuilder =
           new AttributeDefinition.Builder();
 

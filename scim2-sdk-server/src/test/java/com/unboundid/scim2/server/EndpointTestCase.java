@@ -19,6 +19,7 @@ package com.unboundid.scim2.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unboundid.scim2.client.ScimService;
+import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.types.SchemaResource;
@@ -34,12 +35,13 @@ import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.server.providers.DotSearchFilter;
 import com.unboundid.scim2.server.providers.ScimExceptionMapper;
 import com.unboundid.scim2.server.providers.ScimJacksonJsonProvider;
 import com.unboundid.scim2.server.providers.RuntimeExceptionMapper;
-import com.unboundid.scim2.server.resources.AbstractEndpoint;
 import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
+import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -49,7 +51,6 @@ import org.testng.annotations.Test;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.UriBuilder;
 
 import java.net.URI;
@@ -70,6 +71,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   private SchemaResource enterpriseSchema;
   private ResourceTypeResource resourceType;
   private ResourceTypeResource singletonResourceType;
+  private ServiceProviderConfigResource serviceProviderConfig;
 
   /**
    * {@inheritDoc}
@@ -78,14 +80,20 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   protected Application configure()
   {
     ResourceConfig config = new ResourceConfig();
+    // Exception Mappers
     config.register(ScimExceptionMapper.class);
     config.register(RuntimeExceptionMapper.class);
     config.register(ScimJacksonJsonProvider.class);
+
+    // Filters
+    config.register(DotSearchFilter.class);
+    config.register(TestAuthenticatedSubjectAliasFilter.class);
+
+    // Standard endpoints
     config.register(ResourceTypesEndpoint.class);
     config.register(SchemasEndpoint.class);
-
-    config.register(TestAuthenticatedSubjectAliasFilter.class);
     config.register(TestServiceProviderConfigEndpoint.class);
+
     config.register(TestResourceEndpoint.class);
     config.register(new TestSingletonResourceEndpoint());
 
@@ -126,6 +134,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
           Collections.singletonList(new ResourceTypeResource.SchemaExtension(
               new URI(enterpriseSchema.getId()), true)));
       setMeta(ResourceTypesEndpoint.class, singletonResourceType);
+
+      serviceProviderConfig = TestServiceProviderConfigEndpoint.create();
+      setMeta(TestServiceProviderConfigEndpoint.class, serviceProviderConfig);
     }
     catch (Exception e)
     {
@@ -146,8 +157,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     final ServiceProviderConfigResource returnedServiceProviderConfig =
         new ScimService(target()).getServiceProviderConfig();
 
-    assertEquals(returnedServiceProviderConfig,
-        TestServiceProviderConfigEndpoint.CONFIG);
+    assertEquals(returnedServiceProviderConfig, serviceProviderConfig);
   }
 
   /**
@@ -279,13 +289,38 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   @Test
   public void testGetUsers() throws ScimException
   {
-    Object o = new GenericType<ListResponse<UserResource>>(){};
-
     final ListResponse<UserResource> returnedUsers =
         new ScimService(target()).searchRequest("Users").
+            filter("meta.resourceType eq \"User\"").
+            page(1, 10).
+            sort("id", SortOrder.ASCENDING).
+            attributes("id", "name").
             invoke(UserResource.class);
 
     assertEquals(returnedUsers.getTotalResults(), 1);
+    assertEquals(returnedUsers.getStartIndex(), new Integer(1));
+    assertEquals(returnedUsers.getItemsPerPage(), new Integer(1));
+  }
+
+  /**
+   * Test an resource endpoint implementation registered as a class.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testGetUsersUsingPost() throws ScimException
+  {
+    final ListResponse<UserResource> returnedUsers =
+        new ScimService(target()).searchRequest("Users").
+            filter("meta.resourceType eq \"User\"").
+            page(1, 10).
+            sort("id", SortOrder.DESCENDING).
+            excludedAttributes("addresses", "phoneNumbers").
+            invokePost(UserResource.class);
+
+    assertEquals(returnedUsers.getTotalResults(), 1);
+    assertEquals(returnedUsers.getStartIndex(), new Integer(1));
+    assertEquals(returnedUsers.getItemsPerPage(), new Integer(1));
   }
 
   /**
@@ -298,7 +333,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   {
     ScimService scimService = new ScimService(target());
     UserResource user =
-        scimService.retrieve(ScimService.ME_ALIAS, UserResource.class);
+        scimService.retrieve(ScimService.ME_URI, UserResource.class);
     assertEquals(user.getId(), "123");
     assertEquals(user.getMeta().getResourceType(), "User");
   }
@@ -435,7 +470,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   private void setMeta(Class<?> resourceClass, ScimResource scimResource)
   {
     ResourceTypeResource resourceType =
-        AbstractEndpoint.getResourceType(resourceClass);
+        ResourceTypeDefinition.fromJaxRsResource(
+            resourceClass).toScimResource();
     UriBuilder locationBuilder =
         UriBuilder.fromUri(getBaseUri()).path(
             resourceType.getEndpoint().getPath());

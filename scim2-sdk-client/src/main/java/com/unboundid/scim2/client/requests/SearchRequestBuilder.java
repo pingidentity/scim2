@@ -28,6 +28,8 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
+import com.unboundid.scim2.common.utils.ApiConstants;
+import com.unboundid.scim2.common.utils.AttributeSet;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import javax.ws.rs.client.Entity;
@@ -38,10 +40,9 @@ import javax.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
 
 import static com.unboundid.scim2.client.ScimService.MEDIA_TYPE_SCIM_TYPE;
+import static com.unboundid.scim2.common.utils.ApiConstants.*;
 
 /**
  * A builder for SCIM search requests.
@@ -117,17 +118,18 @@ public final class SearchRequestBuilder
     WebTarget target = super.buildTarget();
     if(filter != null)
     {
-      target = target.queryParam("filter", filter);
+      target = target.queryParam(QUERY_PARAMETER_FILTER, filter);
     }
     if(sortBy != null && sortOrder != null)
     {
-      target = target.queryParam("sortBy", sortBy);
-      target = target.queryParam("sortOrder", sortOrder.getStringValue());
+      target = target.queryParam(QUERY_PARAMETER_SORT_BY, sortBy);
+      target = target.queryParam(QUERY_PARAMETER_SORT_ORDER,
+          sortOrder.getName());
     }
     if(startIndex != null && count != null)
     {
-      target = target.queryParam("startIndex", startIndex);
-      target = target.queryParam("count", count);
+      target = target.queryParam(QUERY_PARAMETER_PAGE_START_INDEX, startIndex);
+      target = target.queryParam(QUERY_PARAMETER_PAGE_SIZE, count);
     }
     return target;
   }
@@ -215,27 +217,28 @@ public final class SearchRequestBuilder
     Response response;
     if(post)
     {
-      List<String> attributeList = null;
-      List<String> excludedAttributeList = null;
-      if(attributes != null && attributes.length > 0)
+      AttributeSet attributeSet = null;
+      AttributeSet excludedAttributeSet = null;
+      if(attributes != null && attributes.size() > 0)
       {
         if(!excluded)
         {
-          attributeList = Arrays.asList(attributes);
+          attributeSet = attributes;
         }
         else
         {
-          excludedAttributeList = Arrays.asList(attributes);
+          excludedAttributeSet = attributes;
         }
       }
 
-      SearchRequest searchRequest = new SearchRequest(attributeList,
-          excludedAttributeList, filter, sortBy, sortOrder, startIndex, count);
+      SearchRequest searchRequest = new SearchRequest(attributeSet,
+          excludedAttributeSet, filter, sortBy, sortOrder, startIndex, count);
 
-      response = target.request(
-          ScimService.MEDIA_TYPE_SCIM_TYPE,
-          MediaType.APPLICATION_JSON_TYPE).post(
-        Entity.entity(searchRequest, MEDIA_TYPE_SCIM_TYPE));
+      response = target.path(
+          ApiConstants.SEARCH_WITH_POST_PATH_EXTENSION).
+          request(ScimService.MEDIA_TYPE_SCIM_TYPE,
+              MediaType.APPLICATION_JSON_TYPE).
+          post(Entity.entity(searchRequest, MEDIA_TYPE_SCIM_TYPE));
     }
     else
     {

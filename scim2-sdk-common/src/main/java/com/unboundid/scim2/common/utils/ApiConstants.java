@@ -15,9 +15,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.server;
-
-import javax.ws.rs.core.MediaType;
+package com.unboundid.scim2.common.utils;
 
 /**
  * Various constants used by the SCIM API.
@@ -25,15 +23,42 @@ import javax.ws.rs.core.MediaType;
 public class ApiConstants
 {
   /**
+   * An HTTP GET to this endpoint will return a JSON structure that
+   * describes the SCIM specification features available on a service
+   * provider.
+   */
+  public static final String SERVICE_PROVIDER_CONFIG_ENDPOINT =
+      "ServiceProviderConfig";
+
+  /**
+   * An HTTP GET to this endpoint is used to discover the types of
+   * resources available on a SCIM service provider (e.g., Users and
+   * Groups).
+   */
+  public static final String RESOURCE_TYPES_ENDPOINT = "ResourceTypes";
+
+  /**
+   * An HTTP GET to this endpoint is used to retrieve information about
+   * resource schemas supported by a SCIM service provider.
+   */
+  public static final String SCHEMAS_ENDPOINT = "Schemas";
+
+  /**
+   * The "/Me" authenticated subject URI alias for the User or other resource
+   * associated with the currently authenticated subject for any SCIM operation.
+   */
+  public static final String ME_ENDPOINT = "Me";
+
+  /**
+   * An HTTP POST to this endpoint is used to retrieve information about
+   * resource schemas supported by a SCIM service provider.
+   */
+  public static final String SEARCH_WITH_POST_PATH_EXTENSION = ".search";
+
+  /**
    * The SCIM media type string.
    */
   public static final String MEDIA_TYPE_SCIM = "application/scim+json";
-
-  /**
-   * The SCIM media type.
-   */
-  public static final MediaType MEDIA_TYPE_SCIM_TYPE =
-      MediaType.valueOf(MEDIA_TYPE_SCIM);
 
   /**
    * The HTTP query parameter used in a URI to exclude specific SCIM attributes.

@@ -15,14 +15,30 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.common.filters;
+package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
-import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.common.filters.AndFilter;
+import com.unboundid.scim2.common.filters.ComplexValueFilter;
+import com.unboundid.scim2.common.filters.ContainsFilter;
+import com.unboundid.scim2.common.filters.EndsWithFilter;
+import com.unboundid.scim2.common.filters.EqualFilter;
+import com.unboundid.scim2.common.filters.Filter;
+import com.unboundid.scim2.common.filters.FilterVisitor;
+import com.unboundid.scim2.common.filters.GreaterThanFilter;
+import com.unboundid.scim2.common.filters.GreaterThanOrEqualFilter;
+import com.unboundid.scim2.common.filters.LessThanFilter;
+import com.unboundid.scim2.common.filters.LessThanOrEqualFilter;
+import com.unboundid.scim2.common.filters.NotEqualFilter;
+import com.unboundid.scim2.common.filters.NotFilter;
+import com.unboundid.scim2.common.filters.OrFilter;
+import com.unboundid.scim2.common.filters.PresentFilter;
+import com.unboundid.scim2.common.filters.StartsWithFilter;
+import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,7 +87,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     }
     for (JsonNode node : nodes)
     {
-      if (JsonUtils.compareTo(node, filter.getComparisonValue()) == 0)
+      if (JsonUtils.compareTo(node, filter.getComparisonValue(),
+          getAttributeDefinition(filter.getAttributePath())) == 0)
       {
         return true;
       }
@@ -98,7 +115,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     }
     for (JsonNode node : nodes)
     {
-      if (JsonUtils.compareTo(node, filter.getComparisonValue()) == 0)
+      if (JsonUtils.compareTo(node, filter.getComparisonValue(),
+          getAttributeDefinition(filter.getAttributePath())) == 0)
       {
         return false;
       }
@@ -116,10 +134,23 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
         getCandidateNodes(filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
-      if (node.isTextual() && filter.getComparisonValue().isTextual() &&
-          node.textValue().toLowerCase().contains(
-              filter.getComparisonValue().textValue().toLowerCase()) ||
-          node.equals(filter.getComparisonValue()))
+      if (node.isTextual() && filter.getComparisonValue().isTextual())
+      {
+        AttributeDefinition attributeDefinition =
+            getAttributeDefinition(filter.getAttributePath());
+        String nodeValue = node.textValue();
+        String comparisonValue = filter.getComparisonValue().textValue();
+        if(attributeDefinition == null || !attributeDefinition.isCaseExact())
+        {
+          nodeValue = nodeValue.toLowerCase();
+          comparisonValue = comparisonValue.toLowerCase();
+        }
+        if(nodeValue.contains(comparisonValue))
+        {
+          return true;
+        }
+      }
+      else if(node.equals(filter.getComparisonValue()))
       {
         return true;
       }
@@ -137,10 +168,23 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
         getCandidateNodes(filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
-      if (node.isTextual() && filter.getComparisonValue().isTextual() &&
-          node.textValue().toLowerCase().startsWith(
-              filter.getComparisonValue().textValue().toLowerCase()) ||
-          node.equals(filter.getComparisonValue()))
+      if (node.isTextual() && filter.getComparisonValue().isTextual())
+      {
+        AttributeDefinition attributeDefinition =
+            getAttributeDefinition(filter.getAttributePath());
+        String nodeValue = node.textValue();
+        String comparisonValue = filter.getComparisonValue().textValue();
+        if(attributeDefinition == null || !attributeDefinition.isCaseExact())
+        {
+          nodeValue = nodeValue.toLowerCase();
+          comparisonValue = comparisonValue.toLowerCase();
+        }
+        if(nodeValue.startsWith(comparisonValue))
+        {
+          return true;
+        }
+      }
+      else if(node.equals(filter.getComparisonValue()))
       {
         return true;
       }
@@ -158,10 +202,23 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
         getCandidateNodes(filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
-      if (node.isTextual() && filter.getComparisonValue().isTextual() &&
-          node.textValue().toLowerCase().endsWith(
-              filter.getComparisonValue().textValue().toLowerCase()) ||
-          node.equals(filter.getComparisonValue()))
+      if (node.isTextual() && filter.getComparisonValue().isTextual())
+      {
+        AttributeDefinition attributeDefinition =
+            getAttributeDefinition(filter.getAttributePath());
+        String nodeValue = node.textValue();
+        String comparisonValue = filter.getComparisonValue().textValue();
+        if(attributeDefinition == null || !attributeDefinition.isCaseExact())
+        {
+          nodeValue = nodeValue.toLowerCase();
+          comparisonValue = comparisonValue.toLowerCase();
+        }
+        if(nodeValue.endsWith(comparisonValue))
+        {
+          return true;
+        }
+      }
+      else if(node.equals(filter.getComparisonValue()))
       {
         return true;
       }
@@ -207,7 +264,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
             "Greater than filter may not compare boolean or binary " +
                 "attribute values");
       }
-      if (JsonUtils.compareTo(node, filter.getComparisonValue()) > 0)
+      if (JsonUtils.compareTo(node, filter.getComparisonValue(),
+          getAttributeDefinition(filter.getAttributePath())) > 0)
       {
         return true;
       }
@@ -231,7 +289,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
         throw BadRequestException.invalidFilter("Greater than or equal " +
             "filter may not compare boolean or binary attribute values");
       }
-      if (JsonUtils.compareTo(node, filter.getComparisonValue()) >= 0)
+      if (JsonUtils.compareTo(node, filter.getComparisonValue(),
+          getAttributeDefinition(filter.getAttributePath())) >= 0)
       {
         return true;
       }
@@ -254,7 +313,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
         throw BadRequestException.invalidFilter("Less than or equal " +
             "filter may not compare boolean or binary attribute values");
       }
-      if (JsonUtils.compareTo(node, filter.getComparisonValue()) < 0)
+      if (JsonUtils.compareTo(node, filter.getComparisonValue(),
+          getAttributeDefinition(filter.getAttributePath())) < 0)
       {
         return true;
       }
@@ -278,7 +338,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
         throw BadRequestException.invalidFilter("Less than or equal " +
             "filter may not compare boolean or binary attribute values");
       }
-      if (JsonUtils.compareTo(node, filter.getComparisonValue()) <= 0)
+      if (JsonUtils.compareTo(node, filter.getComparisonValue(),
+          getAttributeDefinition(filter.getAttributePath())) <= 0)
       {
         return true;
       }
@@ -355,6 +416,19 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
       }
     }
     return false;
+  }
+
+  /**
+   * Retrieve the attribute definition for the attribute specified by the path
+   * to determine case sensitivity during string matching.
+   *
+   * @param path The path to the attribute whose definition to retrieve.
+   * @return the attribute definition or {@code null} if not available, in which
+   *         case case insensitive string value matching will be performed.
+   */
+  protected AttributeDefinition getAttributeDefinition(final Path path)
+  {
+    return null;
   }
 
   /**

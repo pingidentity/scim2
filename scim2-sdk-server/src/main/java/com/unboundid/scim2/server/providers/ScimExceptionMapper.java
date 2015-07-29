@@ -18,7 +18,7 @@
 package com.unboundid.scim2.server.providers;
 
 import com.unboundid.scim2.common.exceptions.ScimException;
-import com.unboundid.scim2.server.ApiConstants;
+import com.unboundid.scim2.common.utils.ApiConstants;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -37,6 +37,6 @@ public class ScimExceptionMapper implements ExceptionMapper<ScimException>
   {
     return Response.status(throwable.getScimError().getStatus()).entity(
         throwable.getScimError()).type(
-        ApiConstants.MEDIA_TYPE_SCIM_TYPE).build();
+        ApiConstants.MEDIA_TYPE_SCIM).build();
   }
 }

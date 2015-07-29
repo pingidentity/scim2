@@ -37,6 +37,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import java.net.URI;
 
+import static com.unboundid.scim2.common.utils.ApiConstants.*;
+
 /**
  * The main entry point to the client API used to access a SCIM 2.0 service
  * provider.
@@ -44,27 +46,15 @@ import java.net.URI;
 public class ScimService
 {
   /**
-   * The SCIM media type string.
-   */
-  public static final String MEDIA_TYPE_SCIM = "application/scim+json";
-
-  /**
    * The authenticated subject alias.
    */
-  public static final URI ME_ALIAS = URI.create("/Me");
+  public static final URI ME_URI = URI.create(ME_ENDPOINT);
 
   /**
    * The SCIM media type.
    */
   public static final MediaType MEDIA_TYPE_SCIM_TYPE =
       MediaType.valueOf(MEDIA_TYPE_SCIM);
-
-  private static final String SERVICE_PROVIDER_CONFIG_ENDPOINT =
-      "ServiceProviderConfig";
-  private static final String RESOURCE_TYPES_ENDPOINT =
-      "ResourceTypes";
-  private static final String SCHEMAS_ENDPOINT =
-      "Schemas";
 
   private final WebTarget baseTarget;
   private volatile ServiceProviderConfigResource serviceProviderConfig;
