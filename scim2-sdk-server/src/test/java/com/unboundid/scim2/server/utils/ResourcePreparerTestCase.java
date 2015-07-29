@@ -40,7 +40,7 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 /**
- * Created by boli on 7/28/15.
+ * Test case for the Resource Preparer utility.
  */
 public class ResourcePreparerTestCase
 {
@@ -106,6 +106,11 @@ public class ResourcePreparerTestCase
         new TextNode("test")));
   }
 
+  /**
+   * Test combination data provider.
+   *
+   * @return The combinations of attributes/excludedAttributes to test.
+   */
   @DataProvider
   public Object[][] dataProvider()
   {
@@ -125,6 +130,10 @@ public class ResourcePreparerTestCase
 
   /**
    * Test trim on retrieve.
+   *
+   * @param attribute The attribute to test as attributes/excludedAttributes.
+   * @param excluded Whether the attribute is one of the excludedAttributes.
+   * @throws BadRequestException If an error occurs.
    */
   @Test(dataProvider = "dataProvider")
   public void testRetrieve(AttributeDefinition.Returned attribute,
@@ -166,6 +175,10 @@ public class ResourcePreparerTestCase
 
   /**
    * Test trim on create.
+   *
+   * @param attribute The attribute to test as attributes/excludedAttributes.
+   * @param excluded Whether the attribute is one of the excludedAttributes.
+   * @throws BadRequestException If an error occurs.
    */
   @Test(dataProvider = "dataProvider")
   public void testCreate(AttributeDefinition.Returned attribute,
@@ -179,7 +192,8 @@ public class ResourcePreparerTestCase
             Collections.singleton(Path.fromString(attribute.getName())),
             excluded);
 
-    GenericScimResource prepared = preparer.trimCreatedResource(testResource, null);
+    GenericScimResource prepared =
+        preparer.trimCreatedResource(testResource, null);
     assertTrue(prepared.getObjectNode().has("always"));
     assertFalse(prepared.getObjectNode().has("never"));
     if(attribute == null ||
@@ -220,6 +234,10 @@ public class ResourcePreparerTestCase
 
   /**
    * Test trim on replace.
+   *
+   * @param attribute The attribute to test as attributes/excludedAttributes.
+   * @param excluded Whether the attribute is one of the excludedAttributes.
+   * @throws BadRequestException If an error occurs.
    */
   @Test(dataProvider = "dataProvider")
   public void testReplace(AttributeDefinition.Returned attribute,
@@ -277,6 +295,10 @@ public class ResourcePreparerTestCase
 
   /**
    * Test trim on modify.
+   *
+   * @param attribute The attribute to test as attributes/excludedAttributes.
+   * @param excluded Whether the attribute is one of the excludedAttributes.
+   * @throws BadRequestException If an error occurs.
    */
   @Test(dataProvider = "dataProvider")
   public void testModify(AttributeDefinition.Returned attribute,

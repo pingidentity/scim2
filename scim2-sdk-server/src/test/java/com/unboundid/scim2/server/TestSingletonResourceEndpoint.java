@@ -66,6 +66,13 @@ public class TestSingletonResourceEndpoint
   private final Map<String, UserResource> users =
       new HashMap<String, UserResource>();
 
+  /**
+   * Test SCIM search.
+   *
+   * @param uriInfo The UriInfo.
+   * @return The results.
+   * @throws ScimException if an error occurs.
+   */
   @GET
   @Produces(MEDIA_TYPE_SCIM)
   public SimpleSearchResults<UserResource> search(
@@ -78,6 +85,14 @@ public class TestSingletonResourceEndpoint
     return results;
   }
 
+  /**
+   * Test SCIM retrieve by ID.
+   *
+   * @param id The ID of the resource to retrieve.
+   * @param uriInfo The UriInfo.
+   * @return The result.
+   * @throws ScimException if an error occurs.
+   */
   @Path("{id}")
   @GET
   @Produces(MEDIA_TYPE_SCIM)
@@ -96,6 +111,14 @@ public class TestSingletonResourceEndpoint
     return resourcePreparer.trimRetrievedResource(found);
   }
 
+  /**
+   * Test SCIM create.
+   *
+   * @param resource The resource to create.
+   * @param uriInfo The UriInfo.
+   * @return The result.
+   * @throws ScimException if an error occurs.
+   */
   @POST
   @Consumes(MEDIA_TYPE_SCIM)
   @Produces(MEDIA_TYPE_SCIM)
@@ -111,6 +134,12 @@ public class TestSingletonResourceEndpoint
     return resourcePreparer.trimCreatedResource(resource, resource);
   }
 
+  /**
+   * Test SCIM delete.
+   *
+   * @param id The ID of the resource to delete.
+   * @throws ScimException if an error occurs.
+   */
   @Path("{id}")
   @DELETE
   public void delete(@PathParam("id") final String id) throws ScimException
@@ -122,6 +151,15 @@ public class TestSingletonResourceEndpoint
     }
   }
 
+  /**
+   * Test SCIM replace.
+   *
+   * @param id the ID of the resource to replace.
+   * @param resource The resource to create.
+   * @param uriInfo The UriInfo.
+   * @return The result.
+   * @throws ScimException if an error occurs.
+   */
   @Path("{id}")
   @PUT
   @Consumes(MEDIA_TYPE_SCIM)
@@ -141,6 +179,15 @@ public class TestSingletonResourceEndpoint
     return resourcePreparer.trimReplacedResource(resource, resource);
   }
 
+  /**
+   * Test SCIM modify.
+   *
+   * @param id The ID of the resource to modify.
+   * @param patchRequest The patch request.
+   * @param uriInfo The UriInfo.
+   * @return The result.
+   * @throws ScimException if an error occurs.
+   */
   @Path("{id}")
   @PATCH
   @Consumes(MEDIA_TYPE_SCIM)

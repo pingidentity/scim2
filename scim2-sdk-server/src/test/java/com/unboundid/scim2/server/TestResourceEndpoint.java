@@ -49,6 +49,13 @@ public class TestResourceEndpoint
       ResourceTypeDefinition.fromJaxRsResource(
           TestResourceEndpoint.class);
 
+  /**
+   * Test SCIM search.
+   *
+   * @param uriInfo The UriInfo.
+   * @return The results.
+   * @throws ScimException if an error occurs.
+   */
   @GET
   @Produces(MEDIA_TYPE_SCIM)
   public SimpleSearchResults<UserResource> search(
@@ -65,6 +72,14 @@ public class TestResourceEndpoint
     return results;
   }
 
+  /**
+   * Test SCIM retrieve by ID.
+   *
+   * @param id The ID of the resource to retrieve.
+   * @param uriInfo The UriInfo.
+   * @return The result.
+   * @throws ScimException if an error occurs.
+   */
   @Path("{id}")
   @GET
   @Produces(MEDIA_TYPE_SCIM)

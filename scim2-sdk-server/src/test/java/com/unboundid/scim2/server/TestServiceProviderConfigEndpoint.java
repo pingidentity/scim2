@@ -48,6 +48,11 @@ public class TestServiceProviderConfigEndpoint
     return create();
   }
 
+  /**
+   * Create a test config resource.
+   *
+   * @return The created resource.
+   */
   public static ServiceProviderConfigResource create()
   {
     return new ServiceProviderConfigResource("https://doc",
