@@ -29,7 +29,6 @@ import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.utils.ApiConstants;
-import com.unboundid.scim2.common.utils.AttributeSet;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import javax.ws.rs.client.Entity;
@@ -40,6 +39,7 @@ import javax.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import static com.unboundid.scim2.client.ScimService.MEDIA_TYPE_SCIM_TYPE;
 import static com.unboundid.scim2.common.utils.ApiConstants.*;
@@ -217,8 +217,8 @@ public final class SearchRequestBuilder
     Response response;
     if(post)
     {
-      AttributeSet attributeSet = null;
-      AttributeSet excludedAttributeSet = null;
+      Set<String> attributeSet = null;
+      Set<String> excludedAttributeSet = null;
       if(attributes != null && attributes.size() > 0)
       {
         if(!excluded)

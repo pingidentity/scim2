@@ -28,10 +28,9 @@ import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.utils.AttributeSet;
 import com.unboundid.scim2.common.utils.Debug;
 import com.unboundid.scim2.common.utils.DebugType;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.StaticUtils;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -99,23 +98,42 @@ public class ResourcePreparer<T extends ScimResource>
     }
     if(attributesString != null && !attributesString.isEmpty())
     {
-      AttributeSet attributeSet = AttributeSet.fromString(attributesString);
+      Set<String> attributeSet = StaticUtils.arrayToSet(
+          StaticUtils.splitCommaSeperatedString(attributesString));
       this.queryAttributes = new LinkedHashSet<Path>(attributeSet.size());
       for(String attribute : attributeSet)
       {
-        this.queryAttributes.add(Path.fromString(attribute));
+        try
+        {
+          this.queryAttributes.add(Path.fromString(attribute));
+        }
+        catch (BadRequestException e)
+        {
+          throw BadRequestException.invalidValue("'" + attribute +
+              "' is not a valid value for the attributes parameter: " +
+              e.getMessage());
+        }
       }
       this.excluded = false;
     }
     else if(excludedAttributesString != null &&
         !excludedAttributesString.isEmpty())
     {
-      AttributeSet attributeSet =
-          AttributeSet.fromString(excludedAttributesString);
+      Set<String> attributeSet = StaticUtils.arrayToSet(
+          StaticUtils.splitCommaSeperatedString(excludedAttributesString));
       this.queryAttributes = new LinkedHashSet<Path>(attributeSet.size());
       for(String attribute : attributeSet)
       {
-        this.queryAttributes.add(Path.fromString(attribute));
+        try
+        {
+          this.queryAttributes.add(Path.fromString(attribute));
+        }
+        catch (BadRequestException e)
+        {
+          throw BadRequestException.invalidValue("'" + attribute +
+              "' is not a valid value for the excludedAttributes parameter: " +
+              e.getMessage());
+        }
       }
       this.excluded = true;
     }
@@ -268,17 +286,8 @@ public class ResourcePreparer<T extends ScimResource>
     Set<Path> requestAttributes = Collections.emptySet();
     if(requestResource != null)
     {
-      ObjectNode requestObject;
-      if(requestResource instanceof GenericScimResource)
-      {
-        requestObject = ((GenericScimResource) requestResource).getObjectNode();
-      }
-      else
-      {
-        requestObject = SchemaUtils.createSCIMCompatibleMapper().valueToTree(
-            requestResource);
-
-      }
+      ObjectNode requestObject =
+          requestResource.asGenericScimResource().getObjectNode();
       requestAttributes = new LinkedHashSet<Path>();
       collectAttributes(Path.root(), requestAttributes, requestObject);
     }
@@ -289,20 +298,11 @@ public class ResourcePreparer<T extends ScimResource>
       collectAttributes(requestAttributes, patchOperations);
     }
 
-    ObjectNode returneObject;
-    if(returnedResource instanceof GenericScimResource)
-    {
-      returneObject = ((GenericScimResource) returnedResource).getObjectNode();
-    }
-    else
-    {
-      returneObject = SchemaUtils.createSCIMCompatibleMapper().valueToTree(
-          returnedResource);
-
-    }
+    ObjectNode returnedObject =
+        returnedResource.asGenericScimResource().getObjectNode();
     GenericScimResource preparedResource =
         new GenericScimResource(
-            trimObjectNode(returneObject, requestAttributes, Path.root()));
+            trimObjectNode(returnedObject, requestAttributes, Path.root()));
     setResourceTypeAndLocation((T) preparedResource);
     return preparedResource;
   }

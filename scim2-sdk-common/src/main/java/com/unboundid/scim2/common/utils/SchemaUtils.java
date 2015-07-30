@@ -723,7 +723,7 @@ public class SchemaUtils
    */
   public static boolean isUrn(final String string)
   {
-    return string.toLowerCase().startsWith("urn:") &&
+    return StaticUtils.toLowerCase(string).startsWith("urn:") &&
         string.length() > 4;
   }
 

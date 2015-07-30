@@ -19,6 +19,7 @@ package com.unboundid.scim2.server.providers;
 
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.StaticUtils;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -74,12 +75,13 @@ public class DotSearchFilter implements ContainerRequestFilter
       if(searchRequest.getAttributes() != null)
       {
         builder.queryParam(QUERY_PARAMETER_ATTRIBUTES,
-            searchRequest.getAttributes());
+            StaticUtils.collectionToString(searchRequest.getAttributes(), ","));
       }
       if(searchRequest.getExcludedAttributes() != null)
       {
         builder.queryParam(QUERY_PARAMETER_EXCLUDED_ATTRIBUTES,
-            searchRequest.getExcludedAttributes());
+            StaticUtils.collectionToString(
+                searchRequest.getExcludedAttributes(), ","));
       }
       if(searchRequest.getFilter() != null)
       {

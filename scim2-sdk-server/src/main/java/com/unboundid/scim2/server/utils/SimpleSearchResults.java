@@ -17,8 +17,6 @@
 
 package com.unboundid.scim2.server.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
@@ -28,7 +26,6 @@ import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.server.ListResponseStreamingOutput;
 import com.unboundid.scim2.server.ListResponseWriter;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
@@ -48,8 +45,6 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
 public class SimpleSearchResults<T extends ScimResource>
     extends ListResponseStreamingOutput<T>
 {
-  private static final ObjectMapper mapper =
-      SchemaUtils.createSCIMCompatibleMapper();
   private final List<ScimResource> resources;
   private final Filter filter;
   private final Integer startIndex;
@@ -67,8 +62,7 @@ public class SimpleSearchResults<T extends ScimResource>
    * is invalid.
    */
   public SimpleSearchResults(final ResourceTypeDefinition resourceType,
-                             final UriInfo uriInfo)
-      throws BadRequestException
+                             final UriInfo uriInfo) throws BadRequestException
   {
     this.filterEvaluator = new SchemaAwareFilterEvaluator(resourceType);
     this.responsePreparer =
@@ -126,16 +120,23 @@ public class SimpleSearchResults<T extends ScimResource>
       count = null;
     }
 
-    if(sortByString != null && sortOrderString != null)
+    Path sortBy;
+    try
     {
-      this.resourceComparator = new ResourceComparator<ScimResource>(
-          Path.fromString(sortByString), SortOrder.fromName(sortOrderString),
-          resourceType);
+      sortBy = sortByString == null ? null : Path.fromString(sortByString);
     }
-    else if(sortByString != null)
+    catch (BadRequestException e)
+    {
+      throw BadRequestException.invalidValue("'" + sortByString +
+          "' is not a valid value for the sortBy parameter: " +
+          e.getMessage());
+    }
+    SortOrder sortOrder = sortOrderString == null ?
+        SortOrder.ASCENDING : SortOrder.fromName(sortOrderString);
+    if(sortBy != null)
     {
       this.resourceComparator = new ResourceComparator<ScimResource>(
-          Path.fromString(sortByString), resourceType);
+          sortBy, sortOrder, resourceType);
     }
     else
     {
@@ -163,8 +164,7 @@ public class SimpleSearchResults<T extends ScimResource>
     }
     else
     {
-      genericResource =
-          new GenericScimResource(mapper.<ObjectNode>valueToTree(resource));
+      genericResource = resource.asGenericScimResource();
     }
 
     // Set meta attributes so they can be used in the following filter eval
@@ -210,28 +210,25 @@ public class SimpleSearchResults<T extends ScimResource>
       Collections.sort(resources, resourceComparator);
     }
     List<ScimResource> resultsToReturn = resources;
-    Integer startIndexToReturn = null;
     if(startIndex != null)
     {
-      // 3.4.2.4: A value less than 1 SHALL be interpreted as 1.
-      startIndexToReturn = startIndex < 1 ? 1 : startIndex;
-      if(!resources.isEmpty())
+      if(startIndex > resources.size())
       {
-        startIndexToReturn = Math.min(startIndexToReturn, resources.size());
-        resultsToReturn = resources.subList(startIndexToReturn - 1,
-            resources.size());
+        resultsToReturn = Collections.emptyList();
+      }
+      else
+      {
+        resultsToReturn = resources.subList(startIndex - 1, resources.size());
       }
     }
     if(count != null && !resources.isEmpty())
     {
-      resultsToReturn = resources.subList(0, Math.min(
-          // 3.4.2.4: A negative value SHALL be interpreted as 0.
-          count < 0 ? 0 : count, resources.size()));
+      resultsToReturn = resources.subList(0, Math.min(count, resources.size()));
     }
     os.totalResults(resources.size());
     if(startIndex != null || count != null)
     {
-      os.startIndex(startIndexToReturn == null ? 1 : startIndexToReturn);
+      os.startIndex(startIndex == null ? 1 : startIndex);
       os.itemsPerPage(resultsToReturn.size());
     }
     for(ScimResource resource : resultsToReturn)

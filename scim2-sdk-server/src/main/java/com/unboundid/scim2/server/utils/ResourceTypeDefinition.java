@@ -305,8 +305,8 @@ public final class ResourceTypeDefinition
    * Retrieve the attribute definition for the attribute in the path.
    *
    * @param path The attribute path.
-   * @return The attribute definition for {@code null}.
-   * @throws BadRequestException If there is no attribute definied for the path.
+   * @return The attribute definition.
+   * @throws BadRequestException If there is no attribute defined for the path.
    */
   public AttributeDefinition getAttributeDefinition(final Path path)
       throws BadRequestException

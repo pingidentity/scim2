@@ -226,7 +226,7 @@ public class SchemaChecker
               path.getElement(path.size() - 1).getValueFilter();
       if(path != null && attribute == null)
       {
-        // Can't find the attirbute defintion for attribute in path.
+        // Can't find the attribute definition for attribute in path.
         continue;
       }
       switch (patchOp.getOpType())
@@ -958,7 +958,8 @@ public class SchemaChecker
           {
             if (attribute.isCaseExact() ?
                 canonicalValue.equals(node.textValue()) :
-                canonicalValue.equalsIgnoreCase(node.textValue()))
+                StaticUtils.toLowerCase(canonicalValue).equals(
+                    StaticUtils.toLowerCase(node.textValue())))
             {
               found = true;
               break;

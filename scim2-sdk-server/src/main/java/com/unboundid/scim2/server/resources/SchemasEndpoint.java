@@ -17,7 +17,9 @@
 
 package com.unboundid.scim2.server.resources;
 
+import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
@@ -25,6 +27,7 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.utils.ResourcePreparer;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
+import com.unboundid.scim2.server.utils.SchemaAwareFilterEvaluator;
 import com.unboundid.scim2.server.utils.SimpleSearchResults;
 
 import javax.ws.rs.GET;
@@ -108,20 +111,21 @@ public class SchemasEndpoint
                           @Context final UriInfo uriInfo)
       throws ScimException
   {
-    for(SchemaResource schema : getSchemas())
+    Filter filter = Filter.or(Filter.eq("id", id), Filter.eq("name", id));
+    SchemaAwareFilterEvaluator filterEvaluator =
+        new SchemaAwareFilterEvaluator(RESOURCE_TYPE_DEFINITION);
+    for (SchemaResource schema : getSchemas())
     {
-      String idOrName = schema.getId() == null ?
-          schema.getName() : schema.getId();
-      if (idOrName.equalsIgnoreCase(id))
+      GenericScimResource resource = schema.asGenericScimResource();
+      if (filter.visit(filterEvaluator, resource.getObjectNode()))
       {
-        ResourcePreparer<SchemaResource> resourcePreparer =
-            new ResourcePreparer<SchemaResource>(
+        ResourcePreparer<GenericScimResource> resourcePreparer =
+            new ResourcePreparer<GenericScimResource>(
                 RESOURCE_TYPE_DEFINITION, uriInfo);
-        return resourcePreparer.trimRetrievedResource(schema);
+        return resourcePreparer.trimRetrievedResource(resource);
       }
     }
-
-    throw new ResourceNotFoundException("No schema defined with ID " + id);
+      throw new ResourceNotFoundException("No schema defined with ID " + id);
   }
 
   /**

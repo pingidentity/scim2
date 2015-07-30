@@ -130,32 +130,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   public Boolean visit(final ContainsFilter filter, final JsonNode object)
       throws ScimException
   {
-    Iterable<JsonNode> nodes =
-        getCandidateNodes(filter.getAttributePath(), object);
-    for (JsonNode node : nodes)
-    {
-      if (node.isTextual() && filter.getComparisonValue().isTextual())
-      {
-        AttributeDefinition attributeDefinition =
-            getAttributeDefinition(filter.getAttributePath());
-        String nodeValue = node.textValue();
-        String comparisonValue = filter.getComparisonValue().textValue();
-        if(attributeDefinition == null || !attributeDefinition.isCaseExact())
-        {
-          nodeValue = nodeValue.toLowerCase();
-          comparisonValue = comparisonValue.toLowerCase();
-        }
-        if(nodeValue.contains(comparisonValue))
-        {
-          return true;
-        }
-      }
-      else if(node.equals(filter.getComparisonValue()))
-      {
-        return true;
-      }
-    }
-    return false;
+    return substringMatch(filter, object);
   }
 
   /**
@@ -164,32 +139,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   public Boolean visit(final StartsWithFilter filter, final JsonNode object)
       throws ScimException
   {
-    Iterable<JsonNode> nodes =
-        getCandidateNodes(filter.getAttributePath(), object);
-    for (JsonNode node : nodes)
-    {
-      if (node.isTextual() && filter.getComparisonValue().isTextual())
-      {
-        AttributeDefinition attributeDefinition =
-            getAttributeDefinition(filter.getAttributePath());
-        String nodeValue = node.textValue();
-        String comparisonValue = filter.getComparisonValue().textValue();
-        if(attributeDefinition == null || !attributeDefinition.isCaseExact())
-        {
-          nodeValue = nodeValue.toLowerCase();
-          comparisonValue = comparisonValue.toLowerCase();
-        }
-        if(nodeValue.startsWith(comparisonValue))
-        {
-          return true;
-        }
-      }
-      else if(node.equals(filter.getComparisonValue()))
-      {
-        return true;
-      }
-    }
-    return false;
+    return substringMatch(filter, object);
   }
 
   /**
@@ -198,32 +148,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   public Boolean visit(final EndsWithFilter filter, final JsonNode object)
       throws ScimException
   {
-    Iterable<JsonNode> nodes =
-        getCandidateNodes(filter.getAttributePath(), object);
-    for (JsonNode node : nodes)
-    {
-      if (node.isTextual() && filter.getComparisonValue().isTextual())
-      {
-        AttributeDefinition attributeDefinition =
-            getAttributeDefinition(filter.getAttributePath());
-        String nodeValue = node.textValue();
-        String comparisonValue = filter.getComparisonValue().textValue();
-        if(attributeDefinition == null || !attributeDefinition.isCaseExact())
-        {
-          nodeValue = nodeValue.toLowerCase();
-          comparisonValue = comparisonValue.toLowerCase();
-        }
-        if(nodeValue.endsWith(comparisonValue))
-        {
-          return true;
-        }
-      }
-      else if(node.equals(filter.getComparisonValue()))
-      {
-        return true;
-      }
-    }
-    return false;
+    return substringMatch(filter, object);
   }
 
   /**
@@ -518,5 +443,61 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
       }
     }
     return true;
+  }
+
+  /**
+   * Evaluate a substring match filter.
+   *
+   * @param filter The filter to operate on.
+   * @param object The object to evaluate.
+   * @return The return value from the operation.
+   * @throws ScimException If an exception occurs during the operation.
+   */
+  private boolean substringMatch(final Filter filter, final JsonNode object)
+      throws ScimException
+  {
+    Iterable<JsonNode> nodes =
+        getCandidateNodes(filter.getAttributePath(), object);
+    for (JsonNode node : nodes)
+    {
+      if (node.isTextual() && filter.getComparisonValue().isTextual())
+      {
+        AttributeDefinition attributeDefinition =
+            getAttributeDefinition(filter.getAttributePath());
+        String nodeValue = node.textValue();
+        String comparisonValue = filter.getComparisonValue().textValue();
+        if(attributeDefinition == null || !attributeDefinition.isCaseExact())
+        {
+          nodeValue = StaticUtils.toLowerCase(nodeValue);
+          comparisonValue = StaticUtils.toLowerCase(comparisonValue);
+        }
+        switch(filter.getFilterType())
+        {
+          case CONTAINS:
+            if(nodeValue.contains(comparisonValue))
+            {
+              return true;
+            }
+            break;
+          case STARTS_WITH:
+            if(nodeValue.startsWith(comparisonValue))
+            {
+              return true;
+            }
+            break;
+          case ENDS_WITH:
+            if(nodeValue.endsWith(comparisonValue))
+            {
+              return true;
+            }
+            break;
+        }
+      }
+      else if(node.equals(filter.getComparisonValue()))
+      {
+        return true;
+      }
+    }
+    return false;
   }
 }

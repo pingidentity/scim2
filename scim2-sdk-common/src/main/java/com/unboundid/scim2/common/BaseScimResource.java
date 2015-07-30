@@ -489,6 +489,16 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
+  public GenericScimResource asGenericScimResource()
+  {
+    ObjectNode object =
+        SchemaUtils.createSCIMCompatibleMapper().valueToTree(this);
+    return new GenericScimResource(object);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean equals(final Object o)
   {

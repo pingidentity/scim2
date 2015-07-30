@@ -80,4 +80,13 @@ public interface ScimResource
    * @param schemaUrns a set containing the schema urns for this object.
    */
   void setSchemaUrns(Collection<String> schemaUrns);
+
+  /**
+   * Returns the GenericScimResource representation of this ScimResource. If
+   * this ScimResource is already a GenericScimResource, this same instance will
+   * be returned.
+   *
+   * @return The GenericScimResource representation of this ScimResource.
+   */
+  GenericScimResource asGenericScimResource();
 }

@@ -20,13 +20,11 @@ package com.unboundid.scim2.common;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
-import com.unboundid.scim2.common.utils.AttributeSet;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.StaticUtils;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 
 import static org.testng.Assert.assertEquals;
 
@@ -56,7 +54,7 @@ public class SearchRequestTestCase
             "}", SearchRequest.class);
 
     assertEquals(searchRequest.getAttributes(),
-        Arrays.asList("displayName", "userName"));
+        StaticUtils.arrayToSet("displayName", "userName"));
     assertEquals(searchRequest.getExcludedAttributes(), null);
     assertEquals(searchRequest.getFilter(), "displayName sw \"smith\"");
     assertEquals(searchRequest.getSortBy(), null);
@@ -75,7 +73,7 @@ public class SearchRequestTestCase
 
     assertEquals(searchRequest.getAttributes(), null);
     assertEquals(searchRequest.getExcludedAttributes(),
-        new LinkedHashSet<String>(Arrays.asList("displayName", "userName")));
+        StaticUtils.arrayToSet("displayName", "userName"));
     assertEquals(searchRequest.getFilter(), null);
     assertEquals(searchRequest.getSortBy(), "name.lastName");
     assertEquals(searchRequest.getSortOrder(), SortOrder.DESCENDING);
@@ -83,8 +81,8 @@ public class SearchRequestTestCase
     assertEquals(searchRequest.getCount(), null);
 
     searchRequest = new SearchRequest(
-        AttributeSet.fromString("displayName, userName"),
-        AttributeSet.fromString("addresses"),
+        StaticUtils.arrayToSet("displayName", "userName"),
+        StaticUtils.arrayToSet("addresses"),
         "userName eq \"test\"", "name.lastName",
         SortOrder.ASCENDING, 5, 100);
 

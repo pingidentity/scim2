@@ -76,11 +76,11 @@ public enum SortOrder
   public static SortOrder fromName(final String name)
       throws BadRequestException
   {
-    for(SortOrder mutability : SortOrder.values())
+    for(SortOrder sortOrder : SortOrder.values())
     {
-      if(mutability.getName().equals(name))
+      if(sortOrder.getName().equals(name))
       {
-        return mutability;
+        return sortOrder;
       }
     }
 

@@ -531,6 +531,20 @@ public class AttributeDefinition
     private Collection<String> referenceTypes;
 
     /**
+     * Create a new builder.
+     */
+    public Builder()
+    {
+      // Defaults according to
+      // https://tools.ietf.org/html/draft-ietf-scim-core-schema-20#section-2.2
+      type = Type.STRING;
+      caseExact = false;
+      mutability = Mutability.READ_WRITE;
+      returned = Returned.DEFAULT;
+      uniqueness = Uniqueness.NONE;
+    }
+
+    /**
      * Sets the attribute name.
      *
      * @param name the attribute name.
@@ -707,16 +721,16 @@ public class AttributeDefinition
     public Builder clear()
     {
       this.name = null;
-      this.type = null;
+      this.type = Type.STRING;
       this.subAttributes = null;
       this.multiValued = false;
       this.description = null;
       this.required = false;
       this.canonicalValues = null;
       this.caseExact = false;
-      this.mutability = null;
-      this.returned = null;
-      this.uniqueness = null;
+      this.mutability = Mutability.READ_WRITE;
+      this.returned = Returned.DEFAULT;
+      this.uniqueness = Uniqueness.NONE;
       this.referenceTypes = null;
       return this;
     }

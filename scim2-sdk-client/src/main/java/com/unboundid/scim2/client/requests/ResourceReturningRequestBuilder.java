@@ -18,9 +18,10 @@
 package com.unboundid.scim2.client.requests;
 
 import com.unboundid.scim2.common.utils.ApiConstants;
-import com.unboundid.scim2.common.utils.AttributeSet;
+import com.unboundid.scim2.common.utils.StaticUtils;
 
 import javax.ws.rs.client.WebTarget;
+import java.util.Set;
 
 /**
  * Abstract SCIM request builder for resource returning requests.
@@ -36,7 +37,7 @@ public abstract class ResourceReturningRequestBuilder
   /**
    * The attribute list of include or exclude.
    */
-  protected AttributeSet attributes;
+  protected Set<String> attributes;
 
   /**
    * Create a new SCIM request builder.
@@ -60,12 +61,14 @@ public abstract class ResourceReturningRequestBuilder
       if(!excluded)
       {
         return super.buildTarget().queryParam(
-            ApiConstants.QUERY_PARAMETER_ATTRIBUTES, attributes);
+            ApiConstants.QUERY_PARAMETER_ATTRIBUTES,
+            StaticUtils.collectionToString(attributes, ","));
       }
       else
       {
         return super.buildTarget().queryParam(
-            ApiConstants.QUERY_PARAMETER_EXCLUDED_ATTRIBUTES, attributes);
+            ApiConstants.QUERY_PARAMETER_EXCLUDED_ATTRIBUTES,
+            StaticUtils.collectionToString(attributes, ","));
       }
     }
     return super.buildTarget();
@@ -83,7 +86,7 @@ public abstract class ResourceReturningRequestBuilder
   @SuppressWarnings("unchecked")
   public T attributes(final String... attributes)
   {
-    this.attributes = AttributeSet.fromStrings(attributes);
+    this.attributes = StaticUtils.arrayToSet(attributes);
     return (T) this;
   }
 
@@ -99,7 +102,7 @@ public abstract class ResourceReturningRequestBuilder
   @SuppressWarnings("unchecked")
   public T excludedAttributes(final String... excludedAttributes)
   {
-    this.attributes = AttributeSet.fromStrings(excludedAttributes);
+    this.attributes = StaticUtils.arrayToSet(excludedAttributes);
     this.excluded = true;
     return (T) this;
   }

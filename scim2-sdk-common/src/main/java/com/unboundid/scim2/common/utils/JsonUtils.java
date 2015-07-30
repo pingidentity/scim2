@@ -639,7 +639,8 @@ public class JsonUtils
         {
           return n1.textValue().compareTo(n2.textValue());
         }
-        return n1.textValue().compareToIgnoreCase(n2.textValue());
+        return StaticUtils.toLowerCase(n1.textValue()).compareTo(
+            StaticUtils.toLowerCase(n2.textValue()));
       }
     }
 

@@ -19,8 +19,8 @@ package com.unboundid.scim2.server.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.SortOrder;
@@ -28,7 +28,6 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.utils.Debug;
 import com.unboundid.scim2.common.utils.DebugType;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -39,7 +38,8 @@ import java.util.logging.Level;
  * A comparator implementation that could be used to compare POJOs representing
  * SCIM resources using the SCIM sorting parameters.
  */
-public class ResourceComparator<T> implements Comparator<T>
+public class ResourceComparator<T extends ScimResource>
+    implements Comparator<T>
 {
   private final Path sortBy;
   private final SortOrder sortOrder;
@@ -81,26 +81,8 @@ public class ResourceComparator<T> implements Comparator<T>
    */
   public int compare(final T o1, final T o2)
   {
-    ObjectNode n1;
-    ObjectNode n2;
-
-    if(o1 instanceof GenericScimResource)
-    {
-      n1 = ((GenericScimResource) o1).getObjectNode();
-    }
-    else
-    {
-      n1 = SchemaUtils.createSCIMCompatibleMapper().valueToTree(o1);
-    }
-
-    if(o2 instanceof GenericScimResource)
-    {
-      n2 = ((GenericScimResource) o2).getObjectNode();
-    }
-    else
-    {
-      n2 = SchemaUtils.createSCIMCompatibleMapper().valueToTree(o1);
-    }
+    ObjectNode n1 = o1.asGenericScimResource().getObjectNode();
+    ObjectNode n2 = o2.asGenericScimResource().getObjectNode();
 
     JsonNode v1 = null;
     JsonNode v2 = null;

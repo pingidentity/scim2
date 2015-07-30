@@ -555,6 +555,14 @@ public final class GenericScimResource implements ScimResource
   /**
    * {@inheritDoc}
    */
+  public GenericScimResource asGenericScimResource()
+  {
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String toString()
   {

@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
-import com.unboundid.scim2.common.utils.AttributeSet;
 
 import java.util.Set;
 
@@ -39,13 +38,13 @@ public final class SearchRequest extends BaseScimResource
       "the names of resource attributes to return in the response overriding " +
       "the set of attributes that would be returned by default")
   @JsonProperty
-  private final AttributeSet attributes;
+  private final Set<String> attributes;
 
   @Attribute(description = "A mulit-valued list of strings indicating " +
       "the names of resource attributes to be removed from the default set " +
       "of attributes to return")
   @JsonProperty
-  private final AttributeSet excludedAttributes;
+  private final Set<String> excludedAttributes;
 
   @Attribute(description = "The filter string used to request a subset " +
       "of resources")
@@ -90,9 +89,9 @@ public final class SearchRequest extends BaseScimResource
    */
   @JsonCreator
   public SearchRequest(@JsonProperty(QUERY_PARAMETER_ATTRIBUTES)
-                       final AttributeSet attributes,
+                       final Set<String> attributes,
                        @JsonProperty(QUERY_PARAMETER_EXCLUDED_ATTRIBUTES)
-                       final AttributeSet excludedAttributes,
+                       final Set<String> excludedAttributes,
                        @JsonProperty(QUERY_PARAMETER_FILTER)
                        final String filter,
                        @JsonProperty(QUERY_PARAMETER_SORT_BY)
