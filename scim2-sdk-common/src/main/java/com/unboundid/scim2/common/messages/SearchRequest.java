@@ -23,9 +23,9 @@ import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Set;
+
+import static com.unboundid.scim2.common.utils.ApiConstants.*;
 
 /**
  * Class representing a SCIM 2.0 search request.
@@ -34,19 +34,17 @@ import java.util.regex.Pattern;
     name="Search Operation", description = "SCIM 2.0 Search Request")
 public final class SearchRequest extends BaseScimResource
 {
-  private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
-
   @Attribute(description = "A multi-valued list of strings indicating " +
       "the names of resource attributes to return in the response overriding " +
       "the set of attributes that would be returned by default")
   @JsonProperty
-  private final List<String> attributes;
+  private final Set<String> attributes;
 
   @Attribute(description = "A mulit-valued list of strings indicating " +
       "the names of resource attributes to be removed from the default set " +
       "of attributes to return")
   @JsonProperty
-  private final List<String> excludedAttributes;
+  private final Set<String> excludedAttributes;
 
   @Attribute(description = "The filter string used to request a subset " +
       "of resources")
@@ -90,71 +88,23 @@ public final class SearchRequest extends BaseScimResource
    * @param count the desired maximum number of query results per page.
    */
   @JsonCreator
-  public SearchRequest(@JsonProperty("attributes")
-                       final List<String> attributes,
-                       @JsonProperty("excludedAttributes")
-                       final List<String> excludedAttributes,
-                       @JsonProperty("filter")
+  public SearchRequest(@JsonProperty(QUERY_PARAMETER_ATTRIBUTES)
+                       final Set<String> attributes,
+                       @JsonProperty(QUERY_PARAMETER_EXCLUDED_ATTRIBUTES)
+                       final Set<String> excludedAttributes,
+                       @JsonProperty(QUERY_PARAMETER_FILTER)
                        final String filter,
-                       @JsonProperty("sortBy")
+                       @JsonProperty(QUERY_PARAMETER_SORT_BY)
                        final String sortBy,
-                       @JsonProperty("sortOrder")
+                       @JsonProperty(QUERY_PARAMETER_SORT_ORDER)
                        final SortOrder sortOrder,
-                       @JsonProperty("startIndex")
+                       @JsonProperty(QUERY_PARAMETER_PAGE_START_INDEX)
                        final Integer startIndex,
-                       @JsonProperty("count")
+                       @JsonProperty(QUERY_PARAMETER_PAGE_SIZE)
                        final Integer count)
   {
     this.attributes = attributes;
     this.excludedAttributes = excludedAttributes;
-    this.filter = filter;
-    this.sortBy = sortBy;
-    this.sortOrder = sortOrder;
-    this.startIndex = startIndex;
-    this.count = count;
-  }
-
-  /**
-   * Create a new SearchRequest.
-   *
-   * @param attributes the comma separated string indicating the names of
-   *                   resource attributes to return in the response overriding
-   *                   the set of attributes that would be returned by default.
-   * @param excludedAttributes the comma separated string indicating the names
-   *                           of resource attributes to be removed from the
-   *                           default set of attributes to return.
-   * @param filter the filter string used to request a subset of resources.
-   * @param sortBy the string indicating the attribute whose value shall be used
-   *               to order the returned responses.
-   * @param sortOrder the order in which the sortBy parameter is applied.
-   * @param startIndex the 1-based index of the first query result.
-   * @param count the desired maximum number of query results per page.
-   */
-  public SearchRequest(final String attributes,
-                       final String excludedAttributes,
-                       final String filter,
-                       final String sortBy,
-                       final SortOrder sortOrder,
-                       final Integer startIndex,
-                       final Integer count)
-  {
-    if(attributes != null)
-    {
-      this.attributes = Arrays.asList(SEPARATOR.split(attributes.trim()));
-    }
-    else
-    {
-      this.attributes = null;
-    }
-    if(excludedAttributes != null)
-    {
-      this.excludedAttributes = Arrays.asList(
-          SEPARATOR.split(excludedAttributes.trim()));
-    }
-    else
-    {
-      this.excludedAttributes = null;
-    }
     this.filter = filter;
     this.sortBy = sortBy;
     this.sortOrder = sortOrder;
@@ -170,7 +120,7 @@ public final class SearchRequest extends BaseScimResource
    * @return The list of strings indicating the names of resource attributes
    * to return.
    */
-  public List<String> getAttributes()
+  public Set<String> getAttributes()
   {
     return attributes;
   }
@@ -182,7 +132,7 @@ public final class SearchRequest extends BaseScimResource
    * @return The list of strings indicating the names of resource attributes to
    * be removed.
    */
-  public List<String> getExcludedAttributes()
+  public Set<String> getExcludedAttributes()
   {
     return excludedAttributes;
   }

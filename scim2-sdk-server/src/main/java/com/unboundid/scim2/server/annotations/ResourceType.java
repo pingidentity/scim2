@@ -54,4 +54,11 @@ public @interface ResourceType
    * The optional schema extension resource classes.
    */
   Class<?>[] optionalSchemaExtensions() default {};
+
+  /**
+   * Whether this resource type and its associated schemas should be
+   * discoverable using the SCIM 2.0 standard /resourceTypes and /schemas
+   * endpoints.
+   */
+  boolean discoverable() default true;
 }

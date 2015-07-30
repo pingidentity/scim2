@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.server.providers;
 
+import com.unboundid.scim2.common.utils.ApiConstants;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
@@ -39,11 +41,6 @@ import java.util.List;
 @PreMatching
 public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
 {
-  /**
-   * The authenticated subject alias.
-   */
-  private static final String ME_URI_ALIAS = "Me";
-
   /**
    * {@inheritDoc}
    */
@@ -103,6 +100,6 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
    */
   protected Collection<String> getAliases()
   {
-    return Collections.singleton(ME_URI_ALIAS);
+    return Collections.singleton(ApiConstants.ME_ENDPOINT);
   }
 }

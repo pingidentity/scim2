@@ -1,0 +1,485 @@
+/*
+ * Copyright 2015 UnboundID Corp.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License (GPLv2 only)
+ * or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see <http://www.gnu.org/licenses>.
+ */
+
+package com.unboundid.scim2.server.utils;
+
+import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
+import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.ResourceTypeResource;
+import com.unboundid.scim2.common.types.SchemaResource;
+import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.server.annotations.ResourceType;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Declaration of a resource type including all schemas.
+ */
+public final class ResourceTypeDefinition
+{
+  private final String id;
+  private final String name;
+  private final String description;
+  private final URI endpoint;
+  private final SchemaResource coreSchema;
+  private final Map<SchemaResource, Boolean> schemaExtensions;
+  private final Set<AttributeDefinition> commonAndCoreAttributes;
+  private final boolean discoverable;
+
+  /**
+   * Builder for creating a ResourceTypeDefinition.
+   */
+  public static class Builder
+  {
+    private final String name;
+    private final URI endpoint;
+    private String id;
+    private String description;
+    private SchemaResource coreSchema;
+    private Set<SchemaResource> requiredSchemaExtensions =
+        new HashSet<SchemaResource>();
+    private Set<SchemaResource> optionalSchemaExtensions =
+        new HashSet<SchemaResource>();
+    private boolean discoverable = true;
+
+    /**
+     * Create a new builder.
+     *
+     * @param name The name of the resource type.
+     * @param endpoint The endpoint of the resource type.
+     */
+    public Builder(final String name, final String endpoint)
+    {
+      if(name == null)
+      {
+        throw new IllegalArgumentException("name must not be null");
+      }
+      if(endpoint == null)
+      {
+        throw new IllegalArgumentException("endpoint must not be null");
+      }
+      this.name = name;
+      this.endpoint = URI.create(endpoint);
+    }
+
+    /**
+     * Sets the ID of the resource type.
+     *
+     * @param id the ID of the resource type.
+     * @return this builder.
+     */
+    public Builder setId(final String id)
+    {
+      this.id = id;
+      return this;
+    }
+
+    /**
+     * Sets the description of the resource type.
+     *
+     * @param description the description of the resource type.
+     * @return this builder.
+     */
+    public Builder setDescription(final String description)
+    {
+      this.description = description;
+      return this;
+    }
+
+    /**
+     * Sets the core schema of the resource type.
+     *
+     * @param coreSchema the core schema of the resource type.
+     * @return this builder.
+     */
+    public Builder setCoreSchema(final SchemaResource coreSchema)
+    {
+      this.coreSchema = coreSchema;
+      return this;
+    }
+
+    /**
+     * Adds a required schema extension for a resource type.
+     *
+     * @param schemaExtension the required schema extension for the resource
+     *                        type.
+     * @return this builder.
+     */
+    public Builder addRequiredSchemaExtension(
+        final SchemaResource schemaExtension)
+    {
+      this.requiredSchemaExtensions.add(schemaExtension);
+      return this;
+    }
+
+    /**
+     * Adds a operation schema extension for a resource type.
+     *
+     * @param schemaExtension the operation schema extension for the resource
+     *                        type.
+     * @return this builder.
+     */
+    public Builder addOptionalSchemaExtension(
+        final SchemaResource schemaExtension)
+    {
+      this.optionalSchemaExtensions.add(schemaExtension);
+      return this;
+    }
+
+    /**
+     * Sets whether this resource type is discoverable over the /ResourceTypes
+     * endpoint.
+     *
+     * @param discoverable {@code true} this resource type is discoverable over
+     *                     the /ResourceTypes endpoint or {@code false}
+     *                     otherwise.
+     * @return this builder.
+     */
+    public Builder setDiscoverable(
+        final boolean discoverable)
+    {
+      this.discoverable = discoverable;
+      return this;
+    }
+
+    /**
+     * Build the ResourceTypeDefinition.
+     *
+     * @return The newly created ResourceTypeDefinition.
+     */
+    public ResourceTypeDefinition build()
+    {
+      Map<SchemaResource, Boolean> schemaExtensions =
+          new HashMap<SchemaResource, Boolean>(requiredSchemaExtensions.size() +
+              optionalSchemaExtensions.size());
+      for(SchemaResource schema : requiredSchemaExtensions)
+      {
+        schemaExtensions.put(schema, true);
+      }
+      for(SchemaResource schema : optionalSchemaExtensions)
+      {
+        schemaExtensions.put(schema, false);
+      }
+      return new ResourceTypeDefinition(id, name, description, endpoint,
+          coreSchema, schemaExtensions, discoverable);
+    }
+  }
+
+  /**
+   * Create a new ResourceType.
+   *
+   * @param coreSchema The core schema for the resource type.
+   * @param schemaExtensions A map of schema extensions to whether it is
+   *                         required for the resource type.
+   */
+  private ResourceTypeDefinition(
+      final String id, final String name, final String description,
+      final URI endpoint,
+      final SchemaResource coreSchema,
+      final Map<SchemaResource, Boolean> schemaExtensions,
+      final boolean discoverable)
+  {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.endpoint = endpoint;
+    this.coreSchema = coreSchema;
+    this.schemaExtensions = Collections.unmodifiableMap(schemaExtensions);
+    this.discoverable = discoverable;
+    Set<AttributeDefinition> attributes =
+        new LinkedHashSet<AttributeDefinition>(
+        coreSchema == null ? 0 : coreSchema.getAttributes().size() + 4);
+    attributes.addAll(Arrays.asList(
+        SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION,
+        SchemaUtils.ID_ATTRIBUTE_DEFINITION,
+        SchemaUtils.EXTERNAL_ID_ATTRIBUTE_DEFINITION,
+        SchemaUtils.META_ATTRIBUTE_DEFINITION));
+    if(coreSchema != null)
+    {
+      attributes.addAll(coreSchema.getAttributes());
+    }
+    this.commonAndCoreAttributes = Collections.unmodifiableSet(attributes);
+  }
+
+  /**
+   * Gets the resource type name.
+   *
+   * @return the name of the resource type.
+   */
+  public String getName()
+  {
+    return name;
+  }
+
+  /**
+   * Gets the description of the resource type.
+   *
+   * @return the description of the resource type.
+   */
+  public String getDescription()
+  {
+    return description;
+  }
+
+  /**
+   * Gets the resource type's endpoint.
+   *
+   * @return the endpoint for the resource type.
+   */
+  public URI getEndpoint()
+  {
+    return endpoint;
+  }
+
+  /**
+   * Gets the resource type's schema.
+   *
+   * @return the schema for the resource type.
+   */
+  public SchemaResource getCoreSchema()
+  {
+    return coreSchema;
+  }
+
+  /**
+   * Retrieve the set of attribute definitions for the attributes on the top
+   * level of the JSON object that represents the SCIM resource. This will
+   * includes the attributes from the core schema (if available) as well as the
+   * common attributes (schemas, id, externalId, and meta).
+   *
+   * @return The core and common attributes.
+   */
+  public Set<AttributeDefinition> getCoreAndCommonAttributes()
+  {
+    return commonAndCoreAttributes;
+  }
+
+  /**
+   * Gets the resource type's schema extensions.
+   *
+   * @return the schema extensions for the resource type.
+   */
+  public Map<SchemaResource, Boolean> getSchemaExtensions()
+  {
+    return schemaExtensions;
+  }
+
+  /**
+   * Whether this resource type and its associated schemas should be
+   * discoverable using the SCIM 2.0 standard /resourceTypes and /schemas
+   * endpoints.
+   *
+   * @return {@code true} if discoverable or {@code false} otherwise.
+   */
+  public boolean isDiscoverable()
+  {
+    return discoverable;
+  }
+
+  /**
+   * Retrieve the attribute definition for the attribute in the path.
+   *
+   * @param path The attribute path.
+   * @return The attribute definition.
+   * @throws BadRequestException If there is no attribute defined for the path.
+   */
+  public AttributeDefinition getAttributeDefinition(final Path path)
+      throws BadRequestException
+  {
+    int elementIndex = 0;
+    Iterable<AttributeDefinition> attributes =
+        commonAndCoreAttributes;
+    if(path.getExtensionSchema() != null)
+    {
+      elementIndex = 1;
+      boolean found = false;
+      for(SchemaResource schema : schemaExtensions.keySet())
+      {
+        if(schema.getId().equals(path.getExtensionSchema()))
+        {
+          attributes = schema.getAttributes();
+          found = true;
+          break;
+        }
+      }
+      if(!found)
+      {
+        throw BadRequestException.invalidPath("Schema extension " +
+            path.getExtensionSchema() +" in path is undefined for " +
+            "resource type " + name);
+      }
+    }
+
+    for(; elementIndex < path.size(); elementIndex++)
+    {
+      for(AttributeDefinition attribute : attributes)
+      {
+        if(attribute.getName().equals(
+            path.getElement(elementIndex).getAttribute()))
+        {
+          if(elementIndex >= path.size() - 1)
+          {
+            return attribute;
+          }
+          attributes = attribute.getSubAttributes();
+        }
+      }
+      if(attributes == null)
+      {
+        break;
+      }
+    }
+
+    if(path.getExtensionSchema() == null && elementIndex == 1)
+    {
+      throw BadRequestException.invalidPath("Attribute " +
+          path.getElement(elementIndex - 1).getAttribute() + " in path is " +
+          "undefined for core schema " + coreSchema.getId());
+    }
+    else if(path.getExtensionSchema() != null && elementIndex == 2)
+    {
+      throw BadRequestException.invalidPath("Attribute " +
+          path.getElement(elementIndex - 1).getAttribute() + " in path is " +
+          "undefined for schema extension " + path.getExtensionSchema());
+    }
+    else
+    {
+      throw BadRequestException.invalidPath("Sub-attribute " +
+          path.getElement(elementIndex - 1).getAttribute() + " in path is " +
+          "undefined for attribute " + path.parent());
+    }
+  }
+
+  /**
+   * Retrieve the ResourceType SCIM resource that represents this definition.
+   *
+   * @return The ResourceType SCIM resource that represents this definition.
+   */
+  public ResourceTypeResource toScimResource()
+  {
+    try
+    {
+      URI coreSchemaUri = null;
+      if(coreSchema != null)
+      {
+        coreSchemaUri = new URI(coreSchema.getId());
+      }
+      List<ResourceTypeResource.SchemaExtension> schemaExtensionList = null;
+      if (schemaExtensions.size() > 0)
+      {
+        schemaExtensionList =
+            new ArrayList<ResourceTypeResource.SchemaExtension>(
+                schemaExtensions.size());
+
+        for(Map.Entry<SchemaResource, Boolean> schemaExtension :
+            schemaExtensions.entrySet())
+        {
+          schemaExtensionList.add(new ResourceTypeResource.SchemaExtension(
+              URI.create(schemaExtension.getKey().getId()),
+              schemaExtension.getValue()));
+        }
+      }
+
+      return new ResourceTypeResource(id == null ? name : id, name, description,
+          endpoint, coreSchemaUri, schemaExtensionList);
+    }
+    catch(URISyntaxException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Create a new instance representing the resource type implemented by a
+   * root JAX-RS resource class.
+   *
+   * @param resource a root resource whose
+   *                 {@link com.unboundid.scim2.server.annotations.ResourceType}
+   *                 and {@link javax.ws.rs.Path} values will be used to
+   *                 initialize the ResourceTypeDefinition.
+   * @return a new ResourceTypeDefinition or {@code null} if resource is not
+   * annotated with {@link com.unboundid.scim2.server.annotations.ResourceType}
+   * and {@link javax.ws.rs.Path}.
+   */
+  public static ResourceTypeDefinition fromJaxRsResource(
+      final Class<?> resource)
+  {
+    Class<?> c = resource;
+    ResourceType resourceType;
+    do
+    {
+      resourceType = c.getAnnotation(ResourceType.class);
+      c = c.getSuperclass();
+    }
+    while(c != null && resourceType == null);
+
+    c = resource;
+    javax.ws.rs.Path path;
+    do
+    {
+      path = c.getAnnotation(javax.ws.rs.Path.class);
+      c = c.getSuperclass();
+    }
+    while(c != null && path == null);
+
+    if(resourceType == null || path == null)
+    {
+      return null;
+    }
+
+    try
+    {
+      ResourceTypeDefinition.Builder builder =
+          new Builder(resourceType.name(), path.value());
+      builder.setDescription(resourceType.description());
+      builder.setCoreSchema(SchemaUtils.getSchema(resourceType.schema()));
+      builder.setDiscoverable(
+          resourceType.discoverable());
+
+      for (Class<?> optionalSchemaExtension :
+          resourceType.optionalSchemaExtensions())
+      {
+        builder.addOptionalSchemaExtension(
+            SchemaUtils.getSchema(optionalSchemaExtension));
+      }
+
+      for (Class<?> requiredSchemaExtension :
+          resourceType.requiredSchemaExtensions())
+      {
+        builder.addRequiredSchemaExtension(
+            SchemaUtils.getSchema(requiredSchemaExtension));
+      }
+
+      return builder.build();
+    }
+    catch(Exception e)
+    {
+      throw new IllegalArgumentException(e);
+    }
+  }
+}

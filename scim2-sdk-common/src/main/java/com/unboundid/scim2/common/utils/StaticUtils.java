@@ -19,14 +19,20 @@ package com.unboundid.scim2.common.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * This class provides a number of static utility functions.
  */
 public final class StaticUtils
 {
+  private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
+
   /**
    * Prevent this class from being instantiated.
    */
@@ -192,6 +198,37 @@ public final class StaticUtils
       }
     }
     return sb.toString();
+  }
+
+
+
+  /**
+   * Convert an array to a linked hash set.
+   *
+   * @param i The items in the array to put into the set.
+   * @param <T> The type of items in the array.
+   * @return The set.
+   */
+  public static <T> Set<T> arrayToSet(final T... i)
+  {
+    Set<T> set = new LinkedHashSet<T>(i.length);
+    Collections.addAll(set, i);
+    return set;
+  }
+
+
+
+  /**
+   * Split a comma separated string. White space characters around the
+   * commas will be removed.
+   *
+   * @param str The comma separated string to split.
+   * @return The array of strings computed by splitting this string around
+   * commas.
+   */
+  public static String[] splitCommaSeperatedString(final String str)
+  {
+    return SEPARATOR.split(str.trim());
   }
 
 

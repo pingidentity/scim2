@@ -18,7 +18,7 @@
 package com.unboundid.scim2.server.providers;
 
 import com.unboundid.scim2.common.messages.ErrorResponse;
-import com.unboundid.scim2.server.ApiConstants;
+import com.unboundid.scim2.common.utils.ApiConstants;
 
 import javax.ws.rs.NotAllowedException;
 import javax.ws.rs.WebApplicationException;
@@ -61,10 +61,10 @@ public class RuntimeExceptionMapper implements
     else
     {
       errorResponse = new ErrorResponse(500);
-      errorResponse.setDetail(exception.getMessage());
+      errorResponse.setDetail(exception.toString());
     }
 
     return Response.status(errorResponse.getStatus()).entity(
-        errorResponse).type(ApiConstants.MEDIA_TYPE_SCIM_TYPE).build();
+        errorResponse).type(ApiConstants.MEDIA_TYPE_SCIM).build();
   }
 }

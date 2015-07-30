@@ -27,8 +27,8 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
-import com.unboundid.scim2.common.filters.FilterEvaluator;
 import com.unboundid.scim2.common.messages.PatchOperation;
+import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -613,10 +613,15 @@ public class JsonUtils
    *
    * @param n1 the first node to be compared.
    * @param n2 the second node to be compared.
+   * @param attributeDefinition The attribute definition of the attribute
+   *                            whose values to compare or {@code null} to
+   *                            compare string values using case insensitive
+   *                            matching.
    * @return a negative integer, zero, or a positive integer as the
    *         first argument is less than, equal to, or greater than the second.
    */
-  public static int compareTo(final JsonNode n1, final JsonNode n2)
+  public static int compareTo(final JsonNode n1, final JsonNode n2,
+                              final AttributeDefinition attributeDefinition)
   {
     if (n1.isTextual() && n2.isTextual())
     {
@@ -628,7 +633,14 @@ public class JsonUtils
       }
       else
       {
-        return n1.textValue().compareToIgnoreCase(n2.textValue());
+        if(attributeDefinition != null &&
+            attributeDefinition.getType() == AttributeDefinition.Type.STRING &&
+            attributeDefinition.isCaseExact())
+        {
+          return n1.textValue().compareTo(n2.textValue());
+        }
+        return StaticUtils.toLowerCase(n1.textValue()).compareTo(
+            StaticUtils.toLowerCase(n2.textValue()));
       }
     }
 

@@ -15,36 +15,48 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.common.utils;
+package com.unboundid.scim2.server.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.SortOrder;
+import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.utils.Debug;
+import com.unboundid.scim2.common.utils.DebugType;
+import com.unboundid.scim2.common.utils.JsonUtils;
 
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * A comparator implementation that could be used to compare POJOs representing
  * SCIM resources using the SCIM sorting parameters.
  */
-public class ScimComparator<T> implements Comparator<T>
+public class ResourceComparator<T extends ScimResource>
+    implements Comparator<T>
 {
   private final Path sortBy;
   private final SortOrder sortOrder;
+  private final ResourceTypeDefinition resourceType;
 
   /**
    * Create a new ScimComparator that will sort in ascending order.
    *
    * @param sortBy The path to the attribute to sort by.
+   * @param resourceType The resource type definition containing the schemas or
+   *                     {@code null} to compare using case insensitive matching
+   *                     for string values.
    */
-  public ScimComparator(final Path sortBy)
+  public ResourceComparator(final Path sortBy,
+                            final ResourceTypeDefinition resourceType)
   {
-    this(sortBy, SortOrder.ASCENDING);
+    this(sortBy, SortOrder.ASCENDING, resourceType);
   }
 
   /**
@@ -52,11 +64,16 @@ public class ScimComparator<T> implements Comparator<T>
    *
    * @param sortBy The path to the attribute to sort by.
    * @param sortOrder The sort order.
+   * @param resourceType The resource type definition containing the schemas or
+   *                     {@code null} to compare using case insensitive matching
+   *                     for string values.
    */
-  public ScimComparator(final Path sortBy, final SortOrder sortOrder)
+  public ResourceComparator(final Path sortBy, final SortOrder sortOrder,
+                            final ResourceTypeDefinition resourceType)
   {
     this.sortBy = sortBy;
-    this.sortOrder = sortOrder;
+    this.sortOrder = sortOrder == null ? SortOrder.ASCENDING : sortOrder;
+    this.resourceType = resourceType;
   }
 
   /**
@@ -64,26 +81,8 @@ public class ScimComparator<T> implements Comparator<T>
    */
   public int compare(final T o1, final T o2)
   {
-    ObjectNode n1;
-    ObjectNode n2;
-
-    if(o1 instanceof GenericScimResource)
-    {
-      n1 = ((GenericScimResource) o1).getObjectNode();
-    }
-    else
-    {
-      n1 = SchemaUtils.createSCIMCompatibleMapper().valueToTree(o1);
-    }
-
-    if(o2 instanceof GenericScimResource)
-    {
-      n2 = ((GenericScimResource) o2).getObjectNode();
-    }
-    else
-    {
-      n2 = SchemaUtils.createSCIMCompatibleMapper().valueToTree(o1);
-    }
+    ObjectNode n1 = o1.asGenericScimResource().getObjectNode();
+    ObjectNode n2 = o2.asGenericScimResource().getObjectNode();
 
     JsonNode v1 = null;
     JsonNode v2 = null;
@@ -133,8 +132,20 @@ public class ScimComparator<T> implements Comparator<T>
     }
     else
     {
+      AttributeDefinition attributeDefinition = null;
+      try
+      {
+        attributeDefinition = resourceType.getAttributeDefinition(sortBy);
+      }
+      catch (BadRequestException e)
+      {
+        Debug.debug(Level.WARNING, DebugType.EXCEPTION,
+            "Error retrieving attribute definition for " +
+                sortBy.toString(), e);
+      }
       return sortOrder == SortOrder.ASCENDING ?
-          JsonUtils.compareTo(v1, v2) : JsonUtils.compareTo(v2, v1);
+          JsonUtils.compareTo(v1, v2, attributeDefinition) :
+          JsonUtils.compareTo(v2, v1, attributeDefinition);
     }
   }
 

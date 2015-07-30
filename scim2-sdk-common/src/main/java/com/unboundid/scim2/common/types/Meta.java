@@ -28,23 +28,28 @@ import java.util.Calendar;
 public final class Meta
 {
   @Attribute(description = "The resource Type",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.ALWAYS)
   private String resourceType;
 
   @Attribute(description = "Date and time the resource was created",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.ALWAYS)
   private Calendar created;
 
   @Attribute(description = "Date and time the resource was last modified",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.ALWAYS)
   private Calendar lastModified;
 
   @Attribute(description = "The location (URI) of the resource",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.ALWAYS)
   private URI location;
 
   @Attribute(description = "The version of the resource",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.ALWAYS)
   private String version;
 
   /**

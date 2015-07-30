@@ -15,10 +15,11 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.common.utils;
+package com.unboundid.scim2.server.utils;
 
 import com.fasterxml.jackson.core.Base64Variants;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
@@ -28,13 +29,16 @@ import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
-import com.unboundid.scim2.common.filters.FilterEvaluator;
 import com.unboundid.scim2.common.messages.PatchOperation;
+import com.unboundid.scim2.common.utils.Debug;
+import com.unboundid.scim2.common.utils.DebugType;
+import com.unboundid.scim2.common.utils.FilterEvaluator;
+import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.StaticUtils;
 
 import java.net.URI;
 import java.text.ParsePosition;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -44,15 +48,11 @@ import java.util.Map;
 import java.util.logging.Level;
 
 /**
- * Utility class used to validate and enforce schema constraints on
- * SCIM resources.
+ * Utility class used to validate and enforce the schema constraints of a
+ * Resource Type on JSON objects representing SCIM resources.
  */
-public class SchemaEnforcer
+public class SchemaChecker
 {
-  private final SchemaResource coreSchema;
-  private final Map<SchemaResource, Boolean> schemaExtensions;
-  private final Collection<AttributeDefinition> commonAndCoreAttributes;
-
   /**
    * Schema checking results.
    */
@@ -93,29 +93,17 @@ public class SchemaEnforcer
     }
   }
 
+  private ResourceTypeDefinition resourceType;
+
   /**
    * Create a new instance that may be used to validate and enforce schema
-   * constraints for a resource type using the provided core schema and
-   * schema extensions.
+   * constraints for a resource type.
    *
-   * @param coreSchema The core schema for the resource type.
-   * @param schemaExtensions A map of schema extensions to whether it is
-   *                         required for the resource type.
+   * @param resourceType The resource type whose schema(s) to enforce.
    */
-  public SchemaEnforcer(final SchemaResource coreSchema,
-                        final Map<SchemaResource, Boolean> schemaExtensions)
+  public SchemaChecker(final ResourceTypeDefinition resourceType)
   {
-    this.coreSchema = coreSchema;
-    this.schemaExtensions = schemaExtensions;
-
-    commonAndCoreAttributes = new ArrayList<AttributeDefinition>(
-        coreSchema.getAttributes().size() + 4);
-    commonAndCoreAttributes.addAll(Arrays.asList(
-        SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION,
-        SchemaUtils.ID_ATTRIBUTE_DEFINITION,
-        SchemaUtils.EXTERNAL_ID_ATTRIBUTE_DEFINITION,
-        SchemaUtils.META_ATTRIBUTE_DEFINITION));
-    commonAndCoreAttributes.addAll(coreSchema.getAttributes());
+    this.resourceType = resourceType;
   }
 
   /**
@@ -204,7 +192,7 @@ public class SchemaEnforcer
    * @param currentObjectNode The current state of the SCIM resource or
    *                          {@code null} if not available.
    * @return Schema checking results.
-   * @throws ScimException If an error occured while checking the schema.
+   * @throws ScimException If an error occurred while checking the schema.
    */
   public Results checkModify(final Iterable<PatchOperation> patchOperations,
                              final ObjectNode currentObjectNode)
@@ -223,14 +211,22 @@ public class SchemaEnforcer
       prefix = "Patch op[" + i + "]: ";
       Path path = patchOp.getPath();
       JsonNode value = patchOp.getJsonNode();
-      AttributeDefinition attribute =
-          path == null ? null : getAttributeDefinition(prefix, path, results);
+      AttributeDefinition attribute = null;
+      try
+      {
+        attribute = path == null ? null :
+            resourceType.getAttributeDefinition(path);
+      }
+      catch (BadRequestException e)
+      {
+        results.pathIssues.add(prefix + e.getMessage());
+      }
       Filter valueFilter =
           path == null ? null :
               path.getElement(path.size() - 1).getValueFilter();
       if(path != null && attribute == null)
       {
-        // Can't find the attirbute defintion for attribute in path.
+        // Can't find the attribute definition for attribute in path.
         continue;
       }
       switch (patchOp.getOpType())
@@ -398,7 +394,8 @@ public class SchemaEnforcer
   public ObjectNode removeReadOnlyAttributes(final ObjectNode objectNode)
   {
     ObjectNode copyNode = objectNode.deepCopy();
-    for(SchemaResource schemaExtension : schemaExtensions.keySet())
+    for(SchemaResource schemaExtension :
+        resourceType.getSchemaExtensions().keySet())
     {
       JsonNode extension = copyNode.get(schemaExtension.getId());
       if(extension != null && extension.isObject())
@@ -407,7 +404,8 @@ public class SchemaEnforcer
             (ObjectNode) extension);
       }
     }
-    removeReadOnlyAttributes(commonAndCoreAttributes, copyNode);
+    removeReadOnlyAttributes(
+        resourceType.getCoreAndCommonAttributes(), copyNode);
     return copyNode;
   }
 
@@ -451,84 +449,6 @@ public class SchemaEnforcer
   }
 
   /**
-   * Retrieve the attribute definition for the attribute in the path.
-   *
-   * @param prefix The issue prefix.
-   * @param path The attribute path.
-   * @param results The schema check results.
-   * @return The attribute definition for {@code null}.
-   */
-  private AttributeDefinition getAttributeDefinition(final String prefix,
-                                                     final Path path,
-                                                     final Results results)
-  {
-    int elementIndex = 0;
-    Iterable<AttributeDefinition> attributes =
-        commonAndCoreAttributes;
-    if(path.getExtensionSchema() != null)
-    {
-      elementIndex = 1;
-      boolean found = false;
-      for(SchemaResource schema : schemaExtensions.keySet())
-      {
-        if(schema.getId().equals(path.getExtensionSchema()))
-        {
-          attributes = schema.getAttributes();
-          found = true;
-          break;
-        }
-      }
-      if(!found)
-      {
-        results.pathIssues.add(prefix + "Schema extension " +
-            path.getExtensionSchema() +" in path is undefined for this " +
-            "resource type");
-      }
-    }
-
-    for(; elementIndex < path.size(); elementIndex++)
-    {
-      for(AttributeDefinition attribute : attributes)
-      {
-        if(attribute.getName().equals(
-            path.getElement(elementIndex).getAttribute()))
-        {
-          if(elementIndex >= path.size() - 1)
-          {
-            return attribute;
-          }
-          attributes = attribute.getSubAttributes();
-        }
-      }
-      if(attributes == null)
-      {
-        break;
-      }
-    }
-
-    if(path.getExtensionSchema() == null && elementIndex == 1)
-    {
-      results.pathIssues.add(prefix + "Core attribute " +
-          path.getElement(elementIndex - 1).getAttribute() + " in path is " +
-          "undefined for schema " + coreSchema.getId());
-    }
-    else if(path.getExtensionSchema() != null && elementIndex == 2)
-    {
-      results.pathIssues.add(prefix + "Extended attribute " +
-          path.getElement(elementIndex - 1).getAttribute() + " in path is " +
-          "undefined for schema " +
-          path.getExtensionSchema());
-    }
-    else
-    {
-      results.pathIssues.add(prefix + "Sub-attribute " +
-          path.getElement(elementIndex - 1).getAttribute() + " in path is " +
-          "undefined for attribute " + path.parent());
-    }
-    return null;
-  }
-
-  /**
    * Check a partial resource that is part of the patch operation with no
    * path.
    *
@@ -564,7 +484,8 @@ public class SchemaEnforcer
         else
         {
           boolean found = false;
-          for (SchemaResource schemaExtension : schemaExtensions.keySet())
+          for (SchemaResource schemaExtension :
+              resourceType.getSchemaExtensions().keySet())
           {
             if (schemaExtension.getId().equals(field.getKey()))
             {
@@ -587,7 +508,8 @@ public class SchemaEnforcer
     }
 
     // Check common and core schema
-    checkObjectNode(prefix, Path.root(), commonAndCoreAttributes,
+    checkObjectNode(prefix, Path.root(),
+        resourceType.getCoreAndCommonAttributes(),
         objectNode, results, currentObjectNode,
         isPartialReplace, isPartialAdd);
   }
@@ -628,8 +550,7 @@ public class SchemaEnforcer
         {
           // Extension listed in schemas but no namespace in resource. Treat it
           // as an empty namesapce to check for required attributes.
-          extensionNode =
-              SchemaUtils.createSCIMCompatibleMapper().createObjectNode();
+          extensionNode = JsonNodeFactory.instance.objectNode();
         }
         if (!extensionNode.isObject())
         {
@@ -641,7 +562,7 @@ public class SchemaEnforcer
 
         // Find the schema definition.
         Map.Entry<SchemaResource, Boolean> extensionDefinition = null;
-        if (schema.textValue().equals(coreSchema.getId()))
+        if (schema.textValue().equals(resourceType.getCoreSchema().getId()))
         {
           // Skip the core schema.
           coreFound = true;
@@ -649,7 +570,7 @@ public class SchemaEnforcer
         } else
         {
           for (Map.Entry<SchemaResource, Boolean> schemaExtension :
-              schemaExtensions.entrySet())
+              resourceType.getSchemaExtensions().entrySet())
           {
             if (schema.textValue().equals(schemaExtension.getKey().getId()))
             {
@@ -676,13 +597,13 @@ public class SchemaEnforcer
       {
         // Make sure core schemas was included.
         results.syntaxIssues.add(prefix + "Value for attribute schemas must " +
-            " contain schema URI " + coreSchema.getId() +
+            " contain schema URI " + resourceType.getCoreSchema().getId() +
             " because it is the core schema for this resource type");
       }
 
       // Make sure all required extension schemas were included.
       for (Map.Entry<SchemaResource, Boolean> schemaExtension :
-          schemaExtensions.entrySet())
+          resourceType.getSchemaExtensions().entrySet())
       {
         if (schemaExtension.getValue())
         {
@@ -721,7 +642,8 @@ public class SchemaEnforcer
     }
 
     // Check common and core schema
-    checkObjectNode(prefix, Path.root(), commonAndCoreAttributes,
+    checkObjectNode(prefix, Path.root(),
+        resourceType.getCoreAndCommonAttributes(),
         objectNode, results, currentObjectNode,
         false, false);
   }
@@ -794,14 +716,15 @@ public class SchemaEnforcer
       // Make sure the core schema and/or required schemas extensions are
       // not removed.
       if (FilterEvaluator.evaluate(valueFilter,
-          TextNode.valueOf(coreSchema.getId())))
+          TextNode.valueOf(resourceType.getCoreSchema().getId())))
       {
         results.syntaxIssues.add(prefix + "Attribute value(s) " + path +
             " may not be removed or replaced because the core schema " +
-            coreSchema.getId() + " is required for this resource type");
+            resourceType.getCoreSchema().getId() +
+            " is required for this resource type");
       }
       for (Map.Entry<SchemaResource, Boolean> schemaExtension :
-          schemaExtensions.entrySet())
+          resourceType.getSchemaExtensions().entrySet())
       {
         if (schemaExtension.getValue() &&
             FilterEvaluator.evaluate(valueFilter,
@@ -1035,7 +958,8 @@ public class SchemaEnforcer
           {
             if (attribute.isCaseExact() ?
                 canonicalValue.equals(node.textValue()) :
-                canonicalValue.equalsIgnoreCase(node.textValue()))
+                StaticUtils.toLowerCase(canonicalValue).equals(
+                    StaticUtils.toLowerCase(node.textValue())))
             {
               found = true;
               break;
@@ -1058,7 +982,8 @@ public class SchemaEnforcer
         path.size() == 1)
     {
       boolean found = false;
-      for (SchemaResource schemaExtension : schemaExtensions.keySet())
+      for (SchemaResource schemaExtension :
+          resourceType.getSchemaExtensions().keySet())
       {
         if (node.textValue().equals(schemaExtension.getId()))
         {
@@ -1068,7 +993,7 @@ public class SchemaEnforcer
       }
       if(!found)
       {
-        found = node.textValue().equals(coreSchema.getId());
+        found = node.textValue().equals(resourceType.getCoreSchema().getId());
       }
       if(!found)
       {
@@ -1139,7 +1064,7 @@ public class SchemaEnforcer
       {
         results.syntaxIssues.add(prefix + "Core attribute " +
             i.next().getKey() + " is undefined for schema " +
-            coreSchema.getId());
+            resourceType.getCoreSchema().getId());
       }
       else if(parentPath.isRoot() &&
           parentPath.getExtensionSchema() != null)

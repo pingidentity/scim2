@@ -86,7 +86,8 @@ public class ServiceProviderConfigResource extends BaseScimResource
   @Attribute(description = "A complex type that specifies supported " +
       "Authentication Scheme properties.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
-      isRequired = true)
+      isRequired = true,
+      multiValueClass = AuthenticationScheme.class)
   private final List<AuthenticationScheme> authenticationSchemes;
 
   /**

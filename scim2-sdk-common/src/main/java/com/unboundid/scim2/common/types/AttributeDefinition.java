@@ -367,7 +367,8 @@ public class AttributeDefinition
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
-      uniqueness = AttributeDefinition.Uniqueness.NONE)
+      uniqueness = AttributeDefinition.Uniqueness.NONE,
+      multiValueClass = AttributeDefinition.class)
   private final Collection<AttributeDefinition> subAttributes;
 
   @Attribute(description = "Boolean value indicating the attribute's " +
@@ -508,14 +509,14 @@ public class AttributeDefinition
      * This value indicates the mutability constraints of this attribute.
      * See {@link AttributeDefinition.Mutability}
      */
-    private Mutability mutability;
+    private Mutability mutability = Mutability.READ_WRITE;
 
     /**
      * Indicates the when this attribute will be returned as part of
      * a scim object.
      * See {@link AttributeDefinition.Returned}
      */
-    private Returned returned;
+    private Returned returned = Returned.DEFAULT;
 
     /**
      * This field represents the uniqueness constraints of this
@@ -528,6 +529,20 @@ public class AttributeDefinition
      * The reference types of this attribute.
      */
     private Collection<String> referenceTypes;
+
+    /**
+     * Create a new builder.
+     */
+    public Builder()
+    {
+      // Defaults according to
+      // https://tools.ietf.org/html/draft-ietf-scim-core-schema-20#section-2.2
+      type = Type.STRING;
+      caseExact = false;
+      mutability = Mutability.READ_WRITE;
+      returned = Returned.DEFAULT;
+      uniqueness = Uniqueness.NONE;
+    }
 
     /**
      * Sets the attribute name.
@@ -706,16 +721,16 @@ public class AttributeDefinition
     public Builder clear()
     {
       this.name = null;
-      this.type = null;
+      this.type = Type.STRING;
       this.subAttributes = null;
       this.multiValued = false;
       this.description = null;
       this.required = false;
       this.canonicalValues = null;
       this.caseExact = false;
-      this.mutability = null;
-      this.returned = null;
-      this.uniqueness = null;
+      this.mutability = Mutability.READ_WRITE;
+      this.returned = Returned.DEFAULT;
+      this.uniqueness = Uniqueness.NONE;
       this.referenceTypes = null;
       return this;
     }

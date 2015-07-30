@@ -17,15 +17,20 @@
 
 package com.unboundid.scim2.server.resources;
 
+import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.server.annotations.ResourceType;
+import com.unboundid.scim2.server.utils.ResourcePreparer;
+import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
-import static com.unboundid.scim2.server.ApiConstants.MEDIA_TYPE_SCIM;
+import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 
 /**
  * An abstract JAX-RS resource class for servicing the Service Provider Config
@@ -34,25 +39,33 @@ import static com.unboundid.scim2.server.ApiConstants.MEDIA_TYPE_SCIM;
 @ResourceType(
     description = "SCIM 2.0 Service Provider Config",
     name = "ServiceProviderConfig",
-    schema = ServiceProviderConfigResource.class)
+    schema = ServiceProviderConfigResource.class,
+    discoverable = false)
 @Path("ServiceProviderConfig")
 public abstract class AbstractServiceProviderConfigEndpoint
-    extends AbstractEndpoint
 {
+  private static final ResourceTypeDefinition RESOURCE_TYPE_DEFINITION =
+      ResourceTypeDefinition.fromJaxRsResource(
+          AbstractServiceProviderConfigEndpoint.class);
+
   /**
    * Service request to retrieve the Service Provider Config.
    *
+   * @param uriInfo UriInfo of the request.
    * @return The Service Provider Config.
    * @throws ScimException if an error occurs.
    */
   @GET
   @Produces(MEDIA_TYPE_SCIM)
-  public ServiceProviderConfigResource get() throws ScimException
+  public ScimResource get(@Context final UriInfo uriInfo)
+      throws ScimException
   {
     ServiceProviderConfigResource serviceProviderConfig =
         getServiceProviderConfig();
-    setResourceTypeAndLocation(serviceProviderConfig);
-    return serviceProviderConfig;
+    ResourcePreparer<ServiceProviderConfigResource> resourcePreparer =
+        new ResourcePreparer<ServiceProviderConfigResource>(
+            RESOURCE_TYPE_DEFINITION, uriInfo);
+    return resourcePreparer.trimRetrievedResource(serviceProviderConfig);
   }
 
   /**

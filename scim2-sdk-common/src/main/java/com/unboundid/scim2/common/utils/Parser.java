@@ -189,7 +189,7 @@ public class Parser
 
     Path path = Path.root();
     StringReader reader = new StringReader(trimmedPathString);
-    if(trimmedPathString.toLowerCase().startsWith("urn:"))
+    if(SchemaUtils.isUrn(trimmedPathString))
     {
       // The attribute name is prefixed with the schema URN.
 

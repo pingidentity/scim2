@@ -15,19 +15,19 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.common;
+package com.unboundid.scim2.server.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.types.UserResource;
-import com.unboundid.scim2.common.utils.SchemaEnforcer;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -36,10 +36,8 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -48,7 +46,7 @@ import static org.testng.Assert.assertTrue;
 /**
  * Tests for the SchemaEnforcer.
  */
-public class SchemaEnforcerTestCase
+public class SchemaCheckerTestCase
 {
   private ObjectMapper mapper;
   private SchemaResource coreSchema;
@@ -396,11 +394,11 @@ public class SchemaEnforcerTestCase
     SchemaResource enterpriseExtension =
         SchemaUtils.getSchema(EnterpriseUserExtension.class);
 
-    Map<SchemaResource, Boolean> extensions =
-        new HashMap<SchemaResource, Boolean>();
-    extensions.put(enterpriseExtension, false);
-
-    SchemaEnforcer checker = new SchemaEnforcer(coreSchema, extensions);
+    ResourceTypeDefinition resourceTypeDefinition =
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(coreSchema).
+            addOptionalSchemaExtension(enterpriseExtension).build();
+    SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
 
     // Remove any read only attributes since they are suppose to be ignored
     // on create and replace.
@@ -408,7 +406,7 @@ public class SchemaEnforcerTestCase
     JsonNode copyUserResource = userResource.deepCopy();
 
     // Check create
-    SchemaEnforcer.Results results = checker.checkCreate(userResource);
+    SchemaChecker.Results results = checker.checkCreate(userResource);
 
     // Make sure there are no issues.
     assertTrue(results.getMutabilityIssues().isEmpty(),
@@ -634,9 +632,15 @@ public class SchemaEnforcerTestCase
                                   int expectedErrorOnPatch)
       throws Exception
   {
-    SchemaEnforcer checker = new SchemaEnforcer(coreSchema,
-        Collections.singletonMap(extension, required));
-    SchemaEnforcer.Results results = checker.checkCreate(node);
+    ResourceTypeDefinition resourceTypeDefinition = required ?
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(coreSchema).
+            addRequiredSchemaExtension(extension).build() :
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(coreSchema).
+            addOptionalSchemaExtension(extension).build();
+    SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
+    SchemaChecker.Results results = checker.checkCreate(node);
 
     assertEquals(results.getSyntaxIssues().size(), expectedErrorOnCreate,
         results.getSyntaxIssues().toString());
@@ -679,9 +683,12 @@ public class SchemaEnforcerTestCase
     resource.put("userName", "test");
     resource.putObject("urn:id:testExt").put("test", "test");
 
-    SchemaEnforcer checker = new SchemaEnforcer(coreSchema,
-        Collections.singletonMap(extWithReqAttr, true));
-    SchemaEnforcer.Results results = checker.checkCreate(resource);
+    ResourceTypeDefinition resourceTypeDefinition =
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(coreSchema).
+            addRequiredSchemaExtension(extWithReqAttr).build();
+    SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
+    SchemaChecker.Results results = checker.checkCreate(resource);
 
     assertEquals(results.getSyntaxIssues().size(), 1,
         results.getSyntaxIssues().toString());
@@ -715,12 +722,12 @@ public class SchemaEnforcerTestCase
         new SchemaResource("urn:id:extWithOptAttr", "extWithOptAttr", "",
             Collections.singleton(optAttr));
 
-    Map<SchemaResource, Boolean> extensions =
-        new HashMap<SchemaResource, Boolean>();
-    extensions.put(extWithReqAttr, true);
-    extensions.put(extWithOptAttr, false);
-
-    SchemaEnforcer checker = new SchemaEnforcer(coreSchema, extensions);
+    ResourceTypeDefinition resourceTypeDefinition =
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(coreSchema).
+            addRequiredSchemaExtension(extWithReqAttr).
+            addOptionalSchemaExtension(extWithOptAttr).build();
+    SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
 
     ObjectNode resource = mapper.createObjectNode();
     resource.putArray("schemas").
@@ -734,7 +741,7 @@ public class SchemaEnforcerTestCase
     patchOps.add(PatchOperation.remove(Path.root().attribute("schemas",
         Filter.eq("value", "urn:ietf:params:scim:schemas:core:2.0:User"))));
 
-    SchemaEnforcer.Results results = checker.checkModify(patchOps, resource);
+    SchemaChecker.Results results = checker.checkModify(patchOps, resource);
     assertEquals(results.getSyntaxIssues().size(), 2,
         results.getSyntaxIssues().toString());
 
@@ -959,9 +966,11 @@ public class SchemaEnforcerTestCase
   {
     SchemaResource schema = new SchemaResource("urn:id:test", "test", "",
         Collections.singleton(attributeDefinition));
-    SchemaEnforcer checker = new SchemaEnforcer(schema,
-        Collections.<SchemaResource, Boolean>emptyMap());
-    SchemaEnforcer.Results results = checker.checkCreate(node);
+    ResourceTypeDefinition resourceTypeDefinition =
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(schema).build();
+    SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
+    SchemaChecker.Results results = checker.checkCreate(node);
 
     assertEquals(results.getSyntaxIssues().size(), expectError,
         results.getSyntaxIssues().toString());
@@ -998,11 +1007,11 @@ public class SchemaEnforcerTestCase
     SchemaResource enterpriseExtension =
         SchemaUtils.getSchema(EnterpriseUserExtension.class);
 
-    Map<SchemaResource, Boolean> extensions =
-        new HashMap<SchemaResource, Boolean>();
-    extensions.put(enterpriseExtension, false);
-
-    SchemaEnforcer checker = new SchemaEnforcer(coreSchema, extensions);
+    ResourceTypeDefinition resourceTypeDefinition =
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(coreSchema).
+            addOptionalSchemaExtension(enterpriseExtension).build();
+    SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
 
     // Core attribute is undefined
     ObjectNode coreUndefined = mapper.createObjectNode();
@@ -1012,7 +1021,7 @@ public class SchemaEnforcerTestCase
     coreUndefined.put("userName", "test");
     coreUndefined.put("undefined", "value");
 
-    SchemaEnforcer.Results results = checker.checkCreate(coreUndefined);
+    SchemaChecker.Results results = checker.checkCreate(coreUndefined);
     assertEquals(results.getSyntaxIssues().size(), 1,
         results.getSyntaxIssues().toString());
     assertTrue(containsIssueWith(results.getSyntaxIssues(),
@@ -1024,7 +1033,7 @@ public class SchemaEnforcerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for schema"));
+        "is undefined for core schema"));
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root().attribute("undefined"),
@@ -1032,14 +1041,14 @@ public class SchemaEnforcerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for schema"));
+        "is undefined for core schema"));
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.remove(Path.root().attribute("undefined"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for schema"));
+        "is undefined for core schema"));
 
     // Core sub-attribute is undefined
     ObjectNode coreSubUndefined = mapper.createObjectNode();
@@ -1236,14 +1245,16 @@ public class SchemaEnforcerTestCase
   public void testAttributeValueType(String field, JsonNode node)
       throws Exception
   {
-    SchemaEnforcer checker = new SchemaEnforcer(typeTestSchema,
-        Collections.<SchemaResource, Boolean>emptyMap());
+    ResourceTypeDefinition resourceTypeDefinition =
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(typeTestSchema).build();
+    SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
 
     // First test as an attribute
     ObjectNode o = mapper.createObjectNode();
     o.putArray("schemas").add("urn:id:test");
     o.set(field, node);
-    SchemaEnforcer.Results results = checker.checkCreate(o);
+    SchemaChecker.Results results = checker.checkCreate(o);
     assertEquals(results.getSyntaxIssues().size(), 1,
         results.getSyntaxIssues().toString());
     assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
@@ -1478,14 +1489,16 @@ public class SchemaEnforcerTestCase
 
     SchemaResource schema = new SchemaResource("urn:id:test", "test", "",
         attributeDefinitions);
-    SchemaEnforcer checker = new SchemaEnforcer(schema,
-        Collections.<SchemaResource, Boolean>emptyMap());
+    ResourceTypeDefinition resourceTypeDefinition =
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(schema).build();
+    SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
 
     // Can not create read-only
     ObjectNode o = mapper.createObjectNode();
     o.putArray("schemas").add("urn:id:test");
     o.put("readOnly", "value");
-    SchemaEnforcer.Results results = checker.checkCreate(o);
+    SchemaChecker.Results results = checker.checkCreate(o);
     assertEquals(results.getMutabilityIssues().size(), 1,
         results.getMutabilityIssues().toString());
     assertTrue(containsIssueWith(results.getMutabilityIssues(), "read-only"));

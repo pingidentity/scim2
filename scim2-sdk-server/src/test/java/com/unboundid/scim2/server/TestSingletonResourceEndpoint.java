@@ -20,22 +20,34 @@ package com.unboundid.scim2.server;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.exceptions.ServerErrorException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
-import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.UserResource;
+import com.unboundid.scim2.server.utils.ResourcePreparer;
+import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.server.annotations.ResourceType;
-import com.unboundid.scim2.server.resources.AbstractResourceEndpoint;
+import com.unboundid.scim2.server.utils.SimpleSearchResults;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import java.io.IOException;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 
 /**
  * Test JAX-RS SCIM resource endpoint that has a per request lifecycle.
@@ -47,55 +59,90 @@ import java.util.Map;
     requiredSchemaExtensions = EnterpriseUserExtension.class)
 @Path("/SingletonUsers")
 public class TestSingletonResourceEndpoint
-    extends AbstractResourceEndpoint<UserResource>
 {
+  private static final ResourceTypeDefinition RESOURCE_TYPE_DEFINITION =
+      ResourceTypeDefinition.fromJaxRsResource(
+          TestSingletonResourceEndpoint.class);
   private final Map<String, UserResource> users =
       new HashMap<String, UserResource>();
 
-  @Override
-  public ListResponseStreamingOutput<UserResource> search(
-      final SearchRequest searchRequest) throws ScimException
+  /**
+   * Test SCIM search.
+   *
+   * @param uriInfo The UriInfo.
+   * @return The results.
+   * @throws ScimException if an error occurs.
+   */
+  @GET
+  @Produces(MEDIA_TYPE_SCIM)
+  public SimpleSearchResults<UserResource> search(
+      @Context final UriInfo uriInfo) throws ScimException
   {
-    return new ListResponseStreamingOutput<UserResource>()
-    {
-      @Override
-      public void write(final ListResponseWriter<UserResource> os)
-          throws IOException
-      {
-        for(UserResource user : users.values())
-        {
-          setResourceTypeAndLocation(user);
-          os.resource(user);
-        }
-        os.itemsPerPage(users.size());
-        os.startIndex(1);
-      }
-    };
+    SimpleSearchResults<UserResource> results =
+        new SimpleSearchResults<UserResource>(
+            RESOURCE_TYPE_DEFINITION, uriInfo);
+    results.addAll(users.values());
+    return results;
   }
 
-  @Override
-  public UserResource retrieve(final String id) throws ScimException
+  /**
+   * Test SCIM retrieve by ID.
+   *
+   * @param id The ID of the resource to retrieve.
+   * @param uriInfo The UriInfo.
+   * @return The result.
+   * @throws ScimException if an error occurs.
+   */
+  @Path("{id}")
+  @GET
+  @Produces(MEDIA_TYPE_SCIM)
+  public ScimResource retrieve(
+      @PathParam("id") final String id, @Context final UriInfo uriInfo)
+      throws ScimException
   {
     UserResource found = users.get(id);
     if(found == null)
     {
       throw new ResourceNotFoundException("No resource with ID " + id);
     }
-    setResourceTypeAndLocation(found);
-    return found;
+
+    ResourcePreparer<UserResource> resourcePreparer =
+        new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);
+    return resourcePreparer.trimRetrievedResource(found);
   }
 
-  @Override
-  public UserResource create(final UserResource resource) throws ScimException
+  /**
+   * Test SCIM create.
+   *
+   * @param resource The resource to create.
+   * @param uriInfo The UriInfo.
+   * @return The result.
+   * @throws ScimException if an error occurs.
+   */
+  @POST
+  @Consumes(MEDIA_TYPE_SCIM)
+  @Produces(MEDIA_TYPE_SCIM)
+  public ScimResource create(
+      final UserResource resource, @Context final UriInfo uriInfo)
+      throws ScimException
   {
     resource.setId(String.valueOf(resource.hashCode()));
     users.put(resource.getId(), resource);
-    setResourceTypeAndLocation(resource);
-    return resource;
+
+    ResourcePreparer<UserResource> resourcePreparer =
+        new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);
+    return resourcePreparer.trimCreatedResource(resource, resource);
   }
 
-  @Override
-  public void delete(final String id) throws ScimException
+  /**
+   * Test SCIM delete.
+   *
+   * @param id The ID of the resource to delete.
+   * @throws ScimException if an error occurs.
+   */
+  @Path("{id}")
+  @DELETE
+  public void delete(@PathParam("id") final String id) throws ScimException
   {
     UserResource found = users.remove(id);
     if(found == null)
@@ -104,8 +151,22 @@ public class TestSingletonResourceEndpoint
     }
   }
 
-  @Override
-  public UserResource replace(final String id, final UserResource resource)
+  /**
+   * Test SCIM replace.
+   *
+   * @param id the ID of the resource to replace.
+   * @param resource The resource to create.
+   * @param uriInfo The UriInfo.
+   * @return The result.
+   * @throws ScimException if an error occurs.
+   */
+  @Path("{id}")
+  @PUT
+  @Consumes(MEDIA_TYPE_SCIM)
+  @Produces(MEDIA_TYPE_SCIM)
+  public ScimResource replace(@PathParam("id") final String id,
+                              final UserResource resource,
+                              @Context final UriInfo uriInfo)
       throws ScimException
   {
     if(!users.containsKey(id))
@@ -113,12 +174,27 @@ public class TestSingletonResourceEndpoint
       throw new ResourceNotFoundException("No resource with ID " + id);
     }
     users.put(id, resource);
-    setResourceTypeAndLocation(resource);
-    return resource;
+    ResourcePreparer<UserResource> resourcePreparer =
+        new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);
+    return resourcePreparer.trimReplacedResource(resource, resource);
   }
 
-  @Override
-  public UserResource modify(final String id, final PatchRequest patchRequest)
+  /**
+   * Test SCIM modify.
+   *
+   * @param id The ID of the resource to modify.
+   * @param patchRequest The patch request.
+   * @param uriInfo The UriInfo.
+   * @return The result.
+   * @throws ScimException if an error occurs.
+   */
+  @Path("{id}")
+  @PATCH
+  @Consumes(MEDIA_TYPE_SCIM)
+  @Produces(MEDIA_TYPE_SCIM)
+  public ScimResource modify(@PathParam("id") final String id,
+                             final PatchRequest patchRequest,
+                             @Context final UriInfo uriInfo)
       throws ScimException
   {
     UserResource found = users.get(id);
@@ -142,6 +218,8 @@ public class TestSingletonResourceEndpoint
       throw new ServerErrorException(e.getMessage(), null, e);
     }
     users.put(id, patchedFound);
-    return patchedFound;
+    ResourcePreparer<UserResource> resourcePreparer =
+        new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);
+    return resourcePreparer.trimModifiedResource(patchedFound, patchRequest);
   }
 }
