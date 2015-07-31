@@ -15,29 +15,19 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.server.providers;
+package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.unboundid.scim2.common.utils.SchemaUtils;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * A JacksonJsonProvider specialized for SCIM.
+ * Created by boli on 7/29/15.
  */
-@Provider
-@Consumes(MediaType.WILDCARD)
-@Produces(MediaType.WILDCARD)
-public class ScimJacksonJsonProvider extends JacksonJsonProvider
+public class ScimJsonNodeFactory extends JsonNodeFactory
 {
-  /**
-   * Create a new ScimJacksonJsonProvider.
-   */
-  public ScimJacksonJsonProvider()
+  @Override
+  public ObjectNode objectNode()
   {
-    super(SchemaUtils.createSCIMCompatibleMapper(), BASIC_ANNOTATIONS);
+    return new CaseIgnoreObjectNode(this);
   }
 }

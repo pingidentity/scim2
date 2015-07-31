@@ -20,12 +20,10 @@ package com.unboundid.scim2.common;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -126,7 +124,7 @@ public class JsonUtilsTestCase
   private ObjectNode getTestResource() throws IOException
   {
 
-    return (ObjectNode)SchemaUtils.createSCIMCompatibleMapper().
+    return (ObjectNode) JsonUtils.getObjectReader().
         readTree("{  \n" +
             "  \"string\":\"string\",\n" +
             "  \"integer\":1,\n" +
@@ -725,7 +723,7 @@ public class JsonUtilsTestCase
   @Test
   public void testAddReplaceRoot() throws IOException, ScimException
   {
-    ObjectNode resource = (ObjectNode)SchemaUtils.createSCIMCompatibleMapper().
+    ObjectNode resource = (ObjectNode) JsonUtils.getObjectReader().
         readTree("{\n" +
             "    \"old\" : \"old\",\n" +
             "    \"existing\" : \"existing\",\n" +
@@ -752,7 +750,7 @@ public class JsonUtilsTestCase
             "    }\n" +
             "}");
 
-    JsonNode value = SchemaUtils.createSCIMCompatibleMapper().
+    JsonNode value = JsonUtils.getObjectReader().
         readTree("{\n" +
             "    \"new\" : \"new\",\n" +
             "    \"existing\" : \"newValue\",\n" +
@@ -776,7 +774,7 @@ public class JsonUtilsTestCase
             "    }\n" +
             "}");
 
-    JsonNode expectedAddResult = SchemaUtils.createSCIMCompatibleMapper().
+    JsonNode expectedAddResult = JsonUtils.getObjectReader().
         readTree("{\n" +
             "    \"old\" : \"old\",\n" +
             "    \"new\" : \"new\",\n" +
@@ -815,7 +813,7 @@ public class JsonUtilsTestCase
 
     assertEquals(resource, expectedAddResult);
 
-    JsonNode expectedReplaceResult = SchemaUtils.createSCIMCompatibleMapper().
+    JsonNode expectedReplaceResult = JsonUtils.getObjectReader().
         readTree("{\n" +
             "    \"old\" : \"old\",\n" +
             "    \"new\" : \"new\",\n" +
@@ -1024,9 +1022,9 @@ public class JsonUtilsTestCase
   public void testPathExists(String jsonString, Path path, boolean shouldExist)
       throws Exception
   {
-    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
     GenericScimResource resource =
-        mapper.readValue(jsonString, GenericScimResource.class);
+        JsonUtils.getObjectReader().forType(
+            GenericScimResource.class).readValue(jsonString);
     Assert.assertEquals(
         JsonUtils.pathExists(path, resource.getObjectNode()), shouldExist);
   }

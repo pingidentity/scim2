@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
 import java.util.ArrayList;
@@ -113,8 +112,8 @@ public abstract class PatchOperation
         throw new IllegalArgumentException("Patch operation contains " +
             "multiple values");
       }
-      return SchemaUtils.createSCIMCompatibleMapper().treeToValue(
-                value, cls);
+      return JsonUtils.getObjectReader().treeToValue(
+          value, cls);
     }
 
     /**
@@ -127,8 +126,7 @@ public abstract class PatchOperation
       ArrayList<T> objects = new ArrayList<T>(value.size());
       for(JsonNode node : value)
       {
-        objects.add(
-            SchemaUtils.createSCIMCompatibleMapper().treeToValue(node, cls));
+        objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
       }
       return objects;
     }
@@ -323,8 +321,7 @@ public abstract class PatchOperation
         throw new IllegalArgumentException("Patch operation contains " +
             "multiple values");
       }
-      return SchemaUtils.createSCIMCompatibleMapper().treeToValue(
-                value, cls);
+      return JsonUtils.getObjectReader().treeToValue(value, cls);
     }
 
     /**
@@ -337,8 +334,7 @@ public abstract class PatchOperation
       ArrayList<T> objects = new ArrayList<T>(value.size());
       for(JsonNode node : value)
       {
-        objects.add(
-            SchemaUtils.createSCIMCompatibleMapper().treeToValue(node, cls));
+        objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
       }
       return objects;
     }
@@ -493,8 +489,8 @@ public abstract class PatchOperation
   {
     try
     {
-      return SchemaUtils.createSCIMCompatibleMapper().
-          writerWithDefaultPrettyPrinter().writeValueAsString(this);
+      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
+          writeValueAsString(this);
     }
     catch (JsonProcessingException e)
     {

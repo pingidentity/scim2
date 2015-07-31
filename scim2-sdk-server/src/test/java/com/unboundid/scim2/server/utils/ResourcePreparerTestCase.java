@@ -26,14 +26,13 @@ import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.SchemaResource;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.testng.Assert.assertFalse;
@@ -80,29 +79,29 @@ public class ResourcePreparerTestCase
     attributeDefinitions.add(builder.build());
 
     SchemaResource schema =
-        new SchemaResource("test", "test", "test", attributeDefinitions);
+        new SchemaResource("urn:test", "test", "test", attributeDefinitions);
 
     resourceTypeDefinition = new ResourceTypeDefinition.Builder(
         "test", "test").setCoreSchema(schema).build();
 
     ObjectNode node =
-        (ObjectNode) SchemaUtils.createSCIMCompatibleMapper().readTree(
+        (ObjectNode) JsonUtils.getObjectReader().readTree(
             "{  \n" +
-            "  \"id\":\"test\",\n" +
-            "  \"always\":\"here\",\n" +
-            "  \"never\":\"here\",\n" +
-            "  \"default\":\"here\",\n" +
-            "  \"request\":\"here\"\n" +
-            "}");
+                "  \"id\":\"test\",\n" +
+                "  \"always\":\"here\",\n" +
+                "  \"neVEr\":\"here\",\n" +
+                "  \"default\":\"here\",\n" +
+                "  \"rEquest\":\"here\"\n" +
+                "}");
     testResource = new GenericScimResource(node);
     testPatch = new ArrayList<PatchOperation>(4);
-    testPatch.add(PatchOperation.add(Path.fromString("always"),
+    testPatch.add(PatchOperation.add(Path.fromString("alWays"),
         new TextNode("test")));
-    testPatch.add(PatchOperation.add(Path.fromString("never"),
+    testPatch.add(PatchOperation.add(Path.fromString("neveR"),
         new TextNode("test")));
-    testPatch.add(PatchOperation.add(Path.fromString("default"),
+    testPatch.add(PatchOperation.add(Path.fromString("defauLt"),
         new TextNode("test")));
-    testPatch.add(PatchOperation.add(Path.fromString("request"),
+    testPatch.add(PatchOperation.add(Path.fromString("Request"),
         new TextNode("test")));
   }
 
@@ -116,43 +115,40 @@ public class ResourcePreparerTestCase
   {
     return new Object[][]
         {
-            new Object[] { null, true },
-            new Object[] { AttributeDefinition.Returned.ALWAYS, true },
-            new Object[] { AttributeDefinition.Returned.NEVER, true },
-            new Object[] { AttributeDefinition.Returned.DEFAULT, true },
-            new Object[] { AttributeDefinition.Returned.REQUEST, true },
-            new Object[] { AttributeDefinition.Returned.ALWAYS, false },
-            new Object[] { AttributeDefinition.Returned.NEVER, false },
-            new Object[] { AttributeDefinition.Returned.DEFAULT, false },
-            new Object[] { AttributeDefinition.Returned.REQUEST, false },
+            new Object[] { null, null },
+            new Object[] { null, "always" },
+            new Object[] { null, "never" },
+            new Object[] { null, "urn:test:default" },
+            new Object[] { null, "reQuest" },
+            new Object[] { "Always", null },
+            new Object[] { "neveR", null },
+            new Object[] { "urn:test:DEFAULT", null },
+            new Object[] { "request", null },
         };
   }
 
   /**
    * Test trim on retrieve.
    *
-   * @param attribute The attribute to test as attributes/excludedAttributes.
-   * @param excluded Whether the attribute is one of the excludedAttributes.
+   * @param attributes The value to test as attributes
+   * @param excludedAttributes the value to test as excludedAttributes.
    * @throws BadRequestException If an error occurs.
    */
   @Test(dataProvider = "dataProvider")
-  public void testRetrieve(AttributeDefinition.Returned attribute,
-                           boolean excluded)
+  public void testRetrieve(String attributes, String excludedAttributes)
       throws BadRequestException
   {
     ResourcePreparer<ScimResource> preparer =
         new ResourcePreparer<ScimResource>(resourceTypeDefinition,
-            testBaseUri, attribute == null ?
-            Collections.<Path>emptySet() :
-            Collections.singleton(Path.fromString(attribute.getName())),
-            excluded);
+            attributes, excludedAttributes, testBaseUri);
 
     GenericScimResource prepared = preparer.trimRetrievedResource(testResource);
     assertTrue(prepared.getObjectNode().has("always"));
     assertFalse(prepared.getObjectNode().has("never"));
-    if(attribute == null ||
-        (excluded && attribute != AttributeDefinition.Returned.DEFAULT) ||
-        (!excluded && attribute == AttributeDefinition.Returned.DEFAULT))
+    if((attributes == null && excludedAttributes == null) ||
+        (excludedAttributes != null &&
+            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
+        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
     {
       assertTrue(prepared.getObjectNode().has("default"));
     }
@@ -160,8 +156,7 @@ public class ResourcePreparerTestCase
     {
       assertFalse(prepared.getObjectNode().has("default"));
     }
-    if(attribute != null &&
-        attribute == AttributeDefinition.Returned.REQUEST && !excluded)
+    if(attributes != null && attributes.equalsIgnoreCase("request"))
     {
       assertTrue(prepared.getObjectNode().has("request"));
     }
@@ -176,29 +171,26 @@ public class ResourcePreparerTestCase
   /**
    * Test trim on create.
    *
-   * @param attribute The attribute to test as attributes/excludedAttributes.
-   * @param excluded Whether the attribute is one of the excludedAttributes.
+   * @param attributes The value to test as attributes
+   * @param excludedAttributes the value to test as excludedAttributes.
    * @throws BadRequestException If an error occurs.
    */
   @Test(dataProvider = "dataProvider")
-  public void testCreate(AttributeDefinition.Returned attribute,
-                         boolean excluded)
+  public void testCreate(String attributes, String excludedAttributes)
       throws BadRequestException
   {
     ResourcePreparer<ScimResource> preparer =
         new ResourcePreparer<ScimResource>(resourceTypeDefinition,
-            testBaseUri, attribute == null ?
-            Collections.<Path>emptySet() :
-            Collections.singleton(Path.fromString(attribute.getName())),
-            excluded);
+            attributes, excludedAttributes, testBaseUri);
 
     GenericScimResource prepared =
         preparer.trimCreatedResource(testResource, null);
     assertTrue(prepared.getObjectNode().has("always"));
     assertFalse(prepared.getObjectNode().has("never"));
-    if(attribute == null ||
-        (excluded && attribute != AttributeDefinition.Returned.DEFAULT) ||
-        (!excluded && attribute == AttributeDefinition.Returned.DEFAULT))
+    if((attributes == null && excludedAttributes == null) ||
+        (excludedAttributes != null &&
+            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
+        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
     {
       assertTrue(prepared.getObjectNode().has("default"));
     }
@@ -206,8 +198,7 @@ public class ResourcePreparerTestCase
     {
       assertFalse(prepared.getObjectNode().has("default"));
     }
-    if(attribute != null &&
-        attribute == AttributeDefinition.Returned.REQUEST && !excluded)
+    if(attributes != null && attributes.equalsIgnoreCase("request"))
     {
       assertTrue(prepared.getObjectNode().has("request"));
     }
@@ -219,9 +210,10 @@ public class ResourcePreparerTestCase
     prepared = preparer.trimCreatedResource(testResource, testResource);
     assertTrue(prepared.getObjectNode().has("always"));
     assertFalse(prepared.getObjectNode().has("never"));
-    if(attribute == null ||
-        (excluded && attribute != AttributeDefinition.Returned.DEFAULT) ||
-        (!excluded && attribute == AttributeDefinition.Returned.DEFAULT))
+    if((attributes == null && excludedAttributes == null) ||
+        (excludedAttributes != null &&
+            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
+        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
     {
       assertTrue(prepared.getObjectNode().has("default"));
     }
@@ -235,29 +227,26 @@ public class ResourcePreparerTestCase
   /**
    * Test trim on replace.
    *
-   * @param attribute The attribute to test as attributes/excludedAttributes.
-   * @param excluded Whether the attribute is one of the excludedAttributes.
+   * @param attributes The value to test as attributes
+   * @param excludedAttributes the value to test as excludedAttributes.
    * @throws BadRequestException If an error occurs.
    */
   @Test(dataProvider = "dataProvider")
-  public void testReplace(AttributeDefinition.Returned attribute,
-                          boolean excluded)
+  public void testReplace(String attributes, String excludedAttributes)
       throws BadRequestException
   {
     ResourcePreparer<ScimResource> preparer =
         new ResourcePreparer<ScimResource>(resourceTypeDefinition,
-            testBaseUri, attribute == null ?
-            Collections.<Path>emptySet() :
-            Collections.singleton(Path.fromString(attribute.getName())),
-            excluded);
+            attributes, excludedAttributes, testBaseUri);
 
     GenericScimResource prepared =
         preparer.trimReplacedResource(testResource, null);
     assertTrue(prepared.getObjectNode().has("always"));
     assertFalse(prepared.getObjectNode().has("never"));
-    if(attribute == null ||
-        (excluded && attribute != AttributeDefinition.Returned.DEFAULT) ||
-        (!excluded && attribute == AttributeDefinition.Returned.DEFAULT))
+    if((attributes == null && excludedAttributes == null) ||
+        (excludedAttributes != null &&
+            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
+        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
     {
       assertTrue(prepared.getObjectNode().has("default"));
     }
@@ -265,8 +254,7 @@ public class ResourcePreparerTestCase
     {
       assertFalse(prepared.getObjectNode().has("default"));
     }
-    if(attribute != null &&
-        attribute == AttributeDefinition.Returned.REQUEST && !excluded)
+    if(attributes != null && attributes.equalsIgnoreCase("request"))
     {
       assertTrue(prepared.getObjectNode().has("request"));
     }
@@ -278,9 +266,10 @@ public class ResourcePreparerTestCase
     prepared = preparer.trimReplacedResource(testResource, testResource);
     assertTrue(prepared.getObjectNode().has("always"));
     assertFalse(prepared.getObjectNode().has("never"));
-    if(attribute == null ||
-        (excluded && attribute != AttributeDefinition.Returned.DEFAULT) ||
-        (!excluded && attribute == AttributeDefinition.Returned.DEFAULT))
+    if((attributes == null && excludedAttributes == null) ||
+        (excludedAttributes != null &&
+            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
+        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
     {
       assertTrue(prepared.getObjectNode().has("default"));
     }
@@ -296,29 +285,26 @@ public class ResourcePreparerTestCase
   /**
    * Test trim on modify.
    *
-   * @param attribute The attribute to test as attributes/excludedAttributes.
-   * @param excluded Whether the attribute is one of the excludedAttributes.
+   * @param attributes The value to test as attributes
+   * @param excludedAttributes the value to test as excludedAttributes.
    * @throws BadRequestException If an error occurs.
    */
   @Test(dataProvider = "dataProvider")
-  public void testModify(AttributeDefinition.Returned attribute,
-                         boolean excluded)
+  public void testModify(String attributes, String excludedAttributes)
       throws BadRequestException
   {
     ResourcePreparer<ScimResource> preparer =
         new ResourcePreparer<ScimResource>(resourceTypeDefinition,
-            testBaseUri, attribute == null ?
-            Collections.<Path>emptySet() :
-            Collections.singleton(Path.fromString(attribute.getName())),
-            excluded);
+            attributes, excludedAttributes, testBaseUri);
 
     GenericScimResource prepared =
         preparer.trimModifiedResource(testResource, null);
     assertTrue(prepared.getObjectNode().has("always"));
     assertFalse(prepared.getObjectNode().has("never"));
-    if(attribute == null ||
-        (excluded && attribute != AttributeDefinition.Returned.DEFAULT) ||
-        (!excluded && attribute == AttributeDefinition.Returned.DEFAULT))
+    if((attributes == null && excludedAttributes == null) ||
+        (excludedAttributes != null &&
+            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
+        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
     {
       assertTrue(prepared.getObjectNode().has("default"));
     }
@@ -326,8 +312,7 @@ public class ResourcePreparerTestCase
     {
       assertFalse(prepared.getObjectNode().has("default"));
     }
-    if(attribute != null &&
-        attribute == AttributeDefinition.Returned.REQUEST && !excluded)
+    if(attributes != null && attributes.equalsIgnoreCase("request"))
     {
       assertTrue(prepared.getObjectNode().has("request"));
     }
@@ -339,9 +324,10 @@ public class ResourcePreparerTestCase
     prepared = preparer.trimModifiedResource(testResource, testPatch);
     assertTrue(prepared.getObjectNode().has("always"));
     assertFalse(prepared.getObjectNode().has("never"));
-    if(attribute == null ||
-        (excluded && attribute != AttributeDefinition.Returned.DEFAULT) ||
-        (!excluded && attribute == AttributeDefinition.Returned.DEFAULT))
+    if((attributes == null && excludedAttributes == null) ||
+        (excludedAttributes != null &&
+            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
+        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
     {
       assertTrue(prepared.getObjectNode().has("default"));
     }

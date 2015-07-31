@@ -31,7 +31,7 @@ import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ListResponse;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -70,7 +70,7 @@ public class ScimService
   public ScimService(final WebTarget baseTarget)
   {
     this.baseTarget = baseTarget.register(
-        new JacksonJsonProvider(SchemaUtils.createSCIMCompatibleMapper()));
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
   }
 
   /**

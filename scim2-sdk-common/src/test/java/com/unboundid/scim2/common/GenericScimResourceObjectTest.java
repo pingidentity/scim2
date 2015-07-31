@@ -19,7 +19,7 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -54,8 +54,8 @@ public class GenericScimResourceObjectTest
   @Test
   public void testBasicParsing() throws Exception
   {
-    ObjectNode node = SchemaUtils.createSCIMCompatibleMapper().
-        readValue("{\n" +
+    ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().
+        readTree("{\n" +
             "    \"externalId\": \"user:externalId\",\n" +
             "    \"id\": \"user:id\",\n" +
             "    \"meta\": {\n" +
@@ -80,7 +80,7 @@ public class GenericScimResourceObjectTest
             "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
             "    },\n" +
             "    \"userName\": \"user:username\"\n" +
-            "}", ObjectNode.class);
+            "}");
 
     GenericScimResource gso = new GenericScimResource(node);
 

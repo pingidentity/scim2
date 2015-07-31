@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.FilterEvaluator;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -51,7 +51,7 @@ public class FilterEvaluatorTestCase
   {
     date = new Date();
 
-    node = SchemaUtils.createSCIMCompatibleMapper().
+    node = JsonUtils.getObjectReader().
         readTree("{\n" +
             "    \"externalId\": \"user:externalId\",\n" +
             "    \"id\": \"user:id\",\n" +
@@ -123,7 +123,7 @@ public class FilterEvaluatorTestCase
     return new Object[][]
         {
             new Object[] { "name.first eq \"nAme:fiRst\"", true },
-            new Object[] { "name.first ne \"nAme:fiRst\"", false },
+            new Object[] { "naMe.fIrst ne \"nAme:fiRst\"", false },
             new Object[] { "null eq null", true },
             new Object[] { "unassigned eq null", true },
             new Object[] { "empty eq null", true },
@@ -132,7 +132,7 @@ public class FilterEvaluatorTestCase
             new Object[] { "empty ne null", false },
             new Object[] { "name.first co \"nAme:fiRst\"", true },
             new Object[] { "name.first sw \"nAme:fiRst\"", true },
-            new Object[] { "name.first ew \"nAme:fiRst\"", true },
+            new Object[] { "naMe.First ew \"nAme:fiRst\"", true },
             new Object[] { "name.first sw \"nAme:\"", true },
             new Object[] { "name.first ew \":fiRst\"", true },
             new Object[] { "weight gt 175.2", true },
@@ -140,7 +140,7 @@ public class FilterEvaluatorTestCase
             new Object[] { "weight gt 175.6", false },
             new Object[] { "weight ge 175.6", true },
             new Object[] { "weight ge 175", true },
-            new Object[] { "weight lt 175.8", true },
+            new Object[] { "Weight lt 175.8", true },
             new Object[] { "weight lt 176", true },
             new Object[] { "weight lt 175.6", false },
             new Object[] { "weight le 175.6", true },
@@ -150,7 +150,7 @@ public class FilterEvaluatorTestCase
             new Object[] { "children gt 5", false },
             new Object[] { "children ge 5", true },
             new Object[] { "children ge 4", true },
-            new Object[] { "children lt 5.5", true },
+            new Object[] { "Children lt 5.5", true },
             new Object[] { "children lt 6", true },
             new Object[] { "children lt 5", false },
             new Object[] { "children le 5", true },
@@ -172,7 +172,7 @@ public class FilterEvaluatorTestCase
             new Object[] { "addresses.type eq \"work\" and " +
                 "addresses.streetAddress co \"Hollywood\"", true },
             new Object[] { "addresses[priority gt 5 and " +
-                "streetAddress co \"Hollywood\"]", true },
+                "StreetAddress co \"Hollywood\"]", true },
             new Object[] { "addresses.priority ge 10", true },
             new Object[] { "addresses.priority le 0", true },
             new Object[] { "meta.created eq \"" +

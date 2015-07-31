@@ -18,21 +18,20 @@
 package com.unboundid.scim2.server.utils;
 
 import com.unboundid.scim2.common.Path;
-import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.StaticUtils;
 import com.unboundid.scim2.server.annotations.ResourceType;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +47,7 @@ public final class ResourceTypeDefinition
   private final URI endpoint;
   private final SchemaResource coreSchema;
   private final Map<SchemaResource, Boolean> schemaExtensions;
-  private final Set<AttributeDefinition> commonAndCoreAttributes;
+  private final Map<Path, AttributeDefinition> attributeNotationMap;
   private final boolean discoverable;
 
   /**
@@ -211,19 +210,39 @@ public final class ResourceTypeDefinition
     this.coreSchema = coreSchema;
     this.schemaExtensions = Collections.unmodifiableMap(schemaExtensions);
     this.discoverable = discoverable;
-    Set<AttributeDefinition> attributes =
-        new LinkedHashSet<AttributeDefinition>(
-        coreSchema == null ? 0 : coreSchema.getAttributes().size() + 4);
-    attributes.addAll(Arrays.asList(
-        SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION,
-        SchemaUtils.ID_ATTRIBUTE_DEFINITION,
-        SchemaUtils.EXTERNAL_ID_ATTRIBUTE_DEFINITION,
-        SchemaUtils.META_ATTRIBUTE_DEFINITION));
+    this.attributeNotationMap = new HashMap<Path, AttributeDefinition>();
+
+    // Add the common attributes
+    buildAttributeNotationMap(Path.root(),
+        SchemaUtils.COMMON_ATTRIBUTE_DEFINITIONS);
+
+    // Add the core attributes
     if(coreSchema != null)
     {
-      attributes.addAll(coreSchema.getAttributes());
+      buildAttributeNotationMap(Path.root(), coreSchema.getAttributes());
     }
-    this.commonAndCoreAttributes = Collections.unmodifiableSet(attributes);
+
+    // Add the extension attributes
+    for(SchemaResource schemaExtension : schemaExtensions.keySet())
+    {
+      buildAttributeNotationMap(Path.root(schemaExtension.getId()),
+          schemaExtension.getAttributes());
+    }
+  }
+
+  private void buildAttributeNotationMap(
+      final Path parentPath,
+      final Collection<AttributeDefinition> attributes)
+  {
+    for(AttributeDefinition attribute : attributes)
+    {
+      Path path = parentPath.attribute(attribute.getName());
+      attributeNotationMap.put(path, attribute);
+      if(attribute.getSubAttributes() != null)
+      {
+        buildAttributeNotationMap(path, attribute.getSubAttributes());
+      }
+    }
   }
 
   /**
@@ -267,19 +286,6 @@ public final class ResourceTypeDefinition
   }
 
   /**
-   * Retrieve the set of attribute definitions for the attributes on the top
-   * level of the JSON object that represents the SCIM resource. This will
-   * includes the attributes from the core schema (if available) as well as the
-   * common attributes (schemas, id, externalId, and meta).
-   *
-   * @return The core and common attributes.
-   */
-  public Set<AttributeDefinition> getCoreAndCommonAttributes()
-  {
-    return commonAndCoreAttributes;
-  }
-
-  /**
    * Gets the resource type's schema extensions.
    *
    * @return the schema extensions for the resource type.
@@ -305,74 +311,36 @@ public final class ResourceTypeDefinition
    * Retrieve the attribute definition for the attribute in the path.
    *
    * @param path The attribute path.
-   * @return The attribute definition.
-   * @throws BadRequestException If there is no attribute defined for the path.
+   * @return The attribute definition or {@code null} if there is no attribute
+   * defined for the path.
    */
   public AttributeDefinition getAttributeDefinition(final Path path)
-      throws BadRequestException
   {
-    int elementIndex = 0;
-    Iterable<AttributeDefinition> attributes =
-        commonAndCoreAttributes;
-    if(path.getExtensionSchema() != null)
+    return attributeNotationMap.get(normalizePath(path));
+  }
+
+  /**
+   * Normalize a path by removing all value filters and the schema URI prefix
+   * for core attributes.
+   *
+   * @param path The path to normalize.
+   * @return The normalized path.
+   */
+  Path normalizePath(final Path path)
+  {
+    Path normalizedPath = Path.root();
+    for(int i = 0; i < path.size(); i++)
     {
-      elementIndex = 1;
-      boolean found = false;
-      for(SchemaResource schema : schemaExtensions.keySet())
+      Path.Element element = path.getElement(i);
+      if(i > 0 || coreSchema == null ||
+          !StaticUtils.toLowerCase(element.getAttribute()).equals(
+              StaticUtils.toLowerCase(coreSchema.getId())))
       {
-        if(schema.getId().equals(path.getExtensionSchema()))
-        {
-          attributes = schema.getAttributes();
-          found = true;
-          break;
-        }
-      }
-      if(!found)
-      {
-        throw BadRequestException.invalidPath("Schema extension " +
-            path.getExtensionSchema() +" in path is undefined for " +
-            "resource type " + name);
+        normalizedPath = normalizedPath.attribute(element.getAttribute());
       }
     }
 
-    for(; elementIndex < path.size(); elementIndex++)
-    {
-      for(AttributeDefinition attribute : attributes)
-      {
-        if(attribute.getName().equals(
-            path.getElement(elementIndex).getAttribute()))
-        {
-          if(elementIndex >= path.size() - 1)
-          {
-            return attribute;
-          }
-          attributes = attribute.getSubAttributes();
-        }
-      }
-      if(attributes == null)
-      {
-        break;
-      }
-    }
-
-    if(path.getExtensionSchema() == null && elementIndex == 1)
-    {
-      throw BadRequestException.invalidPath("Attribute " +
-          path.getElement(elementIndex - 1).getAttribute() + " in path is " +
-          "undefined for core schema " + coreSchema.getId());
-    }
-    else if(path.getExtensionSchema() != null && elementIndex == 2)
-    {
-      throw BadRequestException.invalidPath("Attribute " +
-          path.getElement(elementIndex - 1).getAttribute() + " in path is " +
-          "undefined for schema extension " + path.getExtensionSchema());
-    }
-    else
-    {
-      throw BadRequestException.invalidPath("Sub-attribute " +
-          path.getElement(elementIndex - 1).getAttribute() + " in path is " +
-          "undefined for attribute " + path.parent());
-    }
+    return normalizedPath;
   }
 
   /**

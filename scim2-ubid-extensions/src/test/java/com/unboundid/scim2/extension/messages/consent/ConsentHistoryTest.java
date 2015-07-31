@@ -17,10 +17,8 @@
 
 package com.unboundid.scim2.extension.messages.consent;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.utils.SchemaUtils;
-import com.unboundid.scim2.extension.messages.JsonObjectStringBuilder;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,8 +27,6 @@ import java.net.URL;
 @Test
 public class ConsentHistoryTest
 {
-  private final ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-
   /**
    * Tests serialization of ConsentHistory objects.
    *
@@ -53,21 +49,19 @@ public class ConsentHistoryTest
         setName("name3").setDescription("description3").build();
 
     String meta_created = "2015-07-04T00:00:00Z";
-    JsonObjectStringBuilder meta_jsob = new JsonObjectStringBuilder();
-    meta_jsob.appendProperty("lastModified", meta_created);
-    Meta meta = mapper.readValue(meta_jsob.toString(), Meta.class);
     String id = "ConsentHistoryId";
 
 
-    JsonObjectStringBuilder jsob = new JsonObjectStringBuilder();
-    jsob.appendProperty("application", mapper, application);
-    jsob.appendListProperty("scope", mapper, scope1, scope2, scope3);
-    jsob.appendProperty("meta", mapper, meta);
-    jsob.appendProperty("id", id);
+    ObjectNode objectNode = JsonUtils.getJsonNodeFactory().objectNode();
+    objectNode.putPOJO("application", application);
+    objectNode.putArray("scope").addPOJO(scope1).addPOJO(scope2).
+        addPOJO(scope3);
+    objectNode.putObject("meta").put("lastModified", meta_created);
+    objectNode.put("id", id);
 
-    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-    ConsentHistory consentHistory1 = mapper.readValue(jsob.toString(),
-        ConsentHistory.class);
+    ConsentHistory consentHistory1 = JsonUtils.getObjectReader().forType(
+        ConsentHistory.class).readValue(
+        JsonUtils.getObjectWriter().writeValueAsString(objectNode));
     Assert.assertEquals(application, consentHistory1.getApplication());
     Assert.assertEquals(id, consentHistory1.getId());
 
@@ -92,8 +86,8 @@ public class ConsentHistoryTest
     }
 
     ConsentHistory consentHistory2 =
-        mapper.readValue(mapper.writeValueAsString(consentHistory1),
-            ConsentHistory.class);
+        JsonUtils.getObjectReader().forType(ConsentHistory.class).readValue(
+            JsonUtils.getObjectWriter().writeValueAsString(consentHistory1));
     Assert.assertEquals(consentHistory1, consentHistory2);
   }
 }

@@ -23,7 +23,7 @@ import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -230,8 +230,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T replaceValue(final Path path, final Object object)
   {
-    JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
+    JsonNode newObjectNode = JsonUtils.valueToTree(object);
     return addOperation(PatchOperation.replace(path, newObjectNode));
   }
 
@@ -262,8 +261,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T replaceValues(final Path path, final Collection<Object> objects)
   {
-    JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+    JsonNode newObjectNode = JsonUtils.valueToTree(objects);
     return addOperation(PatchOperation.replace(path, newObjectNode));
   }
 
@@ -295,8 +293,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T replaceValues(final Path path, final Object... objects)
   {
-    JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+    JsonNode newObjectNode = JsonUtils.valueToTree(objects);
     return addOperation(PatchOperation.replace(path, newObjectNode));
   }
 
@@ -325,8 +322,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T addValues(final Path path, final Collection<?> objects)
   {
-    JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+    JsonNode newObjectNode = JsonUtils.valueToTree(objects);
     return addOperation(PatchOperation.add(path, newObjectNode));
   }
 
@@ -357,8 +353,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T addValues(final Path path, final Object... objects)
   {
-    JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+    JsonNode newObjectNode = JsonUtils.valueToTree(objects);
     return addOperation(PatchOperation.add(path, newObjectNode));
   }
 

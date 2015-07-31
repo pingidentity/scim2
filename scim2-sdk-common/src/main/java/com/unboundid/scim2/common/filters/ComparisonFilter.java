@@ -17,9 +17,9 @@
 
 package com.unboundid.scim2.common.filters;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.utils.JsonUtils;
 
 /**
  * Attribute comparison filter.
@@ -41,8 +41,9 @@ public abstract class ComparisonFilter extends Filter
     this.filterAttribute = filterAttribute;
     if (filterValue == null)
     {
-      this.filterValue = JsonNodeFactory.instance.nullNode();
-    } else
+      this.filterValue = JsonUtils.getJsonNodeFactory().nullNode();
+    }
+    else
     {
       this.filterValue = filterValue;
     }

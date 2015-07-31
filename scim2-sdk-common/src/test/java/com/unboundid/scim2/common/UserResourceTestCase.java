@@ -19,7 +19,7 @@ package com.unboundid.scim2.common;
 
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.UserResource;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -187,7 +187,7 @@ public class UserResourceTestCase
         "  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\":{\n" +
         "    \"employeeNumber\":\"701984\",\n" +
         "    \"costCenter\":\"4130\",\n" +
-        "    \"organization\":\"Universal Studios\",\n" +
+        "    \"Organization\":\"Universal Studios\",\n" +
         "    \"division\":\"Theme Park\",\n" +
         "    \"department\":\"Tour Operations\",\n" +
         "    \"manager\":{  \n" +
@@ -207,8 +207,8 @@ public class UserResourceTestCase
         "}";
 
     UserResource userResource =
-        SchemaUtils.createSCIMCompatibleMapper().readValue(
-            fullRepresentation, UserResource.class);
+        JsonUtils.getObjectReader().forType(UserResource.class).readValue(
+            fullRepresentation);
 
     EnterpriseUserExtension enterpriseUserExtension =
         userResource.getExtensionValue(
@@ -218,12 +218,12 @@ public class UserResourceTestCase
     assertNotNull(enterpriseUserExtension);
 
     String serializedString =
-        SchemaUtils.createSCIMCompatibleMapper().writeValueAsString(
+        JsonUtils.getObjectWriter().writeValueAsString(
             userResource);
 
     assertEquals(
-        SchemaUtils.createSCIMCompatibleMapper().readValue(
-            serializedString, UserResource.class),
+        JsonUtils.getObjectReader().forType(UserResource.class).readValue(
+            serializedString),
         userResource);
   }
 }

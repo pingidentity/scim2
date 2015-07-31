@@ -18,7 +18,6 @@
 package com.unboundid.scim2.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
@@ -28,9 +27,9 @@ import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.UserResource;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.server.utils.ResourcePreparer;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.utils.SimpleSearchResults;
 
@@ -202,8 +201,7 @@ public class TestSingletonResourceEndpoint
     {
       throw new ResourceNotFoundException("No resource with ID " + id);
     }
-    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-    ObjectNode node = mapper.valueToTree(found);
+    ObjectNode node = JsonUtils.valueToTree(found);
     for(PatchOperation operation : patchRequest)
     {
       operation.apply(node);
@@ -211,7 +209,8 @@ public class TestSingletonResourceEndpoint
     UserResource patchedFound = null;
     try
     {
-      patchedFound = mapper.treeToValue(node, UserResource.class);
+      patchedFound =
+          JsonUtils.getObjectReader().treeToValue(node, UserResource.class);
     }
     catch (JsonProcessingException e)
     {

@@ -19,7 +19,6 @@ package com.unboundid.scim2.server.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
@@ -28,8 +27,7 @@ import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.utils.Debug;
-import com.unboundid.scim2.common.utils.DebugType;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
 import javax.ws.rs.core.UriBuilder;
@@ -40,7 +38,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.*;
 
@@ -82,20 +79,30 @@ public class ResourcePreparer<T extends ScimResource>
                           final UriInfo requestUriInfo)
       throws BadRequestException
   {
-    String attributesString = null;
-    String excludedAttributesString = null;
+    this(resourceType,
+        requestUriInfo.getQueryParameters().getFirst(
+            QUERY_PARAMETER_ATTRIBUTES),
+        requestUriInfo.getQueryParameters().getFirst(
+            QUERY_PARAMETER_EXCLUDED_ATTRIBUTES),
+        requestUriInfo.getBaseUriBuilder().
+            path(resourceType.getEndpoint().getPath()).
+            buildFromMap(requestUriInfo.getPathParameters()));
+  }
 
-    // https://tools.ietf.org/html/draft-ietf-scim-api-19#section-4 says
-    // query params should be ignored for these endpoints.
-    if(!resourceType.getEndpoint().equals(SERVICE_PROVIDER_CONFIG_ENDPOINT) &&
-        !resourceType.getEndpoint().equals(RESOURCE_TYPES_ENDPOINT) &&
-        !resourceType.getEndpoint().equals(SCHEMAS_ENDPOINT))
-    {
-      attributesString = requestUriInfo.getQueryParameters().getFirst(
-          QUERY_PARAMETER_ATTRIBUTES);
-      excludedAttributesString = requestUriInfo.getQueryParameters().getFirst(
-          QUERY_PARAMETER_EXCLUDED_ATTRIBUTES);
-    }
+
+  /**
+   * Private constructor used by unit-test.
+   *
+   * @param resourceType The resource type definition for resources to prepare.
+   * @param attributesString The attributes query param.
+   * @param excludedAttributesString The excludedAttributes query param.
+   * @param baseUri The resource type base URI.
+   */
+  ResourcePreparer(final ResourceTypeDefinition resourceType,
+                   final String attributesString,
+                   final String excludedAttributesString,
+                   final URI baseUri) throws BadRequestException
+  {
     if(attributesString != null && !attributesString.isEmpty())
     {
       Set<String> attributeSet = StaticUtils.arrayToSet(
@@ -105,7 +112,8 @@ public class ResourcePreparer<T extends ScimResource>
       {
         try
         {
-          this.queryAttributes.add(Path.fromString(attribute));
+          this.queryAttributes.add(
+              resourceType.normalizePath(Path.fromString(attribute)));
         }
         catch (BadRequestException e)
         {
@@ -126,7 +134,8 @@ public class ResourcePreparer<T extends ScimResource>
       {
         try
         {
-          this.queryAttributes.add(Path.fromString(attribute));
+          this.queryAttributes.add(
+              resourceType.normalizePath(Path.fromString(attribute)));
         }
         catch (BadRequestException e)
         {
@@ -143,28 +152,7 @@ public class ResourcePreparer<T extends ScimResource>
       this.excluded = true;
     }
     this.resourceType = resourceType;
-    this.baseUri = requestUriInfo.getBaseUriBuilder().
-        path(resourceType.getEndpoint().getPath()).
-        buildFromMap(requestUriInfo.getPathParameters());
-  }
-
-  /**
-   * Private constructor used by unit-test.
-   *
-   * @param resourceType The resource type definition for resources to prepare.
-   * @param baseUri The resource type base URI.
-   * @param queryAttributes The attributes to return or exclude.
-   * @param excluded Whether the queryAttributes should be excluded.
-   */
-  ResourcePreparer(final ResourceTypeDefinition resourceType,
-                   final URI baseUri,
-                   final Set<Path> queryAttributes,
-                   final boolean excluded)
-  {
-    this.resourceType = resourceType;
     this.baseUri = baseUri;
-    this.queryAttributes = queryAttributes;
-    this.excluded = excluded;
   }
 
   /**
@@ -320,7 +308,7 @@ public class ResourcePreparer<T extends ScimResource>
                                     final Set<Path> requestAttributes,
                                     final Path parentPath)
   {
-    ObjectNode objectToReturn = JsonNodeFactory.instance.objectNode();
+    ObjectNode objectToReturn = JsonUtils.getJsonNodeFactory().objectNode();
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
     while(i.hasNext())
     {
@@ -361,7 +349,7 @@ public class ResourcePreparer<T extends ScimResource>
                                   final Set<Path> requestAttributes,
                                   final Path parentPath)
   {
-    ArrayNode arrayToReturn = JsonNodeFactory.instance.arrayNode();
+    ArrayNode arrayToReturn = JsonUtils.getJsonNodeFactory().arrayNode();
     for(JsonNode value : arrayNode)
     {
       if(value.isArray())
@@ -398,17 +386,8 @@ public class ResourcePreparer<T extends ScimResource>
                                final Set<Path> queryAttributes,
                                final boolean excluded)
   {
-    AttributeDefinition attributeDefinition = null;
-    try
-    {
-      attributeDefinition = resourceType == null ? null :
-          resourceType.getAttributeDefinition(path);
-    }
-    catch (BadRequestException e)
-    {
-      Debug.debug(Level.WARNING, DebugType.EXCEPTION,
-          "Error retrieving attribute definition for " + path.toString(), e);
-    }
+    AttributeDefinition attributeDefinition =
+        resourceType.getAttributeDefinition(path);
     AttributeDefinition.Returned returned = attributeDefinition == null ?
         AttributeDefinition.Returned.DEFAULT :
         attributeDefinition.getReturned();
@@ -436,7 +415,8 @@ public class ResourcePreparer<T extends ScimResource>
         }
         else
         {
-          return queryAttributes.isEmpty() || queryAttributes.contains(path);
+          return queryAttributes.isEmpty() ||
+              queryAttributes.contains(path);
         }
     }
   }
@@ -457,7 +437,11 @@ public class ResourcePreparer<T extends ScimResource>
     {
       Map.Entry<String, JsonNode> field = i.next();
       Path path = parentPath.attribute(field.getKey());
-      paths.add(path);
+      if(path.size() > 1 || path.getExtensionSchema() == null)
+      {
+        // Don't add a path for the extension schema object itself.
+        paths.add(path);
+      }
       if (field.getValue().isArray())
       {
         collectAttributes(path, paths, (ArrayNode) field.getValue());
@@ -508,7 +492,7 @@ public class ResourcePreparer<T extends ScimResource>
       Path path = Path.root();
       if(patchOperation.getPath() != null)
       {
-        path = patchOperation.getPath();
+        path = resourceType.normalizePath(patchOperation.getPath());
         paths.add(path);
       }
       if(patchOperation.getJsonNode() != null)

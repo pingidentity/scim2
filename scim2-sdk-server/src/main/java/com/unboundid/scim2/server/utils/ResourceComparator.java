@@ -21,18 +21,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
-import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.utils.Debug;
-import com.unboundid.scim2.common.utils.DebugType;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * A comparator implementation that could be used to compare POJOs representing
@@ -132,17 +129,9 @@ public class ResourceComparator<T extends ScimResource>
     }
     else
     {
-      AttributeDefinition attributeDefinition = null;
-      try
-      {
-        attributeDefinition = resourceType.getAttributeDefinition(sortBy);
-      }
-      catch (BadRequestException e)
-      {
-        Debug.debug(Level.WARNING, DebugType.EXCEPTION,
-            "Error retrieving attribute definition for " +
-                sortBy.toString(), e);
-      }
+      AttributeDefinition attributeDefinition =
+          resourceType == null ? null :
+              resourceType.getAttributeDefinition(sortBy);
       return sortOrder == SortOrder.ASCENDING ?
           JsonUtils.compareTo(v1, v2, attributeDefinition) :
           JsonUtils.compareTo(v2, v1, attributeDefinition);

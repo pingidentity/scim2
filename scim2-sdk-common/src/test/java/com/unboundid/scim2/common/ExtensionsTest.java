@@ -18,13 +18,12 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -202,12 +201,10 @@ public class ExtensionsTest
   @Test
   public void testJsonGeneration_annotations() throws Exception
   {
-    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-
     CoreClass_User user = getBasicUser();
-    String userString = mapper.writeValueAsString(user);
+    String userString = JsonUtils.getObjectWriter().writeValueAsString(user);
 
-    JsonNode userNode = mapper.readTree(userString);
+    JsonNode userNode = JsonUtils.getObjectReader().readTree(userString);
 
     // check some of the basic fields
     Assert.assertEquals(userNode.path("userName").asText(),
@@ -218,7 +215,8 @@ public class ExtensionsTest
         user.getExternalId());
 
     // check the schemas
-    Assert.assertEquals(mapper.treeToValue(userNode.path("schemas"),
+    Assert.assertEquals(
+        JsonUtils.getObjectReader().treeToValue(userNode.path("schemas"),
             HashSet.class), user.getSchemaUrns());
 
     // check the extension values
@@ -236,8 +234,6 @@ public class ExtensionsTest
   @Test
   public void testJsonParsing_annotations() throws Exception
   {
-    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-
     String jsonString = "{\n" +
         "    \"externalId\": \"user:externalId\",\n" +
         "    \"id\": \"user:id\",\n" +
@@ -264,7 +260,8 @@ public class ExtensionsTest
         "    \"userName\": \"user:username\"\n" +
         "}";
 
-    CoreClass_User user = mapper.readValue(jsonString, CoreClass_User.class);
+    CoreClass_User user = JsonUtils.getObjectReader().forType(
+        CoreClass_User.class).readValue(jsonString);
 
     // check some of the basic fields
     Assert.assertEquals(user.getUserName(), "user:username");
@@ -352,8 +349,6 @@ public class ExtensionsTest
    */
   private GenericScimResource getGenericUser() throws Exception
   {
-    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-
     String jsonString = "{\n" +
         "    \"externalId\": \"user:externalId\",\n" +
         "    \"id\": \"user:id\",\n" +
@@ -380,8 +375,7 @@ public class ExtensionsTest
         "    \"userName\": \"user:username\"\n" +
         "}";
 
-    GenericScimResource user =
-        mapper.readValue(jsonString, GenericScimResource.class);
-    return user;
+    return JsonUtils.getObjectReader().forType(
+        GenericScimResource.class).readValue(jsonString);
   }
 }

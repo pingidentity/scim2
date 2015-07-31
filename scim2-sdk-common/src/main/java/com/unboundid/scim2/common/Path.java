@@ -23,6 +23,7 @@ import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.Parser;
+import com.unboundid.scim2.common.utils.StaticUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -99,7 +100,8 @@ public final class Path implements Iterable<Path.Element>
 
       Element element = (Element) o;
 
-      if (!attribute.equals(element.attribute))
+      if (!StaticUtils.toLowerCase(attribute).equals(
+          StaticUtils.toLowerCase(element.attribute)))
       {
         return false;
       }
@@ -118,7 +120,7 @@ public final class Path implements Iterable<Path.Element>
     @Override
     public int hashCode()
     {
-      int result = attribute.hashCode();
+      int result = StaticUtils.toLowerCase(attribute).hashCode();
       result = 31 * result + (valueFilter != null ? valueFilter.hashCode() : 0);
       return result;
     }

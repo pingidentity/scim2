@@ -19,7 +19,6 @@ package com.unboundid.scim2.client.requests;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.client.SearchResultHandler;
@@ -29,6 +28,7 @@ import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.utils.ApiConstants;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import javax.ws.rs.client.Entity;
@@ -248,11 +248,10 @@ public final class SearchRequestBuilder
           Response.Status.Family.SUCCESSFUL)
       {
         InputStream inputStream = response.readEntity(InputStream.class);
-        ObjectMapper objectMapper = SchemaUtils.createSCIMCompatibleMapper();
         try
         {
-          JsonParser parser =
-              objectMapper.getFactory().createParser(inputStream);
+          JsonParser parser = JsonUtils.getObjectReader().
+              getFactory().createParser(inputStream);
           try
           {
             parser.nextToken();
@@ -286,7 +285,7 @@ public final class SearchRequestBuilder
               } else if (SchemaUtils.isUrn(field))
               {
                 resultHandler.extension(
-                    field, parser.readValueAs(ObjectNode.class));
+                    field, parser.<ObjectNode>readValueAsTree());
               } else
               {
                 // Just skip this field

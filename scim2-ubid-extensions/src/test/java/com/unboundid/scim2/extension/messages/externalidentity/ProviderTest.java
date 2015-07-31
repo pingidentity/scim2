@@ -17,9 +17,8 @@
 
 package com.unboundid.scim2.extension.messages.externalidentity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unboundid.scim2.common.utils.SchemaUtils;
-import com.unboundid.scim2.extension.messages.JsonObjectStringBuilder;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -28,8 +27,6 @@ import java.net.URL;
 @Test
 public class ProviderTest
 {
-  private final ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-
   /**
    * Tests serialization of Provider objects.
    *
@@ -43,20 +40,22 @@ public class ProviderTest
     String iconUrl = "https://localhost:12345/test/url";
     String type = "testType";
 
-    JsonObjectStringBuilder jsob = new JsonObjectStringBuilder();
-    jsob.appendProperty("name", name);
-    jsob.appendProperty("description", description);
-    jsob.appendProperty("iconUrl", iconUrl);
-    jsob.appendProperty("type", type);
+    ObjectNode objectNode = JsonUtils.getJsonNodeFactory().objectNode();
+    objectNode.put("name", name);
+    objectNode.put("description", description);
+    objectNode.put("iconUrl", iconUrl);
+    objectNode.put("type", type);
 
-    Provider provider1 = mapper.readValue(jsob.toString(), Provider.class);
+    Provider provider1 = JsonUtils.getObjectReader().forType(Provider.class).
+        readValue(objectNode.toString());
     Assert.assertEquals(name, provider1.getName());
     Assert.assertEquals(description, provider1.getDescription());
     Assert.assertEquals(type, provider1.getType());
     Assert.assertEquals(new URL(iconUrl), provider1.getIconUrl());
 
     Provider provider2 =
-        mapper.readValue(mapper.writeValueAsString(provider1), Provider.class);
+        JsonUtils.getObjectReader().forType(Provider.class).readValue(
+            JsonUtils.getObjectWriter().writeValueAsString(provider1));
     Assert.assertEquals(provider1, provider2);
   }
 }

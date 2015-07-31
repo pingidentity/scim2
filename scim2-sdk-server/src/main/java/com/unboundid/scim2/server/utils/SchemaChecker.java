@@ -19,7 +19,6 @@ package com.unboundid.scim2.server.utils;
 
 import com.fasterxml.jackson.core.Base64Variants;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
@@ -42,6 +41,7 @@ import java.text.ParsePosition;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +94,7 @@ public class SchemaChecker
   }
 
   private ResourceTypeDefinition resourceType;
+  private final Collection<AttributeDefinition> commonAndCoreAttributes;
 
   /**
    * Create a new instance that may be used to validate and enforce schema
@@ -104,6 +105,18 @@ public class SchemaChecker
   public SchemaChecker(final ResourceTypeDefinition resourceType)
   {
     this.resourceType = resourceType;
+    if(resourceType.getCoreSchema() != null)
+    {
+      commonAndCoreAttributes = new LinkedHashSet<AttributeDefinition>(
+          resourceType.getCoreSchema().getAttributes().size() + 4);
+      commonAndCoreAttributes.addAll(SchemaUtils.COMMON_ATTRIBUTE_DEFINITIONS);
+      commonAndCoreAttributes.addAll(
+          resourceType.getCoreSchema().getAttributes());
+    }
+    else
+    {
+      commonAndCoreAttributes = SchemaUtils.COMMON_ATTRIBUTE_DEFINITIONS;
+    }
   }
 
   /**
@@ -211,22 +224,16 @@ public class SchemaChecker
       prefix = "Patch op[" + i + "]: ";
       Path path = patchOp.getPath();
       JsonNode value = patchOp.getJsonNode();
-      AttributeDefinition attribute = null;
-      try
-      {
-        attribute = path == null ? null :
-            resourceType.getAttributeDefinition(path);
-      }
-      catch (BadRequestException e)
-      {
-        results.pathIssues.add(prefix + e.getMessage());
-      }
+      AttributeDefinition attribute = path == null ? null :
+          resourceType.getAttributeDefinition(path);
       Filter valueFilter =
           path == null ? null :
               path.getElement(path.size() - 1).getValueFilter();
       if(path != null && attribute == null)
       {
         // Can't find the attribute definition for attribute in path.
+        results.pathIssues.add(prefix +
+            "Attribute for path " + path.toString() + " is undefined");
         continue;
       }
       switch (patchOp.getOpType())
@@ -404,8 +411,7 @@ public class SchemaChecker
             (ObjectNode) extension);
       }
     }
-    removeReadOnlyAttributes(
-        resourceType.getCoreAndCommonAttributes(), copyNode);
+    removeReadOnlyAttributes(commonAndCoreAttributes, copyNode);
     return copyNode;
   }
 
@@ -508,8 +514,7 @@ public class SchemaChecker
     }
 
     // Check common and core schema
-    checkObjectNode(prefix, Path.root(),
-        resourceType.getCoreAndCommonAttributes(),
+    checkObjectNode(prefix, Path.root(), commonAndCoreAttributes,
         objectNode, results, currentObjectNode,
         isPartialReplace, isPartialAdd);
   }
@@ -550,7 +555,7 @@ public class SchemaChecker
         {
           // Extension listed in schemas but no namespace in resource. Treat it
           // as an empty namesapce to check for required attributes.
-          extensionNode = JsonNodeFactory.instance.objectNode();
+          extensionNode = JsonUtils.getJsonNodeFactory().objectNode();
         }
         if (!extensionNode.isObject())
         {
@@ -642,8 +647,7 @@ public class SchemaChecker
     }
 
     // Check common and core schema
-    checkObjectNode(prefix, Path.root(),
-        resourceType.getCoreAndCommonAttributes(),
+    checkObjectNode(prefix, Path.root(), commonAndCoreAttributes,
         objectNode, results, currentObjectNode,
         false, false);
   }

@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchRequest;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -42,7 +42,8 @@ public class PatchOpTestCase
   @Test
   public void getTestPatch() throws IOException, ScimException
   {
-    PatchRequest patchOp = SchemaUtils.createSCIMCompatibleMapper().
+    PatchRequest patchOp = JsonUtils.getObjectReader().
+        forType(PatchRequest.class).
         readValue("{  \n" +
             "  \"schemas\":[  \n" +
             "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
@@ -155,9 +156,9 @@ public class PatchOpTestCase
             "      \"value\":\"urn:ubid:custom:schema3\"\n" +
             "    }" +
             "  ]\n" +
-            "}", PatchRequest.class);
+            "}");
 
-    JsonNode prePatchResource = SchemaUtils.createSCIMCompatibleMapper().
+    JsonNode prePatchResource = JsonUtils.getObjectReader().
         readTree("{  \n" +
             "  \"schemas\":[  \n" +
             "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
@@ -230,7 +231,7 @@ public class PatchOpTestCase
             "  }\n" +
             "}");
 
-    JsonNode postPatchResource = SchemaUtils.createSCIMCompatibleMapper().
+    JsonNode postPatchResource = JsonUtils.getObjectReader().
         readTree("{  \n" +
             "  \"schemas\":[  \n" +
             "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
@@ -319,10 +320,10 @@ public class PatchOpTestCase
 
     assertEquals(constructed, patchOp);
 
-    String serialized = SchemaUtils.createSCIMCompatibleMapper().
+    String serialized = JsonUtils.getObjectWriter().
         writeValueAsString(constructed);
-    assertEquals(SchemaUtils.createSCIMCompatibleMapper().readValue(
-        serialized, PatchRequest.class), constructed);
+    assertEquals(JsonUtils.getObjectReader().forType(PatchRequest.class).
+        readValue(serialized), constructed);
 
   }
 
