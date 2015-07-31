@@ -221,9 +221,10 @@ public class SimpleSearchResults<T extends ScimResource>
         resultsToReturn = resources.subList(startIndex - 1, resources.size());
       }
     }
-    if(count != null && !resources.isEmpty())
+    if(count != null && !resultsToReturn.isEmpty())
     {
-      resultsToReturn = resources.subList(0, Math.min(count, resources.size()));
+      resultsToReturn = resultsToReturn.subList(
+          0, Math.min(count, resultsToReturn.size()));
     }
     os.totalResults(resources.size());
     if(startIndex != null || count != null)
