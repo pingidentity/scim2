@@ -492,19 +492,19 @@ public class JsonUtilsTestCase
         new GenericScimResource(getTestResource());
 
     List<String> stringResult = gso.getValues(
-        "string",
+        "String",
         String.class);
     assertEquals(stringResult.size(), 1);
     assertEquals(stringResult.get(0), "string");
 
     List<Integer> intResult = gso.getValues(
-        "integer",
+        "integeR",
         Integer.class);
     assertEquals(intResult.size(), 1);
     assertEquals(intResult.get(0), Integer.valueOf(1));
 
     List<Double> decimalResult = gso.getValues(
-        "decimal",
+        "deCimal",
         Double.class);
     assertEquals(decimalResult.size(), 1);
     assertEquals(decimalResult.get(0), Double.valueOf(1.582));
@@ -562,7 +562,7 @@ public class JsonUtilsTestCase
     assertEquals(stringResult.get(0), "string");
 
     stringResult = gso.getValues(
-        "array[id eq \"1\"].complex.array[id eq \"1\"].string",
+        "array[id eq \"1\"].complex.arRay[id eq \"1\"].stRing",
         String.class);
     assertEquals(stringResult.size(), 1);
     assertEquals(stringResult.get(0), "string");
@@ -601,7 +601,7 @@ public class JsonUtilsTestCase
     assertEquals(mapResult.get(0).size(), 9);
 
     mapResult = gso.getValues(
-        "array[id eq \"2\"].complex",
+        "aRray[ID eq \"2\"].cOmplex",
         Map.class);
     assertEquals(mapResult.size(), 1);
     assertEquals(mapResult.get(0).size(), 9);

@@ -48,10 +48,11 @@ public class SearchRequestTestCase
             "     \"schemas\": [" +
             "\"urn:ietf:params:scim:api:messages:2.0:SearchRequest\"],\n" +
             "     \"attributes\": [\"displayName\", \"userName\"],\n" +
-            "     \"filter\":\n" +
+            // Test case insensitivity
+            "     \"Filter\":\n" +
             "       \"displayName sw \\\"smith\\\"\",\n" +
             "     \"startIndex\": 1,\n" +
-            "     \"count\": 10\n" +
+            "     \"counT\": 10\n" +
             "}");
 
     assertEquals(searchRequest.getAttributes(),

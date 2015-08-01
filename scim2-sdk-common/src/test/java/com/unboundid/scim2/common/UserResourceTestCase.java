@@ -48,10 +48,12 @@ public class UserResourceTestCase
         "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
         "  \"externalId\":\"701984\",\n" +
         "  \"userName\":\"bjensen@example.com\",\n" +
-        "  \"name\":{  \n" +
+        // Test case insensitivity
+        "  \"Name\":{  \n" +
         "    \"formatted\":\"Ms. Barbara J Jensen III\",\n" +
         "    \"familyName\":\"Jensen\",\n" +
-        "    \"givenName\":\"Barbara\",\n" +
+        // Test case insensitivity
+        "    \"GivenName\":\"Barbara\",\n" +
         "    \"middleName\":\"Jane\",\n" +
         "    \"honorificPrefix\":\"Ms.\",\n" +
         "    \"honorificSuffix\":\"III\"\n" +
@@ -61,7 +63,8 @@ public class UserResourceTestCase
         "  \"profileUrl\":\"https://login.example.com/bjensen\",\n" +
         "  \"emails\":[  \n" +
         "    {  \n" +
-        "      \"value\":\"bjensen@example.com\",\n" +
+        // Test case insensitivity
+        "      \"Value\":\"bjensen@example.com\",\n" +
         "      \"type\":\"work\",\n" +
         "      \"primary\":true\n" +
         "    },\n" +
@@ -209,6 +212,12 @@ public class UserResourceTestCase
     UserResource userResource =
         JsonUtils.getObjectReader().forType(UserResource.class).readValue(
             fullRepresentation);
+
+      assertNotNull(userResource.getName());
+      assertNotNull(userResource.getName().getGivenName());
+      assertNotNull(userResource.getEmails());
+      assertNotNull(userResource.getEmails().get(0).getValue());
+      assertNotNull(userResource.getEmails().get(1).getValue());
 
     EnterpriseUserExtension enterpriseUserExtension =
         userResource.getExtensionValue(

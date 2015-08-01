@@ -51,9 +51,11 @@ public class ListResponseTestCase
             "  \"schemas\":[  \n" +
             "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n" +
             "  ],\n" +
-            "  \"totalResults\":2,\n" +
+                // Test case-insensitivity
+            "  \"totalresults\":2,\n" +
             "  \"startIndex\":1,\n" +
-            "  \"itemsPerPage\":3,\n" +
+                // Test case-insensitivity
+            "  \"ItemsPerPage\":3,\n" +
             "  \"Resources\":[  \n" +
             "    {  \n" +
             "      \"userName\":\"bjensen\"\n" +

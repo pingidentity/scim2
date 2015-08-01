@@ -61,7 +61,7 @@ public class GenericScimResourceObjectTest
             "    \"meta\": {\n" +
             "        \"created\": \"2015-02-27T11:28:39Z\",\n" +
             "        \"lastModified\": \"2015-02-27T11:29:39Z\",\n" +
-            "        \"location\": \"http://here/user\",\n" +
+            "        \"locAtion\": \"http://here/user\",\n" +
             "        \"resourceType\": \"some resource type\",\n" +
             "        \"version\": \"1.0\"\n" +
             "    },\n" +
@@ -72,7 +72,7 @@ public class GenericScimResourceObjectTest
             "    },\n" +
             "    \"shoeSize\" : \"12W\",\n" +
             "    \"password\": \"user:password\",\n" +
-            "    \"schemas\": [" +
+            "    \"Schemas\": [" +
             "    \"urn:unboundid:schemas:baseSchema\", " +
             "    \"urn:unboundid:schemas:favoriteColor\"" +
             "    ],\n" +
