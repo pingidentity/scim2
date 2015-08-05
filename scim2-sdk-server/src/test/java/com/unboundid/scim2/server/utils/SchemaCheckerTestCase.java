@@ -1654,25 +1654,25 @@ public class SchemaCheckerTestCase
     catch(BadRequestException ex)
     {
       caughtException = ex;
-      Assert.assertEquals(expectedMsg, caughtException.getMessage());
+      Assert.assertEquals(caughtException.getMessage(), expectedMsg);
     }
 
     if (!syntaxIssues.isEmpty())
     {
       Assert.assertNotNull(caughtException);
-      Assert.assertEquals(BadRequestException.INVALID_SYNTAX,
-          caughtException.getScimError().getScimType());
+      Assert.assertEquals(caughtException.getScimError().getScimType(),
+          BadRequestException.INVALID_SYNTAX);
     } else if (!mutabilityIssues.isEmpty())
     {
       Assert.assertNotNull(caughtException);
-      Assert.assertEquals(BadRequestException.MUTABILITY,
-          caughtException.getScimError().getScimType());
+      Assert.assertEquals(caughtException.getScimError().getScimType(),
+          BadRequestException.MUTABILITY);
     }
     else if (!pathIssues.isEmpty())
     {
       Assert.assertNotNull(caughtException);
-      Assert.assertEquals(BadRequestException.INVALID_PATH,
-          caughtException.getScimError().getScimType());
+      Assert.assertEquals(caughtException.getScimError().getScimType(),
+          BadRequestException.INVALID_PATH);
     } else
     {
       Assert.assertNull(caughtException, "Bad exception thrown");

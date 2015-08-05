@@ -95,7 +95,7 @@ public class SchemaChecker
     /**
      * Throws an exception if there are schema validation errors.  The exception
      * will contain all of the syntax errors, mutability errors or path issues
-     * (in that or of precedence.  The exception message will be the content
+     * (in that order of precedence).  The exception message will be the content
      * of baseExceptionMessage followed by a space delimited list of all of the
      * issues of the type (syntax, mutability, or path) being reported.
      *
@@ -129,21 +129,15 @@ public class SchemaChecker
     private String getErrorString(final String errorMessage,
                                   final List<String> issues)
     {
-      if((issues == null) || issues.isEmpty())
+      if ((issues == null) || issues.isEmpty())
       {
         return null;
       }
 
-      StringBuilder builder = new StringBuilder();
-      builder.append(errorMessage);
-
-      for (String issue : issues)
-      {
-        builder.append(" ");
-        builder.append(issue);
-      }
-
-      return builder.toString();
+      StringBuilder errorStringBuilder = new StringBuilder(errorMessage);
+      errorStringBuilder.append(" ");
+      errorStringBuilder.append(StaticUtils.collectionToString(issues, " "));
+      return errorStringBuilder.toString();
     }
   }
 
