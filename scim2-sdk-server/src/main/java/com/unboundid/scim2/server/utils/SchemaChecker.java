@@ -93,9 +93,11 @@ public class SchemaChecker
     }
 
     /**
-     * Throws an exception if there are schema validation errors.  The
-     * Exception message will be the content of baseExceptionMessage followed
-     * by a space delimited list of all of the issues reported.
+     * Throws an exception if there are schema validation errors.  The exception
+     * will contain all of the syntax errors, mutability errors or path issues
+     * (in that or of precedence.  The exception message will be the content
+     * of baseExceptionMessage followed by a space delimited list of all of the
+     * issues of the type (syntax, mutability, or path) being reported.
      *
      * @param baseExceptionMessage the exception text to append the issues
      *                             to.
