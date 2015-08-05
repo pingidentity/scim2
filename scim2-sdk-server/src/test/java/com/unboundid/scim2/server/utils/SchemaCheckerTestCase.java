@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.AttributeDefinition;
@@ -29,11 +30,14 @@ import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -1620,6 +1624,112 @@ public class SchemaCheckerTestCase
         results.getMutabilityIssues().toString());
     assertTrue(containsIssueWith(results.getMutabilityIssues(), "immutable"));
   }
+
+  /**
+   * Test that the proper exceptions are thrown if errors are found during
+   * schema checking.  This test uses a data provider for its data, and uses
+   * reflection to set private fields of the results to make the test simpler.
+   *
+   * @param baseMsg The base message that will be used.
+   * @param expectedMsg The expected exception message.
+   * @param syntaxIssues A list of syntax issues.
+   * @param mutabilityIssues A list of mutability issues.
+   * @param pathIssues A list of path issues.
+   * @throws Exception throw in case of error.
+   */
+  @Test(dataProvider="schemaResultsProvider")
+  public void testSchemaResultExceptions(String baseMsg, String expectedMsg,
+    List<String> syntaxIssues, List<String> mutabilityIssues,
+    List<String> pathIssues) throws Exception
+  {
+    BadRequestException caughtException = null;
+
+    SchemaChecker.Results results =
+        getResults(syntaxIssues, mutabilityIssues, pathIssues);
+
+    try
+    {
+      results.throwSchemaExceptions(baseMsg);
+    }
+    catch(BadRequestException ex)
+    {
+      caughtException = ex;
+      Assert.assertEquals(expectedMsg, caughtException.getMessage());
+    }
+
+    if (!syntaxIssues.isEmpty())
+    {
+      Assert.assertNotNull(caughtException);
+      Assert.assertEquals(BadRequestException.INVALID_SYNTAX,
+          caughtException.getScimError().getScimType());
+    } else if (!mutabilityIssues.isEmpty())
+    {
+      Assert.assertNotNull(caughtException);
+      Assert.assertEquals(BadRequestException.MUTABILITY,
+          caughtException.getScimError().getScimType());
+    }
+    else if (!pathIssues.isEmpty())
+    {
+      Assert.assertNotNull(caughtException);
+      Assert.assertEquals(BadRequestException.INVALID_PATH,
+          caughtException.getScimError().getScimType());
+    } else
+    {
+      Assert.assertNull(caughtException, "Bad exception thrown");
+    }
+  }
+
+  @DataProvider(name="schemaResultsProvider")
+  private Object[][] getResultData()
+  {
+    return new Object[][] {
+        {"TestMessage", "TestMessage syntaxIssueOne syntaxIssueTwo",
+            Arrays.asList("syntaxIssueOne", "syntaxIssueTwo"),
+            Collections.emptyList(), Collections.emptyList()},
+        {"TestMessage", "TestMessage mutabilityIssueOne mutabilityIssueTwo",
+            Collections.emptyList(),
+            Arrays.asList("mutabilityIssueOne", "mutabilityIssueTwo"),
+            Collections.emptyList()},
+        {"TestMessage", "TestMessage pathIssueOne pathIssueTwo",
+            Collections.emptyList(), Collections.emptyList(),
+            Arrays.asList("pathIssueOne", "pathIssueTwo")},
+        {"TestMessage", "TestMessage syntaxIssueOne syntaxIssueTwo",
+            Arrays.asList("syntaxIssueOne", "syntaxIssueTwo"),
+            Arrays.asList("mutabilityIssueOne", "mutabilityIssueTwo"),
+            Arrays.asList("pathIssueOne", "pathIssueTwo")},
+        {"TestMessage", "TestMessage mutabilityIssueOne",
+            Collections.emptyList(),
+            Arrays.asList("mutabilityIssueOne"),
+            Arrays.asList("pathIssueOne", "pathIssueTwo")},
+        {"TestMessage", null,
+            Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList()}
+    };
+  }
+
+  private SchemaChecker.Results getResults(List<String> syntaxIssues,
+      List<String> mutabilityIssues, List<String> pathIssues) throws Exception
+  {
+    SchemaChecker.Results results = new SchemaChecker.Results();
+
+    Field syntaxField =
+        SchemaChecker.Results.class.getDeclaredField("syntaxIssues");
+    syntaxField.setAccessible(true);
+    syntaxField.set(results, syntaxIssues);
+
+    Field pathField =
+        SchemaChecker.Results.class.getDeclaredField("pathIssues");
+    pathField.setAccessible(true);
+    pathField.set(results, pathIssues);
+
+    Field mutabilityField =
+        SchemaChecker.Results.class.getDeclaredField("mutabilityIssues");
+    mutabilityField.setAccessible(true);
+    mutabilityField.set(results, mutabilityIssues);
+
+    return results;
+  }
+
 
   private boolean containsIssueWith(Collection<String> issues, String issueText)
   {
