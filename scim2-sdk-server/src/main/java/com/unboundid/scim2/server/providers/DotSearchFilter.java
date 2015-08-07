@@ -18,7 +18,7 @@
 package com.unboundid.scim2.server.providers;
 
 import com.unboundid.scim2.common.messages.SearchRequest;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
 import javax.ws.rs.HttpMethod;
@@ -63,8 +63,8 @@ public class DotSearchFilter implements ContainerRequestFilter
                 MediaType.APPLICATION_JSON_TYPE)))
     {
       SearchRequest searchRequest =
-          SchemaUtils.createSCIMCompatibleMapper().readValue(
-              requestContext.getEntityStream(), SearchRequest.class);
+          JsonUtils.getObjectReader().forType(SearchRequest.class).readValue(
+              requestContext.getEntityStream());
       UriBuilder builder = requestContext.getUriInfo().getBaseUriBuilder();
       List<PathSegment> pathSegments =
           requestContext.getUriInfo().getPathSegments();

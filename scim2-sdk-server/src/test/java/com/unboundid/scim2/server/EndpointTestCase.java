@@ -18,6 +18,7 @@
 package com.unboundid.scim2.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.Meta;
@@ -34,10 +35,10 @@ import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.UserResource;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.server.providers.DotSearchFilter;
 import com.unboundid.scim2.server.providers.ScimExceptionMapper;
-import com.unboundid.scim2.server.providers.ScimJacksonJsonProvider;
 import com.unboundid.scim2.server.providers.RuntimeExceptionMapper;
 import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
@@ -83,7 +84,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     // Exception Mappers
     config.register(ScimExceptionMapper.class);
     config.register(RuntimeExceptionMapper.class);
-    config.register(ScimJacksonJsonProvider.class);
+    config.register(new JacksonJsonProvider(JsonUtils.createObjectMapper()));
 
     // Filters
     config.register(DotSearchFilter.class);

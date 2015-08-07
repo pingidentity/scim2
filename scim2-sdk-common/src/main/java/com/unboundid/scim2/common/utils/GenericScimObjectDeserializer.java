@@ -20,7 +20,6 @@ package com.unboundid.scim2.common.utils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.GenericScimResource;
 
@@ -39,8 +38,7 @@ public class GenericScimObjectDeserializer
   public GenericScimResource deserialize(final JsonParser jp,
       final DeserializationContext ctxt) throws IOException
   {
-    ObjectMapper objectMapper = SchemaUtils.createSCIMCompatibleMapper();
-    ObjectNode objectNode = objectMapper.readValue(jp, ObjectNode.class);
+    ObjectNode objectNode = JsonUtils.getObjectReader().readTree(jp);
     return new GenericScimResource(objectNode);
   }
 }

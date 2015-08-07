@@ -69,25 +69,13 @@ public class SimpleSearchResults<T extends ScimResource>
         new ResourcePreparer<ScimResource>(resourceType, uriInfo);
     this.resources = new LinkedList<ScimResource>();
 
-    String filterString = null;
-    String startIndexString = null;
-    String countString = null;
-    String sortByString = null;
-    String sortOrderString = null;
-
-    // https://tools.ietf.org/html/draft-ietf-scim-api-19#section-4 says
-    // query params should be ignored for these endpoints.
-    if(!resourceType.getEndpoint().equals(SERVICE_PROVIDER_CONFIG_ENDPOINT) &&
-        !resourceType.getEndpoint().equals(RESOURCE_TYPES_ENDPOINT) &&
-            !resourceType.getEndpoint().equals(SCHEMAS_ENDPOINT))
-    {
-      MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-      filterString = queryParams.getFirst(QUERY_PARAMETER_FILTER);
-      startIndexString = queryParams.getFirst(QUERY_PARAMETER_PAGE_START_INDEX);
-      countString = queryParams.getFirst(QUERY_PARAMETER_PAGE_SIZE);
-      sortByString = queryParams.getFirst(QUERY_PARAMETER_SORT_BY);
-      sortOrderString = queryParams.getFirst(QUERY_PARAMETER_SORT_ORDER);
-    }
+    MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+    String filterString = queryParams.getFirst(QUERY_PARAMETER_FILTER);
+    String startIndexString = queryParams.getFirst(
+        QUERY_PARAMETER_PAGE_START_INDEX);
+    String countString = queryParams.getFirst(QUERY_PARAMETER_PAGE_SIZE);
+    String sortByString = queryParams.getFirst(QUERY_PARAMETER_SORT_BY);
+    String  sortOrderString = queryParams.getFirst(QUERY_PARAMETER_SORT_ORDER);
 
     if(filterString != null)
     {

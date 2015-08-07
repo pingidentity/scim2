@@ -23,7 +23,7 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.SchemaResource;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -69,12 +69,12 @@ public class SchemaAwareFilterEvaluatorTestCase
         "test", "test").setCoreSchema(schema).build();
 
     ObjectNode node =
-        (ObjectNode) SchemaUtils.createSCIMCompatibleMapper().readTree(
+        (ObjectNode) JsonUtils.getObjectReader().readTree(
             "{  \n" +
-            "  \"id\":\"test\",\n" +
-            "  \"insensitive\":\"HeRe\",\n" +
-            "  \"sensitive\":\"hErE\"\n" +
-            "}");
+                "  \"id\":\"test\",\n" +
+                "  \"insensitive\":\"HeRe\",\n" +
+                "  \"sensitive\":\"hErE\"\n" +
+                "}");
     testResource = new GenericScimResource(node);
   }
 

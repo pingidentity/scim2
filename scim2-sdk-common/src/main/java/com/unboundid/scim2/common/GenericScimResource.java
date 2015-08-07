@@ -21,11 +21,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.GenericScimObjectDeserializer;
 import com.unboundid.scim2.common.utils.GenericScimObjectSerializer;
 import com.unboundid.scim2.common.utils.JsonUtils;
@@ -70,7 +68,7 @@ public final class GenericScimResource implements ScimResource
    */
   public GenericScimResource()
   {
-    this.objectNode = JsonNodeFactory.instance.objectNode();
+    this.objectNode = JsonUtils.getJsonNodeFactory().objectNode();
   }
 
   /**
@@ -287,7 +285,7 @@ public final class GenericScimResource implements ScimResource
       }
       node = node.elements().next();
     }
-    return SchemaUtils.createSCIMCompatibleMapper().treeToValue(
+    return JsonUtils.getObjectReader().treeToValue(
         node, cls);
   }
 
@@ -333,15 +331,13 @@ public final class GenericScimResource implements ScimResource
         Iterator<JsonNode> iter = node.elements();
         while (iter.hasNext())
         {
-          objects.add(
-              SchemaUtils.createSCIMCompatibleMapper().treeToValue(
+          objects.add(JsonUtils.getObjectReader().treeToValue(
                   iter.next(), cls));
         }
       }
       else
       {
-        objects.add(
-            SchemaUtils.createSCIMCompatibleMapper().treeToValue(node, cls));
+        objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
       }
     }
     return objects;
@@ -376,7 +372,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
+        JsonUtils.valueToTree(object);
     JsonUtils.replaceValue(path, objectNode, newObjectNode);
     return this;
   }
@@ -412,7 +408,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
+        JsonUtils.valueToTree(object);
     JsonUtils.replaceValue(path, objectNode, newObjectNode);
     return this;
   }
@@ -447,7 +443,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(object);
+        JsonUtils.valueToTree(object);
     JsonUtils.replaceValue(path, objectNode, newObjectNode);
     return this;
   }
@@ -481,7 +477,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+        JsonUtils.valueToTree(objects);
     JsonUtils.addValue(path, objectNode, newObjectNode);
     return this;
   }
@@ -515,7 +511,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     JsonNode newObjectNode =
-        SchemaUtils.createSCIMCompatibleMapper().valueToTree(objects);
+        JsonUtils.valueToTree(objects);
     JsonUtils.addValue(path, objectNode, newObjectNode);
     return this;
   }
@@ -568,8 +564,8 @@ public final class GenericScimResource implements ScimResource
   {
     try
     {
-      return SchemaUtils.createSCIMCompatibleMapper().
-          writerWithDefaultPrettyPrinter().writeValueAsString(this);
+      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
+          writeValueAsString(this);
     }
     catch (JsonProcessingException e)
     {

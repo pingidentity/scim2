@@ -20,12 +20,10 @@ package com.unboundid.scim2.common;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -126,7 +124,7 @@ public class JsonUtilsTestCase
   private ObjectNode getTestResource() throws IOException
   {
 
-    return (ObjectNode)SchemaUtils.createSCIMCompatibleMapper().
+    return (ObjectNode) JsonUtils.getObjectReader().
         readTree("{  \n" +
             "  \"string\":\"string\",\n" +
             "  \"integer\":1,\n" +
@@ -494,19 +492,19 @@ public class JsonUtilsTestCase
         new GenericScimResource(getTestResource());
 
     List<String> stringResult = gso.getValues(
-        "string",
+        "String",
         String.class);
     assertEquals(stringResult.size(), 1);
     assertEquals(stringResult.get(0), "string");
 
     List<Integer> intResult = gso.getValues(
-        "integer",
+        "integeR",
         Integer.class);
     assertEquals(intResult.size(), 1);
     assertEquals(intResult.get(0), Integer.valueOf(1));
 
     List<Double> decimalResult = gso.getValues(
-        "decimal",
+        "deCimal",
         Double.class);
     assertEquals(decimalResult.size(), 1);
     assertEquals(decimalResult.get(0), Double.valueOf(1.582));
@@ -564,7 +562,7 @@ public class JsonUtilsTestCase
     assertEquals(stringResult.get(0), "string");
 
     stringResult = gso.getValues(
-        "array[id eq \"1\"].complex.array[id eq \"1\"].string",
+        "array[id eq \"1\"].complex.arRay[id eq \"1\"].stRing",
         String.class);
     assertEquals(stringResult.size(), 1);
     assertEquals(stringResult.get(0), "string");
@@ -603,7 +601,7 @@ public class JsonUtilsTestCase
     assertEquals(mapResult.get(0).size(), 9);
 
     mapResult = gso.getValues(
-        "array[id eq \"2\"].complex",
+        "aRray[ID eq \"2\"].cOmplex",
         Map.class);
     assertEquals(mapResult.size(), 1);
     assertEquals(mapResult.get(0).size(), 9);
@@ -725,7 +723,7 @@ public class JsonUtilsTestCase
   @Test
   public void testAddReplaceRoot() throws IOException, ScimException
   {
-    ObjectNode resource = (ObjectNode)SchemaUtils.createSCIMCompatibleMapper().
+    ObjectNode resource = (ObjectNode) JsonUtils.getObjectReader().
         readTree("{\n" +
             "    \"old\" : \"old\",\n" +
             "    \"existing\" : \"existing\",\n" +
@@ -752,7 +750,7 @@ public class JsonUtilsTestCase
             "    }\n" +
             "}");
 
-    JsonNode value = SchemaUtils.createSCIMCompatibleMapper().
+    JsonNode value = JsonUtils.getObjectReader().
         readTree("{\n" +
             "    \"new\" : \"new\",\n" +
             "    \"existing\" : \"newValue\",\n" +
@@ -776,7 +774,7 @@ public class JsonUtilsTestCase
             "    }\n" +
             "}");
 
-    JsonNode expectedAddResult = SchemaUtils.createSCIMCompatibleMapper().
+    JsonNode expectedAddResult = JsonUtils.getObjectReader().
         readTree("{\n" +
             "    \"old\" : \"old\",\n" +
             "    \"new\" : \"new\",\n" +
@@ -815,7 +813,7 @@ public class JsonUtilsTestCase
 
     assertEquals(resource, expectedAddResult);
 
-    JsonNode expectedReplaceResult = SchemaUtils.createSCIMCompatibleMapper().
+    JsonNode expectedReplaceResult = JsonUtils.getObjectReader().
         readTree("{\n" +
             "    \"old\" : \"old\",\n" +
             "    \"new\" : \"new\",\n" +
@@ -1024,9 +1022,9 @@ public class JsonUtilsTestCase
   public void testPathExists(String jsonString, Path path, boolean shouldExist)
       throws Exception
   {
-    ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
     GenericScimResource resource =
-        mapper.readValue(jsonString, GenericScimResource.class);
+        JsonUtils.getObjectReader().forType(
+            GenericScimResource.class).readValue(jsonString);
     Assert.assertEquals(
         JsonUtils.pathExists(path, resource.getObjectNode()), shouldExist);
   }

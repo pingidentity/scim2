@@ -17,7 +17,13 @@
 
 package com.unboundid.scim2.common.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -46,6 +52,7 @@ import java.util.logging.Level;
  */
 public class JsonUtils
 {
+  private static final ObjectMapper SDK_OBJECT_MAPPER = createObjectMapper();
   private abstract static class NodeVisitor
   {
     /**
@@ -84,7 +91,7 @@ public class JsonUtils
                           final boolean removeMatching)
         throws ScimException
     {
-      ArrayNode matchingArray = JsonNodeFactory.instance.arrayNode();
+      ArrayNode matchingArray = getJsonNodeFactory().arrayNode();
       Iterator<JsonNode> i = array.elements();
       while(i.hasNext())
       {
@@ -211,7 +218,7 @@ public class JsonUtils
       if(node.isMissingNode() || node.isNull())
       {
         // Create the missing node as an JSON object node.
-        ObjectNode newObjectNode = JsonNodeFactory.instance.objectNode();
+        ObjectNode newObjectNode = getJsonNodeFactory().objectNode();
         parent.set(element.getAttribute(), newObjectNode);
         return newObjectNode;
       }
@@ -1057,5 +1064,75 @@ public class JsonUtils
     {
       nodeVisitor.visitLeafNode(node, element);
     }
+  }
+
+  /**
+   * Factory method for constructing a SCIM compatible Jackson
+   * {@link ObjectReader} with default settings. Note that the resulting
+   * instance is NOT usable as is, without defining expected value type with
+   * ObjectReader.forType.
+   *
+   * @return A Jackson {@link ObjectReader} with default settings.
+   */
+  public static ObjectReader getObjectReader()
+  {
+    return SDK_OBJECT_MAPPER.reader();
+  }
+
+  /**
+   * Factory method for constructing a SCIM compatible Jackson
+   * {@link ObjectWriter} with default settings.
+   *
+   * @return A Jackson {@link ObjectWriter} with default settings.
+   */
+  public static ObjectWriter getObjectWriter()
+  {
+    return SDK_OBJECT_MAPPER.writer();
+  }
+
+  /**
+   * Retrieve the SCIM compatible Jackson JsonNodeFactory that may be used
+   * to create tree model JsonNode instances.
+   *
+   * @return The Jackson JsonNodeFactory.
+   */
+  public static JsonNodeFactory getJsonNodeFactory()
+  {
+    return SDK_OBJECT_MAPPER.getNodeFactory();
+  }
+
+  /**
+   * Utility method to convert a POJO to Jackson tree model. This behaves
+   * exactly the same as Jackson's ObjectMapper.valueToTree.
+   *
+   * @param <T> Actual node type.
+   * @param fromValue POJO to convert.
+   * @return converted JsonNode.
+   */
+  public static <T extends JsonNode> T valueToTree(final Object fromValue)
+  {
+    return SDK_OBJECT_MAPPER.valueToTree(fromValue);
+  }
+
+  /**
+   * Creates an configured SCIM compatible Jackson ObjectMapper. Creating new
+   * ObjectMapper instances are expensive so instances should be shared if
+   * possible. Alternatively, consider using one of the getObjectReader,
+   * getObjectWriter, getJsonNodeFactory, or valueToTree methods which uses the
+   * SDK's ObjectMapper singleton.
+   *
+   * @return an Object Mapper with the correct options set for seirializing
+   *     and deserializing SCIM JSON objects.
+   */
+  public static ObjectMapper createObjectMapper()
+  {
+    ObjectMapper mapper = new ObjectMapper();
+
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+    mapper.setNodeFactory(new ScimJsonNodeFactory());
+    return mapper;
   }
 }

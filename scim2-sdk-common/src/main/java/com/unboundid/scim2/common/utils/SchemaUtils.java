@@ -17,10 +17,7 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
@@ -40,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Stack;
 
@@ -67,6 +65,13 @@ public class SchemaUtils
    * The attribute definition for the SCIM 2.0 standard meta attribute.
    */
   public static final AttributeDefinition META_ATTRIBUTE_DEFINITION;
+
+  /**
+   * The collection of attribute definitions for SCIM 2.0 standard common
+   * attributes: schemas, id, externalId, and meta.
+   */
+  public static final Collection<AttributeDefinition>
+      COMMON_ATTRIBUTE_DEFINITIONS;
 
   static
   {
@@ -110,6 +115,11 @@ public class SchemaUtils
       throw new RuntimeException(e);
     }
     META_ATTRIBUTE_DEFINITION = builder.build();
+
+    COMMON_ATTRIBUTE_DEFINITIONS =
+        Collections.unmodifiableCollection(Arrays.asList(
+            SCHEMAS_ATTRIBUTE_DEFINITION, ID_ATTRIBUTE_DEFINITION,
+            EXTERNAL_ID_ATTRIBUTE_DEFINITION, META_ATTRIBUTE_DEFINITION));
   }
 
   /**
@@ -608,24 +618,6 @@ public class SchemaUtils
     return (cls.isArray() && byte[].class != cls) ||
         Collection.class.isAssignableFrom(cls);
 
-  }
-
-  /**
-   * Creates an object mapper suitable for serializing and deserializing
-   * Scim objects derived from ether this object, or from GenericScimObject.
-   *
-   * @return an Object Mapper with the correct options set for seirializing
-   *     and deserializing SCIM JSON objects.
-   */
-  public static ObjectMapper createSCIMCompatibleMapper()
-  {
-    ObjectMapper mapper = new ObjectMapper();
-
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-
-    return mapper;
   }
 
   /**

@@ -20,6 +20,7 @@ package com.unboundid.scim2.server.resources;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.filters.Filter;
+import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
@@ -28,7 +29,6 @@ import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.utils.ResourcePreparer;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
 import com.unboundid.scim2.server.utils.SchemaAwareFilterEvaluator;
-import com.unboundid.scim2.server.utils.SimpleSearchResults;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -38,6 +38,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -75,7 +76,7 @@ public class ResourceTypesEndpoint
    */
   @GET
   @Produces(MEDIA_TYPE_SCIM)
-  public SimpleSearchResults<ResourceTypeResource> search(
+  public ListResponse<GenericScimResource> search(
       @QueryParam(QUERY_PARAMETER_FILTER) final String filterString,
       @Context final UriInfo uriInfo)
       throws ScimException
@@ -85,14 +86,23 @@ public class ResourceTypesEndpoint
       throw new ForbiddenException("Filtering not allowed");
     }
 
-    SimpleSearchResults<ResourceTypeResource> results =
-        new SimpleSearchResults<ResourceTypeResource>(
+    // https://tools.ietf.org/html/draft-ietf-scim-api-19#section-4 says
+    // query params should be ignored for discovery endpoints so we can't use
+    // SimpleSearchResults.
+    ResourcePreparer<GenericScimResource> preparer =
+        new ResourcePreparer<GenericScimResource>(
             RESOURCE_TYPE_DEFINITION, uriInfo);
-    for(ResourceTypeResource resourceType : getResourceTypes())
+    Collection<ResourceTypeResource> resourceTypes = getResourceTypes();
+    Collection<GenericScimResource> preparedResources =
+        new ArrayList<GenericScimResource>(resourceTypes.size());
+    for(ResourceTypeResource resourceType : resourceTypes)
     {
-      results.add(resourceType);
+      GenericScimResource preparedResource =
+          resourceType.asGenericScimResource();
+      preparer.setResourceTypeAndLocation(preparedResource);
+      preparedResources.add(preparedResource);
     }
-    return results;
+    return new ListResponse<GenericScimResource>(preparedResources);
   }
 
   /**
@@ -113,15 +123,16 @@ public class ResourceTypesEndpoint
     Filter filter = Filter.or(Filter.eq("id", id), Filter.eq("name", id));
     SchemaAwareFilterEvaluator filterEvaluator =
         new SchemaAwareFilterEvaluator(RESOURCE_TYPE_DEFINITION);
+    ResourcePreparer<GenericScimResource> resourcePreparer =
+        new ResourcePreparer<GenericScimResource>(
+            RESOURCE_TYPE_DEFINITION, uriInfo);
     for(ResourceTypeResource resourceType : getResourceTypes())
     {
       GenericScimResource resource = resourceType.asGenericScimResource();
       if(filter.visit(filterEvaluator, resource.getObjectNode()))
       {
-        ResourcePreparer<GenericScimResource> resourcePreparer =
-            new ResourcePreparer<GenericScimResource>(
-                RESOURCE_TYPE_DEFINITION, uriInfo);
-        return resourcePreparer.trimRetrievedResource(resource);
+        resourcePreparer.setResourceTypeAndLocation(resource);
+        return resource;
       }
     }
 

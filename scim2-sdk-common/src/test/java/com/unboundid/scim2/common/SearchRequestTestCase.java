@@ -20,7 +20,7 @@ package com.unboundid.scim2.common;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
 import org.testng.annotations.Test;
 
@@ -42,16 +42,18 @@ public class SearchRequestTestCase
   @Test
   public void testSearchRequest() throws IOException, ScimException
   {
-    SearchRequest searchRequest = SchemaUtils.createSCIMCompatibleMapper().
+    SearchRequest searchRequest = JsonUtils.getObjectReader().
+        forType(SearchRequest.class).
         readValue("{\n" +
             "     \"schemas\": [" +
             "\"urn:ietf:params:scim:api:messages:2.0:SearchRequest\"],\n" +
             "     \"attributes\": [\"displayName\", \"userName\"],\n" +
-            "     \"filter\":\n" +
+            // Test case insensitivity
+            "     \"Filter\":\n" +
             "       \"displayName sw \\\"smith\\\"\",\n" +
             "     \"startIndex\": 1,\n" +
-            "     \"count\": 10\n" +
-            "}", SearchRequest.class);
+            "     \"counT\": 10\n" +
+            "}");
 
     assertEquals(searchRequest.getAttributes(),
         StaticUtils.arrayToSet("displayName", "userName"));
@@ -62,14 +64,15 @@ public class SearchRequestTestCase
     assertEquals(searchRequest.getStartIndex(), new Integer(1));
     assertEquals(searchRequest.getCount(), new Integer(10));
 
-    searchRequest = SchemaUtils.createSCIMCompatibleMapper().
+    searchRequest = JsonUtils.getObjectReader().
+        forType(SearchRequest.class).
         readValue("{\n" +
             "     \"schemas\": [" +
             "\"urn:ietf:params:scim:api:messages:2.0:SearchRequest\"],\n" +
             "     \"excludedAttributes\": [\"displayName\", \"userName\"],\n" +
             "     \"sortBy\": \"name.lastName\",\n" +
             "     \"sortOrder\": \"descending\"\n" +
-            "}", SearchRequest.class);
+            "}");
 
     assertEquals(searchRequest.getAttributes(), null);
     assertEquals(searchRequest.getExcludedAttributes(),
@@ -86,9 +89,9 @@ public class SearchRequestTestCase
         "userName eq \"test\"", "name.lastName",
         SortOrder.ASCENDING, 5, 100);
 
-    String serialized = SchemaUtils.createSCIMCompatibleMapper().
+    String serialized = JsonUtils.getObjectWriter().
         writeValueAsString(searchRequest);
-    assertEquals(SchemaUtils.createSCIMCompatibleMapper().readValue(
-        serialized, SearchRequest.class), searchRequest);
+    assertEquals(JsonUtils.getObjectReader().forType(SearchRequest.class).
+        readValue(serialized), searchRequest);
   }
 }

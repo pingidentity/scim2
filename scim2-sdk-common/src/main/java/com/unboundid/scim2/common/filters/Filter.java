@@ -17,12 +17,12 @@
 
 package com.unboundid.scim2.common.filters;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.Parser;
 
 import java.util.ArrayList;
@@ -205,7 +205,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -220,7 +220,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -235,7 +235,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -250,7 +250,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -265,7 +265,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(filterValue));
+        JsonUtils.getJsonNodeFactory().textNode(filterValue));
   }
 
   /**
@@ -281,7 +281,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.booleanNode(filterValue));
+        JsonUtils.getJsonNodeFactory().booleanNode(filterValue));
   }
 
   /**
@@ -296,7 +296,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.binaryNode(filterValue));
+        JsonUtils.getJsonNodeFactory().binaryNode(filterValue));
   }
 
   /**
@@ -311,7 +311,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(
+        JsonUtils.getJsonNodeFactory().textNode(
             ISO8601Utils.format(filterValue)));
   }
 
@@ -341,7 +341,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -356,7 +356,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -371,7 +371,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -386,7 +386,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -401,7 +401,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(filterValue));
+        JsonUtils.getJsonNodeFactory().textNode(filterValue));
   }
 
   /**
@@ -417,7 +417,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.booleanNode(filterValue));
+        JsonUtils.getJsonNodeFactory().booleanNode(filterValue));
   }
 
   /**
@@ -432,7 +432,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.binaryNode(filterValue));
+        JsonUtils.getJsonNodeFactory().binaryNode(filterValue));
   }
 
   /**
@@ -447,7 +447,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(
+        JsonUtils.getJsonNodeFactory().textNode(
             ISO8601Utils.format(filterValue)));
   }
 
@@ -476,7 +476,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new ContainsFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(filterValue));
+        JsonUtils.getJsonNodeFactory().textNode(filterValue));
   }
 
   /**
@@ -504,7 +504,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new StartsWithFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(filterValue));
+        JsonUtils.getJsonNodeFactory().textNode(filterValue));
   }
 
   /**
@@ -532,7 +532,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new EndsWithFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(filterValue));
+        JsonUtils.getJsonNodeFactory().textNode(filterValue));
   }
 
   /**
@@ -585,7 +585,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -600,7 +600,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -615,7 +615,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -630,7 +630,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -645,7 +645,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(filterValue));
+        JsonUtils.getJsonNodeFactory().textNode(filterValue));
   }
 
   /**
@@ -660,7 +660,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(
+        JsonUtils.getJsonNodeFactory().textNode(
             ISO8601Utils.format(filterValue)));
   }
 
@@ -690,7 +690,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -705,7 +705,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -720,7 +720,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -735,7 +735,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -750,7 +750,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(filterValue));
+        JsonUtils.getJsonNodeFactory().textNode(filterValue));
   }
 
   /**
@@ -765,7 +765,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(
+        JsonUtils.getJsonNodeFactory().textNode(
             ISO8601Utils.format(filterValue)));
   }
 
@@ -795,7 +795,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -810,7 +810,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -825,7 +825,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -840,7 +840,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -855,7 +855,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(filterValue));
+        JsonUtils.getJsonNodeFactory().textNode(filterValue));
   }
 
   /**
@@ -870,7 +870,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(
+        JsonUtils.getJsonNodeFactory().textNode(
             ISO8601Utils.format(filterValue)));
   }
 
@@ -900,7 +900,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -915,7 +915,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -930,7 +930,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -945,7 +945,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.numberNode(filterValue));
+        JsonUtils.getJsonNodeFactory().numberNode(filterValue));
   }
 
   /**
@@ -960,7 +960,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(filterValue));
+        JsonUtils.getJsonNodeFactory().textNode(filterValue));
   }
 
   /**
@@ -975,7 +975,7 @@ public abstract class Filter
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
-        JsonNodeFactory.instance.textNode(
+        JsonUtils.getJsonNodeFactory().textNode(
             ISO8601Utils.format(filterValue)));
   }
 

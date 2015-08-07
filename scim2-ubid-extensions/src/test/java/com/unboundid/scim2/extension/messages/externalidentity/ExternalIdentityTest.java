@@ -17,10 +17,9 @@
 
 package com.unboundid.scim2.extension.messages.externalidentity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.utils.SchemaUtils;
-import com.unboundid.scim2.extension.messages.JsonObjectStringBuilder;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,8 +28,6 @@ import java.net.URL;
 @Test
 public class ExternalIdentityTest
 {
-  private final ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-
   /**
    * Tests serialization of ExternalIdentity objects.
    *
@@ -47,24 +44,27 @@ public class ExternalIdentityTest
 
     String meta_created = "2015-07-04T00:00:00Z";
     String meta_lastModified = "2015-07-06T04:03:02Z";
-    JsonObjectStringBuilder meta_jsob = new JsonObjectStringBuilder();
-    meta_jsob.appendProperty("created", meta_created);
-    meta_jsob.appendProperty("lastModified", meta_lastModified);
-    Meta meta = mapper.readValue(meta_jsob.toString(), Meta.class);
+    ObjectNode metaNode = JsonUtils.getJsonNodeFactory().objectNode();
+    metaNode.put("created", meta_created);
+    metaNode.put("lastModified", meta_lastModified);
+    Meta meta = JsonUtils.getObjectReader().forType(Meta.class).readValue(
+        metaNode.toString());
 
     String providerUserId = "testUserId";
     String accessToken = "testAccessToken";
     String refreshToken = "testRefreshToken";
 
-    JsonObjectStringBuilder jsob = new JsonObjectStringBuilder();
-    jsob.appendProperty("provider", mapper, provider);
-    jsob.appendProperty("providerUserId", providerUserId);
-    jsob.appendProperty("accessToken", accessToken);
-    jsob.appendProperty("refreshToken", refreshToken);
-    jsob.appendProperty("meta", meta_jsob);
+    ObjectNode objectNode = JsonUtils.getJsonNodeFactory().objectNode();
+    objectNode.putPOJO("provider", provider);
+    objectNode.put("providerUserId", providerUserId);
+    objectNode.put("accessToken", accessToken);
+    objectNode.put("refreshToken", refreshToken);
+    objectNode.putObject("meta").put("created", meta_created).put(
+        "lastModified", meta_lastModified);
 
     ExternalIdentity extId1 =
-        mapper.readValue(jsob.toString(), ExternalIdentity.class);
+        JsonUtils.getObjectReader().forType(ExternalIdentity.class).readValue(
+            JsonUtils.getObjectWriter().writeValueAsString(objectNode));
 
 
     Assert.assertEquals(provider, extId1.getProvider());
@@ -73,8 +73,9 @@ public class ExternalIdentityTest
     Assert.assertEquals(refreshToken, extId1.getRefreshToken());
     Assert.assertEquals(meta, extId1.getMeta());
 
-    ExternalIdentity extId2 = mapper.readValue(
-        mapper.writeValueAsString(extId1), ExternalIdentity.class);
+    ExternalIdentity extId2 = JsonUtils.getObjectReader().forType(
+        ExternalIdentity.class).readValue(
+        JsonUtils.getObjectWriter().writeValueAsString(extId1));
     Assert.assertEquals(extId1, extId2);
   }
 }

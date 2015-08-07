@@ -18,7 +18,6 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -147,9 +146,6 @@ public class Parser
       // do nothing.
     }
   }
-
-  private static final ObjectMapper OBJECT_MAPPER =
-      SchemaUtils.createSCIMCompatibleMapper();
 
   /**
    * Parse a filter string.
@@ -595,7 +591,7 @@ public class Parser
             // until the end of string.
             reader.mark(0);
             JsonParser parser =
-                OBJECT_MAPPER.getFactory().createParser(reader);
+                JsonUtils.getObjectReader().getFactory().createParser(reader);
             // The object mapper will return a Java null for JSON null.
             // Have to distinguish between reading a JSON null and encountering
             // the end of string.
@@ -606,12 +602,12 @@ public class Parser
             }
             else
             {
-              valueNode = OBJECT_MAPPER.readValue(parser, ValueNode.class);
+              valueNode = parser.readValueAsTree();
 
               // This is actually a JSON null. Use NullNode.
               if(valueNode == null)
               {
-                valueNode = OBJECT_MAPPER.getNodeFactory().nullNode();
+                valueNode = JsonUtils.getJsonNodeFactory().nullNode();
               }
             }
             // Reset back to the beginning of the JSON value.

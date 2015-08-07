@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2.server.resources;
 
-import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.server.annotations.ResourceType;
@@ -57,15 +57,18 @@ public abstract class AbstractServiceProviderConfigEndpoint
    */
   @GET
   @Produces(MEDIA_TYPE_SCIM)
-  public ScimResource get(@Context final UriInfo uriInfo)
+  public GenericScimResource get(@Context final UriInfo uriInfo)
       throws ScimException
   {
     ServiceProviderConfigResource serviceProviderConfig =
         getServiceProviderConfig();
-    ResourcePreparer<ServiceProviderConfigResource> resourcePreparer =
-        new ResourcePreparer<ServiceProviderConfigResource>(
+    ResourcePreparer<GenericScimResource> resourcePreparer =
+        new ResourcePreparer<GenericScimResource>(
             RESOURCE_TYPE_DEFINITION, uriInfo);
-    return resourcePreparer.trimRetrievedResource(serviceProviderConfig);
+    GenericScimResource resource =
+        serviceProviderConfig.asGenericScimResource();
+    resourcePreparer.setResourceTypeAndLocation(resource);
+    return resource;
   }
 
   /**

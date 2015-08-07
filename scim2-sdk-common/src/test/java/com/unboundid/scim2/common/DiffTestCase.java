@@ -18,7 +18,6 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.PatchOperation;
@@ -29,7 +28,6 @@ import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.Photo;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.annotations.Test;
 
 import java.net.URL;
@@ -45,7 +43,6 @@ import static org.testng.Assert.fail;
  */
 public class DiffTestCase
 {
-  private final ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
   /**
    * Test comparison of single-valued attributes.
    *
@@ -55,8 +52,8 @@ public class DiffTestCase
   public void testDiffSingularAttribute() throws Exception
   {
     // *** singular ***
-    ObjectNode source = mapper.getNodeFactory().objectNode();
-    ObjectNode target = mapper.getNodeFactory().objectNode();
+    ObjectNode source = JsonUtils.getJsonNodeFactory().objectNode();
+    ObjectNode target = JsonUtils.getJsonNodeFactory().objectNode();
 
     // - unchanged
     source.put("userName", "bjensen");
@@ -77,10 +74,10 @@ public class DiffTestCase
     assertEquals(d.size(), 3);
 
     assertTrue(d.contains(PatchOperation.add(null,
-        mapper.getNodeFactory().objectNode().put("nickName","bjj3"))));
+        JsonUtils.getJsonNodeFactory().objectNode().put("nickName","bjj3"))));
     assertTrue(d.contains(PatchOperation.remove(
         Path.root().attribute("title"))));
-    ObjectNode replaceValue = mapper.createObjectNode();
+    ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.put("userType", "manager");
     assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
 
@@ -103,10 +100,10 @@ public class DiffTestCase
   {
     // *** singular complex ***
     // - unchanged
-    ObjectNode source = mapper.getNodeFactory().objectNode();
-    ObjectNode target = mapper.getNodeFactory().objectNode();
+    ObjectNode source = JsonUtils.getJsonNodeFactory().objectNode();
+    ObjectNode target = JsonUtils.getJsonNodeFactory().objectNode();
 
-    ObjectNode name = mapper.valueToTree(new Name().
+    ObjectNode name = JsonUtils.valueToTree(new Name().
         setFormatted("Ms. Barbara J Jensen III").
         setFamilyName("Jensen").
         setMiddleName("J").
@@ -129,15 +126,15 @@ public class DiffTestCase
     assertEquals(source, target);
 
     // - added
-    source = mapper.getNodeFactory().objectNode();
-    target = mapper.getNodeFactory().objectNode();
+    source = JsonUtils.getJsonNodeFactory().objectNode();
+    target = JsonUtils.getJsonNodeFactory().objectNode();
 
     target.set("name", name);
 
     d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 1);
     assertTrue(d.contains(PatchOperation.add(null,
-        mapper.getNodeFactory().objectNode().set("name",name))));
+        JsonUtils.getJsonNodeFactory().objectNode().set("name",name))));
 
     d2 = JsonUtils.diff(source, target, true);
     for(PatchOperation op : d2)
@@ -148,8 +145,8 @@ public class DiffTestCase
     assertEquals(source, target);
 
     // - removed
-    source = mapper.getNodeFactory().objectNode();
-    target = mapper.getNodeFactory().objectNode();
+    source = JsonUtils.getJsonNodeFactory().objectNode();
+    target = JsonUtils.getJsonNodeFactory().objectNode();
 
     source.set("name", name);
     target.putNull("name");
@@ -168,8 +165,8 @@ public class DiffTestCase
     assertEquals(source, target);
 
     // - removed a sub-attribute
-    source = mapper.getNodeFactory().objectNode();
-    target = mapper.getNodeFactory().objectNode();
+    source = JsonUtils.getJsonNodeFactory().objectNode();
+    target = JsonUtils.getJsonNodeFactory().objectNode();
 
     source.set("name", name);
     target.set("name", name.deepCopy().putNull("honorificSuffix"));
@@ -188,15 +185,15 @@ public class DiffTestCase
     assertEquals(source, target);
 
     // - updated
-    source = mapper.getNodeFactory().objectNode();
-    target = mapper.getNodeFactory().objectNode();
+    source = JsonUtils.getJsonNodeFactory().objectNode();
+    target = JsonUtils.getJsonNodeFactory().objectNode();
 
     source.set("name", name);
     target.set("name", name.deepCopy().put("familyName", "Johnson"));
 
     d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 1);
-    ObjectNode replaceValue = mapper.createObjectNode();
+    ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.putObject("name").put("familyName", "Johnson");
     assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
 
@@ -209,8 +206,8 @@ public class DiffTestCase
     assertEquals(source, target);
 
     // - non-asserted
-    source = mapper.getNodeFactory().objectNode();
-    target = mapper.getNodeFactory().objectNode();
+    source = JsonUtils.getJsonNodeFactory().objectNode();
+    target = JsonUtils.getJsonNodeFactory().objectNode();
 
     ObjectNode nameCopy = name.deepCopy();
     nameCopy.remove("middleName");
@@ -238,8 +235,8 @@ public class DiffTestCase
   public void testDiffMultiValuedAttribute() throws Exception
   {
     // *** multi-valued ***
-    ObjectNode source = mapper.getNodeFactory().objectNode();
-    ObjectNode target = mapper.getNodeFactory().objectNode();
+    ObjectNode source = JsonUtils.getJsonNodeFactory().objectNode();
+    ObjectNode target = JsonUtils.getJsonNodeFactory().objectNode();
 
     // - unchanged
     String email1 = "bjensen@example.com";
@@ -287,10 +284,10 @@ public class DiffTestCase
     assertTrue(d.contains(PatchOperation.remove(
         Path.root().attribute("photos",
             Filter.eq("value", thumbnail)))));
-    ObjectNode replaceValue = mapper.createObjectNode();
+    ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.putArray("entitlements").add(entitlement3);
     assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
-    ObjectNode addValue = mapper.createObjectNode();
+    ObjectNode addValue = JsonUtils.getJsonNodeFactory().objectNode();
     addValue.putArray("phones").add(phone1).add(phone2);
     addValue.putArray("photos").add(photo3);
     assertTrue(d.contains(PatchOperation.add(null, addValue)));
@@ -336,15 +333,15 @@ public class DiffTestCase
   public void testDiffMultiValuedComplexAttribute() throws Exception
   {
     // *** multi-valued ***
-    ObjectNode source = mapper.getNodeFactory().objectNode();
-    ObjectNode target = mapper.getNodeFactory().objectNode();
+    ObjectNode source = JsonUtils.getJsonNodeFactory().objectNode();
+    ObjectNode target = JsonUtils.getJsonNodeFactory().objectNode();
 
     // - unchanged
-    ObjectNode email1 = mapper.valueToTree(new Email().
+    ObjectNode email1 = JsonUtils.valueToTree(new Email().
         setValue("bjensen@example.com").
         setType("work").
         setPrimary(true));
-    ObjectNode email2 = mapper.valueToTree(new Email().
+    ObjectNode email2 = JsonUtils.valueToTree(new Email().
         setValue("babs@jensen.org").
         setType("home").
         setPrimary(false));
@@ -353,11 +350,11 @@ public class DiffTestCase
     target.putArray("emails").add(email1).add(email2);
 
     // - added
-    ObjectNode phone1 = mapper.valueToTree(new PhoneNumber().
+    ObjectNode phone1 = JsonUtils.valueToTree(new PhoneNumber().
         setValue("1234567890").
         setType("work").
         setPrimary(true));
-    ObjectNode phone2 = mapper.valueToTree(new PhoneNumber().
+    ObjectNode phone2 = JsonUtils.valueToTree(new PhoneNumber().
         setValue("0987654321").
         setType("home").
         setPrimary(false));
@@ -365,11 +362,11 @@ public class DiffTestCase
     target.putArray("phones").add(phone1).add(phone2);
 
     // - removed
-    ObjectNode im1 = mapper.valueToTree(new InstantMessagingAddress().
+    ObjectNode im1 = JsonUtils.valueToTree(new InstantMessagingAddress().
         setValue("babs").
         setType("aim").
         setPrimary(true));
-    ObjectNode im2 = mapper.valueToTree(new InstantMessagingAddress().
+    ObjectNode im2 = JsonUtils.valueToTree(new InstantMessagingAddress().
         setValue("bjensen").
         setType("gtalk").
         setPrimary(false));
@@ -379,59 +376,59 @@ public class DiffTestCase
 
     // - updated
     // -- unchanged
-    ObjectNode photo0 = mapper.valueToTree(new Photo().
+    ObjectNode photo0 = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo0")).
         setType("photo0").
         setPrimary(false));
-    ObjectNode photo1 = mapper.valueToTree(new Photo().
+    ObjectNode photo1 = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo1")).
         setType("photo1").
         setPrimary(false));
     // -- non-asserted
-    ObjectNode photo2 = mapper.valueToTree(new Photo().
+    ObjectNode photo2 = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo2")).
         setType("photo2").
         setPrimary(false));
-    ObjectNode photo2a = mapper.valueToTree(new Photo().
+    ObjectNode photo2a = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo2")).
         setType("photo2"));
     // -- add a new value
-    ObjectNode photo3 = mapper.valueToTree(new Photo().
+    ObjectNode photo3 = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo3")).
         setType("photo3").
         setPrimary(true));
     // -- update an existing value
-    ObjectNode photo4 = mapper.valueToTree(new Photo().
+    ObjectNode photo4 = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo4")).
         setType("photo4").
         setPrimary(true));
-    ObjectNode photo4a = mapper.valueToTree(new Photo().
+    ObjectNode photo4a = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo4")).
         setType("photo4").
         setPrimary(false));
     // -- add a new value
-    ObjectNode photo5 = mapper.valueToTree(new Photo().
+    ObjectNode photo5 = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo5")).
         setType("photo5").
         setPrimary(false));
-    ObjectNode photo5a = mapper.valueToTree(new Photo().
+    ObjectNode photo5a = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo5")).
         setType("photo5").
         setPrimary(false).
         setDisplay("Photo 5"));
     // -- remove an existing value
-    ObjectNode photo6 = mapper.valueToTree(new Photo().
+    ObjectNode photo6 = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo6")).
         setType("photo6").
         setPrimary(false).
         setDisplay("Photo 6"));
-    ObjectNode photo6a = mapper.valueToTree(new Photo().
+    ObjectNode photo6a = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://photo6")).
         setType("photo6").
         setPrimary(false));
     photo6a.putNull("display");
     // -- remove a value
-    ObjectNode thumbnail = mapper.valueToTree(new Photo().
+    ObjectNode thumbnail = JsonUtils.valueToTree(new Photo().
         setValue(new URL("http://thumbnail1")).
         setType("thumbnail").
         setPrimary(true));
@@ -442,13 +439,13 @@ public class DiffTestCase
         add(photo4a).add(photo5a).add(photo6a).add(photo3);
 
     // -- updated with all new values
-    ObjectNode entitlement1 = mapper.valueToTree(new Entitlement().
+    ObjectNode entitlement1 = JsonUtils.valueToTree(new Entitlement().
         setValue("admin").
         setPrimary(false));
-    ObjectNode entitlement2 = mapper.valueToTree(new Entitlement().
+    ObjectNode entitlement2 = JsonUtils.valueToTree(new Entitlement().
         setValue("user").
         setPrimary(false));
-    ObjectNode entitlement3 = mapper.valueToTree(new Entitlement().
+    ObjectNode entitlement3 = JsonUtils.valueToTree(new Entitlement().
         setValue("inactive").
         setPrimary(true));
     source.putArray("entitlements").add(entitlement1).add(entitlement2);
@@ -469,22 +466,23 @@ public class DiffTestCase
             Filter.fromString("value eq \"http://photo4\" and " +
                 "type eq \"photo4\" and " +
                 "primary eq true")),
-        mapper.createObjectNode().put("primary", false))));
+        JsonUtils.getJsonNodeFactory().objectNode().put("primary", false))));
     assertTrue(d.contains(PatchOperation.replace(
         Path.root().attribute("photos",
             Filter.fromString("value eq \"http://photo5\" and " +
                 "type eq \"photo5\" and " +
                 "primary eq false")),
-        mapper.createObjectNode().put("display", "Photo 5"))));
+        JsonUtils.getJsonNodeFactory().objectNode().put(
+            "display", "Photo 5"))));
     assertTrue(d.contains(PatchOperation.remove(
         Path.root().attribute("photos",
             Filter.fromString("value eq \"http://thumbnail1\" and " +
                 "type eq \"thumbnail\" and " +
                 "primary eq true")))));
-    ObjectNode replaceValue = mapper.createObjectNode();
+    ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.putArray("entitlements").add(entitlement3);
     assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
-    ObjectNode addValue = mapper.createObjectNode();
+    ObjectNode addValue = JsonUtils.getJsonNodeFactory().objectNode();
     addValue.putArray("phones").add(phone1).add(phone2);
     addValue.putArray("photos").add(photo3);
     assertTrue(d.contains(PatchOperation.add(null, addValue)));
@@ -509,7 +507,7 @@ public class DiffTestCase
   {
     // *** singular ***
     ObjectNode source = null;
-    ObjectNode target = mapper.getNodeFactory().objectNode();
+    ObjectNode target = JsonUtils.getJsonNodeFactory().objectNode();
 
     // - unchanged
     target.put("userName", "bjensen");
@@ -537,7 +535,7 @@ public class DiffTestCase
   public void testDiffNullObject2() throws Exception
   {
     // *** singular ***
-    ObjectNode source = mapper.getNodeFactory().objectNode();
+    ObjectNode source = JsonUtils.getJsonNodeFactory().objectNode();
     ObjectNode target = null;
 
     // - unchanged
@@ -598,7 +596,7 @@ public class DiffTestCase
   public void testDiffSameObject() throws Exception
   {
     // *** singular ***
-    ObjectNode source = mapper.getNodeFactory().objectNode();
+    ObjectNode source = JsonUtils.getJsonNodeFactory().objectNode();
     ObjectNode target = source;
 
     // - unchanged
@@ -621,8 +619,8 @@ public class DiffTestCase
   public void testDiffEmptyObjects() throws Exception
   {
     // *** singular ***
-    ObjectNode source = mapper.getNodeFactory().objectNode();
-    ObjectNode target = mapper.getNodeFactory().objectNode();
+    ObjectNode source = JsonUtils.getJsonNodeFactory().objectNode();
+    ObjectNode target = JsonUtils.getJsonNodeFactory().objectNode();
 
     List<PatchOperation> d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 0);
@@ -638,8 +636,8 @@ public class DiffTestCase
   public void testDiffNoChanges() throws Exception
   {
     // *** singular ***
-    ObjectNode source = mapper.getNodeFactory().objectNode();
-    ObjectNode target = mapper.getNodeFactory().objectNode();
+    ObjectNode source = JsonUtils.getJsonNodeFactory().objectNode();
+    ObjectNode target = JsonUtils.getJsonNodeFactory().objectNode();
 
     source.put("userName", "bjensen");
     target.put("userName", "bjensen");
@@ -664,8 +662,8 @@ public class DiffTestCase
   public void testRemoveAll() throws Exception
   {
     // *** singular ***
-    ObjectNode source = mapper.getNodeFactory().objectNode();
-    ObjectNode target = mapper.getNodeFactory().objectNode();
+    ObjectNode source = JsonUtils.getJsonNodeFactory().objectNode();
+    ObjectNode target = JsonUtils.getJsonNodeFactory().objectNode();
 
     // - unchanged
     source.put("userName", "bjensen");
@@ -688,7 +686,7 @@ public class DiffTestCase
     assertTrue(d.contains(PatchOperation.remove(
         Path.root().attribute("userType"))));
 
-    target = mapper.getNodeFactory().objectNode();
+    target = JsonUtils.getJsonNodeFactory().objectNode();
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
     for(PatchOperation op : d2)
     {

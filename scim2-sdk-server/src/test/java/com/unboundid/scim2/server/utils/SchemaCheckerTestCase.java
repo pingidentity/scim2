@@ -18,7 +18,6 @@
 package com.unboundid.scim2.server.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.Path;
@@ -29,6 +28,7 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.types.UserResource;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -52,7 +52,6 @@ import static org.testng.Assert.assertTrue;
  */
 public class SchemaCheckerTestCase
 {
-  private ObjectMapper mapper;
   private SchemaResource coreSchema;
   private SchemaResource typeTestSchema;
 
@@ -65,7 +64,6 @@ public class SchemaCheckerTestCase
   public void setUp() throws Exception
   {
     coreSchema = SchemaUtils.getSchema(UserResource.class);
-    mapper = SchemaUtils.createSCIMCompatibleMapper();
 
     List<AttributeDefinition> attributeDefinitions =
         new ArrayList<AttributeDefinition>();
@@ -233,9 +231,11 @@ public class SchemaCheckerTestCase
         "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
         "  \"externalId\":\"701984\",\n" +
         "  \"userName\":\"bjensen@example.com\",\n" +
-        "  \"name\":{  \n" +
+         // Check for case insensitive behavior
+        "  \"nAme\":{  \n" +
         "    \"formatted\":\"Ms. Barbara J Jensen III\",\n" +
-        "    \"familyName\":\"Jensen\",\n" +
+         // Check for case insensitive behavior
+        "    \"FAMILYName\":\"Jensen\",\n" +
         "    \"givenName\":\"Barbara\",\n" +
         "    \"middleName\":\"Jane\",\n" +
         "    \"honorificPrefix\":\"Ms.\",\n" +
@@ -248,7 +248,8 @@ public class SchemaCheckerTestCase
         "    {  \n" +
         "      \"value\":\"bjensen@example.com\",\n" +
         "      \"type\":\"work\",\n" +
-        "      \"primary\":true\n" +
+         // Check for case insensitive behavior
+        "      \"pRIMary\":true\n" +
         "    },\n" +
         "    {  \n" +
         "      \"value\":\"babs@jensen.org\",\n" +
@@ -391,8 +392,7 @@ public class SchemaCheckerTestCase
         "  }\n" +
         "}";
     ObjectNode userResource =
-        SchemaUtils.createSCIMCompatibleMapper().readValue(
-            USER, ObjectNode.class);
+        (ObjectNode) JsonUtils.getObjectReader().readTree(USER);
 
     SchemaResource coreSchema = SchemaUtils.getSchema(UserResource.class);
     SchemaResource enterpriseExtension =
@@ -442,15 +442,18 @@ public class SchemaCheckerTestCase
         "{  \n" +
             "  \"op\":\"add\",\n" +
             "  \"value\":{  \n" +
-            "    \"password\":\"password\",\n" +
+         // Check for case insensitive behavior
+            "    \"passWORD\":\"password\",\n" +
             "    \"name\":{  \n" +
             "      \"givenName\":\"Barbara\",\n" +
-            "      \"familyName\":\"Jensen\",\n" +
+         // Check for case insensitive behavior
+            "      \"FAMILYName\":\"Jensen\",\n" +
             "      \"formatted\":\"Barbara Ann Jensen\"\n" +
             "    },\n" +
             "    \"emails\":[  \n" +
             "      {  \n" +
-            "        \"value\":\"bjensen@example.com\",\n" +
+         // Check for case insensitive behavior
+            "        \"VALUE\":\"bjensen@example.com\",\n" +
             "        \"type\":\"work\"\n" +
             "      },\n" +
             "      {  \n" +
@@ -489,7 +492,8 @@ public class SchemaCheckerTestCase
             "}";
 
     PatchOperation operation =
-        mapper.readValue(patchRequestStr, PatchOperation.class);
+        JsonUtils.getObjectReader().forType(PatchOperation.class).
+            readValue(patchRequestStr);
 
     results = checker.checkModify(
         Collections.singleton(operation), userResource);
@@ -504,7 +508,8 @@ public class SchemaCheckerTestCase
 
     // Make sure the patch operation wasn't modified during the check.
     assertEquals(operation,
-        mapper.readValue(patchRequestStr, PatchOperation.class));
+        JsonUtils.getObjectReader().forType(PatchOperation.class).
+                    readValue(patchRequestStr));
 
     // Make sure the ObjectNode wasn't modified during the check.
     assertEquals(userResource, copyUserResource);
@@ -537,50 +542,51 @@ public class SchemaCheckerTestCase
         new SchemaResource("urn:id:testExt", "testExt", "",
             Collections.singleton(optAttr));
 
-    ObjectNode extNotIn = mapper.createObjectNode();
+    ObjectNode extNotIn = JsonUtils.getJsonNodeFactory().objectNode();
     extNotIn.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User");
     extNotIn.put("userName", "test");
 
-    ObjectNode extInSchemas = mapper.createObjectNode();
+    ObjectNode extInSchemas = JsonUtils.getJsonNodeFactory().objectNode();
     extInSchemas.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User").
         add("urn:id:testExt");
     extInSchemas.put("userName", "test");
 
-    ObjectNode extNotInSchemas = mapper.createObjectNode();
+    ObjectNode extNotInSchemas = JsonUtils.getJsonNodeFactory().objectNode();
     extNotInSchemas.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User");
     extNotInSchemas.put("userName", "test");
     extNotInSchemas.putObject("urn:id:testExt").put("test", "test");
 
-    ObjectNode extIn = mapper.createObjectNode();
+    ObjectNode extIn = JsonUtils.getJsonNodeFactory().objectNode();
     extIn.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User").
         add("urn:id:testExt");
     extIn.put("userName", "test");
     extIn.putObject("urn:id:testExt").put("test", "test");
 
-    ObjectNode undefinedInSchemas = mapper.createObjectNode();
+    ObjectNode undefinedInSchemas = JsonUtils.getJsonNodeFactory().objectNode();
     undefinedInSchemas.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User").
         add("urn:id:undefined");
     undefinedInSchemas.put("userName", "test");
 
-    ObjectNode undefinedNotInSchemas = mapper.createObjectNode();
+    ObjectNode undefinedNotInSchemas =
+        JsonUtils.getJsonNodeFactory().objectNode();
     undefinedNotInSchemas.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User");
     undefinedNotInSchemas.put("userName", "test");
     undefinedNotInSchemas.putObject("urn:id:undefined").put("test", "test");
 
-    ObjectNode undefinedIn = mapper.createObjectNode();
+    ObjectNode undefinedIn = JsonUtils.getJsonNodeFactory().objectNode();
     undefinedIn.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User").
         add("urn:id:undefined");
     undefinedIn.put("userName", "test");
     undefinedIn.putObject("urn:id:undefined").put("test", "test");
 
-    ObjectNode notObject = mapper.createObjectNode();
+    ObjectNode notObject = JsonUtils.getJsonNodeFactory().objectNode();
     notObject.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User").
         add("urn:id:testExt");
@@ -681,7 +687,7 @@ public class SchemaCheckerTestCase
             Collections.singleton(reqAttr));
 
     // Not including the core schema should be an error.
-    ObjectNode resource = mapper.createObjectNode();
+    ObjectNode resource = JsonUtils.getJsonNodeFactory().objectNode();
     resource.putArray("schemas").
         add("urn:id:testExt");
     resource.put("userName", "test");
@@ -733,7 +739,7 @@ public class SchemaCheckerTestCase
             addOptionalSchemaExtension(extWithOptAttr).build();
     SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
 
-    ObjectNode resource = mapper.createObjectNode();
+    ObjectNode resource = JsonUtils.getJsonNodeFactory().objectNode();
     resource.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User").
         add("urn:id:extWithReqAttr");
@@ -781,7 +787,7 @@ public class SchemaCheckerTestCase
     // Shouldn't be able to add an undefined schema extension
     patchOps = new LinkedList<PatchOperation>();
     patchOps.add(PatchOperation.add(Path.root().attribute("schemas"),
-        mapper.createArrayNode().add("urn:id:undefined")));
+        JsonUtils.getJsonNodeFactory().arrayNode().add("urn:id:undefined")));
 
     results = checker.checkModify(patchOps, resource);
     assertEquals(results.getSyntaxIssues().size(), 2,
@@ -879,42 +885,42 @@ public class SchemaCheckerTestCase
 
 
     // Attribute not present
-    ObjectNode notPresent = mapper.createObjectNode();
+    ObjectNode notPresent = JsonUtils.getJsonNodeFactory().objectNode();
     notPresent.putArray("schemas").
         add("urn:id:test");
 
     // Attribute with null value
-    ObjectNode nullValue = mapper.createObjectNode();
+    ObjectNode nullValue = JsonUtils.getJsonNodeFactory().objectNode();
     nullValue.putArray("schemas").
         add("urn:id:test");
     nullValue.putNull("test");
 
     // Attribute with not present sub-attribute
-    ObjectNode subNotPresent = mapper.createObjectNode();
+    ObjectNode subNotPresent = JsonUtils.getJsonNodeFactory().objectNode();
     subNotPresent.putArray("schemas").
         add("urn:id:test");
     subNotPresent.putObject("test");
 
     // Attribute with null value sub-attribute
-    ObjectNode subNullValue = mapper.createObjectNode();
+    ObjectNode subNullValue = JsonUtils.getJsonNodeFactory().objectNode();
     subNullValue.putArray("schemas").
         add("urn:id:test");
     subNullValue.putObject("test").putNull("test");
 
     // Attribute with empty array
-    ObjectNode emptyArray = mapper.createObjectNode();
+    ObjectNode emptyArray = JsonUtils.getJsonNodeFactory().objectNode();
     emptyArray.putArray("schemas").
         add("urn:id:test");
     emptyArray.putArray("test");
 
     // Attribute with one element not present sub-attribute
-    ObjectNode arrayNotPresent = mapper.createObjectNode();
+    ObjectNode arrayNotPresent = JsonUtils.getJsonNodeFactory().objectNode();
     arrayNotPresent.putArray("schemas").
         add("urn:id:test");
     arrayNotPresent.putArray("test").addObject();
 
     // Attribute with one element null value sub-attribute
-    ObjectNode arrayNullValue = mapper.createObjectNode();
+    ObjectNode arrayNullValue = JsonUtils.getJsonNodeFactory().objectNode();
     arrayNullValue.putArray("schemas").
         add("urn:id:test");
     arrayNullValue.putArray("test").addObject().putNull("test");
@@ -982,8 +988,9 @@ public class SchemaCheckerTestCase
     // Can't remove required attributes in patch
     if(attributeDefinition.isRequired())
     {
+      // Check for case insensitive behavior
       results = checker.checkModify(Collections.singleton(
-          PatchOperation.remove(Path.root().attribute("test"))), null);
+          PatchOperation.remove(Path.fromString("TEST"))), null);
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
     }
@@ -1018,7 +1025,7 @@ public class SchemaCheckerTestCase
     SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
 
     // Core attribute is undefined
-    ObjectNode coreUndefined = mapper.createObjectNode();
+    ObjectNode coreUndefined = JsonUtils.getJsonNodeFactory().objectNode();
     coreUndefined.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User").
         add("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User");
@@ -1037,7 +1044,7 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for core schema"));
+        "is undefined"));
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root().attribute("undefined"),
@@ -1045,17 +1052,17 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for core schema"));
+        "is undefined"));
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.remove(Path.root().attribute("undefined"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for core schema"));
+        "is undefined"));
 
     // Core sub-attribute is undefined
-    ObjectNode coreSubUndefined = mapper.createObjectNode();
+    ObjectNode coreSubUndefined = JsonUtils.getJsonNodeFactory().objectNode();
     coreSubUndefined.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User").
         add("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User");
@@ -1074,7 +1081,7 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for attribute"));
+        "is undefined"));
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(
@@ -1083,7 +1090,7 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for attribute"));
+        "is undefined"));
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.remove(
@@ -1091,10 +1098,10 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for attribute"));
+        "is undefined"));
 
     // Extended attribute is undefined
-    ObjectNode extendedUndefined = mapper.createObjectNode();
+    ObjectNode extendedUndefined = JsonUtils.getJsonNodeFactory().objectNode();
     extendedUndefined.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User").
         add("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User");
@@ -1117,7 +1124,7 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for schema"));
+        "is undefined"));
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root(
@@ -1127,7 +1134,7 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for schema"));
+        "is undefined"));
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.remove(Path.root(
@@ -1136,10 +1143,11 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for schema"));
+        "is undefined"));
 
     // Extended sub-attribute is undefined
-    ObjectNode extendedSubUndefined = mapper.createObjectNode();
+    ObjectNode extendedSubUndefined =
+        JsonUtils.getJsonNodeFactory().objectNode();
     extendedSubUndefined.putArray("schemas").
         add("urn:ietf:params:scim:schemas:core:2.0:User").
         add("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User");
@@ -1165,7 +1173,7 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for attribute"));
+        "is undefined"));
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root(
@@ -1175,7 +1183,7 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for attribute"));
+        "is undefined"));
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.remove(Path.root(
@@ -1184,7 +1192,7 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
-        "is undefined for attribute"));
+        "is undefined"));
   }
 
   /**
@@ -1197,44 +1205,59 @@ public class SchemaCheckerTestCase
   {
     return new Object[][] {
         // Wrong attribute value types
-        new Object[] {"string", mapper.getNodeFactory().numberNode(1)},
-        new Object[] {"string", mapper.getNodeFactory().booleanNode(true)},
-        new Object[] {"string", mapper.getNodeFactory().objectNode()},
-        new Object[] {"string", mapper.getNodeFactory().arrayNode()},
+        new Object[] {"string", JsonUtils.getJsonNodeFactory().numberNode(1)},
+        new Object[] {"string",
+            JsonUtils.getJsonNodeFactory().booleanNode(true)},
+        new Object[] {"string", JsonUtils.getJsonNodeFactory().objectNode()},
+        new Object[] {"string", JsonUtils.getJsonNodeFactory().arrayNode()},
         new Object[] {"stringCanonical",
-            mapper.getNodeFactory().textNode("value3")},
+            JsonUtils.getJsonNodeFactory().textNode("value3")},
         new Object[] {"datetime",
-            mapper.getNodeFactory().textNode("notdatetime")},
-        new Object[] {"datetime", mapper.getNodeFactory().numberNode(1)},
-        new Object[] {"datetime", mapper.getNodeFactory().booleanNode(true)},
-        new Object[] {"datetime", mapper.getNodeFactory().objectNode()},
-        new Object[] {"datetime", mapper.getNodeFactory().arrayNode()},
-        new Object[] {"binary", mapper.getNodeFactory().textNode("()$#@_@")},
-        new Object[] {"binary", mapper.getNodeFactory().numberNode(1)},
-        new Object[] {"binary", mapper.getNodeFactory().booleanNode(true)},
-        new Object[] {"binary", mapper.getNodeFactory().objectNode()},
-        new Object[] {"binary", mapper.getNodeFactory().arrayNode()},
-        new Object[] {"reference", mapper.getNodeFactory().textNode("rtp:\\")},
-        new Object[] {"reference", mapper.getNodeFactory().numberNode(1)},
-        new Object[] {"reference", mapper.getNodeFactory().booleanNode(true)},
-        new Object[] {"reference", mapper.getNodeFactory().objectNode()},
-        new Object[] {"reference", mapper.getNodeFactory().arrayNode()},
-        new Object[] {"boolean", mapper.getNodeFactory().textNode("string")},
-        new Object[] {"boolean", mapper.getNodeFactory().numberNode(1)},
-        new Object[] {"boolean", mapper.getNodeFactory().objectNode()},
-        new Object[] {"boolean", mapper.getNodeFactory().arrayNode()},
-        new Object[] {"decimal", mapper.getNodeFactory().textNode("string")},
-        new Object[] {"decimal", mapper.getNodeFactory().booleanNode(true)},
-        new Object[] {"decimal", mapper.getNodeFactory().objectNode()},
-        new Object[] {"decimal", mapper.getNodeFactory().arrayNode()},
-        new Object[] {"integer", mapper.getNodeFactory().textNode("string")},
-        new Object[] {"integer", mapper.getNodeFactory().booleanNode(true)},
-        new Object[] {"integer", mapper.getNodeFactory().objectNode()},
-        new Object[] {"integer", mapper.getNodeFactory().arrayNode()},
-        new Object[] {"integer", mapper.getNodeFactory().numberNode(1.1)},
-        new Object[] {"complex", mapper.getNodeFactory().textNode("string")},
-        new Object[] {"complex", mapper.getNodeFactory().numberNode(1)},
-        new Object[] {"complex", mapper.getNodeFactory().booleanNode(true)},
+            JsonUtils.getJsonNodeFactory().textNode("notdatetime")},
+        new Object[] {"datetime", JsonUtils.getJsonNodeFactory().numberNode(1)},
+        new Object[] {"datetime",
+            JsonUtils.getJsonNodeFactory().booleanNode(true)},
+        new Object[] {"datetime", JsonUtils.getJsonNodeFactory().objectNode()},
+        new Object[] {"datetime", JsonUtils.getJsonNodeFactory().arrayNode()},
+        new Object[] {"binary",
+            JsonUtils.getJsonNodeFactory().textNode("()$#@_@")},
+        new Object[] {"binary", JsonUtils.getJsonNodeFactory().numberNode(1)},
+        new Object[] {"binary",
+            JsonUtils.getJsonNodeFactory().booleanNode(true)},
+        new Object[] {"binary", JsonUtils.getJsonNodeFactory().objectNode()},
+        new Object[] {"binary", JsonUtils.getJsonNodeFactory().arrayNode()},
+        new Object[] {"reference",
+            JsonUtils.getJsonNodeFactory().textNode("rtp:\\")},
+        new Object[] {"reference",
+            JsonUtils.getJsonNodeFactory().numberNode(1)},
+        new Object[] {"reference",
+            JsonUtils.getJsonNodeFactory().booleanNode(true)},
+        new Object[] {"reference", JsonUtils.getJsonNodeFactory().objectNode()},
+        new Object[] {"reference", JsonUtils.getJsonNodeFactory().arrayNode()},
+        new Object[] {"boolean",
+            JsonUtils.getJsonNodeFactory().textNode("string")},
+        new Object[] {"boolean", JsonUtils.getJsonNodeFactory().numberNode(1)},
+        new Object[] {"boolean", JsonUtils.getJsonNodeFactory().objectNode()},
+        new Object[] {"boolean", JsonUtils.getJsonNodeFactory().arrayNode()},
+        new Object[] {"decimal",
+            JsonUtils.getJsonNodeFactory().textNode("string")},
+        new Object[] {"decimal",
+            JsonUtils.getJsonNodeFactory().booleanNode(true)},
+        new Object[] {"decimal", JsonUtils.getJsonNodeFactory().objectNode()},
+        new Object[] {"decimal", JsonUtils.getJsonNodeFactory().arrayNode()},
+        new Object[] {"integer",
+            JsonUtils.getJsonNodeFactory().textNode("string")},
+        new Object[] {"integer",
+            JsonUtils.getJsonNodeFactory().booleanNode(true)},
+        new Object[] {"integer", JsonUtils.getJsonNodeFactory().objectNode()},
+        new Object[] {"integer", JsonUtils.getJsonNodeFactory().arrayNode()},
+        new Object[] {"integer",
+            JsonUtils.getJsonNodeFactory().numberNode(1.1)},
+        new Object[] {"complex",
+            JsonUtils.getJsonNodeFactory().textNode("string")},
+        new Object[] {"complex", JsonUtils.getJsonNodeFactory().numberNode(1)},
+        new Object[] {"complex",
+            JsonUtils.getJsonNodeFactory().booleanNode(true)},
     };
   }
 
@@ -1255,7 +1278,7 @@ public class SchemaCheckerTestCase
     SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
 
     // First test as an attribute
-    ObjectNode o = mapper.createObjectNode();
+    ObjectNode o = JsonUtils.getJsonNodeFactory().objectNode();
     o.putArray("schemas").add("urn:id:test");
     o.set(field, node);
     SchemaChecker.Results results = checker.checkCreate(o);
@@ -1295,7 +1318,7 @@ public class SchemaCheckerTestCase
     // Then test a an sub-attribute
     if(!field.equals("complex"))
     {
-      o = mapper.createObjectNode();
+      o = JsonUtils.getJsonNodeFactory().objectNode();
       o.putArray("schemas").add("urn:id:test");
       o.putObject("complex").set(field, node);
       results = checker.checkCreate(o);
@@ -1338,7 +1361,7 @@ public class SchemaCheckerTestCase
     // Then test as a single-value for multi-valued attributes
     if(!node.isArray())
     {
-      o = mapper.createObjectNode();
+      o = JsonUtils.getJsonNodeFactory().objectNode();
       o.putArray("schemas").add("urn:id:test");
       o.set("mv" + field, node);
       results = checker.checkCreate(o);
@@ -1378,7 +1401,7 @@ public class SchemaCheckerTestCase
     }
 
     // Then test as a multi-valued attribute
-    o = mapper.createObjectNode();
+    o = JsonUtils.getJsonNodeFactory().objectNode();
     o.putArray("schemas").add("urn:id:test");
     o.putArray("mv" + field).add(node);
     results = checker.checkCreate(o);
@@ -1404,7 +1427,7 @@ public class SchemaCheckerTestCase
       // Path'ed patch
       results = checker.checkModify(Collections.singleton(
           PatchOperation.add(Path.root().attribute("mv"+field),
-              mapper.createArrayNode().add(node))), null);
+              JsonUtils.getJsonNodeFactory().arrayNode().add(node))), null);
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
@@ -1412,7 +1435,7 @@ public class SchemaCheckerTestCase
       results = checker.checkModify(Collections.singleton(
           PatchOperation.replace(
               Path.root().attribute("mv"+field),
-              mapper.createArrayNode().add(node))), null);
+              JsonUtils.getJsonNodeFactory().arrayNode().add(node))), null);
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
@@ -1421,7 +1444,7 @@ public class SchemaCheckerTestCase
     // Finally test as a sub-attribute of a multi-valued attribute
     if(!field.equals("complex"))
     {
-      o = mapper.createObjectNode();
+      o = JsonUtils.getJsonNodeFactory().objectNode();
       o.putArray("schemas").add("urn:id:test");
       o.putArray("mvcomplex").addObject().set(field, node);
       results = checker.checkCreate(o);
@@ -1499,7 +1522,7 @@ public class SchemaCheckerTestCase
     SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
 
     // Can not create read-only
-    ObjectNode o = mapper.createObjectNode();
+    ObjectNode o = JsonUtils.getJsonNodeFactory().objectNode();
     o.putArray("schemas").add("urn:id:test");
     o.put("readOnly", "value");
     SchemaChecker.Results results = checker.checkCreate(o);
@@ -1537,7 +1560,7 @@ public class SchemaCheckerTestCase
     assertTrue(containsIssueWith(results.getMutabilityIssues(), "read-only"));
 
     // Can create immutable
-    o = mapper.createObjectNode();
+    o = JsonUtils.getJsonNodeFactory().objectNode();
     o.putArray("schemas").add("urn:id:test");
     o.put("immutable", "value");
     results = checker.checkCreate(o);
@@ -1545,7 +1568,7 @@ public class SchemaCheckerTestCase
         results.getMutabilityIssues().toString());
 
     // Can replace immutable if not already present
-    o = mapper.createObjectNode();
+    o = JsonUtils.getJsonNodeFactory().objectNode();
     o.putArray("schemas").add("urn:id:test");
     o.put("immutable", "value");
     results = checker.checkReplace(o, null);
@@ -1553,7 +1576,7 @@ public class SchemaCheckerTestCase
         results.getMutabilityIssues().toString());
 
     // Can replace if it is the same
-    o = mapper.createObjectNode();
+    o = JsonUtils.getJsonNodeFactory().objectNode();
     o.putArray("schemas").add("urn:id:test");
     o.put("immutable", "value");
     results = checker.checkReplace(o, o);
@@ -1561,7 +1584,7 @@ public class SchemaCheckerTestCase
         results.getMutabilityIssues().toString());
 
     // Can not replace if value already present and different
-    o = mapper.createObjectNode();
+    o = JsonUtils.getJsonNodeFactory().objectNode();
     o.putArray("schemas").add("urn:id:test");
     o.put("immutable", "value");
     results = checker.checkReplace(

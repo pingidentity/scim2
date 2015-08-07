@@ -18,13 +18,8 @@
 package com.unboundid.scim2.server.utils;
 
 import com.unboundid.scim2.common.Path;
-import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.types.AttributeDefinition;
-import com.unboundid.scim2.common.utils.Debug;
-import com.unboundid.scim2.common.utils.DebugType;
 import com.unboundid.scim2.common.utils.FilterEvaluator;
-
-import java.util.logging.Level;
 
 /**
  * A schema aware filter evaluator that respects case sensitivity.
@@ -49,15 +44,6 @@ public class SchemaAwareFilterEvaluator extends FilterEvaluator
   @Override
   protected AttributeDefinition getAttributeDefinition(final Path path)
   {
-    try
-    {
-      return resourceType.getAttributeDefinition(path);
-    }
-    catch (BadRequestException e)
-    {
-      Debug.debug(Level.WARNING, DebugType.EXCEPTION,
-          "Error retrieving attribute definition for " + path.toString(), e);
-      return null;
-    }
+    return resourceType.getAttributeDefinition(path);
   }
 }

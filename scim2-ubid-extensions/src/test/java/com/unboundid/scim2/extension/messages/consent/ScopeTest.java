@@ -17,17 +17,14 @@
 
 package com.unboundid.scim2.extension.messages.consent;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unboundid.scim2.common.utils.SchemaUtils;
-import com.unboundid.scim2.extension.messages.JsonObjectStringBuilder;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @Test
 public class ScopeTest
 {
-  private final ObjectMapper mapper = SchemaUtils.createSCIMCompatibleMapper();
-
   /**
    * Tests serialization of Scope objects.
    *
@@ -40,19 +37,20 @@ public class ScopeTest
     String description = "testDescription";
     String consent = Scope.CONSENT_GRANTED;
 
-    JsonObjectStringBuilder jsob = new JsonObjectStringBuilder();
-    jsob.appendProperty("name", name);
-    jsob.appendProperty("description", description);
-    jsob.appendProperty("consent", consent);
+    ObjectNode objectNode = JsonUtils.getJsonNodeFactory().objectNode();
+    objectNode.put("name", name);
+    objectNode.put("description", description);
+    objectNode.put("consent", consent);
 
-    Scope scope1 = mapper.readValue(jsob.toString(), Scope.class);
+    Scope scope1 = JsonUtils.getObjectReader().forType(Scope.class).readValue(
+        objectNode.toString());
     Assert.assertEquals(name, scope1.getName());
     Assert.assertEquals(description, scope1.getDescription());
     Assert.assertEquals(consent, scope1.getConsent());
 
     Scope scope2 =
-        mapper.readValue(mapper.writeValueAsString(scope1),
-            Scope.class);
+        JsonUtils.getObjectReader().forType(Scope.class).readValue(
+            JsonUtils.getObjectWriter().writeValueAsString(scope1));
     Assert.assertEquals(scope1, scope2);
   }
 }

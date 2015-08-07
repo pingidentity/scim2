@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
 
 import java.net.URI;
@@ -45,13 +45,17 @@ public class ListResponseTestCase
       throws Exception
   {
     ListResponse<ObjectNode> listResponse =
-        SchemaUtils.createSCIMCompatibleMapper().readValue("{  \n" +
+        JsonUtils.getObjectReader().forType(
+            new TypeReference<ListResponse<ObjectNode>>() {}).readValue(
+            "{  \n" +
             "  \"schemas\":[  \n" +
             "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n" +
             "  ],\n" +
-            "  \"totalResults\":2,\n" +
+                // Test case-insensitivity
+            "  \"totalresults\":2,\n" +
             "  \"startIndex\":1,\n" +
-            "  \"itemsPerPage\":3,\n" +
+                // Test case-insensitivity
+            "  \"ItemsPerPage\":3,\n" +
             "  \"Resources\":[  \n" +
             "    {  \n" +
             "      \"userName\":\"bjensen\"\n" +
@@ -60,7 +64,7 @@ public class ListResponseTestCase
             "      \"userName\":\"jsmith\"\n" +
             "    }\n" +
             "  ]\n" +
-            "}", new TypeReference<ListResponse<ObjectNode>>() {});
+            "}");
 
     assertEquals(listResponse.getTotalResults(), 2);
     assertEquals(listResponse.getStartIndex(), Integer.valueOf(1));
@@ -80,11 +84,11 @@ public class ListResponseTestCase
     ListResponse<ResourceTypeResource> response =
         new ListResponse<ResourceTypeResource>(100, resourceTypeList, 1, 10);
 
-    String serialized = SchemaUtils.createSCIMCompatibleMapper().
+    String serialized = JsonUtils.getObjectWriter().
         writeValueAsString(response);
-    assertEquals(SchemaUtils.createSCIMCompatibleMapper().readValue(
-        serialized,
-            new TypeReference<ListResponse<ResourceTypeResource>>() { }),
+    assertEquals(JsonUtils.getObjectReader().forType(
+            new TypeReference<ListResponse<ResourceTypeResource>>() { }).
+            readValue(serialized),
         response);
   }
 }

@@ -19,10 +19,9 @@ package com.unboundid.scim2.server;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.ScimResource;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -56,9 +55,9 @@ public class ListResponseWriter<T extends ScimResource>
   public ListResponseWriter(final OutputStream outputStream)
       throws IOException
   {
-    ObjectMapper objectMapper = SchemaUtils.createSCIMCompatibleMapper();
-    jsonGenerator = objectMapper.getFactory().createGenerator(outputStream);
-    deferredFields = objectMapper.getNodeFactory().objectNode();
+    jsonGenerator =
+        JsonUtils.getObjectReader().getFactory().createGenerator(outputStream);
+    deferredFields = JsonUtils.getJsonNodeFactory().objectNode();
   }
 
   /**

@@ -19,7 +19,7 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -54,14 +54,14 @@ public class GenericScimResourceObjectTest
   @Test
   public void testBasicParsing() throws Exception
   {
-    ObjectNode node = SchemaUtils.createSCIMCompatibleMapper().
-        readValue("{\n" +
+    ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().
+        readTree("{\n" +
             "    \"externalId\": \"user:externalId\",\n" +
             "    \"id\": \"user:id\",\n" +
             "    \"meta\": {\n" +
             "        \"created\": \"2015-02-27T11:28:39Z\",\n" +
             "        \"lastModified\": \"2015-02-27T11:29:39Z\",\n" +
-            "        \"location\": \"http://here/user\",\n" +
+            "        \"locAtion\": \"http://here/user\",\n" +
             "        \"resourceType\": \"some resource type\",\n" +
             "        \"version\": \"1.0\"\n" +
             "    },\n" +
@@ -72,7 +72,7 @@ public class GenericScimResourceObjectTest
             "    },\n" +
             "    \"shoeSize\" : \"12W\",\n" +
             "    \"password\": \"user:password\",\n" +
-            "    \"schemas\": [" +
+            "    \"Schemas\": [" +
             "    \"urn:unboundid:schemas:baseSchema\", " +
             "    \"urn:unboundid:schemas:favoriteColor\"" +
             "    ],\n" +
@@ -80,7 +80,7 @@ public class GenericScimResourceObjectTest
             "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
             "    },\n" +
             "    \"userName\": \"user:username\"\n" +
-            "}", ObjectNode.class);
+            "}");
 
     GenericScimResource gso = new GenericScimResource(node);
 
