@@ -91,7 +91,7 @@ public class JsonUtils
                           final boolean removeMatching)
         throws ScimException
     {
-      ArrayNode matchingArray = JsonUtils.getJsonNodeFactory().arrayNode();
+      ArrayNode matchingArray = getJsonNodeFactory().arrayNode();
       Iterator<JsonNode> i = array.elements();
       while(i.hasNext())
       {
