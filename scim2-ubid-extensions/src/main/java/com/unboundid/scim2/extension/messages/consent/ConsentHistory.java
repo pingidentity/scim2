@@ -23,10 +23,6 @@ import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.Meta;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -39,76 +35,6 @@ import java.util.List;
     name = "ConsentHistory")
 public final class ConsentHistory extends BaseScimResource
 {
-  public static class Builder
-  {
-    private Application application;
-    private List<Scope> scopes;
-    private Calendar created;
-    private String id;
-
-    /**
-     * Sets the scopes for the consent history.
-     *
-     * @param scopes the scopes for the consent history.
-     * @return this.
-     */
-    public Builder setScopes(final List<Scope> scopes)
-    {
-      this.scopes = scopes;
-      return this;
-    }
-
-    /**
-     * Sets the application for the consent history.
-     *
-     * @param application the application for the consent history.
-     * @return this.
-     */
-    public Builder setApplication(final Application application)
-    {
-      this.application = application;
-      return this;
-    }
-
-    /**
-     * Sets the created attribute of the meta attribute of the consent history.
-     *
-     * @param created the created attribute of the meta attribute of the
-     *                consent history.
-     * @return this.
-     */
-    public Builder setCreated(final Calendar created)
-    {
-      this.created = created;
-      return this;
-    }
-
-    /**
-     * Sets the id for the consent history.
-     *
-     * @param id the id for the consent history.
-     * @return this.
-     */
-    public Builder setId(final String id)
-    {
-      this.id = id;
-      return this;
-    }
-
-    /**
-     * Builds a new consent history from the attributes set in this builder.
-     *
-     * @return a new consent history object.
-     */
-    public ConsentHistory build()
-    {
-      if(created == null)
-      {
-        created = new GregorianCalendar();
-      }
-      return new ConsentHistory(this);
-    }
-  }
 
   @Attribute(description = "The application for this consent history entry.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
@@ -122,19 +48,22 @@ public final class ConsentHistory extends BaseScimResource
   // private no-arg constructor for Jackson
   private ConsentHistory()
   {
-    this(new Builder());
+    this(null, null);
   }
 
-  private ConsentHistory(final Builder builder)
+  /**
+   * Constructs a new ConsentHistory.  This should only be needed
+   * by the server.
+   *
+   * @param application the application for this consent history.
+   * @param scopes the scopes for this consent history.
+   */
+  public ConsentHistory(
+      final Application application, final List<Scope> scopes)
   {
-    this.application = builder.application;
-    this.setId(builder.id);
-    Meta meta  = new Meta();
-    meta.setCreated(builder.created);
-    setMeta(meta);
-
-    scopes = Collections.unmodifiableList(
-        (builder.scopes == null) ? new ArrayList<Scope>() : builder.scopes);
+    this.setMeta(new Meta());
+    this.application = application;
+    this.scopes = scopes;
   }
 
   /**
@@ -155,6 +84,42 @@ public final class ConsentHistory extends BaseScimResource
   public List<Scope> getScopes()
   {
     return scopes;
+  }
+
+  @Override
+  public boolean equals(final Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass())
+    {
+      return false;
+    }
+    if (!super.equals(o))
+    {
+      return false;
+    }
+
+    ConsentHistory that = (ConsentHistory) o;
+
+    if (application != null ?
+        !application.equals(that.application) : that.application != null)
+    {
+      return false;
+    }
+    return !(scopes != null ?
+        !scopes.equals(that.scopes) : that.scopes != null);
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int result = super.hashCode();
+    result = 31 * result + (application != null ? application.hashCode() : 0);
+    result = 31 * result + (scopes != null ? scopes.hashCode() : 0);
+    return result;
   }
 }
 
