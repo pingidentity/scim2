@@ -85,7 +85,7 @@ public class ResourcePreparer<T extends ScimResource>
         requestUriInfo.getQueryParameters().getFirst(
             QUERY_PARAMETER_EXCLUDED_ATTRIBUTES),
         requestUriInfo.getBaseUriBuilder().
-            path(resourceType.getEndpoint().getPath()).
+            path(resourceType.getEndpoint()).
             buildFromMap(requestUriInfo.getPathParameters()));
   }
 
