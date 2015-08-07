@@ -45,7 +45,7 @@ public final class ResourceTypeDefinition
   private final String id;
   private final String name;
   private final String description;
-  private final URI endpoint;
+  private final String endpoint;
   private final SchemaResource coreSchema;
   private final Map<SchemaResource, Boolean> schemaExtensions;
   private final Set<AttributeDefinition> commonAndCoreAttributes;
@@ -57,7 +57,7 @@ public final class ResourceTypeDefinition
   public static class Builder
   {
     private final String name;
-    private final URI endpoint;
+    private final String endpoint;
     private String id;
     private String description;
     private SchemaResource coreSchema;
@@ -84,7 +84,7 @@ public final class ResourceTypeDefinition
         throw new IllegalArgumentException("endpoint must not be null");
       }
       this.name = name;
-      this.endpoint = URI.create(endpoint);
+      this.endpoint = endpoint;
     }
 
     /**
@@ -199,7 +199,7 @@ public final class ResourceTypeDefinition
    */
   private ResourceTypeDefinition(
       final String id, final String name, final String description,
-      final URI endpoint,
+      final String endpoint,
       final SchemaResource coreSchema,
       final Map<SchemaResource, Boolean> schemaExtensions,
       final boolean discoverable)
@@ -251,7 +251,7 @@ public final class ResourceTypeDefinition
    *
    * @return the endpoint for the resource type.
    */
-  public URI getEndpoint()
+  public String getEndpoint()
   {
     return endpoint;
   }
@@ -406,7 +406,7 @@ public final class ResourceTypeDefinition
       }
 
       return new ResourceTypeResource(id == null ? name : id, name, description,
-          endpoint, coreSchemaUri, schemaExtensionList);
+          URI.create(endpoint), coreSchemaUri, schemaExtensionList);
     }
     catch(URISyntaxException e)
     {

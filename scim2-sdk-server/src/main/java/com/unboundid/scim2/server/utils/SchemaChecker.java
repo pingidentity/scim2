@@ -99,45 +99,35 @@ public class SchemaChecker
      * of baseExceptionMessage followed by a space delimited list of all of the
      * issues of the type (syntax, mutability, or path) being reported.
      *
-     * @param baseExceptionMessage the exception text to append the issues
-     *                             to.
      * @throws BadRequestException if issues are found during schema checking.
      */
-    public void throwSchemaExceptions(final String baseExceptionMessage)
+    public void throwSchemaExceptions()
       throws BadRequestException
     {
-      List<String> syntaxErrors = getSyntaxIssues();
       if(syntaxIssues.size() > 0)
       {
-        throw BadRequestException.invalidSyntax(
-            getErrorString(baseExceptionMessage, syntaxIssues));
+        throw BadRequestException.invalidSyntax(getErrorString(syntaxIssues));
       }
 
       if(mutabilityIssues.size() > 0)
       {
-        throw BadRequestException.mutability(
-            getErrorString(baseExceptionMessage, mutabilityIssues));
+        throw BadRequestException.mutability(getErrorString(mutabilityIssues));
       }
 
       if(pathIssues.size() > 0)
       {
-        throw BadRequestException.invalidPath(
-            getErrorString(baseExceptionMessage, pathIssues));
+        throw BadRequestException.invalidPath(getErrorString(pathIssues));
       }
     }
 
-    private String getErrorString(final String errorMessage,
-                                  final List<String> issues)
+    private String getErrorString(final List<String> issues)
     {
       if ((issues == null) || issues.isEmpty())
       {
         return null;
       }
 
-      StringBuilder errorStringBuilder = new StringBuilder(errorMessage);
-      errorStringBuilder.append(" ");
-      errorStringBuilder.append(StaticUtils.collectionToString(issues, " "));
-      return errorStringBuilder.toString();
+      return StaticUtils.collectionToString(issues, ", ");
     }
   }
 

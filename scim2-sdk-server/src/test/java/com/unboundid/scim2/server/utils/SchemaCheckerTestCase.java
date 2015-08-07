@@ -1630,7 +1630,6 @@ public class SchemaCheckerTestCase
    * schema checking.  This test uses a data provider for its data, and uses
    * reflection to set private fields of the results to make the test simpler.
    *
-   * @param baseMsg The base message that will be used.
    * @param expectedMsg The expected exception message.
    * @param syntaxIssues A list of syntax issues.
    * @param mutabilityIssues A list of mutability issues.
@@ -1638,7 +1637,7 @@ public class SchemaCheckerTestCase
    * @throws Exception throw in case of error.
    */
   @Test(dataProvider="schemaResultsProvider")
-  public void testSchemaResultExceptions(String baseMsg, String expectedMsg,
+  public void testSchemaResultExceptions(String expectedMsg,
     List<String> syntaxIssues, List<String> mutabilityIssues,
     List<String> pathIssues) throws Exception
   {
@@ -1649,7 +1648,7 @@ public class SchemaCheckerTestCase
 
     try
     {
-      results.throwSchemaExceptions(baseMsg);
+      results.throwSchemaExceptions();
     }
     catch(BadRequestException ex)
     {
@@ -1683,25 +1682,25 @@ public class SchemaCheckerTestCase
   private Object[][] getResultData()
   {
     return new Object[][] {
-        {"TestMessage", "TestMessage syntaxIssueOne syntaxIssueTwo",
+        {"syntaxIssueOne, syntaxIssueTwo",
             Arrays.asList("syntaxIssueOne", "syntaxIssueTwo"),
             Collections.emptyList(), Collections.emptyList()},
-        {"TestMessage", "TestMessage mutabilityIssueOne mutabilityIssueTwo",
+        {"mutabilityIssueOne, mutabilityIssueTwo",
             Collections.emptyList(),
             Arrays.asList("mutabilityIssueOne", "mutabilityIssueTwo"),
             Collections.emptyList()},
-        {"TestMessage", "TestMessage pathIssueOne pathIssueTwo",
+        {"pathIssueOne, pathIssueTwo",
             Collections.emptyList(), Collections.emptyList(),
             Arrays.asList("pathIssueOne", "pathIssueTwo")},
-        {"TestMessage", "TestMessage syntaxIssueOne syntaxIssueTwo",
+        {"syntaxIssueOne, syntaxIssueTwo",
             Arrays.asList("syntaxIssueOne", "syntaxIssueTwo"),
             Arrays.asList("mutabilityIssueOne", "mutabilityIssueTwo"),
             Arrays.asList("pathIssueOne", "pathIssueTwo")},
-        {"TestMessage", "TestMessage mutabilityIssueOne",
+        {"mutabilityIssueOne",
             Collections.emptyList(),
             Arrays.asList("mutabilityIssueOne"),
             Arrays.asList("pathIssueOne", "pathIssueTwo")},
-        {"TestMessage", null,
+        {null,
             Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList()}
     };

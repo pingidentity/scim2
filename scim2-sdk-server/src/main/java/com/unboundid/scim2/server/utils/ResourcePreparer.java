@@ -144,7 +144,7 @@ public class ResourcePreparer<T extends ScimResource>
     }
     this.resourceType = resourceType;
     this.baseUri = requestUriInfo.getBaseUriBuilder().
-        path(resourceType.getEndpoint().getPath()).
+        path(resourceType.getEndpoint()).
         buildFromMap(requestUriInfo.getPathParameters());
   }
 
