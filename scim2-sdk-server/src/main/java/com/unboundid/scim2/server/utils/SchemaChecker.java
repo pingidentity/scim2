@@ -91,44 +91,6 @@ public class SchemaChecker
     {
       return Collections.unmodifiableList(pathIssues);
     }
-
-    /**
-     * Throws an exception if there are schema validation errors.  The exception
-     * will contain all of the syntax errors, mutability errors or path issues
-     * (in that order of precedence).  The exception message will be a comma
-     * delimited list of all of the issues of the type (syntax, mutability, or
-     * path) being reported.
-     *
-     * @throws BadRequestException if issues are found during schema checking.
-     */
-    public void throwSchemaExceptions()
-      throws BadRequestException
-    {
-      if(syntaxIssues.size() > 0)
-      {
-        throw BadRequestException.invalidSyntax(getErrorString(syntaxIssues));
-      }
-
-      if(mutabilityIssues.size() > 0)
-      {
-        throw BadRequestException.mutability(getErrorString(mutabilityIssues));
-      }
-
-      if(pathIssues.size() > 0)
-      {
-        throw BadRequestException.invalidPath(getErrorString(pathIssues));
-      }
-    }
-
-    private String getErrorString(final List<String> issues)
-    {
-      if ((issues == null) || issues.isEmpty())
-      {
-        return null;
-      }
-
-      return StaticUtils.collectionToString(issues, ", ");
-    }
   }
 
   private ResourceTypeDefinition resourceType;
