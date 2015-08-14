@@ -23,10 +23,6 @@ import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.Meta;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 @Schema(description = "Consent objects.  These represent a user giving" +
@@ -35,79 +31,6 @@ import java.util.List;
     name = "Consent")
 public final class Consent extends BaseScimResource
 {
-
-  public static class Builder
-  {
-    private Application application;
-    private List<Scope> scopes;
-    private Calendar lastModified;
-    private String id;
-
-    /**
-     * Sets the scopes for this consent.
-     *
-     * @param scopes the scopes for this consent.
-     * @return this
-     */
-    public Builder setScopes(final List<Scope> scopes)
-    {
-      this.scopes = scopes;
-      return this;
-    }
-
-    /**
-     * Sets the application for this consent.
-     *
-     * @param application the application for this consent.
-     * @return this
-     */
-    public Builder setApplication(final Application application)
-    {
-      this.application = application;
-      return this;
-    }
-
-    /**
-     * Sets the lastModified attribute of the meta attribute
-     *                     for this consent.
-     *
-     * @param lastModified the lastModified attribute of the meta attribute
-     *                     for this consent.
-     * @return this
-     */
-    public Builder setLastModified(final Calendar lastModified)
-    {
-      this.lastModified = lastModified;
-      return this;
-    }
-
-    /**
-     * Sets the id of the consent.
-     *
-     * @param id the id of the consent (this should be set to the
-     *           application name).
-     */
-    public void setId(final String id)
-    {
-      this.id = id;
-    }
-
-    /**
-     * Builds a new Consent object.
-     *
-     * @return a new consent object created from the attributes set on this
-     * builder.
-     */
-    public Consent build()
-    {
-      if(lastModified == null)
-      {
-        lastModified = new GregorianCalendar();
-      }
-      return new Consent(this);
-    }
-  }
-
   @Attribute(description = "The application for this consent.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final Application application;
@@ -117,22 +40,25 @@ public final class Consent extends BaseScimResource
       multiValueClass = Scope.class)
   private final List<Scope> scopes;
 
-  // private no-arg constructor for Jackson
+  // private no-arg constructor for Jackson.  Jackson will construct
+  // this object and set all fields (even private final ones).
   private Consent()
   {
-    this(new Builder());
+    this(null, null);
   }
 
-  private Consent(final Builder builder)
+  /**
+   * Construct a new Consent object.  This should only be needed by the
+   * server.
+   *
+   * @param application application for this consent.
+   * @param scopes scopes for this consent.
+   */
+  public Consent(final Application application, final List<Scope> scopes)
   {
-    this.application = builder.application;
-    Meta meta  = new Meta();
-    meta.setLastModified(builder.lastModified);
-    setMeta(meta);
-    setId(builder.id);
-
-    scopes = Collections.unmodifiableList(
-        (builder.scopes == null) ? new ArrayList<Scope>() : builder.scopes);
+    this.setMeta(new Meta());
+    this.application = application;
+    this.scopes = scopes;
   }
 
   /**

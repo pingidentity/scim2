@@ -17,12 +17,9 @@
 
 package com.unboundid.scim2.extension.messages.consent;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.net.URL;
 
 @Test
 public class ConsentTest
@@ -35,58 +32,43 @@ public class ConsentTest
   @Test
   public void testSerialization() throws Exception
   {
-    Application application = new Application.Builder().
-        setName("appName").setDescription("appDesc").
-        setEmailAddress("email@address.com").
-        setIconUrl(new URL("http://localhost:12345/app/icon")).
-        setIconUrl(new URL("http://localhost:12345/app")).build();
+    String consentString =
+        "{  \n" +
+            "   \"application\":{  \n" +
+            "      \"name\":\"appName\",\n" +
+            "      \"description\":\"appDesc\",\n" +
+            "      \"iconUrl\":\"http://localhost:12345/app\",\n" +
+            "      \"emailAddress\":\"email@address.com\"\n" +
+            "   },\n" +
+            "   \"scope\":[  \n" +
+            "      {  \n" +
+            "         \"name\":\"name1\",\n" +
+            "         \"description\":\"description1\",\n" +
+            "         \"consent\":\"granted\"\n" +
+            "      },\n" +
+            "      {  \n" +
+            "         \"name\":\"name2\",\n" +
+            "         \"description\":\"description2\",\n" +
+            "         \"consent\":\"denied\"\n" +
+            "      },\n" +
+            "      {  \n" +
+            "         \"name\":\"name3\",\n" +
+            "         \"description\":\"description3\",\n" +
+            "         \"consent\":\"revoked\"\n" +
+            "      }\n" +
+            "   ],\n" +
+            "   \"meta\":{  \n" +
+            "      \"lastModified\":\"2015-07-06T04:03:02Z\"\n" +
+            "   },\n" +
+            "   \"id\":\"ConsentId\"\n" +
+            "}";
 
-    Scope scope1 = new Scope.Builder().setConsent(Scope.CONSENT_GRANTED).
-        setName("name1").setDescription("description1").build();
-    Scope scope2 = new Scope.Builder().setConsent(Scope.CONSENT_DENIED).
-        setName("name2").setDescription("description2").build();
-    Scope scope3 = new Scope.Builder().setConsent(Scope.CONSENT_REVOKED).
-        setName("name3").setDescription("description3").build();
-
-    String meta_lastModified = "2015-07-06T04:03:02Z";
-    String id = "ConsentId";
-
-
-    ObjectNode objectNode = JsonUtils.getJsonNodeFactory().objectNode();
-    objectNode.putPOJO("application", application);
-    objectNode.putArray("scope").addPOJO(scope1).addPOJO(scope2).addPOJO(
-        scope3);
-    objectNode.putObject("meta").put("lastModified", meta_lastModified);
-    objectNode.put("id", id);
-
-    Consent consent1 = JsonUtils.getObjectReader().forType(Consent.class).
-        readValue(JsonUtils.getObjectWriter().writeValueAsString(objectNode));
-    Assert.assertEquals(application, consent1.getApplication());
-    Assert.assertEquals(id, consent1.getId());
-
-    for(Scope scope : consent1.getScopes())
-    {
-      if(scope.getName().equals(scope1.getName()))
-      {
-        Assert.assertEquals(scope1, scope);
-      }
-      else if(scope.getName().equals(scope2.getName()))
-      {
-        Assert.assertEquals(scope2, scope);
-      }
-      else if(scope.getName().equals(scope3.getName()))
-      {
-        Assert.assertEquals(scope3, scope);
-      }
-      else
-      {
-        Assert.fail("Unknown scope found - name = " + scope.getName());
-      }
-    }
-
-    Consent consent2 =
-        JsonUtils.getObjectReader().forType(Consent.class).readValue(
-            JsonUtils.getObjectWriter().writeValueAsString(consent1));
-    Assert.assertEquals(consent1, consent2);
+    Consent consent = JsonUtils.getObjectReader().forType(Consent.class).
+        readValue(consentString);
+    String serializedConsent =
+        JsonUtils.getObjectWriter().writeValueAsString(consent);
+    Consent deserializedConsent = JsonUtils.getObjectReader().
+        forType(Consent.class).readValue(serializedConsent);
+    Assert.assertEquals(consent, deserializedConsent);
   }
 }

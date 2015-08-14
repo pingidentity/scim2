@@ -21,10 +21,6 @@ import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
-import com.unboundid.scim2.common.types.Meta;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  * External identity provider information.
@@ -37,35 +33,26 @@ public final class ExternalIdentity extends BaseScimResource
 
   public static class Builder
   {
-    private Provider provider;
-    private String providerUserId;
+    private String providerName;
     private String accessToken;
     private String refreshToken;
-    private Calendar created;
-    private Calendar lastModified;
-    private String id;
+    private String providerUserId;
 
+    /**
+     * Constructs a new builder.
+     */
+    public Builder()
+    {
+    }
     /**
      * Sets the external identity provider.
      *
-     * @param provider the external identity provider.
+     * @param providerName the external identity provider name.
      * @return this;
      */
-    public Builder setProvider(final Provider provider)
+    public Builder setProviderName(final String providerName)
     {
-      this.provider = provider;
-      return this;
-    }
-
-    /**
-     * Sets the user id from the external identity provider.
-     *
-     * @param providerUserId the user id from the external identity provider.
-     * @return this;
-     */
-    public Builder setProviderUserId(final String providerUserId)
-    {
-      this.providerUserId = providerUserId;
+      this.providerName = providerName;
       return this;
     }
 
@@ -94,68 +81,40 @@ public final class ExternalIdentity extends BaseScimResource
     }
 
     /**
-     * Sets the created time.
+     * Sets the user id from the external identity provider.
      *
-     * @param created the created time.
+     * @param providerUserId the user id from the external identity provider.
      * @return this;
      */
-    public Builder setCreated(final Calendar created)
+    public Builder setProviderUserId(final String providerUserId)
     {
-      this.created = created;
+      this.providerUserId = providerUserId;
       return this;
     }
 
     /**
-     * Sets the last modified time.
-     *
-     * @param lastModified the last modified time.
-     * @return this;
-     */
-    public Builder setLastModified(final Calendar lastModified)
-    {
-      this.lastModified = lastModified;
-      return this;
-    }
-
-    /**
-     * Sets the id of this external identity.
-     *
-     * @param id the id of this external identity.  This should be the
-     *           name of the external identity provider.
-     * @return this;
-     */
-    public Builder setId(final String id)
-    {
-      this.id = id;
-      return this;
-    }
-
-    /**
-     * Builds a new external identity object from values in this builder.
-     *
-     * @return a new external identity object.
-     */
+      * Builds a new external identity object from values in this builder.
+      *
+      * @return a new external identity object.
+      */
     public ExternalIdentity build()
     {
-      if(created == null)
-      {
-        created = new GregorianCalendar();
-      }
-      if(lastModified == null)
-      {
-        lastModified = new GregorianCalendar();
-      }
       return new ExternalIdentity(this);
     }
+
   }
 
   @Attribute(description = "The external IDP.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final Provider provider;
 
+  // TODO this should be READ_ONLY.  I changed it to immutable temporarily,
+  // because at present it will get stored with null, and it's a key value.
+  // that causes problems.  It can't be removed because we dont allow
+  // filters to have null key values.
   @Attribute(description = "The user ID at the provider. If not available, " +
       "the user is not linked to any external identities at the provider.",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final String providerUserId;
 
   @Attribute(description = "The access token issued by the provider that " +
@@ -168,8 +127,10 @@ public final class ExternalIdentity extends BaseScimResource
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final String refreshToken;
 
-  // private no-arg constructor for Jackson
-  private ExternalIdentity()
+  /**
+   * No-argument constructor.
+   */
+  public ExternalIdentity()
   {
     this(new Builder());
   }
@@ -181,15 +142,27 @@ public final class ExternalIdentity extends BaseScimResource
    */
   private ExternalIdentity(final Builder builder)
   {
-    Meta meta  = new Meta();
-    meta.setLastModified(builder.created);
-    meta.setLastModified(builder.lastModified);
-    setMeta(meta);
-    this.provider = builder.provider;
-    this.providerUserId = builder.providerUserId;
-    this.accessToken = builder.accessToken;
-    this.refreshToken = builder.refreshToken;
-    this.setId(builder.id);
+    this(new Provider.Builder().setName(builder.providerName).build(),
+        builder.providerUserId, builder.accessToken, builder.refreshToken);
+  }
+
+  /**
+   * Constructs a new ExternalIdentity object.  This should only be needed
+   * by the server.  Clients should instead construct ExternalIdentity objects
+   * with the provided builder.
+   *
+   * @param provider the provider
+   * @param providerUserId the provider user id.
+   * @param accessToken the access token.
+   * @param refreshToken the refresh token (optional.  May be null.).
+   */
+  public ExternalIdentity(final Provider provider, final String providerUserId,
+                          final String accessToken, final String refreshToken)
+  {
+    this.provider = provider;
+    this.providerUserId = providerUserId;
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
   }
 
   /**
