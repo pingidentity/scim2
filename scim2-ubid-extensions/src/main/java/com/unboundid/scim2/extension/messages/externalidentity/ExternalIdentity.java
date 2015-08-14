@@ -21,7 +21,6 @@ import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
-import com.unboundid.scim2.common.types.Meta;
 
 /**
  * External identity provider information.
@@ -37,11 +36,12 @@ public final class ExternalIdentity extends BaseScimResource
     private String providerName;
     private String accessToken;
     private String refreshToken;
+    private String providerUserId;
 
     /**
      * Constructs a new builder.
      */
-    Builder()
+    public Builder()
     {
     }
     /**
@@ -79,15 +79,42 @@ public final class ExternalIdentity extends BaseScimResource
       this.refreshToken = refreshToken;
       return this;
     }
+
+    /**
+     * Sets the user id from the external identity provider.
+     *
+     * @param providerUserId the user id from the external identity provider.
+     * @return this;
+     */
+    public Builder setProviderUserId(final String providerUserId)
+    {
+      this.providerUserId = providerUserId;
+      return this;
+    }
+
+    /**
+      * Builds a new external identity object from values in this builder.
+      *
+      * @return a new external identity object.
+      */
+    public ExternalIdentity build()
+    {
+      return new ExternalIdentity(this);
+    }
+
   }
 
   @Attribute(description = "The external IDP.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final Provider provider;
 
+  // TODO this should be READ_ONLY.  I changed it to immutable temporarily,
+  // because at present it will get stored with null, and it's a key value.
+  // that causes problems.  It can't be removed because we dont allow
+  // filters to have null key values.
   @Attribute(description = "The user ID at the provider. If not available, " +
       "the user is not linked to any external identities at the provider.",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final String providerUserId;
 
   @Attribute(description = "The access token issued by the provider that " +
@@ -100,8 +127,10 @@ public final class ExternalIdentity extends BaseScimResource
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final String refreshToken;
 
-  // private no-arg constructor for Jackson
-  private ExternalIdentity()
+  /**
+   * No-argument constructor.
+   */
+  public ExternalIdentity()
   {
     this(new Builder());
   }
@@ -114,7 +143,7 @@ public final class ExternalIdentity extends BaseScimResource
   private ExternalIdentity(final Builder builder)
   {
     this(new Provider.Builder().setName(builder.providerName).build(),
-        null, builder.accessToken, builder.refreshToken);
+        builder.providerUserId, builder.accessToken, builder.refreshToken);
   }
 
   /**
@@ -130,8 +159,6 @@ public final class ExternalIdentity extends BaseScimResource
   public ExternalIdentity(final Provider provider, final String providerUserId,
                           final String accessToken, final String refreshToken)
   {
-    setMeta(new Meta());
-    this.setMeta(new Meta());
     this.provider = provider;
     this.providerUserId = providerUserId;
     this.accessToken = accessToken;
