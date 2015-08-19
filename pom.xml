@@ -50,7 +50,7 @@
         <url>http://www.unboundid.com</url>
     </organization>
     <scm>
-        <connection>scm:git:https://github.com/UnboundID/scim2.git</connection>
+        <connection>scm:git:git@github.com:UnboundID/scim2.git</connection>
     </scm>
 
     <modules>
