@@ -230,7 +230,10 @@
                 <version>2.2.2</version>
                 <configuration>
                   <tagNameFormat>scim-@{project.version}</tagNameFormat>
+<!--
                   <goals>deploy scm:export -Doriginal.target.dir=${project.build.directory} -Dgpg.sign</goals>
+-->
+                  <goals>deploy</goals>
                   <useReleaseProfile>false</useReleaseProfile>
                   <checkModificationExcludeList>pom.xml</checkModificationExcludeList>
                   <waitBeforeTagging>3</waitBeforeTagging>
