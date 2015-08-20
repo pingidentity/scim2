@@ -50,7 +50,7 @@
         <url>http://www.unboundid.com</url>
     </organization>
     <scm>
-        <connection>scm:git:https://github.com/UnboundID/scim2.git</connection>
+        <connection>scm:git:git@github.com:UnboundID/scim2.git</connection>
     </scm>
 
     <modules>
@@ -230,7 +230,10 @@
                 <version>2.2.2</version>
                 <configuration>
                   <tagNameFormat>scim-@{project.version}</tagNameFormat>
+<!--
                   <goals>deploy scm:export -Doriginal.target.dir=${project.build.directory} -Dgpg.sign</goals>
+-->
+                  <goals>deploy</goals>
                   <useReleaseProfile>false</useReleaseProfile>
                   <checkModificationExcludeList>pom.xml</checkModificationExcludeList>
                   <waitBeforeTagging>3</waitBeforeTagging>
