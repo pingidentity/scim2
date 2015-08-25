@@ -320,6 +320,38 @@ public final class ResourceTypeDefinition
   }
 
   /**
+   * Gets the schema for the attribute in the path.
+   *
+   * @param path The attribute path.
+   * @return the schema for the attribute in the path or {@code null} if the
+   *         attribute's schema is not defined.
+   */
+  public SchemaResource getSchema(final Path path)
+  {
+    String schemaId = path.getExtensionSchema();
+    if(schemaId != null)
+    {
+      schemaId = StaticUtils.toLowerCase(schemaId);
+    }
+
+    if(schemaId == null || schemaId.equals(
+        StaticUtils.toLowerCase(coreSchema.getId())))
+    {
+      return getCoreSchema();
+    }
+
+    for(SchemaResource schemaExtension : schemaExtensions.keySet())
+    {
+      if(schemaId.equals(StaticUtils.toLowerCase(schemaExtension.getId())))
+      {
+        return schemaExtension;
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * Normalize a path by removing all value filters and the schema URI prefix
    * for core attributes.
    *

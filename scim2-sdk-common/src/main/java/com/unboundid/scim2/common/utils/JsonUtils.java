@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -1128,11 +1129,20 @@ public class JsonUtils
   {
     ObjectMapper mapper = new ObjectMapper();
 
+    // Don't serialize POJO nulls as JSON nulls.
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+
+    // Only use ISO8601 format for dates.
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    mapper.setDateFormat(new ISO8601DateFormat());
+
+    // Do not care about case when de-serializing POJOs.
     mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+
+    // Use the case-insensitive JsonNodes.
     mapper.setNodeFactory(new ScimJsonNodeFactory());
+
     return mapper;
   }
 }
