@@ -25,9 +25,7 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
-import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
 import javax.ws.rs.core.UriBuilder;
@@ -106,7 +104,7 @@ public class ResourcePreparer<T extends ScimResource>
     if(attributesString != null && !attributesString.isEmpty())
     {
       Set<String> attributeSet = StaticUtils.arrayToSet(
-          StaticUtils.splitCommaSeperatedString(attributesString));
+          StaticUtils.splitCommaSeparatedString(attributesString));
       this.queryAttributes = new LinkedHashSet<Path>(attributeSet.size());
       for(String attribute : attributeSet)
       {
@@ -128,7 +126,7 @@ public class ResourcePreparer<T extends ScimResource>
         !excludedAttributesString.isEmpty())
     {
       Set<String> attributeSet = StaticUtils.arrayToSet(
-          StaticUtils.splitCommaSeperatedString(excludedAttributesString));
+          StaticUtils.splitCommaSeparatedString(excludedAttributesString));
       this.queryAttributes = new LinkedHashSet<Path>(attributeSet.size());
       for(String attribute : attributeSet)
       {
@@ -288,137 +286,14 @@ public class ResourcePreparer<T extends ScimResource>
 
     ObjectNode returnedObject =
         returnedResource.asGenericScimResource().getObjectNode();
+    ScimResourceTrimmer trimmer =
+        new ScimResourceTrimmer(resourceType, requestAttributes,
+                                queryAttributes, excluded);
     GenericScimResource preparedResource =
         new GenericScimResource(
-            trimObjectNode(returnedObject, requestAttributes, Path.root()));
+            trimmer.trimObjectNode(returnedObject, Path.root()));
     setResourceTypeAndLocation((T) preparedResource);
     return preparedResource;
-  }
-
-  /**
-   * Trim attributes of the object node to return based on schema and the client
-   * request.
-   *
-   * @param objectNode The object node to return.
-   * @param requestAttributes The attributes in the request object or
-   *                          {@code null} for other requests.
-   * @return The trimmed object node ready to return to the client.
-   */
-  private ObjectNode trimObjectNode(final ObjectNode objectNode,
-                                    final Set<Path> requestAttributes,
-                                    final Path parentPath)
-  {
-    ObjectNode objectToReturn = JsonUtils.getJsonNodeFactory().objectNode();
-    Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while(i.hasNext())
-    {
-      Map.Entry<String, JsonNode> field = i.next();
-      Path path = parentPath.attribute(field.getKey());
-      if(shouldReturn(path, requestAttributes,
-          queryAttributes, excluded))
-      {
-        if (field.getValue().isArray())
-        {
-          objectToReturn.set(field.getKey(), trimArrayNode(
-              (ArrayNode) field.getValue(), requestAttributes, path));
-        }
-        else if (field.getValue().isObject())
-        {
-          objectToReturn.set(field.getKey(), trimObjectNode(
-              (ObjectNode) field.getValue(), requestAttributes, path));
-        }
-        else
-        {
-          objectToReturn.set(field.getKey(), field.getValue());
-        }
-      }
-    }
-    return objectToReturn;
-  }
-
-  /**
-   * Trim attributes of the values in the array node to return based on
-   * schema and the client request.
-   *
-   * @param arrayNode The array node to return.
-   * @param requestAttributes The attributes in the request object or
-   *                          {@code null} for other requests.
-   * @return The trimmed object node ready to return to the client.
-   */
-  private ArrayNode trimArrayNode(final ArrayNode arrayNode,
-                                  final Set<Path> requestAttributes,
-                                  final Path parentPath)
-  {
-    ArrayNode arrayToReturn = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(JsonNode value : arrayNode)
-    {
-      if(value.isArray())
-      {
-        arrayToReturn.add(trimArrayNode((ArrayNode) value,
-            requestAttributes, parentPath));
-      }
-      else if(value.isObject())
-      {
-        arrayToReturn.add(trimObjectNode((ObjectNode) value,
-            requestAttributes, parentPath));
-      }
-      else
-      {
-        arrayToReturn.add(value);
-      }
-    }
-    return arrayToReturn;
-  }
-
-  /**
-   * Determine if the attribute specified by the path should be returned.
-   *
-   * @param path The path for the attribute.
-   * @param requestAttributes The attributes in the request object or
-   *                          {@code null} for other requests.
-   * @param queryAttributes The attributes to return or exclude.
-   * @param excluded Whether the queryAttributes should be excluded.
-   * @return {@code true} to return the attribute or {@code false} to remove the
-   * attribute from the returned resource..
-   */
-  private boolean shouldReturn(final Path path,
-                               final Set<Path> requestAttributes,
-                               final Set<Path> queryAttributes,
-                               final boolean excluded)
-  {
-    AttributeDefinition attributeDefinition =
-        resourceType.getAttributeDefinition(path);
-    AttributeDefinition.Returned returned = attributeDefinition == null ?
-        AttributeDefinition.Returned.DEFAULT :
-        attributeDefinition.getReturned();
-
-    switch(returned)
-    {
-      case ALWAYS:
-        return true;
-      case NEVER:
-        return false;
-      case REQUEST:
-        // Return only if it was one of the request attributes or if there are
-        // no request attributes, then only if it was one of the override query
-        // attributes.
-        return requestAttributes.contains(path) ||
-            (requestAttributes.isEmpty() && !excluded &&
-                queryAttributes.contains(path));
-      default:
-        // Return if it is not one of the excluded query attributes and no
-        // override query attributes are provided. If override query attributes
-        // are provided, only return if it is one of them.
-        if(excluded)
-        {
-          return !queryAttributes.contains(path);
-        }
-        else
-        {
-          return queryAttributes.isEmpty() ||
-              queryAttributes.contains(path);
-        }
-    }
   }
 
   /**
