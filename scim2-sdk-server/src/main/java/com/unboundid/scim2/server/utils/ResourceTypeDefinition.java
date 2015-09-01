@@ -358,7 +358,7 @@ public final class ResourceTypeDefinition
    * @param path The path to normalize.
    * @return The normalized path.
    */
-  Path normalizePath(final Path path)
+  public Path normalizePath(final Path path)
   {
     Path normalizedPath = Path.root();
     for(int i = 0; i < path.size(); i++)
