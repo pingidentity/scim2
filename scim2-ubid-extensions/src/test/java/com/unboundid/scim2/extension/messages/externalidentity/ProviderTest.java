@@ -22,8 +22,6 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.net.URL;
-
 @Test
 public class ProviderTest
 {
@@ -48,10 +46,10 @@ public class ProviderTest
 
     Provider provider1 = JsonUtils.getObjectReader().forType(Provider.class).
         readValue(objectNode.toString());
-    Assert.assertEquals(name, provider1.getName());
-    Assert.assertEquals(description, provider1.getDescription());
-    Assert.assertEquals(type, provider1.getType());
-    Assert.assertEquals(new URL(iconUrl), provider1.getIconUrl());
+    Assert.assertEquals(provider1.getName(), name);
+    Assert.assertEquals(provider1.getDescription(), description);
+    Assert.assertEquals(provider1.getType(), type);
+    Assert.assertEquals(provider1.getIconUrl(), iconUrl);
 
     Provider provider2 =
         JsonUtils.getObjectReader().forType(Provider.class).readValue(

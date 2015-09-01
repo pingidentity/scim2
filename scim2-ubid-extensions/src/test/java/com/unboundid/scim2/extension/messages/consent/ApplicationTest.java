@@ -22,8 +22,6 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.net.URL;
-
 @Test
 public class ApplicationTest
 {
@@ -50,10 +48,10 @@ public class ApplicationTest
 
     Application app1 = JsonUtils.getObjectReader().forType(Application.class).
         readValue(objectNode.toString());
-    Assert.assertEquals(name, app1.getName());
-    Assert.assertEquals(description, app1.getDescription());
-    Assert.assertEquals(new URL(iconUrl), app1.getIconUrl());
-    Assert.assertEquals(emailAddress, app1.getEmailAddress());
+    Assert.assertEquals(app1.getName(), name);
+    Assert.assertEquals(app1.getDescription(), description);
+    Assert.assertEquals(app1.getIconUrl(), iconUrl);
+    Assert.assertEquals(app1.getEmailAddress(), emailAddress);
 
     Application app2 =
         JsonUtils.getObjectReader().forType(Application.class).readValue(

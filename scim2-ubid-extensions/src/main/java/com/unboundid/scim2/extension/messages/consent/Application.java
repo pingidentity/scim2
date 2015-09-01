@@ -20,8 +20,6 @@ package com.unboundid.scim2.extension.messages.consent;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
-import java.net.URL;
-
 public final class Application
 {
 
@@ -29,8 +27,8 @@ public final class Application
   {
     private String name;
     private String description;
-    private URL url;
-    private URL iconUrl;
+    private String url;
+    private String iconUrl;
     private String emailAddress;
 
     /**
@@ -63,7 +61,7 @@ public final class Application
      * @param url the url of the application.
      * @return this.
      */
-    public Builder setUrl(final URL url)
+    public Builder setUrl(final String url)
     {
       this.url = url;
       return this;
@@ -75,7 +73,7 @@ public final class Application
      * @param iconUrl the icon url of the application.
      * @return this.
      */
-    public Builder setIconUrl(final URL iconUrl)
+    public Builder setIconUrl(final String iconUrl)
     {
       this.iconUrl = iconUrl;
       return this;
@@ -118,12 +116,12 @@ public final class Application
   @Attribute(description = "The reference to the page of the application " +
       "authorized by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private final URL url;
+  private final String url;
 
   @Attribute(description = "The reference to icon of the application " +
       "authorized by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private final URL iconUrl;
+  private final String iconUrl;
 
   @Attribute(description = "The name of the application authorized " +
       "by the consent.",
@@ -170,7 +168,7 @@ public final class Application
    *
    * @return the url of the application.
    */
-  public URL getUrl()
+  public String getUrl()
   {
     return url;
   }
@@ -180,7 +178,7 @@ public final class Application
    *
    * @return the icon url of the application.
    */
-  public URL getIconUrl()
+  public String getIconUrl()
   {
     return iconUrl;
   }
