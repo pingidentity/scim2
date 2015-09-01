@@ -38,8 +38,6 @@ import java.util.List;
  */
 public final class Path implements Iterable<Path.Element>
 {
-  private static Path ROOT = new Path(Collections.<Element>emptyList());
-
   /**
    * This class represents an element of the path.
    */
@@ -144,6 +142,7 @@ public final class Path implements Iterable<Path.Element>
     }
   }
 
+  private final String schemaUrn;
   private final List<Element> elements;
 
   /**
@@ -151,8 +150,9 @@ public final class Path implements Iterable<Path.Element>
    *
    * @param elements The path elements.
    */
-  private Path(final List<Element> elements)
+  private Path(final String schemaUrn, final List<Element> elements)
   {
+    this.schemaUrn = schemaUrn;
     this.elements = Collections.unmodifiableList(elements);
   }
 
@@ -169,7 +169,7 @@ public final class Path implements Iterable<Path.Element>
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.add(new Element(attribute, null));
-    return new Path(newElements);
+    return new Path(schemaUrn, newElements);
   }
 
   /**
@@ -186,22 +186,88 @@ public final class Path implements Iterable<Path.Element>
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.add(new Element(attribute, valueFilter));
-    return new Path(newElements);
+    return new Path(schemaUrn, newElements);
   }
 
   /**
-   * Creates a new path to the parent of the attribute referenced by this path.
+   * Create a new path to the sub-attribute path of the attribute referenced by
+   * this path.
    *
-   * @return A new path to the parent of the attribute referenced by this path
-   *         or {@code null} if this path is a root path.
+   * @param path The path of the sub-attribute.
+   *
+   * @return A new path to a sub-attribute of the attribute referenced by this
+   * path.
    */
-  public Path parent()
+  public Path attribute(final Path path)
   {
-    if(isRoot())
-    {
-      return null;
-    }
-    return new Path(elements.subList(0, elements.size() - 1));
+    List<Element> newElements = new ArrayList<Element>(
+        this.elements.size() + path.size());
+    newElements.addAll(this.elements);
+    newElements.addAll(path.elements);
+    return new Path(schemaUrn, newElements);
+  }
+
+  /**
+   * Create a new path where the attribute and filter at the specified index
+   * is replaced with those provided.
+   *
+   * @param index The index of the element to replace.
+   * @param attribute The replacement attribute.
+   * @param valueFilter The replacement value filter.
+   * @return The new path.
+   */
+  public Path replace(final int index,
+                      final String attribute,
+                      final Filter valueFilter)
+  {
+    List<Element> newElements = new ArrayList<Element>(this.elements);
+    newElements.set(index, new Element(attribute, valueFilter));
+    return new Path(schemaUrn, newElements);
+  }
+
+  /**
+   * Create a new path where the attribute at the specified index is replaced
+   * with those provided.
+   *
+   * @param index The index of the element to replace.
+   * @param attribute The replacement attribute.
+   * @return The new path.
+   */
+  public Path replace(final int index, final String attribute)
+  {
+    List<Element> newElements = new ArrayList<Element>(this.elements);
+    newElements.set(index,
+        new Element(attribute, this.elements.get(index).getValueFilter()));
+    return new Path(schemaUrn, newElements);
+  }
+
+  /**
+   * Create a new path where the filter at the specified index is replaced with
+   * those provided.
+   *
+   * @param index The index of the element to replace.
+   * @param valueFilter The replacement value filter.
+   * @return The new path.
+   */
+  public Path replace(final int index, final Filter valueFilter)
+  {
+    List<Element> newElements = new ArrayList<Element>(this.elements);
+    newElements.set(index,
+        new Element(this.elements.get(index).getAttribute(), valueFilter));
+    return new Path(schemaUrn, newElements);
+  }
+
+  /**
+   * Creates a new path to a beginning portion of this path.
+   *
+   * @param index The exclusive index of the endpoint path element.
+   * @return A ew path to a beginning portion of this path.
+   * @throws IndexOutOfBoundsException if the index is out of range
+   *         (<tt>index &lt; 0 || index &gt; size()</tt>)
+   */
+  public Path subPath(final int index) throws IndexOutOfBoundsException
+  {
+    return new Path(schemaUrn, elements.subList(0, index));
   }
 
   /**
@@ -235,8 +301,7 @@ public final class Path implements Iterable<Path.Element>
    */
   public boolean isRoot()
   {
-    return elements.isEmpty() || elements.size() == 1 &&
-        SchemaUtils.isUrn(elements.get(0).getAttribute());
+    return elements.isEmpty();
   }
 
   /**
@@ -247,6 +312,21 @@ public final class Path implements Iterable<Path.Element>
   public int size()
   {
     return elements.size();
+  }
+
+  /**
+   * Create a new path from this path with any value filters removed.
+   *
+   * @return A new path from this path with any value filters removed.
+   */
+  public Path withoutFilters()
+  {
+    ArrayList<Element> newElements = new ArrayList<Element>(elements.size());
+    for(Element element : elements)
+    {
+      newElements.add(new Element(element.getAttribute(), null));
+    }
+    return new Path(schemaUrn, newElements);
   }
 
   /**
@@ -272,28 +352,27 @@ public final class Path implements Iterable<Path.Element>
    */
   public static Path root()
   {
-    return ROOT;
+    return new Path(null, Collections.<Element>emptyList());
   }
 
   /**
    * Creates a path to the root of the JSON object that contains all the
-   * extension attributes of an extension schema.
+   * attributes of a schema.
    *
-   * @param extensionSchema The the extension schema URN.
+   * @param schemaUrn The the schema URN or {@code null}.
    *
    * @return The path to the root of the JSON object that contains all the
-   * extension attributes of an extension schema.
+   * attributes of an extension URN.
    */
-  public static Path root(final String extensionSchema)
+  public static Path root(final String schemaUrn)
   {
-    if(!SchemaUtils.isUrn(extensionSchema))
+    if(schemaUrn != null && !SchemaUtils.isUrn(schemaUrn))
     {
       throw new IllegalArgumentException(
           String.format("Invalid extension schema URN: %s",
-              extensionSchema));
+              schemaUrn));
     }
-    return new Path(Collections.singletonList(
-        new Element(extensionSchema, null)));
+    return new Path(schemaUrn, Collections.<Element>emptyList());
   }
 
   /**
@@ -314,24 +393,16 @@ public final class Path implements Iterable<Path.Element>
   }
 
   /**
-   * Retrieves the extension schema URN of the extension attribute referenced by
-   * this path.
+   * Retrieves the schema URN of the attribute referenced by this path.
    *
-   * @return The extension schema URN of the extension attribute referenced by
-   * this path or {@code null} if this path references a core attribute.
+   * @return The schema URN of the attribute referenced by this path or
+   * {@code null} if not specified.
    */
-  public String getExtensionSchema()
+  public String getSchemaUrn()
   {
-    if(!elements.isEmpty() && SchemaUtils.isUrn(elements.get(0).getAttribute()))
-    {
-      return elements.get(0).getAttribute();
-    }
-    return null;
+    return schemaUrn;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public boolean equals(final Object o)
   {
@@ -346,21 +417,22 @@ public final class Path implements Iterable<Path.Element>
 
     Path path = (Path) o;
 
-    if (!elements.equals(path.elements))
+    if (schemaUrn != null ? !schemaUrn.equalsIgnoreCase(path.schemaUrn) :
+        path.schemaUrn != null)
     {
       return false;
     }
+    return elements.equals(path.elements);
 
-    return true;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public int hashCode()
   {
-    return elements.hashCode();
+    int result = schemaUrn != null ?
+        StaticUtils.toLowerCase(schemaUrn).hashCode() : 0;
+    result = 31 * result + elements.hashCode();
+    return result;
   }
 
   /**
@@ -384,33 +456,12 @@ public final class Path implements Iterable<Path.Element>
    */
   public void toString(final StringBuilder builder)
   {
-    Iterator<Element> i = elements.iterator();
-
-    Element element;
-
-    // If the first element has an attribute that starts with "urn:", it is a
-    // schema extension URN.
-    if(i.hasNext())
+    if(schemaUrn != null)
     {
-      element = i.next();
-      if(SchemaUtils.isUrn(element.getAttribute()))
-      {
-        element.toString(builder);
-        if(i.hasNext())
-        {
-          builder.append(':');
-        }
-      }
-      else
-      {
-        element.toString(builder);
-        if(i.hasNext())
-        {
-          builder.append(".");
-        }
-      }
+      builder.append(schemaUrn);
+      builder.append(":");
     }
-
+    Iterator<Element> i = elements.iterator();
     while(i.hasNext())
     {
       i.next().toString(builder);

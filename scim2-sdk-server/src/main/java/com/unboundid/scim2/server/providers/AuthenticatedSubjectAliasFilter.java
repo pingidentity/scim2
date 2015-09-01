@@ -59,9 +59,8 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
           if(authSubjectPath != null)
           {
             UriBuilder newRequestUri =
-                requestContext.getUriInfo().getRequestUriBuilder();
-            newRequestUri.replacePath(requestContext.getUriInfo().getPath().
-                replaceFirst(alias, authSubjectPath));
+                requestContext.getUriInfo().getBaseUriBuilder();
+            newRequestUri.path(authSubjectPath);
             requestContext.setRequestUri(newRequestUri.build());
           }
           break;
