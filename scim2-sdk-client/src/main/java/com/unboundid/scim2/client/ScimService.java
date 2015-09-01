@@ -193,14 +193,13 @@ public class ScimService
   }
 
   /**
-   * Retrieve a known SCIM resource from the service provider. If the the
+   * Retrieve a known SCIM resource from the service provider. If the
    * service provider supports resource versioning and the resource has not been
    * modified, the provided resource will be returned.
    *
    * @param resource The resource to retrieve.
    * @param <T> The Java type of the resource.
-   * @return The request builder that may be used to specify additional request
-   * parameters and to invoke the request.
+   * @return The successfully retrieved SCIM resource.
    * @throws ScimException if an error occurs.
    */
   public <T extends ScimResource> T retrieve(final T resource)

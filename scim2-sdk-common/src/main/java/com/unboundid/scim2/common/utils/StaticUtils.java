@@ -226,7 +226,7 @@ public final class StaticUtils
    * @return The array of strings computed by splitting this string around
    * commas.
    */
-  public static String[] splitCommaSeperatedString(final String str)
+  public static String[] splitCommaSeparatedString(final String str)
   {
     return SEPARATOR.split(str.trim());
   }
