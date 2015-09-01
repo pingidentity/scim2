@@ -21,8 +21,6 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
-import java.net.URL;
-
 /**
  * Provider information.  This class will contain information about
  * external identity providers.
@@ -37,7 +35,7 @@ public final class Provider
   {
     private String name;
     private String description;
-    private URL iconUrl;
+    private String iconUrl;
     private String type;
 
     /**
@@ -70,7 +68,7 @@ public final class Provider
      * @param iconUrl the icon url of this provider.
      * @return this
      */
-    public Builder setIconUrl(final URL iconUrl)
+    public Builder setIconUrl(final String iconUrl)
     {
       this.iconUrl = iconUrl;
       return this;
@@ -109,7 +107,7 @@ public final class Provider
 
   @Attribute(description = "The reference to the icon of the IDP.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private URL iconUrl;
+  private String iconUrl;
 
   @Attribute(description = "The IDP type. May be one of:  " +
       "'oidc', 'facebook', or 'googlePlus'.",
@@ -166,7 +164,7 @@ public final class Provider
    *
    * @return the icon url of this provider.
    */
-  public URL getIconUrl()
+  public String getIconUrl()
   {
     return iconUrl;
   }
