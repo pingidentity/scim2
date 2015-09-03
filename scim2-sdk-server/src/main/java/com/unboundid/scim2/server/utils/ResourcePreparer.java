@@ -111,7 +111,8 @@ public class ResourcePreparer<T extends ScimResource>
         try
         {
           this.queryAttributes.add(
-              resourceType.normalizePath(Path.fromString(attribute)));
+              resourceType.normalizePath(Path.fromString(attribute)).
+                  withoutFilters());
         }
         catch (BadRequestException e)
         {
@@ -133,7 +134,8 @@ public class ResourcePreparer<T extends ScimResource>
         try
         {
           this.queryAttributes.add(
-              resourceType.normalizePath(Path.fromString(attribute)));
+              resourceType.normalizePath(Path.fromString(attribute)).
+                  withoutFilters());
         }
         catch (BadRequestException e)
         {
@@ -312,7 +314,7 @@ public class ResourcePreparer<T extends ScimResource>
     {
       Map.Entry<String, JsonNode> field = i.next();
       Path path = parentPath.attribute(field.getKey());
-      if(path.size() > 1 || path.getExtensionSchema() == null)
+      if(path.size() > 1 || path.getSchemaUrn() == null)
       {
         // Don't add a path for the extension schema object itself.
         paths.add(path);
@@ -367,7 +369,8 @@ public class ResourcePreparer<T extends ScimResource>
       Path path = Path.root();
       if(patchOperation.getPath() != null)
       {
-        path = resourceType.normalizePath(patchOperation.getPath());
+        path = resourceType.normalizePath(patchOperation.getPath()).
+            withoutFilters();
         paths.add(path);
       }
       if(patchOperation.getJsonNode() != null)

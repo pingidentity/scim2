@@ -845,12 +845,12 @@ public class SchemaChecker
       {
         // Use a special notation attr[index] to refer to a value of an JSON
         // array.
-        Path parentPath = path.parent();
-        if(parentPath == null)
+        if(path.isRoot())
         {
           throw new NullPointerException(
               "Path should always point to an attribute");
         }
+        Path parentPath = path.subPath(path.size() - 1);
         Path valuePath = parentPath.attribute(
             path.getElement(path.size() - 1).getAttribute() + "[" + i + "]");
         checkAttributeValue(prefix, value, valuePath, attribute, results,
@@ -1109,11 +1109,11 @@ public class SchemaChecker
             resourceType.getCoreSchema().getId());
       }
       else if(parentPath.isRoot() &&
-          parentPath.getExtensionSchema() != null)
+          parentPath.getSchemaUrn() != null)
       {
         results.syntaxIssues.add(prefix + "Extended attribute " +
             i.next().getKey() + " is undefined for schema " +
-            parentPath.getExtensionSchema());
+            parentPath.getSchemaUrn());
       }
       else
       {

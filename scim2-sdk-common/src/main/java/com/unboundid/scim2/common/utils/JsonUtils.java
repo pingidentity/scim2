@@ -54,29 +54,33 @@ import java.util.logging.Level;
 public class JsonUtils
 {
   private static final ObjectMapper SDK_OBJECT_MAPPER = createObjectMapper();
-  private abstract static class NodeVisitor
+  public abstract static class NodeVisitor
   {
     /**
      * Visit a node referenced by an path element before that last element.
      *
      * @param parent The parent container ObjectNode.
-     * @param element The path element.
+     * @param field The field to visit.
+     * @param valueFilter the filter for the value(s) to visit.
      * @return The JsonNode referenced by the element in the parent.
      * @throws ScimException If an error occurs.
      */
     abstract JsonNode visitInnerNode(final ObjectNode parent,
-                                     final Path.Element element)
+                                     final String field,
+                                     final Filter valueFilter)
         throws ScimException;
 
     /**
      * Visit a node referenced by the last path element.
      *
      * @param parent The parent container ObjectNode.
-     * @param element The path element.
+     * @param field The field to visit.
+     * @param valueFilter the filter for the value(s) to visit.
      * @throws ScimException If an error occurs.
      */
     abstract void visitLeafNode(final ObjectNode parent,
-                                final Path.Element element)
+                                final String field,
+                                final Filter valueFilter)
         throws ScimException;
 
     /**
@@ -131,13 +135,14 @@ public class JsonUtils
      * {@inheritDoc}
      */
     JsonNode visitInnerNode(final ObjectNode parent,
-                            final Path.Element element)
+                            final String field,
+                            final Filter valueFilter)
         throws ScimException
     {
-      JsonNode node = parent.path(element.getAttribute());
-      if(node.isArray() && element.getValueFilter() != null)
+      JsonNode node = parent.path(field);
+      if(node.isArray() && valueFilter != null)
       {
-        return filterArray((ArrayNode) node, element.getValueFilter(), false);
+        return filterArray((ArrayNode) node, valueFilter, false);
       }
       return node;
     }
@@ -146,16 +151,17 @@ public class JsonUtils
      * {@inheritDoc}
      */
     void visitLeafNode(final ObjectNode parent,
-                       final Path.Element element) throws ScimException
+                       final String field,
+                       final Filter valueFilter) throws ScimException
     {
-      JsonNode node = parent.path(element.getAttribute());
+      JsonNode node = parent.path(field);
       if(node.isArray())
       {
         ArrayNode arrayNode = (ArrayNode) node;
 
-        if(element.getValueFilter() != null)
+        if(valueFilter != null)
         {
-          arrayNode = filterArray((ArrayNode) node, element.getValueFilter(),
+          arrayNode = filterArray((ArrayNode) node, valueFilter,
               removeValues);
         }
         if (arrayNode.size() > 0)
@@ -163,12 +169,11 @@ public class JsonUtils
           values.add(arrayNode);
         }
 
-        if(removeValues &&
-            (element.getValueFilter() == null || node.size() == 0))
+        if(removeValues && (valueFilter == null || node.size() == 0))
         {
           // There are no more values left after removing the matching values.
           // Just remove the field.
-          parent.remove(element.getAttribute());
+          parent.remove(field);
         }
       }
       else if(node.isObject() || node.isValueNode())
@@ -176,16 +181,23 @@ public class JsonUtils
         values.add(node);
         if(removeValues)
         {
-          parent.remove(element.getAttribute());
+          parent.remove(field);
         }
       }
     }
   }
 
-  private static final class UpdatingNodeVisitor extends NodeVisitor
+  public static class UpdatingNodeVisitor extends NodeVisitor
   {
-    private final JsonNode value;
-    private final boolean appendValues;
+    /**
+     * The updated value.
+     */
+    protected final JsonNode value;
+
+    /**
+     * Whether to append or replace array values.
+     */
+    protected final boolean appendValues;
 
     /**
      * Create a new UpdatingNodeVisitor.
@@ -194,8 +206,8 @@ public class JsonUtils
      * @param appendValues {@code true} to append the update value or
      *                     {@code false} otherwise.
      */
-    private UpdatingNodeVisitor(final JsonNode value,
-                                final boolean appendValues)
+    protected UpdatingNodeVisitor(final JsonNode value,
+                        final boolean appendValues)
     {
       this.value = value.deepCopy();
       this.appendValues = appendValues;
@@ -204,38 +216,39 @@ public class JsonUtils
     /**
      * {@inheritDoc}
      */
-    JsonNode visitInnerNode(final ObjectNode parent,
-                            final Path.Element element)
+    protected JsonNode visitInnerNode(final ObjectNode parent,
+                            final String field,
+                            final Filter valueFilter)
         throws ScimException
     {
-      JsonNode node = parent.path(element.getAttribute());
+      JsonNode node = parent.path(field);
       if(node.isValueNode() || ((node.isMissingNode() || node.isNull()) &&
-          element.getValueFilter() != null))
+          valueFilter != null))
       {
         throw BadRequestException.noTarget("Attribute " +
-            element.getAttribute() + " does not have a multi-valued or " +
+            field + " does not have a multi-valued or " +
             "complex value");
       }
       if(node.isMissingNode() || node.isNull())
       {
         // Create the missing node as an JSON object node.
         ObjectNode newObjectNode = getJsonNodeFactory().objectNode();
-        parent.set(element.getAttribute(), newObjectNode);
+        parent.set(field, newObjectNode);
         return newObjectNode;
       }
       else if(node.isArray())
       {
         ArrayNode arrayNode = (ArrayNode) node;
-        if(element.getValueFilter() != null)
+        if(valueFilter != null)
         {
           arrayNode =
-              filterArray((ArrayNode)node, element.getValueFilter(), false);
-        }
-        if(arrayNode.size() == 0)
-        {
-          throw BadRequestException.noTarget("Attribute " +
-              element.getAttribute() + " does not have a value matching the " +
-              "filter " + element.getValueFilter().toString());
+              filterArray((ArrayNode)node, valueFilter, false);
+          if(arrayNode.size() == 0)
+          {
+            throw BadRequestException.noTarget("Attribute " +
+                field + " does not have a value matching the " +
+                "filter " + valueFilter);
+          }
         }
         return arrayNode;
       }
@@ -245,16 +258,15 @@ public class JsonUtils
     /**
      * {@inheritDoc}
      */
-    void visitLeafNode(final ObjectNode parent,
-                       final Path.Element element)
+    protected void visitLeafNode(final ObjectNode parent,
+                       final String field,
+                       final Filter valueFilter)
         throws ScimException
     {
-      String attributeName = null;
-      if(element != null)
+      if(field != null)
       {
-        attributeName = element.getAttribute();
-        JsonNode node = parent.path(attributeName);
-        if (!appendValues && element.getValueFilter() != null)
+        JsonNode node = parent.path(field);
+        if (!appendValues && valueFilter != null)
         {
           // in replace mode, a value filter requires that the target node
           // be an array and that we can find matching value(s)
@@ -263,13 +275,12 @@ public class JsonUtils
           {
             for(int i = 0; i < node.size(); i++)
             {
-              if(FilterEvaluator.evaluate(
-                  element.getValueFilter(), node.get(i)))
+              if(FilterEvaluator.evaluate(valueFilter, node.get(i)))
               {
                 matchesFound = true;
                 if(node.get(i).isObject() && value.isObject())
                 {
-                  updateValues((ObjectNode) node.get(i), null, value);
+                  updateNode((ObjectNode) node.get(i), null, value);
                 }
                 else
                 {
@@ -281,13 +292,13 @@ public class JsonUtils
           if(!matchesFound)
           {
             throw BadRequestException.noTarget("Attribute " +
-                element.getAttribute() + " does not have a value matching " +
-                "the filter " + element.getValueFilter().toString());
+                field + " does not have a value matching " +
+                "the filter " + valueFilter.toString());
           }
           return;
         }
       }
-      updateValues(parent, attributeName, value);
+      updateNode(parent, field, value);
     }
 
     /**
@@ -298,7 +309,7 @@ public class JsonUtils
      * @param key The key of the field to update.
      * @param value The update value.
      */
-    private void updateValues(final ObjectNode parent, final String key,
+    protected void updateNode(final ObjectNode parent, final String key,
                               final JsonNode value)
     {
       if(value.isNull() || value.isArray() && value.size() == 0)
@@ -322,7 +333,7 @@ public class JsonUtils
           while (i.hasNext())
           {
             Map.Entry<String, JsonNode> field = i.next();
-            updateValues(targetObject, field.getKey(), field.getValue());
+            updateNode(targetObject, field.getKey(), field.getValue());
           }
         }
         else
@@ -375,24 +386,26 @@ public class JsonUtils
 
     @Override
     JsonNode visitInnerNode(final ObjectNode parent,
-                            final Path.Element element) throws ScimException
+                            final String field,
+                            final Filter valueFilter) throws ScimException
     {
-      JsonNode node = parent.path(element.getAttribute());
-      if(node.isArray() && element.getValueFilter() != null)
+      JsonNode node = parent.path(field);
+      if(node.isArray() && valueFilter != null)
       {
-        return filterArray((ArrayNode) node, element.getValueFilter(), false);
+        return filterArray((ArrayNode) node, valueFilter, false);
       }
       return node;
     }
 
     @Override
     void visitLeafNode(final ObjectNode parent,
-                       final Path.Element element) throws ScimException
+                       final String field,
+                       final Filter valueFilter) throws ScimException
     {
-      JsonNode node = parent.path(element.getAttribute());
-      if(node.isArray() && element.getValueFilter() != null)
+      JsonNode node = parent.path(field);
+      if(node.isArray() && valueFilter != null)
       {
-        node = filterArray((ArrayNode) node, element.getValueFilter(), false);
+        node = filterArray((ArrayNode) node, valueFilter, false);
       }
 
       if(node.isArray())
@@ -1027,6 +1040,23 @@ public class JsonUtils
   }
 
   /**
+   * Recursively traver JSON nodes based on a path using the provided node
+   * visitor.
+   *
+   * @param nodeVisitor The NodeVisitor to use to handle the traversed nodes.
+   * @param node The JSON node representing the SCIM resource.
+   * @param path The path to the attributes whose values to retrieve.
+   *
+   * @throws ScimException If an error occurs while traversing the JSON node.
+   */
+  public static void traverseValues(final NodeVisitor nodeVisitor,
+                                    final ObjectNode node,
+                                    final Path path) throws ScimException
+  {
+    traverseValues(nodeVisitor, node, 0, path);
+  }
+
+  /**
    * Internal method to recursively gather values based on path.
    *
    * @param nodeVisitor The NodeVisitor to use to handle the traversed nodes.
@@ -1042,10 +1072,33 @@ public class JsonUtils
                                      final Path path)
       throws ScimException
   {
-    Path.Element element = path.size() == 0 ? null : path.getElement(index);
-    if(index < path.size() - 1)
+    String field = null;
+    Filter valueFilter = null;
+    int pathDepth = path.size();
+    if(path.getSchemaUrn() != null)
     {
-      JsonNode child = nodeVisitor.visitInnerNode(node, element);
+      if(index > 0)
+      {
+        Path.Element element = path.getElement(index - 1);
+        field = element.getAttribute();
+        valueFilter = element.getValueFilter();
+      }
+      else
+      {
+        field = path.getSchemaUrn();
+      }
+      pathDepth += 1;
+    }
+    else if(path.size() > 0)
+    {
+      Path.Element element = path.getElement(index);
+      field = element.getAttribute();
+      valueFilter = element.getValueFilter();
+    }
+
+    if(index < pathDepth - 1)
+    {
+      JsonNode child = nodeVisitor.visitInnerNode(node, field, valueFilter);
       if(child.isArray())
       {
         for(JsonNode value : child)
@@ -1063,7 +1116,7 @@ public class JsonUtils
     }
     else
     {
-      nodeVisitor.visitLeafNode(node, element);
+      nodeVisitor.visitLeafNode(node, field, valueFilter);
     }
   }
 

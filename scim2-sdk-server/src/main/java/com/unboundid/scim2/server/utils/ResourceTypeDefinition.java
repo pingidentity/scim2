@@ -22,7 +22,6 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.utils.SchemaUtils;
-import com.unboundid.scim2.common.utils.StaticUtils;
 import com.unboundid.scim2.server.annotations.ResourceType;
 
 import java.net.URI;
@@ -316,63 +315,23 @@ public final class ResourceTypeDefinition
    */
   public AttributeDefinition getAttributeDefinition(final Path path)
   {
-    return attributeNotationMap.get(normalizePath(path));
+    return attributeNotationMap.get(normalizePath(path).withoutFilters());
   }
 
   /**
-   * Gets the schema for the attribute in the path.
-   *
-   * @param path The attribute path.
-   * @return the schema for the attribute in the path or {@code null} if the
-   *         attribute's schema is not defined.
-   */
-  public SchemaResource getSchema(final Path path)
-  {
-    String schemaId = path.getExtensionSchema();
-    if(schemaId != null)
-    {
-      schemaId = StaticUtils.toLowerCase(schemaId);
-    }
-
-    if(schemaId == null || schemaId.equals(
-        StaticUtils.toLowerCase(coreSchema.getId())))
-    {
-      return getCoreSchema();
-    }
-
-    for(SchemaResource schemaExtension : schemaExtensions.keySet())
-    {
-      if(schemaId.equals(StaticUtils.toLowerCase(schemaExtension.getId())))
-      {
-        return schemaExtension;
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   * Normalize a path by removing all value filters and the schema URI prefix
-   * for core attributes.
+   * Normalize a path by removing the the schema URN for core attributes.
    *
    * @param path The path to normalize.
    * @return The normalized path.
    */
   public Path normalizePath(final Path path)
   {
-    Path normalizedPath = Path.root();
-    for(int i = 0; i < path.size(); i++)
+    if(path.getSchemaUrn() != null && coreSchema != null &&
+        path.getSchemaUrn().equalsIgnoreCase(coreSchema.getId()))
     {
-      Path.Element element = path.getElement(i);
-      if(i > 0 || coreSchema == null ||
-          !StaticUtils.toLowerCase(element.getAttribute()).equals(
-              StaticUtils.toLowerCase(coreSchema.getId())))
-      {
-        normalizedPath = normalizedPath.attribute(element.getAttribute());
-      }
+      return Path.root().attribute(path);
     }
-
-    return normalizedPath;
+    return path;
   }
 
   /**
