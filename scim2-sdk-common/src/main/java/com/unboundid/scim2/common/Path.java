@@ -227,7 +227,7 @@ public final class Path implements Iterable<Path.Element>
 
   /**
    * Create a new path where the attribute at the specified index is replaced
-   * with those provided.
+   * with the one provided.
    *
    * @param index The index of the element to replace.
    * @param attribute The replacement attribute.
@@ -243,7 +243,7 @@ public final class Path implements Iterable<Path.Element>
 
   /**
    * Create a new path where the filter at the specified index is replaced with
-   * those provided.
+   * the one provided.
    *
    * @param index The index of the element to replace.
    * @param valueFilter The replacement value filter.
@@ -258,10 +258,12 @@ public final class Path implements Iterable<Path.Element>
   }
 
   /**
-   * Creates a new path to a beginning portion of this path.
+   * Creates a new path from beginning portion of this path to the specified
+   * index (exclusive). The last element in the newly created path will be
+   * the provided index - 1.
    *
    * @param index The exclusive index of the endpoint path element.
-   * @return A ew path to a beginning portion of this path.
+   * @return A new path to a beginning portion of this path.
    * @throws IndexOutOfBoundsException if the index is out of range
    *         (<tt>index &lt; 0 || index &gt; size()</tt>)
    */
@@ -359,7 +361,7 @@ public final class Path implements Iterable<Path.Element>
    * Creates a path to the root of the JSON object that contains all the
    * attributes of a schema.
    *
-   * @param schemaUrn The the schema URN or {@code null}.
+   * @param schemaUrn The schema URN or {@code null}.
    *
    * @return The path to the root of the JSON object that contains all the
    * attributes of an extension URN.
