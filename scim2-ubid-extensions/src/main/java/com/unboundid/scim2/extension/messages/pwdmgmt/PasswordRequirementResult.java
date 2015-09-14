@@ -19,6 +19,7 @@ package com.unboundid.scim2.extension.messages.pwdmgmt;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.annotations.Attribute;
 
@@ -49,7 +50,8 @@ public class PasswordRequirementResult
       "such as the message associated with a password validation failure.",
         mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String additionalInfo;
-  private Map<String, String> properties = new LinkedHashMap<String, String>();
+  private Map<String, JsonNode> properties =
+      new LinkedHashMap<String, JsonNode>();
 
   /**
    * Gets the human-readable description of the password requirement.
@@ -156,7 +158,7 @@ public class PasswordRequirementResult
    * @return the properties for this password requirement.
    */
   @JsonAnyGetter
-  public Map<String, String> getProperties()
+  public Map<String, JsonNode> getProperties()
   {
     return properties;
   }
@@ -168,7 +170,8 @@ public class PasswordRequirementResult
    * @param propertyValue The value of the property.
    */
   @JsonAnySetter
-  public void putProperty(final String propertyName, final String propertyValue)
+  public void putProperty(final String propertyName,
+                          final JsonNode propertyValue)
   {
     properties.put(propertyName, propertyValue);
   }

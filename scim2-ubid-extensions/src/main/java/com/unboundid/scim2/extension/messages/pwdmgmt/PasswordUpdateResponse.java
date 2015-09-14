@@ -20,6 +20,7 @@ package com.unboundid.scim2.extension.messages.pwdmgmt;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.types.AttributeDefinition;
 
 /**
  * The response for password change requests.
@@ -32,7 +33,8 @@ public class PasswordUpdateResponse extends BaseScimResource
 
   @Attribute(
       description = "Contains a generated password" +
-          " if a password was generated.")
+          " if a password was generated.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String generatedPassword;
 
   /**
