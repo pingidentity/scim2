@@ -32,7 +32,7 @@ public @interface Schema
   /**
    * The id for the object.  This is the complete urn.
    */
-  String id() default "urn:unboundid:schemas:broker:2.0";
+  String id() default "urn:unboundid:scim:api:messages:2.0";
 
   /**
    * The description for the object.

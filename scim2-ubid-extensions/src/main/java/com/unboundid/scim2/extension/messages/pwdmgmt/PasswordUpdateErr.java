@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * This class represents the errors that occurred while updating a password.
  */
-@Schema(id="urn:unboundid:schemas:broker:2.0:PasswordUpdateError",
+@Schema(id="urn:unboundid:scim:api:messages:2.0:PasswordUpdateError",
     description = "This class represents the errors that occurred while " +
         "updating a password.",
     name = "PasswordUpdateError")
