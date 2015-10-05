@@ -17,18 +17,20 @@
 
 package com.unboundid.scim2.server.providers;
 
+import com.unboundid.scim2.common.exceptions.NotImplementedException;
+import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.ApiConstants;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * A ContainerRequestFilter implementation to resolve the /Me alias to the
@@ -47,24 +49,30 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
   public void filter(final ContainerRequestContext requestContext)
       throws IOException
   {
-    List<PathSegment> pathSegments =
-        requestContext.getUriInfo().getPathSegments();
-    if(pathSegments.size() >= 1)
+    String requestPath = requestContext.getUriInfo().getPath();
+    for(String alias : getAliases())
     {
-      for(String alias : getAliases())
+      if(requestPath.startsWith(alias + "/") || requestPath.equals(alias))
       {
-        if(pathSegments.get(0).getPath().equals(alias))
+        String authSubjectPath;
+        try
         {
-          String authSubjectPath = getAuthenticatedSubjectPath(requestContext);
-          if(authSubjectPath != null)
-          {
-            UriBuilder newRequestUri =
-                requestContext.getUriInfo().getBaseUriBuilder();
-            newRequestUri.path(authSubjectPath);
-            requestContext.setRequestUri(newRequestUri.build());
-          }
-          break;
+          authSubjectPath = getAuthenticatedSubjectPath(
+              requestContext.getSecurityContext());
+          UriBuilder newRequestUri =
+              requestContext.getUriInfo().getBaseUriBuilder();
+          newRequestUri.path(authSubjectPath +
+              requestPath.substring(alias.length()));
+          requestContext.setRequestUri(newRequestUri.build());
         }
+        catch (ScimException e)
+        {
+          requestContext.abortWith(Response.status(
+              e.getScimError().getStatus()).entity(
+              e.getScimError()).type(
+              ApiConstants.MEDIA_TYPE_SCIM).build());
+        }
+        break;
       }
     }
   }
@@ -72,24 +80,20 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
   /**
    * Get the path of the resource the represents the authenticated subject.
    *
-   * @param requestContext The request context.
+   * @param securityContext The request's security context.
    * @return The path relative to the base URI.
+   * @throws ScimException if an error occurs while resolving the path.
    */
   protected String getAuthenticatedSubjectPath(
-      final ContainerRequestContext requestContext)
+      final SecurityContext securityContext)
+      throws ScimException
   {
-    if(requestContext.getSecurityContext() == null)
+    if(securityContext == null || securityContext.getUserPrincipal() == null)
     {
-      return null;
+      throw new NotImplementedException("/Me not supported");
     }
 
-    if(requestContext.getSecurityContext().getUserPrincipal() == null)
-    {
-      return null;
-    }
-
-    return "Users/"+
-        requestContext.getSecurityContext().getUserPrincipal().toString();
+    return "Users/"+ securityContext.getUserPrincipal().toString();
   }
 
   /**

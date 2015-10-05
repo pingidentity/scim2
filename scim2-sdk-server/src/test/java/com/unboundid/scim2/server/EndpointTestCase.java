@@ -337,6 +337,18 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         scimService.retrieve(ScimService.ME_URI, UserResource.class);
     assertEquals(user.getId(), "123");
     assertEquals(user.getMeta().getResourceType(), "User");
+
+    UriBuilder subResourceUri =
+        UriBuilder.fromUri(ScimService.ME_URI).path("something");
+    try
+    {
+      scimService.retrieve(subResourceUri.build(), UserResource.class);
+      fail("Sub-resource should not exist");
+    }
+    catch(ScimException e)
+    {
+      // Expected.
+    }
   }
 
   /**

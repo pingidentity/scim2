@@ -19,8 +19,8 @@ package com.unboundid.scim2.server;
 
 import com.unboundid.scim2.server.providers.AuthenticatedSubjectAliasFilter;
 
-import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 /**
@@ -33,7 +33,7 @@ public class TestAuthenticatedSubjectAliasFilter
 {
   @Override
   protected String getAuthenticatedSubjectPath(
-      final ContainerRequestContext requestContext)
+      final SecurityContext securityContext)
   {
     return "Users/123";
   }
