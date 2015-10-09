@@ -24,6 +24,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.SchemaUtils;
@@ -170,14 +172,27 @@ public abstract class BaseScimResource
    *
    * @param key name of the field.
    * @param value value of the field.
+   *
+   * @throws ScimException if the key is not an extension attribute namespace.
    */
   @JsonAnySetter
   protected void setAny(final String key,
                         final JsonNode value)
+      throws ScimException
   {
     if(SchemaUtils.isUrn(key) && value.isObject())
     {
       extensionObjectNode.set(key, value);
+    }
+    else
+    {
+      String message = "Core attribute " + key +  " is undefined";
+      Schema schemaAnnotation = this.getClass().getAnnotation(Schema.class);
+      if(schemaAnnotation != null)
+      {
+        message += " for schema " + schemaAnnotation.id();
+      }
+      throw BadRequestException.invalidSyntax(message);
     }
   }
 
