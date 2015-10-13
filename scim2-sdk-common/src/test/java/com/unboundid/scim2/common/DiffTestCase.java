@@ -20,6 +20,7 @@ package com.unboundid.scim2.common;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.filters.Filter;
+import com.unboundid.scim2.common.messages.PatchOpType;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.Email;
 import com.unboundid.scim2.common.types.Entitlement;
@@ -694,6 +695,349 @@ public class DiffTestCase
     }
     removeNullNodes(target);
     assertEquals(source, target);
+  }
+
+  /**
+   * Sanity test with source and target objects containing multiple attribute
+   * types but with only a small difference.
+   *
+   * @throws Exception
+   *           if an error occurs.
+   */
+  @Test
+  public void sanityTest() throws Exception
+  {
+    ObjectNode source = (ObjectNode) JsonUtils.getObjectReader().readTree(
+        "{\n" +
+        "  \"addresses\": [\n" +
+        "    {\n" +
+        "      \"streetAddress\": \"60804 Ridge Street\",\n" +
+        "      \"locality\": \"Indianapolis\",\n" +
+        "      \"region\": \"HI\",\n" +
+        "      \"postalCode\": \"92756\",\n" +
+        "      \"country\": \"US\",\n" +
+        "      \"primary\": true,\n" +
+        "      \"type\": \"home\"\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"urn:unboundid:schemas:sample:profile:1.0\": {\n" +
+        "    \"birthdayDayMonth\": {\n" +
+        "      \"day\": 24,\n" +
+        "      \"month\": 12\n" +
+        "    },\n" +
+        "    \"communicationOpts\": [\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:Opt:SMSMarketing\",\n" +
+        "        \"destination\": \"+1 921 433 6722\",\n" +
+        "        \"destinationType\": \"sms\",\n" +
+        "        \"polarityOpt\": \"out\",\n" +
+        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
+        "        \"frequency\": \"daily;5:33\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:Opt:EmailMarketing\",\n" +
+        "        \"destination\": \"user.13@example.com\",\n" +
+        "        \"destinationType\": \"email\",\n" +
+        "        \"polarityOpt\": \"in\",\n" +
+        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
+        "        \"frequency\": \"daily;5:33\"\n" +
+        "      }\n" +
+        "    ],\n" +
+        "    \"contentOpts\": [\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:Opt:Coupons\",\n" +
+        "        \"polarityOpt\": \"out\",\n" +
+        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:Opt:Newsletters\",\n" +
+        "        \"polarityOpt\": \"in\",\n" +
+        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:Opt:Notification\",\n" +
+        "        \"polarityOpt\": \"in\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
+        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\"\n" +
+        "      }\n" +
+        "    ],\n" +
+        "    \"postalCode\": \"92756\",\n" +
+        "    \"termsOfService\": [\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:ToS:StandardUser:1.0\",\n" +
+        "        \"timeStamp\": \"2013-11-13T12:40:57Z\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Mobile:1.0\"\n" +
+        "      }\n" +
+        "    ],\n" +
+        "    \"topicPreferences\": [\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:finance:renting\",\n" +
+        "        \"strength\": -10,\n" +
+        "        \"timeStamp\": \"2014-12-20T17:54:25Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:auto:maintenance\",\n" +
+        "        \"strength\": -8,\n" +
+        "        \"timeStamp\": \"2013-11-25T12:45:21Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:health:heart\",\n" +
+        "        \"strength\": -5,\n" +
+        "        \"timeStamp\": \"2013-10-30T13:32:39Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:clothing:shoes\",\n" +
+        "        \"strength\": 10,\n" +
+        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:clothing:workout\",\n" +
+        "        \"strength\": 10,\n" +
+        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:clothing:casual\",\n" +
+        "        \"strength\": 10,\n" +
+        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:clothing:accessories\",\n" +
+        "        \"strength\": -10,\n" +
+        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:clothing:impress\",\n" +
+        "        \"strength\": -10,\n" +
+        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
+        "      }\n" +
+        "    ]\n" +
+        "  },\n" +
+        "  \"displayName\": \"Jacquelynn Ellis\",\n" +
+        "  \"emails\": [\n" +
+        "    {\n" +
+        "      \"value\": \"user.13@example.com\",\n" +
+        "      \"verified\": false,\n" +
+        "      \"primary\": false,\n" +
+        "      \"type\": \"work\"\n" +
+        "    },\n" +
+        "    {\n" +
+        "      \"value\": \"Jacquelynn.Ellis@gmail.com\",\n" +
+        "      \"verified\": true,\n" +
+        "      \"primary\": true,\n" +
+        "      \"type\": \"home\"\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"meta\": {\n" +
+        "    \"lastModified\": \"2015-10-13T16:54:59.157Z\",\n" +
+        "    \"resourceType\": \"Users\"\n" +
+        "  },\n" +
+        "  \"name\": {\n" +
+        "    \"familyName\": \"Ellis\",\n" +
+        "    \"formatted\": \"Chad Sanford\",\n" +
+        "    \"givenName\": \"Jacquelynn\",\n" +
+        "    \"middleName\": \"Krystle\"\n" +
+        "  },\n" +
+        "  \"phoneNumbers\": [\n" +
+        "    {\n" +
+        "      \"value\": \"+1 909 234 2568\",\n" +
+        "      \"type\": \"work\",\n" +
+        "      \"verified\": false,\n" +
+        "      \"primary\": false\n" +
+        "    },\n" +
+        "    {\n" +
+        "      \"value\": \"+1 191 623 7660\",\n" +
+        "      \"type\": \"home\",\n" +
+        "      \"verified\": false,\n" +
+        "      \"primary\": false\n" +
+        "    },\n" +
+        "    {\n" +
+        "      \"value\": \"+1 490 020 8366\",\n" +
+        "      \"type\": \"mobile\",\n" +
+        "      \"verified\": true,\n" +
+        "      \"primary\": true\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"userName\": \"user.0\",\n" +
+        "  \"id\": \"ad55a34a-763f-358f-93f9-da86f9ecd9e4\",\n" +
+        "  \"schemas\": [\n" +
+        "    \"urn:unboundid:schemas:User:1.0\",\n" +
+        "    \"urn:unboundid:schemas:sample:profile:1.0\"\n" +
+        "  ]\n" +
+        "}");
+
+    ObjectNode target = (ObjectNode) JsonUtils.getObjectReader().readTree(
+        "{\n" +
+        "  \"schemas\": [\n" +
+        "    \"urn:unboundid:schemas:User:1.0\",\n" +
+        "    \"urn:unboundid:schemas:sample:profile:1.0\"\n" +
+        "  ],\n" +
+        "  \"addresses\": [\n" +
+        "    {\n" +
+        "      \"streetAddress\": \"60804 Ridge Street\",\n" +
+        "      \"locality\": \"Indianapolis\",\n" +
+        "      \"region\": \"HI\",\n" +
+        "      \"postalCode\": \"92756\",\n" +
+        "      \"country\": \"US\",\n" +
+        "      \"primary\": true,\n" +
+        "      \"type\": \"home\"\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"displayName\": \"Jacquelynn Ellis\",\n" +
+        "  \"emails\": [\n" +
+        "    {\n" +
+        "      \"value\": \"user.13@example.com\",\n" +
+        "      \"verified\": false,\n" +
+        "      \"primary\": false,\n" +
+        "      \"type\": \"work\"\n" +
+        "    },\n" +
+        "    {\n" +
+        "      \"value\": \"Jacquelynn.Ellis@gmail.com\",\n" +
+        "      \"verified\": true,\n" +
+        "      \"primary\": true,\n" +
+        "      \"type\": \"home\"\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"name\": {\n" +
+        "    \"familyName\": \"Ellis\",\n" +
+        "    \"formatted\": \"Chad Sanford\",\n" +
+        "    \"givenName\": \"Jacquelynn\",\n" +
+        "    \"middleName\": \"Krystle\"\n" +
+        "  },\n" +
+        "  \"phoneNumbers\": [\n" +
+        "    {\n" +
+        "      \"value\": \"+1 909 234 2568\",\n" +
+        "      \"type\": \"work\",\n" +
+        "      \"verified\": false,\n" +
+        "      \"primary\": false\n" +
+        "    },\n" +
+        "    {\n" +
+        "      \"value\": \"+1 191 623 7660\",\n" +
+        "      \"type\": \"home\",\n" +
+        "      \"verified\": false,\n" +
+        "      \"primary\": false\n" +
+        "    },\n" +
+        "    {\n" +
+        "      \"value\": \"+1 490 020 8366\",\n" +
+        "      \"type\": \"mobile\",\n" +
+        "      \"verified\": true,\n" +
+        "      \"primary\": true\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"urn:unboundid:schemas:sample:profile:1.0\": {\n" +
+        "    \"birthdayDayMonth\": {\n" +
+        "      \"day\": 24,\n" +
+        "      \"month\": 12\n" +
+        "    },\n" +
+        "    \"communicationOpts\": [\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:Opt:SMSMarketing\",\n" +
+        "        \"destination\": \"+1 921 433 6722\",\n" +
+        "        \"destinationType\": \"sms\",\n" +
+        "        \"polarityOpt\": \"out\",\n" +
+        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
+        "        \"frequency\": \"daily;5:33\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:Opt:EmailMarketing\",\n" +
+        "        \"destination\": \"user.13@example.com\",\n" +
+        "        \"destinationType\": \"email\",\n" +
+        "        \"polarityOpt\": \"in\",\n" +
+        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
+        "        \"frequency\": \"daily;5:33\"\n" +
+        "      }\n" +
+        "    ],\n" +
+        "    \"contentOpts\": [\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:Opt:Coupons\",\n" +
+        "        \"polarityOpt\": \"out\",\n" +
+        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:Opt:Newsletters\",\n" +
+        "        \"polarityOpt\": \"in\",\n" +
+        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:Opt:Notification\",\n" +
+        "        \"polarityOpt\": \"in\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
+        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\"\n" +
+        "      }\n" +
+        "    ],\n" +
+        "    \"postalCode\": \"92756\",\n" +
+        "    \"termsOfService\": [\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:ToS:StandardUser:1.0\",\n" +
+        "        \"timeStamp\": \"2013-11-13T12:40:57Z\",\n" +
+        "        \"collector\": \"urn:X-UnboundID:App:Mobile:1.0\"\n" +
+        "      }\n" +
+        "    ],\n" +
+        "    \"topicPreferences\": [\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:finance:renting\",\n" +
+        "        \"strength\": -10,\n" +
+        "        \"timeStamp\": \"2014-12-20T17:54:25Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:auto:maintenance\",\n" +
+        "        \"strength\": -8,\n" +
+        "        \"timeStamp\": \"2013-11-25T12:45:21Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:health:heart\",\n" +
+        "        \"strength\": -5,\n" +
+        "        \"timeStamp\": \"2013-10-30T13:32:39Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:clothing:shoes\",\n" +
+        "        \"strength\": 10,\n" +
+        "        \"timeStamp\": \"2015-10-13T14:57:36.494Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:clothing:workout\",\n" +
+        "        \"strength\": 10,\n" +
+        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:clothing:casual\",\n" +
+        "        \"strength\": 10,\n" +
+        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:clothing:accessories\",\n" +
+        "        \"strength\": -10,\n" +
+        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
+        "      },\n" +
+        "      {\n" +
+        "        \"id\": \"urn:X-UnboundID:topic:clothing:impress\",\n" +
+        "        \"strength\": -10,\n" +
+        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
+        "      }\n" +
+        "    ]\n" +
+        "  },\n" +
+        "  \"userName\": \"user.0\",\n" +
+        "  \"photoURLs\": [\n" +
+        "    \n" +
+        "  ]\n" +
+        "}");
+
+    List<PatchOperation> d = JsonUtils.diff(source, target, false);
+    assertEquals(d.size(), 1);
+    assertEquals(d.get(0).getOpType(), PatchOpType.REPLACE);
+    assertEquals(d.get(0).getPath().toString(),
+        "urn:unboundid:schemas:sample:profile:1.0:topicPreferences[" +
+            "(id eq \"urn:X-UnboundID:topic:clothing:shoes\" and" +
+            " strength eq 10 and timeStamp eq \"2015-10-12T14:57:36.494Z\")]");
+    assertEquals(d.get(0).getJsonNode().path("timeStamp").textValue(),
+        "2015-10-13T14:57:36.494Z");
   }
 
   private void removeNullNodes(JsonNode object)
