@@ -38,6 +38,7 @@ import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.server.providers.DotSearchFilter;
+import com.unboundid.scim2.server.providers.JsonProcessingExceptionMapper;
 import com.unboundid.scim2.server.providers.ScimExceptionMapper;
 import com.unboundid.scim2.server.providers.RuntimeExceptionMapper;
 import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
@@ -51,12 +52,16 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import java.net.URI;
 import java.util.Collections;
 
+import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -84,6 +89,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     // Exception Mappers
     config.register(ScimExceptionMapper.class);
     config.register(RuntimeExceptionMapper.class);
+    config.register(JsonProcessingExceptionMapper.class);
     config.register(new JacksonJsonProvider(JsonUtils.createObjectMapper()));
 
     // Filters
@@ -478,6 +484,48 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertEquals(updatedUser.getPhoneNumbers().size(), 2);
     assertTrue(contains(updatedUser.getPhoneNumbers(), phone1));
     assertTrue(contains(updatedUser.getPhoneNumbers(), phone2));
+  }
+
+  /**
+   * Test error response when invalid JSON is submitted.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testInvalidJson() throws ScimException
+  {
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+
+    Response response = target.path("SingletonUsers").request().post(
+        Entity.entity("{badJson}", MEDIA_TYPE_SCIM));
+    assertEquals(response.getStatus(), 400);
+    ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+    assertEquals(errorResponse.getStatus(), new Integer(400));
+    assertEquals(errorResponse.getScimType(), "invalidSyntax");
+    assertNotNull(errorResponse.getDetail());
+  }
+
+  /**
+   * Test error response when an invalid standard SCIM message is submitted and
+   * a Jackson binding error occurs.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testInvalidMessage() throws ScimException
+  {
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+
+    Response response = target.path("SingletonUsers").path(".search").
+        request().post(Entity.entity(
+        "{\"undefinedField\": \"value\"}", MEDIA_TYPE_SCIM));
+    assertEquals(response.getStatus(), 400);
+    ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+    assertEquals(errorResponse.getStatus(), new Integer(400));
+    assertEquals(errorResponse.getScimType(), "invalidSyntax");
+    assertNotNull(errorResponse.getDetail());
   }
 
   private void setMeta(Class<?> resourceClass, ScimResource scimResource)

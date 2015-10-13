@@ -40,7 +40,7 @@ public class ConsentTest
             "      \"iconUrl\":\"http://localhost:12345/app\",\n" +
             "      \"emailAddress\":\"email@address.com\"\n" +
             "   },\n" +
-            "   \"scope\":[  \n" +
+            "   \"scopes\":[  \n" +
             "      {  \n" +
             "         \"name\":\"name1\",\n" +
             "         \"description\":\"description1\",\n" +

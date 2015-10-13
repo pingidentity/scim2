@@ -189,9 +189,19 @@ public class Parser
     {
       // The attribute name is prefixed with the schema URN.
 
-      // Find the last ":". Everything to the left is the schema URN,
-      // everything on the right is the attribute name.
-      int i = trimmedPathString.lastIndexOf(':');
+      // Find the last ":" before any open brackets. Everything to the left is
+      // the schema URN, everything on the right is the attribute name plus a
+      // potential value filter.
+      int j = trimmedPathString.indexOf('[');
+      int i;
+      if(j >= 0)
+      {
+        i = trimmedPathString.substring(0, j).lastIndexOf(':');
+      }
+      else
+      {
+        i = trimmedPathString.lastIndexOf(':');
+      }
       String schemaUrn = trimmedPathString.substring(0, i++);
       String attributeName =
           trimmedPathString.substring(i, trimmedPathString.length());
