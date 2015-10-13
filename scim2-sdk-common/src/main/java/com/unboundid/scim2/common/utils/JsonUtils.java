@@ -737,7 +737,10 @@ public class JsonUtils
     while (si.hasNext())
     {
       Map.Entry<String, JsonNode> sourceField = si.next();
-      Path path = parentPath.attribute(sourceField.getKey());
+      Path path = parentPath.isRoot() &&
+          SchemaUtils.isUrn(sourceField.getKey()) ?
+          Path.root(sourceField.getKey()) :
+          parentPath.attribute(sourceField.getKey());
       JsonNode sourceValue = sourceField.getValue();
       JsonNode targetValueToAdd = targetToAdd.remove(sourceField.getKey());
       JsonNode targetValueToReplace =
@@ -890,6 +893,9 @@ public class JsonUtils
         }
       }
     }
+
+    removeNullAndEmptyValues(targetToAdd);
+    removeNullAndEmptyValues(targetToReplace);
   }
 
   /**
@@ -945,7 +951,9 @@ public class JsonUtils
               }
             }
           }
-          if(matchScore > 0)
+          // Only consider the match if there is not already match with the same
+          // score. This will prefer matches at the same index in the array.
+          if(matchScore > 0 && !matchScoreToIndex.containsKey(matchScore))
           {
             matchScoreToIndex.put(matchScore, i);
           }
@@ -1007,6 +1015,29 @@ public class JsonUtils
 
     // We can't uniquely identify this value with a filter.
     return null;
+  }
+
+
+  /**
+   * Removes any fields with the null value or an empty array.
+   *
+   * @param node The node with null and empty array values removed.
+   */
+  private static void removeNullAndEmptyValues(final JsonNode node)
+  {
+    Iterator<JsonNode> si = node.elements();
+    while (si.hasNext())
+    {
+      JsonNode field = si.next();
+      if(field.isNull() || field.isArray() && field.size() == 0)
+      {
+        si.remove();
+      }
+      else if(field.isContainerNode())
+      {
+        removeNullAndEmptyValues(field);
+      }
+    }
   }
 
   /**

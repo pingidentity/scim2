@@ -18,6 +18,7 @@
 package com.unboundid.scim2.common;
 
 import com.unboundid.scim2.common.exceptions.BadRequestException;
+import com.unboundid.scim2.common.filters.Filter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -57,6 +58,18 @@ public class PathParsingTestCase
                 "enterprise:2.0:User:employeeNumber",
                 Path.root("urn:ietf:params:scim:schemas:extension:" +
                     "enterprise:2.0:User").attribute("employeeNumber") },
+            new Object[] { "urn:unboundid:schemas:sample:profile:1.0:" +
+                "topicPreferences[(id eq " +
+                "\"urn:X-UnboundID:topic:clothing:shoes\" and " +
+                "strength eq 10 and timeStamp eq " +
+                "\"2015-10-12T14:57:36.494Z\")]",
+                Path.root("urn:unboundid:schemas:sample:profile:1.0").
+                    attribute("topicPreferences",
+                        Filter.and(Filter.eq("id",
+                                "urn:X-UnboundID:topic:clothing:shoes"),
+                                   Filter.eq("strength", 10),
+                                   Filter.eq("timeStamp",
+                                       "2015-10-12T14:57:36.494Z"))) },
 
             // The following does not technically conform to the SCIM spec
             // but our path impl is lenient so it may be used with any JSON
