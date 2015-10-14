@@ -173,7 +173,8 @@ public abstract class BaseScimResource
    * @param key name of the field.
    * @param value value of the field.
    *
-   * @throws ScimException if the key is not an extension attribute namespace.
+   * @throws ScimException if the key is not an extension attribute namespace
+   * (the key name doesn't start with "urn:").
    */
   @JsonAnySetter
   protected void setAny(final String key,
