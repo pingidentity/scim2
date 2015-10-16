@@ -26,14 +26,14 @@ import com.unboundid.scim2.common.types.Meta;
 import java.util.List;
 
 @Schema(description = "Consent objects.  These represent a user giving" +
-    "consent for an application to access identity data.",
+    "consent for a client to access identity data.",
     id = "urn:unboundid:scim:api:messages:2.0:consent",
     name = "Consent")
 public final class Consent extends BaseScimResource
 {
-  @Attribute(description = "The application for this consent.",
+  @Attribute(description = "The client for this consent.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
-  private final Application application;
+  private final OAuth2Client client;
 
   @Attribute(description = "The scopes for this consent.",
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -51,24 +51,24 @@ public final class Consent extends BaseScimResource
    * Construct a new Consent object.  This should only be needed by the
    * server.
    *
-   * @param application application for this consent.
+   * @param client client for this consent.
    * @param scopes scopes for this consent.
    */
-  public Consent(final Application application, final List<Scope> scopes)
+  public Consent(final OAuth2Client client, final List<Scope> scopes)
   {
     this.setMeta(new Meta());
-    this.application = application;
+    this.client = client;
     this.scopes = scopes;
   }
 
   /**
-   * Gets the application for this consent.
+   * Gets the client for this consent.
    *
-   * @return the application for this consent.
+   * @return the client for this consent.
    */
-  public Application getApplication()
+  public OAuth2Client getClient()
   {
-    return application;
+    return client;
   }
 
   /**
@@ -104,8 +104,8 @@ public final class Consent extends BaseScimResource
 
     Consent consent = (Consent) o;
 
-    if (application != null ? !application.equals(consent.application) :
-        consent.application != null)
+    if (client != null ? !client.equals(consent.client) :
+        consent.client != null)
     {
       return false;
     }
@@ -122,7 +122,7 @@ public final class Consent extends BaseScimResource
   public int hashCode()
   {
     int result = super.hashCode();
-    result = 31 * result + (application != null ? application.hashCode() : 0);
+    result = 31 * result + (client != null ? client.hashCode() : 0);
     result = 31 * result + (scopes != null ? scopes.hashCode() : 0);
     return result;
   }

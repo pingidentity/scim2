@@ -20,7 +20,7 @@ package com.unboundid.scim2.extension.messages.consent;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
-public final class Application
+public final class OAuth2Client
 {
 
   public static class Builder
@@ -32,9 +32,9 @@ public final class Application
     private String emailAddress;
 
     /**
-     * Sets the name of the application.
+     * Sets the name of the client.
      *
-     * @param name the name of the application.
+     * @param name the name of the client.
      * @return this.
      */
     public Builder setName(final String name)
@@ -44,9 +44,9 @@ public final class Application
     }
 
     /**
-     * Sets the description of the application.
+     * Sets the description of the client.
      *
-     * @param description the description of the application.
+     * @param description the description of the client.
      * @return this.
      */
     public Builder setDescription(final String description)
@@ -56,9 +56,9 @@ public final class Application
     }
 
     /**
-     * Sets the url of the application.
+     * Sets the url of the client.
      *
-     * @param url the url of the application.
+     * @param url the url of the client.
      * @return this.
      */
     public Builder setUrl(final String url)
@@ -68,9 +68,9 @@ public final class Application
     }
 
     /**
-     * Sets the icon url of the application.
+     * Sets the icon url of the client.
      *
-     * @param iconUrl the icon url of the application.
+     * @param iconUrl the icon url of the client.
      * @return this.
      */
     public Builder setIconUrl(final String iconUrl)
@@ -80,9 +80,9 @@ public final class Application
     }
 
     /**
-     * Sets the email address of the application.
+     * Sets the email address of the client.
      *
-     * @param emailAddress the email address of the application.
+     * @param emailAddress the email address of the client.
      * @return this.
      */
     public Builder setEmailAddress(final String emailAddress)
@@ -92,49 +92,49 @@ public final class Application
     }
 
     /**
-     * Builds an application with the parameters that have been
+     * Builds an client with the parameters that have been
      * set in the builder.
      *
-     * @return a newly created application.
+     * @return a newly created client.
      */
-    public Application build()
+    public OAuth2Client build()
     {
-      return new Application(this);
+      return new OAuth2Client(this);
     }
   }
 
-  @Attribute(description = "The name of the application authorized " +
+  @Attribute(description = "The name of the client authorized " +
       "by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String name;
 
-  @Attribute(description = "The description of the application authorized " +
+  @Attribute(description = "The description of the client authorized " +
       "by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
-  @Attribute(description = "The reference to the page of the application " +
+  @Attribute(description = "The reference to the page of the client " +
       "authorized by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String url;
 
-  @Attribute(description = "The reference to icon of the application " +
+  @Attribute(description = "The reference to icon of the client " +
       "authorized by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String iconUrl;
 
-  @Attribute(description = "The name of the application authorized " +
+  @Attribute(description = "The name of the client authorized " +
       "by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String emailAddress;
 
   // private no-arg constructor for Jackson
-  private Application()
+  private OAuth2Client()
   {
     this(new Builder());
   }
 
-  private Application(final Builder builder)
+  private OAuth2Client(final Builder builder)
   {
     this.name = builder.name;
     this.description = builder.description;
@@ -144,9 +144,9 @@ public final class Application
   }
 
   /**
-   * Gets the name of the application.
+   * Gets the name of the client.
    *
-   * @return the name of the application.
+   * @return the name of the client.
    */
   public String getName()
   {
@@ -154,9 +154,9 @@ public final class Application
   }
 
   /**
-   * Gets the description of the application.
+   * Gets the description of the client.
    *
-   * @return the description of the application.
+   * @return the description of the client.
    */
   public String getDescription()
   {
@@ -164,9 +164,9 @@ public final class Application
   }
 
   /**
-   * Gets the url of the application.
+   * Gets the url of the client.
    *
-   * @return the url of the application.
+   * @return the url of the client.
    */
   public String getUrl()
   {
@@ -174,9 +174,9 @@ public final class Application
   }
 
   /**
-   * Gets the icon url of the application.
+   * Gets the icon url of the client.
    *
-   * @return the icon url of the application.
+   * @return the icon url of the client.
    */
   public String getIconUrl()
   {
@@ -184,9 +184,9 @@ public final class Application
   }
 
   /**
-   * Gets the email address for the application.
+   * Gets the email address for the client.
    *
-   * @return the email address for the application.
+   * @return the email address for the client.
    */
   public String getEmailAddress()
   {
@@ -209,7 +209,7 @@ public final class Application
       return false;
     }
 
-    Application that = (Application) o;
+    OAuth2Client that = (OAuth2Client) o;
 
     if (name != null ? !name.equals(that.name) : that.name != null)
     {

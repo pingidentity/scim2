@@ -35,7 +35,7 @@ public class ConsentHistoryTest
   {
     String consentHistoryString =
         "{  \n" +
-            "   \"application\":{  \n" +
+            "   \"client\":{  \n" +
             "      \"name\":\"appName\",\n" +
             "      \"description\":\"appDesc\",\n" +
             "      \"iconUrl\":\"http://localhost:12345/app\",\n" +

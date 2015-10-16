@@ -23,10 +23,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @Test
-public class ApplicationTest
+public class OAuth2ClientTest
 {
   /**
-   * Tests serialization of Application objects.
+   * Tests serialization of Client objects.
    *
    * @throws Exception if an error occurs.
    */
@@ -46,15 +46,15 @@ public class ApplicationTest
     objectNode.put("url", url);
     objectNode.put("emailAddress", emailAddress);
 
-    Application app1 = JsonUtils.getObjectReader().forType(Application.class).
+    OAuth2Client app1 = JsonUtils.getObjectReader().forType(OAuth2Client.class).
         readValue(objectNode.toString());
     Assert.assertEquals(app1.getName(), name);
     Assert.assertEquals(app1.getDescription(), description);
     Assert.assertEquals(app1.getIconUrl(), iconUrl);
     Assert.assertEquals(app1.getEmailAddress(), emailAddress);
 
-    Application app2 =
-        JsonUtils.getObjectReader().forType(Application.class).readValue(
+    OAuth2Client app2 =
+        JsonUtils.getObjectReader().forType(OAuth2Client.class).readValue(
             JsonUtils.getObjectWriter().writeValueAsString(app1));
     Assert.assertEquals(app1, app2);
   }

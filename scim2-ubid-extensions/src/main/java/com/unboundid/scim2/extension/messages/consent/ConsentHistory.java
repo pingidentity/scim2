@@ -29,16 +29,16 @@ import java.util.List;
  * Contains information about a consent history record.
  */
 @Schema(description = "Consent History objects.  These represent the " +
-    "history of a user giving consent for an application to access " +
+    "history of a user giving consent for a client to access " +
     "identity data.",
     id = "urn:unboundid:scim:api:messages:2.0:consentHistory",
     name = "ConsentHistory")
 public final class ConsentHistory extends BaseScimResource
 {
 
-  @Attribute(description = "The application for this consent history entry.",
+  @Attribute(description = "The client for this consent history entry.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private final Application application;
+  private final OAuth2Client client;
 
   @Attribute(description = "The scopes for this consent history entry.",
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -55,25 +55,25 @@ public final class ConsentHistory extends BaseScimResource
    * Constructs a new ConsentHistory.  This should only be needed
    * by the server.
    *
-   * @param application the application for this consent history.
+   * @param client the client for this consent history.
    * @param scopes the scopes for this consent history.
    */
   public ConsentHistory(
-      final Application application, final List<Scope> scopes)
+      final OAuth2Client client, final List<Scope> scopes)
   {
     this.setMeta(new Meta());
-    this.application = application;
+    this.client = client;
     this.scopes = scopes;
   }
 
   /**
-   * Gets the application for this consent history entry.
+   * Gets the client for this consent history entry.
    *
-   * @return the application for this consent history entry.
+   * @return the client for this consent history entry.
    */
-  public Application getApplication()
+  public OAuth2Client getClient()
   {
-    return application;
+    return client;
   }
 
   /**
@@ -104,8 +104,8 @@ public final class ConsentHistory extends BaseScimResource
 
     ConsentHistory that = (ConsentHistory) o;
 
-    if (application != null ?
-        !application.equals(that.application) : that.application != null)
+    if (client != null ?
+        !client.equals(that.client) : that.client != null)
     {
       return false;
     }
@@ -117,7 +117,7 @@ public final class ConsentHistory extends BaseScimResource
   public int hashCode()
   {
     int result = super.hashCode();
-    result = 31 * result + (application != null ? application.hashCode() : 0);
+    result = 31 * result + (client != null ? client.hashCode() : 0);
     result = 31 * result + (scopes != null ? scopes.hashCode() : 0);
     return result;
   }
