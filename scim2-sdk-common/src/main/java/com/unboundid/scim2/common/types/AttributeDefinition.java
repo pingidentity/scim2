@@ -19,6 +19,7 @@ package com.unboundid.scim2.common.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 
@@ -96,6 +97,7 @@ public class AttributeDefinition
      *
      * @return the name of the type.
      */
+    @JsonValue
     public String getName()
     {
       return name;
@@ -109,6 +111,7 @@ public class AttributeDefinition
      * @param name the name of the type.
      * @return the type matching the given name.
      */
+    @JsonCreator
     public static Type fromName(final String name)
     {
       for(Type type : Type.values())
@@ -170,6 +173,7 @@ public class AttributeDefinition
      *
      * @return the name of the mutability constraint.
      */
+    @JsonValue
     public String getName()
     {
       return name;
@@ -185,6 +189,7 @@ public class AttributeDefinition
      * @throws BadRequestException if the name of the mutability constraint is
      *                             invalid.
      */
+    @JsonCreator
     public static Mutability fromName(final String name)
         throws BadRequestException
     {
@@ -248,6 +253,7 @@ public class AttributeDefinition
      *
      * @return the name of the return constraint.
      */
+    @JsonValue
     public String getName()
     {
       return name;
@@ -263,6 +269,7 @@ public class AttributeDefinition
      * @throws BadRequestException if the name of the return constraint is
      *                             invalid.
      */
+    @JsonCreator
     public static Returned fromName(final String name)
         throws BadRequestException
     {
@@ -313,6 +320,7 @@ public class AttributeDefinition
      *
      * @return the name of the uniqueness constraint.
      */
+    @JsonValue
     public String getName()
     {
       return name;
@@ -328,6 +336,7 @@ public class AttributeDefinition
      * @throws BadRequestException if the name of the uniqueness constraint is
      *                             invalid.
      */
+    @JsonCreator
     public static Uniqueness fromName(final String name)
         throws BadRequestException
     {
