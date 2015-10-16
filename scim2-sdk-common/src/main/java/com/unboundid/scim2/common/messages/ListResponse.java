@@ -50,7 +50,7 @@ public final class ListResponse<T> extends BaseScimResource
   @JsonProperty(value = "Resources", required = true)
   private final List<T> resources;
 
-  @Attribute(description = "The 1-based index of hte first result in " +
+  @Attribute(description = "The 1-based index of the first result in " +
       "the current set of list results")
   @JsonProperty("startIndex")
   private final Integer startIndex;
