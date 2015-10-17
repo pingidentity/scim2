@@ -40,11 +40,13 @@ import java.net.URI;
 import java.text.ParsePosition;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -131,8 +133,30 @@ public class SchemaChecker
     }
   }
 
+  /**
+   * Enumeration that defines options affecting the way schema checking is
+   * performed. These options may be enabled and disabled before using the
+   * schema checker.
+   */
+  public enum Option
+  {
+    /**
+     * Relax SCIM 2.0 standard schema requirements by allowing core or extended
+     * attributes in the resource that are not defined by any schema in the
+     * resource type definition.
+     */
+    ALLOW_UNDEFINED_ATTRIBUTES,
+
+    /**
+     * Relax SCIM 2.0 standard schema requirements by allowing sub-attributes
+     * that are not defined by the definition of the parent attribute.
+     */
+    ALLOW_UNDEFINED_SUB_ATTRIBUTES;
+  }
+
   private ResourceTypeDefinition resourceType;
   private final Collection<AttributeDefinition> commonAndCoreAttributes;
+  private final Set<Option> enabledOptions;
 
   /**
    * Create a new instance that may be used to validate and enforce schema
@@ -155,6 +179,27 @@ public class SchemaChecker
     {
       commonAndCoreAttributes = SchemaUtils.COMMON_ATTRIBUTE_DEFINITIONS;
     }
+    this.enabledOptions = new HashSet<Option>();
+  }
+
+  /**
+   * Enable an option.
+   *
+   * @param option The option to enable.
+   */
+  public void enable(final Option option)
+  {
+    enabledOptions.add(option);
+  }
+
+  /**
+   * Disable an option.
+   *
+   * @param option The option to disable.
+   */
+  public void disable(final Option option)
+  {
+    enabledOptions.remove(option);
   }
 
   /**
@@ -270,8 +315,38 @@ public class SchemaChecker
       if(path != null && attribute == null)
       {
         // Can't find the attribute definition for attribute in path.
-        results.pathIssues.add(prefix +
-            "Attribute for path " + path.toString() + " is undefined");
+        if(path.size() > 1)
+        {
+          // This is a path to a sub-attribute. See if the parent attribute is
+          // defined.
+          if(resourceType.getAttributeDefinition(path.subPath(1)) == null)
+          {
+            // The parent attribute is also undefined.
+            if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+            {
+              results.pathIssues.add(prefix +
+                  "Attribute " + path.getElement(0)+ " in path " +
+                  path.toString() + " is undefined");
+            }
+          }
+          else
+          {
+            // The parent attribute is defined but the sub-attribute is
+            // undefined.
+            if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_SUB_ATTRIBUTES))
+            {
+              results.pathIssues.add(prefix +
+                  "Sub-attribute " + path.getElement(1)+ " in path " +
+                  path.toString() + " is undefined");
+            }
+          }
+        }
+        else if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+        {
+          results.pathIssues.add(prefix +
+              "Attribute " + path.getElement(0)+ " in path " +
+              path.toString() + " is undefined");
+        }
         continue;
       }
       switch (patchOp.getOpType())
@@ -541,7 +616,8 @@ public class SchemaChecker
               break;
             }
           }
-          if(!found)
+          if(!found &&
+              !enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
           {
             results.syntaxIssues.add(prefix + "Undefined extended attributes " +
                 "namespace " + field);
@@ -671,15 +747,16 @@ public class SchemaChecker
     }
 
     // All defined schema extensions should be removed.
-    // Remove any additional undefined schema extensions.
+    // Remove any additional extended attribute namespaces not included in
+    // the schemas attribute.
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
     while(i.hasNext())
     {
       String fieldName = i.next().getKey();
       if(SchemaUtils.isUrn(fieldName))
       {
-        results.syntaxIssues.add(prefix + "Undefined extended attributes " +
-            "namespace " + fieldName);
+        results.syntaxIssues.add(prefix + "Extended attributes namespace "
+            + fieldName + " must be included in the schemas attribute");
         i.remove();
       }
     }
@@ -1037,11 +1114,11 @@ public class SchemaChecker
       {
         found = node.textValue().equals(resourceType.getCoreSchema().getId());
       }
-      if(!found)
+      if(!found && !enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
       {
-        results.syntaxIssues.add(prefix + "Value " + node.textValue() +
-            " is not valid for attribute " + path + " because it is " +
-            "an undefined schema for this resource type");
+        results.syntaxIssues.add(prefix + "Schema URI " + node.textValue() +
+            " is not a valid value for attribute " + path + " because it is " +
+            "undefined as a core or schema extension for this resource type");
       }
     }
   }
@@ -1102,23 +1179,33 @@ public class SchemaChecker
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
     while(i.hasNext())
     {
+      String undefinedAttribute = i.next().getKey();
       if(parentPath.size() == 0)
       {
-        results.syntaxIssues.add(prefix + "Core attribute " +
-            i.next().getKey() + " is undefined for schema " +
-            resourceType.getCoreSchema().getId());
+        if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+        {
+          results.syntaxIssues.add(prefix + "Core attribute " +
+              undefinedAttribute + " is undefined for schema " +
+              resourceType.getCoreSchema().getId());
+        }
       }
       else if(parentPath.isRoot() &&
           parentPath.getSchemaUrn() != null)
       {
-        results.syntaxIssues.add(prefix + "Extended attribute " +
-            i.next().getKey() + " is undefined for schema " +
-            parentPath.getSchemaUrn());
+        if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+        {
+          results.syntaxIssues.add(prefix + "Extended attribute " +
+              undefinedAttribute + " is undefined for schema " +
+              parentPath.getSchemaUrn());
+        }
       }
       else
       {
-        results.syntaxIssues.add(prefix + "Sub-attribute " + i.next().getKey() +
-            " is undefined for attribute " + parentPath);
+        if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_SUB_ATTRIBUTES))
+        {
+          results.syntaxIssues.add(prefix + "Sub-attribute " +
+              undefinedAttribute + " is undefined for attribute " + parentPath);
+        }
       }
       i.remove();
     }

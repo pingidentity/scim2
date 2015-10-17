@@ -1196,6 +1196,378 @@ public class SchemaCheckerTestCase
   }
 
   /**
+   * Test case for the allow undefined attribute options.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testAllowUndefinedAttributeOptions()
+      throws Exception
+  {
+    SchemaResource coreSchema = SchemaUtils.getSchema(UserResource.class);
+    SchemaResource enterpriseExtension =
+        SchemaUtils.getSchema(EnterpriseUserExtension.class);
+
+    ResourceTypeDefinition resourceTypeDefinition =
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(coreSchema).
+            addOptionalSchemaExtension(enterpriseExtension).build();
+
+    SchemaChecker undefinedAttributesChecker =
+        new SchemaChecker(resourceTypeDefinition);
+    undefinedAttributesChecker.enable(
+        SchemaChecker.Option.ALLOW_UNDEFINED_ATTRIBUTES);
+
+    SchemaChecker undefinedSubAttributesChecker =
+        new SchemaChecker(resourceTypeDefinition);
+    undefinedSubAttributesChecker.enable(
+        SchemaChecker.Option.ALLOW_UNDEFINED_SUB_ATTRIBUTES);
+
+    // Core attribute is undefined
+    ObjectNode coreUndefined = JsonUtils.getJsonNodeFactory().objectNode();
+    coreUndefined.putArray("schemas").
+        add("urn:ietf:params:scim:schemas:core:2.0:User").
+        add("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User");
+    coreUndefined.put("userName", "test");
+    coreUndefined.put("undefined", "value");
+
+    SchemaChecker.Results results =
+        undefinedAttributesChecker.checkCreate(coreUndefined);
+    assertEquals(results.getSyntaxIssues().size(), 0,
+        results.getSyntaxIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkCreate(coreUndefined);
+    assertEquals(results.getSyntaxIssues().size(), 1,
+        results.getSyntaxIssues().toString());
+    assertTrue(containsIssueWith(results.getSyntaxIssues(),
+        "is undefined for schema"));
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.add(Path.root().attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.add(Path.root().attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.replace(Path.root().attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.replace(Path.root().attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.remove(Path.root().attribute("undefined"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.remove(Path.root().attribute("undefined"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    // Core sub-attribute is undefined
+    ObjectNode coreSubUndefined = JsonUtils.getJsonNodeFactory().objectNode();
+    coreSubUndefined.putArray("schemas").
+        add("urn:ietf:params:scim:schemas:core:2.0:User").
+        add("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User");
+    coreSubUndefined.put("userName", "test");
+    coreSubUndefined.putObject("name").put("undefined", "value");
+
+    results = undefinedAttributesChecker.checkCreate(coreSubUndefined);
+    assertEquals(results.getSyntaxIssues().size(), 1,
+        results.getSyntaxIssues().toString());
+    assertTrue(containsIssueWith(results.getSyntaxIssues(),
+        "is undefined for attribute"));
+
+    results = undefinedSubAttributesChecker.checkCreate(coreSubUndefined);
+    assertEquals(results.getSyntaxIssues().size(), 0,
+        results.getSyntaxIssues().toString());
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.add(Path.root().attribute("name").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.add(Path.root().attribute("name").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.replace(
+            Path.root().attribute("name").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.replace(
+            Path.root().attribute("name").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.remove(
+            Path.root().attribute("name").attribute("undefined"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.remove(
+            Path.root().attribute("name").attribute("undefined"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    // Extended attribute namespace is undefined
+    ObjectNode extendedUndefined = JsonUtils.getJsonNodeFactory().objectNode();
+    extendedUndefined.putArray("schemas").
+        add("urn:ietf:params:scim:schemas:core:2.0:User");
+    extendedUndefined.put("userName", "test");
+    extendedUndefined.putObject(
+        "urn:undefined").
+        put("undefined", "value");
+
+    // This should still be an error since all namespaces must be defined in the
+    // schemas attribute.
+    results = undefinedAttributesChecker.checkCreate(extendedUndefined);
+    assertEquals(results.getSyntaxIssues().size(), 1,
+        results.getSyntaxIssues().toString());
+
+    extendedUndefined = JsonUtils.getJsonNodeFactory().objectNode();
+    extendedUndefined.putArray("schemas").
+        add("urn:ietf:params:scim:schemas:core:2.0:User").
+        add("urn:undefined");
+    extendedUndefined.put("userName", "test");
+    extendedUndefined.putObject(
+        "urn:undefined").
+        put("undefined", "value");
+
+    results = undefinedSubAttributesChecker.checkCreate(extendedUndefined);
+    assertEquals(results.getSyntaxIssues().size(), 1,
+        results.getSyntaxIssues().toString());
+    assertTrue(containsIssueWith(results.getSyntaxIssues(),
+        "is undefined"));
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.add(Path.root("urn:undefined").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.add(Path.root("urn:undefined").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.replace(
+            Path.root("urn:undefined").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.replace(
+            Path.root("urn:undefined").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.remove(
+            Path.root("urn:undefined").attribute("undefined"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.remove(
+            Path.root("urn:undefined").attribute("undefined"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    // Extended attribute is undefined
+    extendedUndefined = JsonUtils.getJsonNodeFactory().objectNode();
+    extendedUndefined.putArray("schemas").
+        add("urn:ietf:params:scim:schemas:core:2.0:User").
+        add("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User");
+    extendedUndefined.put("userName", "test");
+    extendedUndefined.putObject(
+        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+        put("undefined", "value");
+
+    results = undefinedAttributesChecker.checkCreate(extendedUndefined);
+    assertEquals(results.getSyntaxIssues().size(), 0,
+        results.getSyntaxIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkCreate(extendedUndefined);
+    assertEquals(results.getSyntaxIssues().size(), 1,
+        results.getSyntaxIssues().toString());
+    assertTrue(containsIssueWith(results.getSyntaxIssues(),
+        "is undefined for schema"));
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.add(Path.root(
+                "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+                attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.add(Path.root(
+                "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+                attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.replace(Path.root(
+                "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+                attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.replace(Path.root(
+                "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+                attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.remove(Path.root(
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+            attribute("undefined"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.remove(Path.root(
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+            attribute("undefined"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    // Extended sub-attribute is undefined
+    ObjectNode extendedSubUndefined =
+        JsonUtils.getJsonNodeFactory().objectNode();
+    extendedSubUndefined.putArray("schemas").
+        add("urn:ietf:params:scim:schemas:core:2.0:User").
+        add("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User");
+    extendedSubUndefined.put("userName", "test");
+    extendedSubUndefined.putObject(
+        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+        putObject("manager").
+        put("$ref", "https://value").
+        put("value", "value").
+        put("undefined", "value");
+
+    results = undefinedAttributesChecker.checkCreate(extendedSubUndefined);
+    assertEquals(results.getSyntaxIssues().size(), 1,
+        results.getSyntaxIssues().toString());
+    assertTrue(containsIssueWith(results.getSyntaxIssues(),
+        "is undefined for attribute"));
+
+    results = undefinedSubAttributesChecker.checkCreate(extendedSubUndefined);
+    assertEquals(results.getSyntaxIssues().size(), 0,
+        results.getSyntaxIssues().toString());
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.add(Path.root(
+                "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+                attribute("manager").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.add(Path.root(
+                "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+                attribute("manager").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.replace(Path.root(
+                "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+                attribute("manager").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.replace(Path.root(
+                "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+                attribute("manager").attribute("undefined"),
+            TextNode.valueOf("value"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+
+    results = undefinedAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.remove(Path.root(
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+            attribute("manager").attribute("undefined"))), null);
+    assertEquals(results.getPathIssues().size(), 1,
+        results.getPathIssues().toString());
+    assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
+        PatchOperation.remove(Path.root(
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
+            attribute("manager").attribute("undefined"))), null);
+    assertEquals(results.getPathIssues().size(), 0,
+        results.getPathIssues().toString());
+  }
+
+  /**
    * Provider for testAttributeValueType.
    *
    * @return The test data.

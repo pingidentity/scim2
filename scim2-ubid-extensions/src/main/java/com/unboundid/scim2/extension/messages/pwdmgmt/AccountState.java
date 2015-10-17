@@ -104,13 +104,13 @@ public class AccountState extends BaseScimResource
       multiValueClass = Calendar.class)
   private JsonReference<List<Calendar>> graceLoginTimes;
 
-
   @Attribute(description = "Remaining grace login count.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Integer> remainingGraceLoginCount;
 
   @Attribute(description = "Password change by required time.  Set to null " +
-      "to clear.")
+      "to clear.",
+      mutability = AttributeDefinition.Mutability.READ_WRITE)
   private JsonReference<Calendar> passwordChangedByRequiredTime;
 
   @Attribute(description = "Seconds until require change time.",
@@ -125,6 +125,30 @@ public class AccountState extends BaseScimResource
   @Attribute(description = "Retired password information.",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private JsonReference<RetiredPassword> retiredPassword;
+
+  @Attribute(description = "Time of account activation.  Set to null to clear.",
+      mutability = AttributeDefinition.Mutability.READ_WRITE)
+  private JsonReference<Calendar> accountActivationTime;
+
+  @Attribute(description = "Seconds until account is activated.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private JsonReference<Integer> secondsUntilAccountActivation;
+
+  @Attribute(description = "Last login IP address.  Set to null to clear.",
+      mutability = AttributeDefinition.Mutability.READ_WRITE)
+  private JsonReference<String> lastLoginIpAddress;
+
+  @Attribute(description = "Account usability notices.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private JsonReference<List<AccountUsabilityIssue>> accountUsabilityNotices;
+
+  @Attribute(description = "Account usability warnings.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private JsonReference<List<AccountUsabilityIssue>> accountUsabilityWarnings;
+
+  @Attribute(description = "Account usability errors.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private JsonReference<List<AccountUsabilityIssue>> accountUsabilityErrors;
 
   /**
    * Gets a boolean indicating whether or not the account is disabled.
@@ -587,5 +611,145 @@ public class AccountState extends BaseScimResource
   public void purgeRetiredPassword()
   {
     this.retiredPassword = new JsonReference<RetiredPassword>(null);
+  }
+
+  /**
+   * Gets the account activation time.
+   *
+   * @return the account activation time.
+   */
+  public Calendar getAccountActivationTime()
+  {
+    return (accountActivationTime == null) ?
+        null : accountActivationTime.getObj();
+  }
+
+  /**
+   * Sets the account activation time.
+   *
+   * @param accountActivationTime the account activation time.
+   */
+  public void setAccountActivationTime(
+      final Calendar accountActivationTime)
+  {
+    this.accountActivationTime =
+        new JsonReference<Calendar>(accountActivationTime);
+  }
+
+  /**
+   * Gets the seconds until the account is activated.
+   *
+   * @return the seconds until the account is activated.
+   */
+  public Integer getSecondsUntilAccountActivation()
+  {
+    return (secondsUntilAccountActivation == null) ?
+        null : secondsUntilAccountActivation.getObj();
+  }
+
+  /**
+   * Sets the seconds until the account is activated.
+   *
+   * @param secondsUntilAccountActivation the seconds until the account is
+   *                                      activated.
+   */
+  private void setSecondsUntilAccountActivation(
+      final Integer secondsUntilAccountActivation)
+  {
+    this.secondsUntilAccountActivation =
+        new JsonReference<Integer>(secondsUntilAccountActivation);
+  }
+
+  /**
+   * Gets the last login IP address.
+   *
+   * @return the last login IP address.
+   */
+  public String getLastLoginIpAddress()
+  {
+    return (lastLoginIpAddress == null) ?
+        null : lastLoginIpAddress.getObj();
+  }
+
+  /**
+   * Sets the last login IP address.
+   *
+   * @param lastLoginIpAddress the last login IP address.
+   */
+  private void setLastLoginIpAddress(
+      final String lastLoginIpAddress)
+  {
+    this.lastLoginIpAddress =
+        new JsonReference<String>(lastLoginIpAddress);
+  }
+
+  /**
+   * Gets the account usability notices.
+   *
+   * @return the account usability notices.
+   */
+  public List<AccountUsabilityIssue> getAccountUsabilityNotices()
+  {
+    return (accountUsabilityNotices == null) ?
+        null : accountUsabilityNotices.getObj();
+  }
+
+  /**
+   * Sets the account usability notices.
+   *
+   * @param accountUsabilityNotices the account usability notices.
+   */
+  private void setAccountUsabilityNotices(
+      final List<AccountUsabilityIssue> accountUsabilityNotices)
+  {
+    this.accountUsabilityNotices =
+        new JsonReference<List<AccountUsabilityIssue>>(accountUsabilityNotices);
+  }
+
+  /**
+   * Gets the account usability warnings.
+   *
+   * @return the account usability warnings.
+   */
+  public List<AccountUsabilityIssue> getAccountUsabilityWarnings()
+  {
+    return (accountUsabilityWarnings == null) ?
+        null : accountUsabilityWarnings.getObj();
+  }
+
+  /**
+   * Sets the account usability warnings.
+   *
+   * @param accountUsabilityWarnings the account usability warnings.
+   */
+  private void setAccountUsabilityWarnings(
+      final List<AccountUsabilityIssue> accountUsabilityWarnings)
+  {
+    this.accountUsabilityWarnings =
+        new JsonReference<List<AccountUsabilityIssue>>(
+            accountUsabilityWarnings);
+  }
+
+  /**
+   * Gets the account usability errors.
+   *
+   * @return the account usability errors.
+   */
+  public List<AccountUsabilityIssue> getAccountUsabilityErrors()
+  {
+    return (accountUsabilityErrors == null) ?
+        null : accountUsabilityErrors.getObj();
+  }
+
+  /**
+   * Sets the account usability errors.
+   *
+   * @param accountUsabilityErrors the account usability errors.
+   */
+  private void setAccountUsabilityErrors(
+      final List<AccountUsabilityIssue> accountUsabilityErrors)
+  {
+    this.accountUsabilityErrors =
+        new JsonReference<List<AccountUsabilityIssue>>(accountUsabilityErrors);
   }
 }
