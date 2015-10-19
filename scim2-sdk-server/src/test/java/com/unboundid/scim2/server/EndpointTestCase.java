@@ -296,8 +296,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   @Test
   public void testGetUsers() throws ScimException
   {
+    final ScimService service = new ScimService(target());
     final ListResponse<UserResource> returnedUsers =
-        new ScimService(target()).searchRequest("Users").
+        service.searchRequest("Users").
             filter("meta.resourceType eq \"User\"").
             page(1, 10).
             sort("id", SortOrder.ASCENDING).
@@ -307,6 +308,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertEquals(returnedUsers.getTotalResults(), 1);
     assertEquals(returnedUsers.getStartIndex(), new Integer(1));
     assertEquals(returnedUsers.getItemsPerPage(), new Integer(1));
+
+    final UserResource r = returnedUsers.getResources().get(0);
+    service.retrieve(r);
   }
 
   /**

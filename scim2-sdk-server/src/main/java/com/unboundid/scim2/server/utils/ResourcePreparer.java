@@ -28,11 +28,13 @@ import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -84,9 +86,22 @@ public class ResourcePreparer<T extends ScimResource>
             QUERY_PARAMETER_EXCLUDED_ATTRIBUTES),
         requestUriInfo.getBaseUriBuilder().
             path(resourceType.getEndpoint()).
-            buildFromMap(requestUriInfo.getPathParameters()));
+            buildFromMap(singleValuedMapFromMultivaluedMap(
+                requestUriInfo.getPathParameters())));
   }
 
+  private static Map<String, String> singleValuedMapFromMultivaluedMap(
+      final MultivaluedMap<String, String> multivaluedMap
+  )
+  {
+    final Map<String, String> returnMap = new LinkedHashMap<String, String>();
+    for (String k : multivaluedMap.keySet())
+    {
+      returnMap.put(k, multivaluedMap.getFirst(k));
+    }
+
+    return returnMap;
+  }
 
   /**
    * Private constructor used by unit-test.
