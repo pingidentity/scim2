@@ -308,7 +308,7 @@ public class ResourcePreparer<T extends ScimResource>
                                 queryAttributes, excluded);
     GenericScimResource preparedResource =
         new GenericScimResource(
-            trimmer.trimObjectNode(returnedObject, Path.root()));
+            trimmer.trimObjectNode(returnedObject));
     setResourceTypeAndLocation((T) preparedResource);
     return preparedResource;
   }

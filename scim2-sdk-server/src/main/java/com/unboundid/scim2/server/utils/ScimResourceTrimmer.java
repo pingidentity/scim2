@@ -82,22 +82,40 @@ public class ScimResourceTrimmer extends ResourceTrimmer
         // Return only if it was one of the request attributes or if there are
         // no request attributes, then only if it was one of the override query
         // attributes.
-        return requestAttributes.contains(path) ||
+        return pathContains(requestAttributes, path) ||
                (requestAttributes.isEmpty() && !excluded &&
-                queryAttributes.contains(path));
+                pathContains(queryAttributes, path));
       default:
         // Return if it is not one of the excluded query attributes and no
         // override query attributes are provided. If override query attributes
         // are provided, only return if it is one of them.
         if(excluded)
         {
-          return !queryAttributes.contains(path);
+          return !pathContains(queryAttributes, path);
         }
         else
         {
           return queryAttributes.isEmpty() ||
-              queryAttributes.contains(path);
+                 pathContains(queryAttributes, path);
         }
     }
+  }
+
+  private boolean pathContains(final Set<Path> paths, final Path path)
+  {
+    if (paths.contains(path))
+    {
+      return true;
+    }
+
+    for (Path p = path; p.size() > 0; p = p.subPath(p.size() - 1))
+    {
+      if (paths.contains(p))
+      {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
