@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -38,11 +39,56 @@ public abstract class ResourceTrimmer
    * Trim attributes of the object node to return.
    *
    * @param objectNode The object node to return.
+   * @return The trimmed object node ready to return to the client.
+   */
+  public ObjectNode trimObjectNode(final ObjectNode objectNode)
+  {
+    ObjectNode objectToReturn = JsonUtils.getJsonNodeFactory().objectNode();
+    Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
+    while(i.hasNext())
+    {
+      Map.Entry<String, JsonNode> field = i.next();
+      final boolean isUrn = SchemaUtils.isUrn(field.getKey());
+      final Path path;
+      if (isUrn)
+      {
+        path = Path.root(field.getKey());
+      }
+      else
+      {
+        path = Path.root().attribute(field.getKey());
+      }
+
+      if(isUrn || shouldReturn(path))
+      {
+        if (field.getValue().isArray())
+        {
+          objectToReturn.set(field.getKey(), trimArrayNode(
+              (ArrayNode) field.getValue(), path));
+        }
+        else if (field.getValue().isObject())
+        {
+          objectToReturn.set(field.getKey(), trimObjectNodeInner(
+              (ObjectNode) field.getValue(), path));
+        }
+        else
+        {
+          objectToReturn.set(field.getKey(), field.getValue());
+        }
+      }
+    }
+    return objectToReturn;
+  }
+
+  /**
+   * Trim attributes of an inner object node to return.
+   *
+   * @param objectNode The object node to return.
    * @param parentPath  The parent path of attributes in the object.
    * @return The trimmed object node ready to return to the client.
    */
-  public ObjectNode trimObjectNode(final ObjectNode objectNode,
-                                   final Path parentPath)
+  private ObjectNode trimObjectNodeInner(final ObjectNode objectNode,
+                                         final Path parentPath)
   {
     ObjectNode objectToReturn = JsonUtils.getJsonNodeFactory().objectNode();
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
@@ -59,7 +105,7 @@ public abstract class ResourceTrimmer
         }
         else if (field.getValue().isObject())
         {
-          objectToReturn.set(field.getKey(), trimObjectNode(
+          objectToReturn.set(field.getKey(), trimObjectNodeInner(
               (ObjectNode) field.getValue(), path));
         }
         else
@@ -91,8 +137,8 @@ public abstract class ResourceTrimmer
       }
       else if(value.isObject())
       {
-        arrayToReturn.add(trimObjectNode((ObjectNode) value,
-            parentPath));
+        arrayToReturn.add(trimObjectNodeInner((ObjectNode) value,
+                                              parentPath));
       }
       else
       {

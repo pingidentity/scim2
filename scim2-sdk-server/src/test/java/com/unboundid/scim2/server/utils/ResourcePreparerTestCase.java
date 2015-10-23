@@ -78,21 +78,106 @@ public class ResourcePreparerTestCase
     builder.setReturned(AttributeDefinition.Returned.REQUEST);
     attributeDefinitions.add(builder.build());
 
+    AttributeDefinition[] attributeDefinitionsArray =
+        attributeDefinitions.toArray(
+            new AttributeDefinition[attributeDefinitions.size()]);
+    List<AttributeDefinition> complexAttributeDefinitions =
+        new ArrayList<AttributeDefinition>(4);
+    builder = new AttributeDefinition.Builder();
+    builder.setName("always");
+    builder.setType(AttributeDefinition.Type.COMPLEX);
+    builder.setReturned(AttributeDefinition.Returned.ALWAYS);
+    builder.addSubAttributes(attributeDefinitionsArray);
+    complexAttributeDefinitions.add(builder.build());
+
+    builder.setName("never");
+    builder.setReturned(AttributeDefinition.Returned.NEVER);
+    complexAttributeDefinitions.add(builder.build());
+
+    builder.setName("default");
+    builder.setReturned(AttributeDefinition.Returned.DEFAULT);
+    complexAttributeDefinitions.add(builder.build());
+
+    builder.setName("request");
+    builder.setReturned(AttributeDefinition.Returned.REQUEST);
+    complexAttributeDefinitions.add(builder.build());
+
+
     SchemaResource schema =
-        new SchemaResource("urn:test", "test", "test", attributeDefinitions);
+        new SchemaResource("urn:test", "test", "test",
+                           complexAttributeDefinitions);
+    SchemaResource extensionSchema =
+        new SchemaResource("urn:ext:1", "ext", "ext",
+                           complexAttributeDefinitions);
 
     resourceTypeDefinition = new ResourceTypeDefinition.Builder(
-        "test", "test").setCoreSchema(schema).build();
+        "test", "test").setCoreSchema(schema).addOptionalSchemaExtension(
+        extensionSchema).build();
 
     ObjectNode node =
         (ObjectNode) JsonUtils.getObjectReader().readTree(
             "{  \n" +
-                "  \"id\":\"test\",\n" +
-                "  \"always\":\"here\",\n" +
-                "  \"neVEr\":\"here\",\n" +
-                "  \"default\":\"here\",\n" +
-                "  \"rEquest\":\"here\"\n" +
-                "}");
+            "  \"id\":\"test\",\n" +
+            "  \"always\":\n" +
+            "  {\n" +
+            "    \"always\":\"here\",\n" +
+            "    \"neVEr\":\"here\",\n" +
+            "    \"default\":\"here\",\n" +
+            "    \"rEquest\":\"here\"\n" +
+            "  },\n" +
+            "  \"neVEr\":\n" +
+            "  {\n" +
+            "    \"always\":\"here\",\n" +
+            "    \"neVEr\":\"here\",\n" +
+            "    \"default\":\"here\",\n" +
+            "    \"rEquest\":\"here\"\n" +
+            "  },\n" +
+            "  \"default\":\n" +
+            "  {\n" +
+            "    \"always\":\"here\",\n" +
+            "    \"neVEr\":\"here\",\n" +
+            "    \"default\":\"here\",\n" +
+            "    \"rEquest\":\"here\"\n" +
+            "  },\n" +
+            "  \"rEquest\":\n" +
+            "  {\n" +
+            "    \"always\":\"here\",\n" +
+            "    \"neVEr\":\"here\",\n" +
+            "    \"default\":\"here\",\n" +
+            "    \"rEquest\":\"here\"\n" +
+            "  },\n" +
+            "  \"urn:ext:1\":\n" +
+            "  {\n" +
+            "    \"always\":\n" +
+            "    {\n" +
+            "      \"always\":\"here\",\n" +
+            "      \"neVEr\":\"here\",\n" +
+            "      \"default\":\"here\",\n" +
+            "      \"rEquest\":\"here\"\n" +
+            "    },\n" +
+            "    \"neVEr\":\n" +
+            "    {\n" +
+            "      \"always\":\"here\",\n" +
+            "      \"neVEr\":\"here\",\n" +
+            "      \"default\":\"here\",\n" +
+            "      \"rEquest\":\"here\"\n" +
+            "    },\n" +
+            "    \"default\":\n" +
+            "    {\n" +
+            "      \"always\":\"here\",\n" +
+            "      \"neVEr\":\"here\",\n" +
+            "      \"default\":\"here\",\n" +
+            "      \"rEquest\":\"here\"\n" +
+            "    },\n" +
+            "    \"rEquest\":\n" +
+            "    {\n" +
+            "      \"always\":\"here\",\n" +
+            "      \"neVEr\":\"here\",\n" +
+            "      \"default\":\"here\",\n" +
+            "      \"rEquest\":\"here\"\n" +
+            "    }\n" +
+            "  }\n" +
+            "}");
     testResource = new GenericScimResource(node);
     testPatch = new ArrayList<PatchOperation>(4);
     testPatch.add(PatchOperation.add(Path.fromString("alWays"),
@@ -124,6 +209,14 @@ public class ResourcePreparerTestCase
             new Object[] { "neveR", null },
             new Object[] { "urn:test:DEFAULT", null },
             new Object[] { "request", null },
+            new Object[] { null, "urn:ext:1:always" },
+            new Object[] { null, "urn:ext:1:never" },
+            new Object[] { null, "urn:ext:1:default" },
+            new Object[] { null, "urn:ext:1:reQuest" },
+            new Object[] { "urn:ext:1:Always", null },
+            new Object[] { "urn:ext:1:neveR", null },
+            new Object[] { "urn:ext:1:DEFAULT", null },
+            new Object[] { "urn:ext:1:request", null },
         };
   }
 
@@ -144,25 +237,62 @@ public class ResourcePreparerTestCase
 
     GenericScimResource prepared = preparer.trimRetrievedResource(testResource);
     assertTrue(prepared.getObjectNode().has("always"));
+    ObjectNode innerNode = (ObjectNode)prepared.getObjectNode().get("always");
+    assertTrue(innerNode.has("always"));
+    assertFalse(innerNode.has("never"));
+
     assertFalse(prepared.getObjectNode().has("never"));
+
     if((attributes == null && excludedAttributes == null) ||
         (excludedAttributes != null &&
             !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
         (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
     {
       assertTrue(prepared.getObjectNode().has("default"));
+      innerNode = (ObjectNode)prepared.getObjectNode().get("default");
+      assertTrue(innerNode.has("default"), prepared.toString());
     }
     else
     {
       assertFalse(prepared.getObjectNode().has("default"));
     }
+
     if(attributes != null && attributes.equalsIgnoreCase("request"))
     {
       assertTrue(prepared.getObjectNode().has("request"));
+      innerNode = (ObjectNode)prepared.getObjectNode().get("request");
+      assertTrue(innerNode.has("always"));
+      assertFalse(innerNode.has("never"));
+      assertTrue(innerNode.has("request"), prepared.toString());
     }
     else
     {
       assertFalse(prepared.getObjectNode().has("request"));
+    }
+
+    assertTrue(prepared.getObjectNode().has("urn:ext:1"));
+    ObjectNode extNode = (ObjectNode)prepared.getObjectNode().get("urn:ext:1");
+    assertTrue(extNode.has("always"));
+    assertFalse(extNode.has("never"));
+    if((attributes == null && excludedAttributes == null) ||
+        (excludedAttributes != null &&
+            !excludedAttributes.equalsIgnoreCase("urn:ext:1:default")) ||
+        (attributes != null &&
+         attributes.equalsIgnoreCase("urn:ext:1:default")))
+    {
+      assertTrue(extNode.has("default"));
+    }
+    else
+    {
+      assertFalse(extNode.has("default"));
+    }
+    if(attributes != null && attributes.equalsIgnoreCase("urn:ext:1:request"))
+    {
+      assertTrue(extNode.has("request"));
+    }
+    else
+    {
+      assertFalse(extNode.has("request"));
     }
   }
 
