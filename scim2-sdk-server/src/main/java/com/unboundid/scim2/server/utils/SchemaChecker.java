@@ -154,7 +154,7 @@ public class SchemaChecker
     ALLOW_UNDEFINED_SUB_ATTRIBUTES;
   }
 
-  private ResourceTypeDefinition resourceType;
+  private final ResourceTypeDefinition resourceType;
   private final Collection<AttributeDefinition> commonAndCoreAttributes;
   private final Set<Option> enabledOptions;
 
@@ -167,18 +167,12 @@ public class SchemaChecker
   public SchemaChecker(final ResourceTypeDefinition resourceType)
   {
     this.resourceType = resourceType;
-    if(resourceType.getCoreSchema() != null)
-    {
-      commonAndCoreAttributes = new LinkedHashSet<AttributeDefinition>(
-          resourceType.getCoreSchema().getAttributes().size() + 4);
-      commonAndCoreAttributes.addAll(SchemaUtils.COMMON_ATTRIBUTE_DEFINITIONS);
-      commonAndCoreAttributes.addAll(
-          resourceType.getCoreSchema().getAttributes());
-    }
-    else
-    {
-      commonAndCoreAttributes = SchemaUtils.COMMON_ATTRIBUTE_DEFINITIONS;
-    }
+    this.commonAndCoreAttributes = new LinkedHashSet<AttributeDefinition>(
+        resourceType.getCoreSchema().getAttributes().size() + 4);
+    this.commonAndCoreAttributes.addAll(
+        SchemaUtils.COMMON_ATTRIBUTE_DEFINITIONS);
+    this.commonAndCoreAttributes.addAll(
+        resourceType.getCoreSchema().getAttributes());
     this.enabledOptions = new HashSet<Option>();
   }
 
@@ -297,7 +291,8 @@ public class SchemaChecker
     ObjectNode copyCurrentNode =
         currentObjectNode == null ? null : currentObjectNode.deepCopy();
     ObjectNode appliedNode =
-        currentObjectNode == null ? null : currentObjectNode.deepCopy();
+        currentObjectNode == null ? null :
+            removeReadOnlyAttributes(currentObjectNode.deepCopy());
     Results results = new Results();
 
     int i = 0;
@@ -649,7 +644,8 @@ public class SchemaChecker
       throws ScimException
   {
     // Iterate through the schemas
-    JsonNode schemas = objectNode.get("schemas");
+    JsonNode schemas = objectNode.get(
+        SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION.getName());
     if(schemas != null && schemas.isArray())
     {
       boolean coreFound = false;

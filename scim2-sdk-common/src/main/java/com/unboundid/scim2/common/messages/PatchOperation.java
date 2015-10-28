@@ -25,12 +25,15 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -139,6 +142,7 @@ public abstract class PatchOperation
     {
       JsonUtils.addValue(getPath() == null ? Path.root() :
           getPath(), node, value);
+      addMissingSchemaUrns(node);
     }
 
     /**
@@ -347,6 +351,7 @@ public abstract class PatchOperation
     {
       JsonUtils.replaceValue(getPath() == null ? Path.root() :
           getPath(), node, value);
+      addMissingSchemaUrns(node);
     }
 
     /**
@@ -496,6 +501,54 @@ public abstract class PatchOperation
     {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * Implicitly add any schema URNs of any extended attributes that are missing
+   * from the schemas attribute.
+   *
+   * @param node The ObjectNode to apply this patch operation to.
+   */
+  protected void addMissingSchemaUrns(final ObjectNode node)
+  {
+    // Implicitly add the schema URN of any extended attributes to the
+    // schemas attribute.
+    JsonNode schemasNode =
+        node.path(SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION.getName());
+    if(schemasNode.isArray())
+    {
+      ArrayNode schemas = (ArrayNode) schemasNode;
+      if (getPath() == null)
+      {
+        Iterator<String> i = getJsonNode().fieldNames();
+        while (i.hasNext())
+        {
+          String field = i.next();
+          if (SchemaUtils.isUrn(field))
+          {
+            addSchemaUrnIfMissing(schemas, field);
+          }
+        }
+      }
+      else if(getPath().getSchemaUrn() != null)
+      {
+        addSchemaUrnIfMissing(schemas, getPath().getSchemaUrn());
+      }
+    }
+  }
+
+  private void addSchemaUrnIfMissing(final ArrayNode schemas,
+                                     final String schemaUrn)
+  {
+    for(JsonNode node : schemas)
+    {
+      if(node.isTextual() && node.textValue().equalsIgnoreCase(schemaUrn))
+      {
+        return;
+      }
+    }
+
+    schemas.add(schemaUrn);
   }
 
   /**

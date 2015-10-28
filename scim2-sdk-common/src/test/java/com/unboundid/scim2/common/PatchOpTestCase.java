@@ -154,6 +154,11 @@ public class PatchOpTestCase
             "      \"path\":\"schemas[" +
             "value eq \\\"urn:ubid:custom:schema2\\\"]\",\n" +
             "      \"value\":\"urn:ubid:custom:schema3\"\n" +
+            "    }," +
+            "    {  \n" +
+            "      \"op\":\"add\",\n" +
+            "      \"path\":\"urn:ubid:custom:schema4:attr\",\n" +
+            "      \"value\":\"somevalue\"\n" +
             "    }" +
             "  ]\n" +
             "}");
@@ -233,82 +238,86 @@ public class PatchOpTestCase
 
     JsonNode postPatchResource = JsonUtils.getObjectReader().
         readTree("{  \n" +
-            "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
-            "    \"urn:ubid:custom:schema3\"\n" +
-            "  ],\n" +
-            "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
-            "  \"userName\":\"bjensen@example.com\",\n" +
-            "  \"nickname2\":\"Babs\",\n" +
-            "  \"emails\":[  \n" +
-            "    {  \n" +
-            "      \"value\":\"babs@jensen.org\",\n" +
-            "      \"type\":\"home\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"emails2\":[  \n" +
-            "    {  \n" +
-            "      \"value\":\"bjensen@example.com\",\n" +
-            "      \"type\":\"work\",\n" +
-            "      \"primary\":true\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"value\":\"babs@jensen.org\",\n" +
-            "      \"type\":\"home\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"members2\":[  \n" +
-            "    {  \n" +
-            "      \"display\":\"Babs Jensen\",\n" +
-            "      \"$ref\":\"https://example.com/v2/Users/2819c223..." +
-            "413861904646\",\n" +
-            "      \"value\":\"2819c223...413861904646\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"display\":\"James Smith\",\n" +
-            "      \"$ref\":\"https://example.com/v2/Users/08e1d05d..." +
-            "473d93df9210\",\n" +
-            "      \"value\":\"08e1d05d...473d93df9210\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"addresses\":[  \n" +
-            "    {  \n" +
-            "      \"type\":\"work\",\n" +
-            "      \"streetAddress\":\"911 Universal City Plaza\",\n" +
-            "      \"locality\":\"Hollywood\",\n" +
-            "      \"region\":\"CA\",\n" +
-            "      \"postalCode\":\"91608\",\n" +
-            "      \"country\":\"US\",\n" +
-            "      \"formatted\":\"911 Universal City Plaza\\nHollywood, " +
-            "CA 91608 US\",\n" +
-            "      \"primary\":true\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"type\":\"home\",\n" +
-            "      \"streetAddress\":\"1010 Broadway Ave\",\n" +
-            "      \"locality\":\"Hollywood\",\n" +
-            "      \"region\":\"CA\",\n" +
-            "      \"postalCode\":\"91608\",\n" +
-            "      \"country\":\"USA\",\n" +
-            "      \"formatted\":\"456 Hollywood Blvd\\nHollywood, " +
-            "CA 91608 USA\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"nickname\":\"Babs\",\n" +
-            "  \"members\":[  \n" +
-            "    {  \n" +
-            "      \"display\":\"Babs Jensen\",\n" +
-            "      \"$ref\":\"https://example.com/v2/Users/2819c223..." +
-            "413861904646\",\n" +
-            "      \"value\":\"2819c223-7f76-453a-919d-413861904646\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"display\":\"James Smith\",\n" +
-            "      \"$ref\":\"https://example.com/v2/Users/08e1d05d..." +
-            "473d93df9210\",\n" +
-            "      \"value\":\"08e1d05d-121c-4561-8b96-473d93df9210\"\n" +
-            "    }\n" +
-            "  ]\n" +
+            "   \"schemas\":[  \n" +
+            "      \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
+            "      \"urn:ubid:custom:schema3\",\n" +
+            "      \"urn:ubid:custom:schema4\"\n" +
+            "   ],\n" +
+            "   \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
+            "   \"userName\":\"bjensen@example.com\",\n" +
+            "   \"nickname2\":\"Babs\",\n" +
+            "   \"emails\":[  \n" +
+            "      {  \n" +
+            "         \"value\":\"babs@jensen.org\",\n" +
+            "         \"type\":\"home\"\n" +
+            "      }\n" +
+            "   ],\n" +
+            "   \"emails2\":[  \n" +
+            "      {  \n" +
+            "         \"value\":\"bjensen@example.com\",\n" +
+            "         \"type\":\"work\",\n" +
+            "         \"primary\":true\n" +
+            "      },\n" +
+            "      {  \n" +
+            "         \"value\":\"babs@jensen.org\",\n" +
+            "         \"type\":\"home\"\n" +
+            "      }\n" +
+            "   ],\n" +
+            "   \"members2\":[  \n" +
+            "      {  \n" +
+            "         \"display\":\"Babs Jensen\",\n" +
+            "         \"$ref\":" +
+            "\"https://example.com/v2/Users/2819c223...413861904646\",\n" +
+            "         \"value\":\"2819c223...413861904646\"\n" +
+            "      },\n" +
+            "      {  \n" +
+            "         \"display\":\"James Smith\",\n" +
+            "         \"$ref\":" +
+            "\"https://example.com/v2/Users/08e1d05d...473d93df9210\",\n" +
+            "         \"value\":\"08e1d05d...473d93df9210\"\n" +
+            "      }\n" +
+            "   ],\n" +
+            "   \"addresses\":[  \n" +
+            "      {  \n" +
+            "         \"type\":\"work\",\n" +
+            "         \"streetAddress\":\"911 Universal City Plaza\",\n" +
+            "         \"locality\":\"Hollywood\",\n" +
+            "         \"region\":\"CA\",\n" +
+            "         \"postalCode\":\"91608\",\n" +
+            "         \"country\":\"US\",\n" +
+            "         \"formatted\":" +
+            "\"911 Universal City Plaza\\nHollywood, CA 91608 US\",\n" +
+            "         \"primary\":true\n" +
+            "      },\n" +
+            "      {  \n" +
+            "         \"type\":\"home\",\n" +
+            "         \"streetAddress\":\"1010 Broadway Ave\",\n" +
+            "         \"locality\":\"Hollywood\",\n" +
+            "         \"region\":\"CA\",\n" +
+            "         \"postalCode\":\"91608\",\n" +
+            "         \"country\":\"USA\",\n" +
+            "         \"formatted\":" +
+            "\"456 Hollywood Blvd\\nHollywood, CA 91608 USA\"\n" +
+            "      }\n" +
+            "   ],\n" +
+            "   \"nickname\":\"Babs\",\n" +
+            "   \"members\":[  \n" +
+            "      {  \n" +
+            "         \"display\":\"Babs Jensen\",\n" +
+            "         \"$ref\":" +
+            "\"https://example.com/v2/Users/2819c223...413861904646\",\n" +
+            "         \"value\":\"2819c223-7f76-453a-919d-413861904646\"\n" +
+            "      },\n" +
+            "      {  \n" +
+            "         \"display\":\"James Smith\",\n" +
+            "         \"$ref\":" +
+            "\"https://example.com/v2/Users/08e1d05d...473d93df9210\",\n" +
+            "         \"value\":\"08e1d05d-121c-4561-8b96-473d93df9210\"\n" +
+            "      }\n" +
+            "   ],\n" +
+            "   \"urn:ubid:custom:schema4\":{  \n" +
+            "      \"attr\":\"somevalue\"\n" +
+            "   }\n" +
             "}");
 
     GenericScimResource scimResource =
