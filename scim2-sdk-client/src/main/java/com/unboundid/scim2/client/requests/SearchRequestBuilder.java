@@ -30,6 +30,7 @@ import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.utils.ApiConstants;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.StaticUtils;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.ResponseProcessingException;
@@ -296,6 +297,11 @@ public final class SearchRequestBuilder
           finally
           {
             parser.close();
+            StaticUtils.consumeContent(inputStream);
+            if(response != null)
+            {
+              response.close();
+            }
           }
         }
         catch (IOException e)

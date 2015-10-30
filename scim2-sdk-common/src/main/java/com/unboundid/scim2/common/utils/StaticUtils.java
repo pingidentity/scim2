@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -427,6 +429,32 @@ public final class StaticUtils
     else
     {
       return chain.get(chain.size() - 1);
+    }
+  }
+
+/**
+  * consume content.
+  * @param inputStream inputStream.
+  */
+  public static void consumeContent(final InputStream inputStream)
+  {
+    if(inputStream == null)
+    {
+      return;
+    }
+
+    try
+    {
+      byte[] bytes = new byte[1024];
+      while (inputStream.read(bytes) != -1)
+      {
+        System.err.println("XXX - more to read!");
+      }
+      inputStream.close();
+    }
+    catch(IOException ex)
+    {
+      // ignore error.  Just preventing a throw.
     }
   }
 }
