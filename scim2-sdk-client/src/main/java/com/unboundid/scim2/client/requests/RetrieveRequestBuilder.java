@@ -178,7 +178,9 @@ public abstract class RetrieveRequestBuilder
       if(response.getStatusInfo().getFamily() ==
           Response.Status.Family.SUCCESSFUL)
       {
-        return response.readEntity(cls);
+        T entity = response.readEntity(cls);
+        response.close();
+        return entity;
       }
       else
       {
