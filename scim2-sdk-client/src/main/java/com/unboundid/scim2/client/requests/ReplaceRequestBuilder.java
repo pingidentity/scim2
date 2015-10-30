@@ -102,7 +102,9 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
     if(response.getStatusInfo().getFamily() ==
         Response.Status.Family.SUCCESSFUL)
     {
-      return response.readEntity(cls);
+      C entity = response.readEntity(cls);
+      response.close();
+      return entity;
     }
     else
     {
