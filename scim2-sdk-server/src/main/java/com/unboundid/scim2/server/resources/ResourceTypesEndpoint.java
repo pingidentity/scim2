@@ -37,6 +37,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,7 +76,7 @@ public class ResourceTypesEndpoint
    * @throws ScimException If an error occurs.
    */
   @GET
-  @Produces(MEDIA_TYPE_SCIM)
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public ListResponse<GenericScimResource> search(
       @QueryParam(QUERY_PARAMETER_FILTER) final String filterString,
       @Context final UriInfo uriInfo)
@@ -115,7 +116,7 @@ public class ResourceTypesEndpoint
    */
   @Path("{id}")
   @GET
-  @Produces(MEDIA_TYPE_SCIM)
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public ScimResource get(@PathParam("id") final String id,
                           @Context final UriInfo uriInfo)
       throws ScimException

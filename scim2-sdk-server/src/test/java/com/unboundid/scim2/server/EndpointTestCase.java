@@ -35,6 +35,7 @@ import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.UserResource;
+import com.unboundid.scim2.common.utils.ApiConstants;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.server.providers.DotSearchFilter;
@@ -44,6 +45,7 @@ import com.unboundid.scim2.server.providers.RuntimeExceptionMapper;
 import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
+import com.unboundid.scim2.server.utils.ServerUtils;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -55,6 +57,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
@@ -207,6 +210,16 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     {
       assertTrue(e instanceof ResourceNotFoundException);
     }
+
+    // Now with application/json
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+
+    Response response = target.path("badPath").path("id").request().accept(
+        MediaType.APPLICATION_JSON_TYPE,
+        ServerUtils.MEDIA_TYPE_SCIM_TYPE).get();
+    assertEquals(response.getStatus(), 404);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
@@ -223,6 +236,16 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertEquals(returnedSchemas.getTotalResults(), 2);
     assertTrue(contains(returnedSchemas, userSchema));
     assertTrue(contains(returnedSchemas, enterpriseSchema));
+
+    // Now with application/json
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+
+    Response response = target.path(ApiConstants.SCHEMAS_ENDPOINT).request().
+        accept(MediaType.APPLICATION_JSON_TYPE,
+            ServerUtils.MEDIA_TYPE_SCIM_TYPE).get();
+    assertEquals(response.getStatus(), 200);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
@@ -242,6 +265,17 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         enterpriseSchema.getId());
 
     assertEquals(returnedSchema, enterpriseSchema);
+
+    // Now with application/json
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+
+    Response response = target.path(ApiConstants.SCHEMAS_ENDPOINT).
+        path(userSchema.getId()).request().
+        accept(MediaType.APPLICATION_JSON_TYPE,
+            ServerUtils.MEDIA_TYPE_SCIM_TYPE).get();
+    assertEquals(response.getStatus(), 200);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
@@ -258,6 +292,16 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertEquals(returnedResourceTypes.getTotalResults(), 2);
     assertTrue(contains(returnedResourceTypes, resourceType));
     assertTrue(contains(returnedResourceTypes, singletonResourceType));
+
+    // Now with application/json
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+
+    Response response = target.path(ApiConstants.RESOURCE_TYPES_ENDPOINT).
+        request().accept(MediaType.APPLICATION_JSON_TYPE,
+        ServerUtils.MEDIA_TYPE_SCIM_TYPE).get();
+    assertEquals(response.getStatus(), 200);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
@@ -285,7 +329,16 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     assertEquals(returnedSchema, userSchema);
 
+    // Now with application/json
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
 
+    Response response = target.path(ApiConstants.RESOURCE_TYPES_ENDPOINT).
+        path(resourceType.getId()).request().accept(
+        MediaType.APPLICATION_JSON_TYPE,
+        ServerUtils.MEDIA_TYPE_SCIM_TYPE).get();
+    assertEquals(response.getStatus(), 200);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
@@ -501,13 +554,23 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     WebTarget target = target().register(
         new JacksonJsonProvider(JsonUtils.createObjectMapper()));
 
-    Response response = target.path("SingletonUsers").request().post(
+    Response response = target.path("SingletonUsers").request().
+        accept(MEDIA_TYPE_SCIM).post(
         Entity.entity("{badJson}", MEDIA_TYPE_SCIM));
     assertEquals(response.getStatus(), 400);
+    assertEquals(response.getMediaType(), MediaType.valueOf(MEDIA_TYPE_SCIM));
     ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
     assertEquals(errorResponse.getStatus(), new Integer(400));
     assertEquals(errorResponse.getScimType(), "invalidSyntax");
     assertNotNull(errorResponse.getDetail());
+
+    // Now with application/json
+    response = target.path("SingletonUsers").request().
+        accept(MediaType.APPLICATION_JSON_TYPE,
+            ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(
+        Entity.entity("{badJson}", MediaType.APPLICATION_JSON_TYPE));
+    assertEquals(response.getStatus(), 400);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
@@ -523,13 +586,22 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         new JacksonJsonProvider(JsonUtils.createObjectMapper()));
 
     Response response = target.path("SingletonUsers").path(".search").
-        request().post(Entity.entity(
+        request().accept(MEDIA_TYPE_SCIM).post(Entity.entity(
         "{\"undefinedField\": \"value\"}", MEDIA_TYPE_SCIM));
     assertEquals(response.getStatus(), 400);
+    assertEquals(response.getMediaType(), MediaType.valueOf(MEDIA_TYPE_SCIM));
     ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
     assertEquals(errorResponse.getStatus(), new Integer(400));
     assertEquals(errorResponse.getScimType(), "invalidSyntax");
     assertNotNull(errorResponse.getDetail());
+
+    // Now with application/json
+    response = target.path("SingletonUsers").path(".search").
+        request().accept(MediaType.APPLICATION_JSON_TYPE,
+        ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(Entity.entity(
+        "{\"undefinedField\": \"value\"}", MediaType.APPLICATION_JSON_TYPE));
+    assertEquals(response.getStatus(), 400);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
   }
 
   private void setMeta(Class<?> resourceClass, ScimResource scimResource)

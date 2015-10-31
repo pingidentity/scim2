@@ -31,6 +31,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
@@ -57,7 +58,7 @@ public class TestResourceEndpoint
    * @throws ScimException if an error occurs.
    */
   @GET
-  @Produces(MEDIA_TYPE_SCIM)
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public SimpleSearchResults<UserResource> search(
       @Context final UriInfo uriInfo) throws ScimException
   {
@@ -82,7 +83,7 @@ public class TestResourceEndpoint
    */
   @Path("{id}")
   @GET
-  @Produces(MEDIA_TYPE_SCIM)
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public ScimResource retrieve(
       @PathParam("id") final String id, @Context final UriInfo uriInfo)
       throws ScimException

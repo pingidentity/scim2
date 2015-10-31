@@ -28,6 +28,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
@@ -56,7 +57,7 @@ public abstract class AbstractServiceProviderConfigEndpoint
    * @throws ScimException if an error occurs.
    */
   @GET
-  @Produces(MEDIA_TYPE_SCIM)
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public GenericScimResource get(@Context final UriInfo uriInfo)
       throws ScimException
   {

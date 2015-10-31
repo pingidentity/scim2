@@ -18,7 +18,6 @@
 package com.unboundid.scim2.server.providers;
 
 import com.unboundid.scim2.common.exceptions.ScimException;
-import com.unboundid.scim2.common.utils.ApiConstants;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -35,8 +34,10 @@ public class ScimExceptionMapper implements ExceptionMapper<ScimException>
    */
   public Response toResponse(final ScimException throwable)
   {
+    // We don't need to deal with selecting a content type here because
+    // ScimExceptions are only thrown by resource methods and the JAX-RS
+    // runtime will use the @Produce annotation to pick the right type.
     return Response.status(throwable.getScimError().getStatus()).entity(
-        throwable.getScimError()).type(
-        ApiConstants.MEDIA_TYPE_SCIM).build();
+        throwable.getScimError()).build();
   }
 }

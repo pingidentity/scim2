@@ -42,6 +42,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class TestSingletonResourceEndpoint
    * @throws ScimException if an error occurs.
    */
   @GET
-  @Produces(MEDIA_TYPE_SCIM)
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public SimpleSearchResults<UserResource> search(
       @Context final UriInfo uriInfo) throws ScimException
   {
@@ -94,7 +95,7 @@ public class TestSingletonResourceEndpoint
    */
   @Path("{id}")
   @GET
-  @Produces(MEDIA_TYPE_SCIM)
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public ScimResource retrieve(
       @PathParam("id") final String id, @Context final UriInfo uriInfo)
       throws ScimException
@@ -119,8 +120,8 @@ public class TestSingletonResourceEndpoint
    * @throws ScimException if an error occurs.
    */
   @POST
-  @Consumes(MEDIA_TYPE_SCIM)
-  @Produces(MEDIA_TYPE_SCIM)
+  @Consumes({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public ScimResource create(
       final UserResource resource, @Context final UriInfo uriInfo)
       throws ScimException
@@ -161,8 +162,8 @@ public class TestSingletonResourceEndpoint
    */
   @Path("{id}")
   @PUT
-  @Consumes(MEDIA_TYPE_SCIM)
-  @Produces(MEDIA_TYPE_SCIM)
+  @Consumes({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public ScimResource replace(@PathParam("id") final String id,
                               final UserResource resource,
                               @Context final UriInfo uriInfo)
@@ -189,8 +190,8 @@ public class TestSingletonResourceEndpoint
    */
   @Path("{id}")
   @PATCH
-  @Consumes(MEDIA_TYPE_SCIM)
-  @Produces(MEDIA_TYPE_SCIM)
+  @Consumes({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public ScimResource modify(@PathParam("id") final String id,
                              final PatchRequest patchRequest,
                              @Context final UriInfo uriInfo)

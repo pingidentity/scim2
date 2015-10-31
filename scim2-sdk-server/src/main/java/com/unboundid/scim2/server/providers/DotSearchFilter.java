@@ -20,6 +20,7 @@ package com.unboundid.scim2.server.providers;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
+import com.unboundid.scim2.server.utils.ServerUtils;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -44,12 +45,6 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
 public class DotSearchFilter implements ContainerRequestFilter
 {
   /**
-   * The SCIM media type.
-   */
-  private static final MediaType MEDIA_TYPE_SCIM_TYPE =
-      MediaType.valueOf(MEDIA_TYPE_SCIM);
-
-  /**
    * {@inheritDoc}
    */
   public void filter(final ContainerRequestContext requestContext)
@@ -58,7 +53,8 @@ public class DotSearchFilter implements ContainerRequestFilter
     if(requestContext.getMethod().equals(HttpMethod.POST) &&
         requestContext.getUriInfo().getPath().endsWith(
             SEARCH_WITH_POST_PATH_EXTENSION) &&
-        (requestContext.getMediaType().equals(MEDIA_TYPE_SCIM_TYPE) ||
+        (requestContext.getMediaType().equals(
+            ServerUtils.MEDIA_TYPE_SCIM_TYPE) ||
             requestContext.getMediaType().equals(
                 MediaType.APPLICATION_JSON_TYPE)))
     {

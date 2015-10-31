@@ -21,9 +21,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
-import com.unboundid.scim2.common.utils.ApiConstants;
+import com.unboundid.scim2.server.utils.ServerUtils;
 
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -39,6 +40,8 @@ public class JsonProcessingExceptionMapper implements
 {
   @Context
   private Request request;
+  @Context
+  private HttpHeaders headers;
 
   /**
    * {@inheritDoc}
@@ -66,7 +69,8 @@ public class JsonProcessingExceptionMapper implements
     ErrorResponse errorResponse =
         BadRequestException.invalidSyntax(builder.toString()).getScimError();
 
-    return Response.status(errorResponse.getStatus()).entity(
-        errorResponse).type(ApiConstants.MEDIA_TYPE_SCIM).build();
+    return ServerUtils.setAcceptableType(
+        Response.status(errorResponse.getStatus()).entity(errorResponse),
+        headers.getAcceptableMediaTypes()).build();
   }
 }

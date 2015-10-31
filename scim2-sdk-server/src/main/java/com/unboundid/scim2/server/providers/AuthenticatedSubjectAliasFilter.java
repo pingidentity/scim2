@@ -20,6 +20,7 @@ package com.unboundid.scim2.server.providers;
 import com.unboundid.scim2.common.exceptions.NotImplementedException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.ApiConstants;
+import com.unboundid.scim2.server.utils.ServerUtils;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -67,10 +68,11 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
         }
         catch (ScimException e)
         {
-          requestContext.abortWith(Response.status(
-              e.getScimError().getStatus()).entity(
-              e.getScimError()).type(
-              ApiConstants.MEDIA_TYPE_SCIM).build());
+          requestContext.abortWith(
+              ServerUtils.setAcceptableType(Response.
+                  status(e.getScimError().getStatus()).
+                  entity(e.getScimError()),
+                  requestContext.getAcceptableMediaTypes()).build());
         }
         break;
       }
