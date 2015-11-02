@@ -76,7 +76,8 @@ public class RequestBuilder
   static ScimException toScimException(final Response response)
   {
     ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
-    ScimException exception = ScimException.createException(errorResponse, null);
+    ScimException exception =
+      ScimException.createException(errorResponse, null);
     response.close();
     return exception;
   }

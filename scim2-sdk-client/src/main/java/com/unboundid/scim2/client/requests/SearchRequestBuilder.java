@@ -296,12 +296,12 @@ public final class SearchRequestBuilder
           }
           finally
           {
-            parser.close();
-            StaticUtils.consumeContent(inputStream);
             if(response != null)
             {
               response.close();
             }
+            StaticUtils.consumeContent(inputStream);
+            parser.close();
           }
         }
         catch (IOException e)
