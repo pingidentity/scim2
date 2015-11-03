@@ -124,7 +124,7 @@ public class AttributeDefinition
 
       throw new RuntimeException("Unknown SCIM datatype");
     }
-  };
+  }
 
   /**
    * This enum is used to describe the mutability of an attribute.
