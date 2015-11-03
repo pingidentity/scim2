@@ -355,6 +355,22 @@ public class ScimService
    * Build a request to modify a SCIM resource by replacing the resource's
    * attributes at the service provider.
    *
+   * @param uri The URL of the resource to modify.
+   * @param resource The resource to replace.
+   * @param <T> The Java type of the resource.
+   * @return The request builder that may be used to specify additional request
+   * parameters and to invoke the request.
+   */
+  public <T extends ScimResource> ReplaceRequestBuilder<T> replaceRequest(
+      final URI uri, final T resource)
+  {
+    return new ReplaceRequestBuilder<T>(resolveWebTarget(uri), resource);
+  }
+
+  /**
+   * Build a request to modify a SCIM resource by replacing the resource's
+   * attributes at the service provider.
+   *
    * @param resource The previously retrieved and revised resource.
    * @param <T> The Java type of the resource.
    * @return The request builder that may be used to specify additional request
