@@ -60,14 +60,30 @@ public final class SingleUseTokenRequest extends BaseScimResource
     private String messageSubject;
 
     /**
-     * Gets the preferred delivery mechanisms list (which can be
+     * Sets the preferred delivery mechanisms list (which can be
      * used to add delivery mechanisms).
      *
-     * @return the preferred delivery mechanisms list.
+     * @param preferredDeliveryMechanisms the preferred delivery mechanisms list.
+     * @return this.
      */
-    public List<DeliveryMechanism> getPreferredDeliveryMechanisms()
+    public SingleUseTokenRequestBuilder setPreferredDeliveryMechanisms(
+        List<DeliveryMechanism> preferredDeliveryMechanisms)
     {
-      return preferredDeliveryMechanisms;
+      this.preferredDeliveryMechanisms = preferredDeliveryMechanisms;
+      return this;
+    }
+
+    /**
+     * Adds a delivery mechanism to the preferred delivery mechanisms list.
+     *
+     * @param preferredDeliveryMechanism a preferred delivery mechanisms.
+     * @return this.
+     */
+    public SingleUseTokenRequestBuilder addPreferredDeliveryMechanisms(
+        DeliveryMechanism preferredDeliveryMechanism)
+    {
+      this.preferredDeliveryMechanisms.add(preferredDeliveryMechanism);
+      return this;
     }
 
     /**
