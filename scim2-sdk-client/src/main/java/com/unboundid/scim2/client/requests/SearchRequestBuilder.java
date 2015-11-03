@@ -30,14 +30,12 @@ import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.utils.ApiConstants;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
-import com.unboundid.scim2.common.utils.StaticUtils;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
@@ -300,7 +298,10 @@ public final class SearchRequestBuilder
             {
               response.close();
             }
-            StaticUtils.consumeContent(inputStream);
+            if(inputStream != null)
+            {
+              inputStream.close();
+            }
             parser.close();
           }
         }
