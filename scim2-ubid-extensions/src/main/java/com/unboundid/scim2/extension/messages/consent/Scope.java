@@ -28,17 +28,17 @@ public final class Scope
   /**
    * Consent string constant used to show that the user has granted consent.
    */
-  public static String CONSENT_GRANTED = "granted";
+  public static final String CONSENT_GRANTED = "granted";
 
   /**
    * Consent string constant used to show that the user has denied consent.
    */
-  public static String CONSENT_DENIED = "denied";
+  public static final String CONSENT_DENIED = "denied";
 
   /**
    * Consent string constant used to show that the consent was revoked.
    */
-  public static String CONSENT_REVOKED = "revoked";
+  public static final String CONSENT_REVOKED = "revoked";
 
   public static class Builder
   {
