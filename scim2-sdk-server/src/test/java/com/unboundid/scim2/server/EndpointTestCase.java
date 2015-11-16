@@ -20,6 +20,7 @@ package com.unboundid.scim2.server;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimService;
+import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
@@ -63,6 +64,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 import static org.testng.Assert.assertEquals;
@@ -385,6 +388,35 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertEquals(returnedUsers.getTotalResults(), 1);
     assertEquals(returnedUsers.getStartIndex(), new Integer(1));
     assertEquals(returnedUsers.getItemsPerPage(), new Integer(1));
+
+    // Now with application/json
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+
+    Set<String> excludedAttributes = new HashSet<String>();
+    excludedAttributes.add("addresses");
+    excludedAttributes.add("phoneNumbers");
+    SearchRequest searchRequest = new SearchRequest(
+        null,
+        excludedAttributes,
+        "meta.resourceType eq \"User\"",
+        "id", SortOrder.DESCENDING, 1, 10);
+
+    Response response = target.path("Users").path(".search").
+        request().accept(
+        MediaType.APPLICATION_JSON_TYPE,
+        ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(Entity.json(searchRequest));
+    assertEquals(response.getStatus(), 200);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+
+    // Now with application/json; charset=UTF-8
+    response = target.path("Users").path(".search").
+        request().accept(
+        MediaType.APPLICATION_JSON_TYPE,
+        ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(
+        Entity.entity(searchRequest, "application/json; charset=UTF-8"));
+    assertEquals(response.getStatus(), 200);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
@@ -479,6 +511,15 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     {
       // expected
     }
+
+    // Now with no accept header
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+
+    Response response = target.path("SingletonUsers").path("deleteUser").
+        request().delete();
+    assertEquals(response.getStatus(), 404);
+    assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
   }
 
   /**

@@ -53,9 +53,9 @@ public class DotSearchFilter implements ContainerRequestFilter
     if(requestContext.getMethod().equals(HttpMethod.POST) &&
         requestContext.getUriInfo().getPath().endsWith(
             SEARCH_WITH_POST_PATH_EXTENSION) &&
-        (requestContext.getMediaType().equals(
+        (requestContext.getMediaType().isCompatible(
             ServerUtils.MEDIA_TYPE_SCIM_TYPE) ||
-            requestContext.getMediaType().equals(
+            requestContext.getMediaType().isCompatible(
                 MediaType.APPLICATION_JSON_TYPE)))
     {
       SearchRequest searchRequest =
