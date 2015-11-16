@@ -23,11 +23,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
@@ -61,26 +61,38 @@ public abstract class PatchOperation
      *
      * @param path The path targeted by this patch operation.
      * @param value The value(s) to add.
-     * @throws JsonMappingException If an value is not valid.
+     * @throws ScimException If an value is not valid.
      */
     @JsonCreator
     private AddOperation(
         @JsonProperty(value = "path") final Path path,
         @JsonProperty(value = "value", required = true) final JsonNode value)
-        throws JsonMappingException
+        throws ScimException
     {
       super(path);
       if(value == null || value.isNull() ||
            ((value.isArray() || value.isObject()) && value.size() == 0))
        {
-         throw new JsonMappingException(
+         throw BadRequestException.invalidSyntax(
              "value field must not be null or an empty container");
        }
       if(path == null && !value.isObject())
       {
-        throw new JsonMappingException(
+        throw BadRequestException.invalidSyntax(
             "value field must be a JSON object containing the attributes to " +
                 "add");
+      }
+      if(path != null)
+      {
+        for (Path.Element element : path)
+        {
+          if(element.getValueFilter() != null)
+          {
+            throw BadRequestException.invalidPath(
+                "path field for add operations must not include any value " +
+                    "selection filters");
+          }
+        }
       }
       this.value = value;
     }
@@ -192,17 +204,17 @@ public abstract class PatchOperation
      * Create a new remove patch operation.
      *
      * @param path The path targeted by this patch operation.
-     * @throws JsonMappingException If an path is null.
+     * @throws ScimException If an path is null.
      */
     @JsonCreator
     private RemoveOperation(
         @JsonProperty(value = "path", required = true) final Path path)
-        throws JsonMappingException
+        throws ScimException
     {
       super(path);
       if(path == null)
       {
-        throw new JsonMappingException(
+        throw BadRequestException.invalidSyntax(
             "path field must not be null");
       }
     }
@@ -271,24 +283,24 @@ public abstract class PatchOperation
      *
      * @param path The path targeted by this patch operation.
      * @param value The value(s) to replace.
-     * @throws JsonMappingException If an value is not valid.
+     * @throws ScimException If a value is not valid.
      */
     @JsonCreator
     private ReplaceOperation(
         @JsonProperty(value = "path") final Path path,
         @JsonProperty(value = "value", required = true) final JsonNode value)
-        throws JsonMappingException
+        throws ScimException
     {
       super(path);
       if(value == null || value.isNull() ||
            ((value.isArray() || value.isObject()) && value.size() == 0))
        {
-         throw new JsonMappingException(
+         throw BadRequestException.invalidSyntax(
              "value field must not be null or an empty container");
        }
       if(path == null && !value.isObject())
       {
-        throw new JsonMappingException(
+        throw BadRequestException.invalidSyntax(
             "value field must be a JSON object containing the attributes to " +
                 "replace");
       }
@@ -402,9 +414,24 @@ public abstract class PatchOperation
    * Create a new patch operation.
    *
    * @param path The path targeted by this patch operation.
+   * @throws ScimException If an value is not valid.
    */
-  PatchOperation(final Path path)
+  PatchOperation(final Path path) throws ScimException
   {
+    if(path != null)
+    {
+      if(path.size() > 2)
+      {
+        throw BadRequestException.invalidPath(
+            "Path can not target sub-attributes more than one level deep");
+      }
+
+      if(path.size() == 2 && path.getElement(1).getValueFilter() != null)
+      {
+        throw BadRequestException.invalidPath(
+            "Path can not include a value filter on sub-attributes");
+      }
+    }
     this.path = path;
   }
 
@@ -565,7 +592,7 @@ public abstract class PatchOperation
     {
       return new AddOperation(path, value);
     }
-    catch (JsonMappingException e)
+    catch (ScimException e)
     {
       throw new IllegalArgumentException(e);
     }
@@ -585,7 +612,7 @@ public abstract class PatchOperation
     {
       return new ReplaceOperation(path, value);
     }
-    catch (JsonMappingException e)
+    catch (ScimException e)
     {
       throw new IllegalArgumentException(e);
     }
@@ -604,9 +631,35 @@ public abstract class PatchOperation
     {
       return new RemoveOperation(path);
     }
-    catch (JsonMappingException e)
+    catch (ScimException e)
     {
       throw new IllegalArgumentException(e);
+    }
+  }
+
+  /**
+   * Create a new patch operation based on the parameters provided.
+   *
+   * @param opType The operation type.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s).
+   *
+   * @return The new patch operation.
+   */
+  public static PatchOperation create(final PatchOpType opType,
+                                      final Path path,
+                                      final JsonNode value)
+  {
+    switch (opType)
+    {
+      case ADD:
+        return add(path, value);
+      case REPLACE:
+        return replace(path, value);
+      case REMOVE:
+        return remove(path);
+      default:
+        throw new IllegalArgumentException("Unknown patch op type " + opType);
     }
   }
 }

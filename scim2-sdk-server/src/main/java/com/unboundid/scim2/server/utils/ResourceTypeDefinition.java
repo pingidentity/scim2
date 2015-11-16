@@ -319,7 +319,7 @@ public final class ResourceTypeDefinition
   }
 
   /**
-   * Normalize a path by removing the the schema URN for core attributes.
+   * Normalize a path by removing the schema URN for core attributes.
    *
    * @param path The path to normalize.
    * @return The normalized path.

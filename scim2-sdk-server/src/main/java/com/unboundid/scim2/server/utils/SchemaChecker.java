@@ -344,6 +344,13 @@ public class SchemaChecker
         }
         continue;
       }
+      if(valueFilter != null && !attribute.isMultiValued())
+      {
+        results.pathIssues.add(prefix +
+            "Attribute " + path.getElement(0)+ " in path " +
+            path.toString() + " must not have a value selection filter " +
+            "because it is not multi-valued");
+      }
       switch (patchOp.getOpType())
       {
         case REMOVE:

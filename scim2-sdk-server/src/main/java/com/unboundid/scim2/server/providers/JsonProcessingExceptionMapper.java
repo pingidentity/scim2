@@ -20,6 +20,8 @@ package com.unboundid.scim2.server.providers;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
+import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.exceptions.ServerErrorException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.server.utils.ServerUtils;
 
@@ -48,9 +50,10 @@ public class JsonProcessingExceptionMapper implements
    */
   public Response toResponse(final JsonProcessingException exception)
   {
-    StringBuilder builder = new StringBuilder();
+    ErrorResponse errorResponse;
     if(exception instanceof JsonParseException)
     {
+      StringBuilder builder = new StringBuilder();
       builder.append("Unable to parse request: ");
       builder.append(exception.getOriginalMessage());
       if(exception.getLocation() != null)
@@ -60,14 +63,22 @@ public class JsonProcessingExceptionMapper implements
         builder.append(", column: ");
         builder.append(exception.getLocation().getColumnNr());
       }
+      errorResponse =
+          BadRequestException.invalidSyntax(builder.toString()).getScimError();
     }
     else
     {
-      builder.append(exception.getMessage());
+      if(exception.getCause() != null &&
+          exception.getCause() instanceof ScimException)
+      {
+        errorResponse = ((ScimException) exception.getCause()).getScimError();
+      }
+      else
+      {
+        errorResponse =
+            new ServerErrorException(exception.getMessage()).getScimError();
+      }
     }
-
-    ErrorResponse errorResponse =
-        BadRequestException.invalidSyntax(builder.toString()).getScimError();
 
     return ServerUtils.setAcceptableType(
         Response.status(errorResponse.getStatus()).entity(errorResponse),

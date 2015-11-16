@@ -17,8 +17,10 @@
 
 package com.unboundid.scim2.common;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.utils.JsonUtils;
@@ -334,6 +336,89 @@ public class PatchOpTestCase
     assertEquals(JsonUtils.getObjectReader().forType(PatchRequest.class).
         readValue(serialized), constructed);
 
+  }
+
+  /**
+   * Test bad patch requests.
+   *
+   * @throws IOException If an error occurs.
+   * @throws ScimException If an error occurs.
+   */
+  @Test
+  public void getTestBadPatch() throws IOException, ScimException
+  {
+    try
+    {
+      JsonUtils.getObjectReader().
+          forType(PatchRequest.class).
+          readValue("{  \n" +
+              "  \"schemas\":[  \n" +
+              "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
+              "  ],\n" +
+              "  \"Operations\":[  \n" +
+              "    {  \n" +
+              "      \"op\":\"remove\",\n" +
+              "      \"path\":\"emails[type eq \\\"work\\\" and " +
+              "value ew \\\"example.com\\\"].too.deep\"\n" +
+              "    }\n" +
+              "  ]\n" +
+              "}");
+    }
+    catch(JsonMappingException e)
+    {
+      assertEquals(
+          ((BadRequestException) e.getCause()).getScimError().getScimType(),
+          BadRequestException.INVALID_PATH);
+    }
+
+    try
+    {
+    JsonUtils.getObjectReader().
+        forType(PatchRequest.class).
+        readValue("{  \n" +
+            "  \"schemas\":[  \n" +
+            "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
+            "  ],\n" +
+            "  \"Operations\":[  \n" +
+            "    {  \n" +
+            "      \"op\":\"remove\",\n" +
+            "      \"path\":\"emails[type eq \\\"work\\\" and " +
+            "value ew \\\"example.com\\\"].sub[something eq 2]\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}");
+    }
+    catch(JsonMappingException e)
+    {
+      assertEquals(
+          ((BadRequestException) e.getCause()).getScimError().getScimType(),
+          BadRequestException.INVALID_PATH);
+    }
+
+    try
+    {
+    JsonUtils.getObjectReader().
+        forType(PatchRequest.class).
+        readValue("{  \n" +
+            "  \"schemas\":[  \n" +
+            "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
+            "  ],\n" +
+            "  \"Operations\":[  \n" +
+            "    {  \n" +
+            "      \"op\":\"add\",\n" +
+            "      \"path\":\"emails[type eq \\\"work\\\" and " +
+            "value ew \\\"example.com\\\"],\"\n" +
+            "      \"value\":\"value\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}");
+    }
+    catch(JsonMappingException e)
+    {
+      assertEquals(
+          ((BadRequestException) e.getCause()).getScimError().getScimType(),
+          BadRequestException.INVALID_PATH);
+    }
   }
 
 }

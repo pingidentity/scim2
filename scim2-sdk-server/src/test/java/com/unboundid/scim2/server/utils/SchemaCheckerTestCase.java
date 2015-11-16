@@ -1685,6 +1685,14 @@ public class SchemaCheckerTestCase
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
+
+      results = checker.checkModify(Collections.singleton(
+          PatchOperation.replace(Path.root().attribute(field,
+              Filter.eq("test", "test")), node)), null);
+      assertEquals(results.getSyntaxIssues().size(), 1,
+          results.getSyntaxIssues().toString());
+      assertTrue(containsIssueWith(results.getPathIssues(),
+          "not multi-valued"));
     }
 
     // Then test a an sub-attribute
