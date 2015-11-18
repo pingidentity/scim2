@@ -20,7 +20,6 @@ package com.unboundid.scim2.server.providers;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.server.utils.ServerUtils;
 
-import javax.ws.rs.NotAllowedException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -49,13 +48,7 @@ public class RuntimeExceptionMapper implements
   {
     ErrorResponse errorResponse;
 
-    if(exception instanceof NotAllowedException)
-    {
-      // SCIM 2.0 uses 501 instead of 405.
-      errorResponse = new ErrorResponse(501);
-      errorResponse.setDetail(request.getMethod() + " not supported");
-    }
-    else if(exception instanceof WebApplicationException)
+    if(exception instanceof WebApplicationException)
     {
       errorResponse = new ErrorResponse(
           ((WebApplicationException)exception).getResponse().getStatus());
