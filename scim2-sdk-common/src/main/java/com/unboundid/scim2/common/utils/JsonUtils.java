@@ -627,6 +627,21 @@ public class JsonUtils
     return pathExistsVisitor.isPathPresent();
   }
 
+
+
+  /**
+   * Determines whether the provided JSON nodes have the same JSON data type.
+   * @param n1  The first node.
+   * @param n2  The second node.
+   * @return  {@code true} iff the nodes have the same JSON data type.
+   */
+  public static boolean isSameType(final JsonNode n1, final JsonNode n2)
+  {
+    return (n1.getNodeType() == n2.getNodeType() ||
+        ((n1.isTextual() || n1.isBinary()) &&
+         (n2.isTextual() || n2.isBinary())));
+  }
+
   /**
    * Compares two JsonNodes for order. Nodes containing datetime and numerical
    * values are ordered accordingly. Otherwise, the values' string
@@ -667,9 +682,19 @@ public class JsonUtils
 
     if (n1.isNumber() && n2.isNumber())
     {
+      if (n1.isBigDecimal() || n2.isBigDecimal())
+      {
+        return n1.decimalValue().compareTo(n2.decimalValue());
+      }
+
       if(n1.isFloatingPointNumber() || n2.isFloatingPointNumber())
       {
         return Double.compare(n1.doubleValue(), n2.doubleValue());
+      }
+
+      if (n1.isBigInteger() || n2.isBigInteger())
+      {
+        return n1.bigIntegerValue().compareTo(n2.bigIntegerValue());
       }
 
       return Long.compare(n1.longValue(), n2.longValue());
@@ -754,7 +779,7 @@ public class JsonUtils
         }
         continue;
       }
-      if (sourceValue.getNodeType() == targetValueToAdd.getNodeType())
+      if (isSameType(sourceValue, targetValueToAdd))
       {
         // Value present in both and they are of the same type.
         if (sourceValue.isObject())
@@ -858,7 +883,7 @@ public class JsonUtils
         } else
         {
           // They are value nodes.
-          if (!sourceValue.equals(targetValueToAdd))
+          if (compareTo(sourceValue, targetValueToAdd, null) != 0)
           {
             // Just replace with the target value.
             targetToReplace.set(sourceField.getKey(), targetValueToReplace);
@@ -866,7 +891,7 @@ public class JsonUtils
         }
       } else
       {
-        // Value parent in both but they are of different types.
+        // Value present in both but they are of different types.
         if (targetValueToAdd.isNull() ||
             (targetValueToAdd.isArray() && targetValueToAdd.size() == 0))
         {
@@ -969,7 +994,7 @@ public class JsonUtils
       // Find an exact match
       for(int i = 0; i < targetValues.size(); i++)
       {
-        if(sourceValue.equals(targetValues.get(i)))
+        if (compareTo(sourceValue, targetValues.get(i), null) == 0)
         {
           return targetValues.remove(i);
         }

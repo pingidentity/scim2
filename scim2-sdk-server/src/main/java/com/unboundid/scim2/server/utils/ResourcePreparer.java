@@ -254,7 +254,7 @@ public class ResourcePreparer<T extends ScimResource>
       if (id != null)
       {
         UriBuilder locationBuilder = UriBuilder.fromUri(baseUri);
-        locationBuilder.path(id);
+        locationBuilder.segment(id);
         meta.setLocation(locationBuilder.build());
       }
       else
