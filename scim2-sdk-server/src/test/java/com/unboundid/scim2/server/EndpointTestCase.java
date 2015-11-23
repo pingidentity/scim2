@@ -520,6 +520,14 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         request().delete();
     assertEquals(response.getStatus(), 404);
     assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+
+    // With invalid accept type (DS-14520)
+    target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+    response = target.path("SingletonUsers").path("deleteUser").
+        request().accept(MediaType.APPLICATION_ATOM_XML_TYPE).delete();
+    assertEquals(response.getStatus(), 404);
+    assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
   }
 
   /**
@@ -644,6 +652,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertEquals(response.getStatus(), 400);
     assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
   }
+
+
 
   private void setMeta(Class<?> resourceClass, ScimResource scimResource)
   {

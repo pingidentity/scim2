@@ -48,19 +48,21 @@ public class ServerUtils
       final Response.ResponseBuilder response,
       final List<MediaType> acceptableTypes)
   {
+    MediaType responseType = null;
     for(MediaType mediaType : acceptableTypes)
     {
       if(mediaType.isCompatible(MEDIA_TYPE_SCIM_TYPE))
       {
-        response.type(MEDIA_TYPE_SCIM_TYPE);
+        responseType = MEDIA_TYPE_SCIM_TYPE;
         break;
       }
       else if(mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE))
       {
-        response.type(MediaType.APPLICATION_JSON_TYPE);
+        responseType = MediaType.APPLICATION_JSON_TYPE;
         break;
       }
     }
+    response.type(responseType == null ? MEDIA_TYPE_SCIM_TYPE : responseType);
 
     return response;
   }
