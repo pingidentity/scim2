@@ -36,7 +36,7 @@ import java.util.TimeZone;
 public class GenericScimResourceObjectTest
 {
   private DateFormat dateFormat =
-      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
   /**
    * Constructor.  Sets up the dateFormat.
@@ -59,8 +59,8 @@ public class GenericScimResourceObjectTest
             "    \"externalId\": \"user:externalId\",\n" +
             "    \"id\": \"user:id\",\n" +
             "    \"meta\": {\n" +
-            "        \"created\": \"2015-02-27T11:28:39Z\",\n" +
-            "        \"lastModified\": \"2015-02-27T11:29:39Z\",\n" +
+            "        \"created\": \"2015-02-27T11:28:39.042Z\",\n" +
+            "        \"lastModified\": \"2015-02-27T11:29:39.042Z\",\n" +
             "        \"locAtion\": \"http://here/user\",\n" +
             "        \"resourceType\": \"some resource type\",\n" +
             "        \"version\": \"1.0\"\n" +
@@ -92,21 +92,33 @@ public class GenericScimResourceObjectTest
 
     Assert.assertTrue(cso.getSchemaUrns().containsAll(schemaSet));
 
-    Assert.assertEquals("user:id", cso.getId());
-    Assert.assertEquals("user:externalId", cso.getExternalId());
+    Assert.assertEquals(cso.getId(), "user:id");
+    Assert.assertEquals(cso.getExternalId(), "user:externalId");
     Meta meta = cso.getMeta();
 
-    Assert.assertEquals("2015-02-27T11:28:39Z",
-        dateFormat.format(meta.getCreated().getTime()));
-    Assert.assertEquals("2015-02-27T11:29:39Z",
-        dateFormat.format(meta.getLastModified().getTime()));
-    Assert.assertEquals("http://here/user".toString(),
-        meta.getLocation().toString());
-    Assert.assertEquals("some resource type", meta.getResourceType());
-    Assert.assertEquals("1.0", meta.getVersion());
+    Assert.assertEquals(
+        dateFormat.format(meta.getCreated().getTime()),
+        "2015-02-27T11:28:39.042Z");
+    Assert.assertEquals(
+        dateFormat.format(meta.getLastModified().getTime()),
+        "2015-02-27T11:29:39.042Z");
 
-    Assert.assertEquals("12W",
-        ((GenericScimResource)cso).getObjectNode().path("shoeSize")
-            .asText());
+    ObjectNode metaNode = (ObjectNode)JsonUtils.getObjectReader().readTree(
+        JsonUtils.getObjectWriter().writeValueAsString(gso.getMeta()));
+    Assert.assertEquals(
+        metaNode.get("created").asText(),
+        "2015-02-27T11:28:39.042Z");
+    Assert.assertEquals(
+        metaNode.get("lastModified").asText(),
+        "2015-02-27T11:29:39.042Z");
+
+    Assert.assertEquals(meta.getLocation().toString(),
+                        "http://here/user");
+    Assert.assertEquals(meta.getResourceType(), "some resource type");
+    Assert.assertEquals(meta.getVersion(), "1.0");
+
+    Assert.assertEquals(
+        ((GenericScimResource)cso).getObjectNode().path("shoeSize").asText(),
+        "12W");
   }
 }
