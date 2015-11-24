@@ -31,6 +31,7 @@ import com.unboundid.scim2.common.types.Photo;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -646,8 +647,10 @@ public class DiffTestCase
     target.put("nickName", "bjj3");
     source.put("title", "hot shot");
     target.put("title", "hot shot");
-    source.put("userType", "employee");
-    target.put("userType", "employee");
+    source.put("userType", 1);
+    target.put("userType", new BigDecimal(1));
+    source.put("password", "cGFzc3dvcmQ=");
+    target.put("password", "password".getBytes());
 
     List<PatchOperation> d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 0);

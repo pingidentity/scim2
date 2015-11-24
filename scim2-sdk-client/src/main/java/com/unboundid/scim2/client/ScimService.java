@@ -506,7 +506,7 @@ public class ScimService
       relativePath = url;
     }
 
-    return baseTarget.path(relativePath.getPath());
+    return baseTarget.path(relativePath.getRawPath());
   }
 
   /**
