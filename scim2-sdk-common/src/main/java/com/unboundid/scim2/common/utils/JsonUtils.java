@@ -1034,7 +1034,19 @@ public class JsonUtils
         filters.add(Filter.eq(Path.root().attribute(field.getKey()),
             (ValueNode) field.getValue()));
       }
-      return Filter.and(filters);
+
+      if (filters.size() == 0)
+      {
+        return null;
+      }
+      else if (filters.size() == 1)
+      {
+        return filters.get(0);
+      }
+      else
+      {
+        return Filter.and(filters);
+      }
     }
 
     // We can't uniquely identify this value with a filter.

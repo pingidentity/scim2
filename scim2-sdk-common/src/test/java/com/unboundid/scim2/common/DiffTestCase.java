@@ -723,6 +723,11 @@ public class DiffTestCase
         "      \"type\": \"home\"\n" +
         "    }\n" +
         "  ],\n" +
+        "  \"someObject\": [\n" +
+        "    {\n" +
+        "      \"someField\": \"A\"\n" +
+        "    }\n" +
+        "  ],\n" +
         "  \"urn:unboundid:schemas:sample:profile:1.0\": {\n" +
         "    \"birthdayDayMonth\": {\n" +
         "      \"day\": 24,\n" +
@@ -889,6 +894,11 @@ public class DiffTestCase
         "      \"type\": \"home\"\n" +
         "    }\n" +
         "  ],\n" +
+        "  \"someObject\": [\n" +
+        "    {\n" +
+        "      \"someField\": \"B\"\n" +
+        "    }\n" +
+        "  ],\n" +
         "  \"displayName\": \"Jacquelynn Ellis\",\n" +
         "  \"emails\": [\n" +
         "    {\n" +
@@ -1033,7 +1043,7 @@ public class DiffTestCase
         "}");
 
     List<PatchOperation> d = JsonUtils.diff(source, target, false);
-    assertEquals(d.size(), 1);
+    assertEquals(d.size(), 2);
     assertEquals(d.get(0).getOpType(), PatchOpType.REPLACE);
     assertEquals(d.get(0).getPath().toString(),
         "urn:unboundid:schemas:sample:profile:1.0:topicPreferences[" +
