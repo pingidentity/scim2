@@ -86,4 +86,35 @@ public class JsonReference<T>
   {
     return set ? obj : null;
   }
+
+  @Override
+  public boolean equals(final Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass())
+    {
+      return false;
+    }
+
+    JsonReference<?> that = (JsonReference<?>) o;
+
+    if (set != that.set)
+    {
+      return false;
+    }
+    return !(obj != null ? !obj.equals(that.obj) : that.obj != null);
+
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int result = (set ? 1 : 0);
+    result = 31 * result + (obj != null ? obj.hashCode() : 0);
+    return result;
+  }
 }

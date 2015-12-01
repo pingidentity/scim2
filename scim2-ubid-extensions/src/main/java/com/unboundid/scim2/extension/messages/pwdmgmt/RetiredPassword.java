@@ -74,4 +74,42 @@ public class RetiredPassword
   {
     this.passwordRetiredTime = passwordRetiredTime;
   }
+
+  @Override
+  public boolean equals(final Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass())
+    {
+      return false;
+    }
+
+    RetiredPassword that = (RetiredPassword) o;
+
+    if (passwordRetiredTime != null ?
+        !passwordRetiredTime.equals(that.passwordRetiredTime) :
+        that.passwordRetiredTime != null)
+    {
+      return false;
+    }
+
+    return !(passwordExpirationTime != null ?
+        !passwordExpirationTime.equals(that.passwordExpirationTime) :
+        that.passwordExpirationTime != null);
+
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int result =
+        passwordRetiredTime != null ? passwordRetiredTime.hashCode() : 0;
+    result = 31 * result + (passwordExpirationTime != null ?
+        passwordExpirationTime.hashCode() : 0);
+    return result;
+  }
 }
