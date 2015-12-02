@@ -122,6 +122,7 @@ public class FilterEvaluatorTestCase
   {
     return new Object[][]
         {
+            new Object[] { "not (weight gt 175)", false },
             new Object[] { "name.first eq \"nAme:fiRst\"", true },
             new Object[] { "naMe.fIrst ne \"nAme:fiRst\"", false },
             new Object[] { "null eq null", true },
