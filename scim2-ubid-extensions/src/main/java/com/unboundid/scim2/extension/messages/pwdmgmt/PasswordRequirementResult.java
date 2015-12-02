@@ -31,10 +31,6 @@ import java.util.Map;
  */
 public class PasswordRequirementResult
 {
-  @Attribute(description = "The human-readable description of the " +
-      "password requirement",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private String display;
   @Attribute(description = "The type of password requirement.",
         mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String type;
@@ -52,26 +48,6 @@ public class PasswordRequirementResult
   private String additionalInfo;
   private Map<String, JsonNode> properties =
       new LinkedHashMap<String, JsonNode>();
-
-  /**
-   * Gets the human-readable description of the password requirement.
-   *
-   * @return the human-readable description of the password requirement.
-   */
-  public String getDisplay()
-  {
-    return display;
-  }
-
-  /**
-   * Sets the human-readable description of the password requirement.
-   * @param display the the human-readable description of the password
-   *                requirement.
-   */
-  public void setDisplay(final String display)
-  {
-    this.display = display;
-  }
 
   /**
    * Gets the type of password requirement.

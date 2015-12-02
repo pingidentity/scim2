@@ -36,7 +36,7 @@ public class PasswordUpdateErr
       description = "A list of errors that occurred while attempting"
           + " to change the password.",
       multiValueClass = PasswordRequirementResult.class)
-  private List<PasswordRequirementResult> passwordRequirementResults =
+  private List<PasswordRequirementResult> passwordRequirements =
       new ArrayList<PasswordRequirementResult>();
 
 
@@ -46,9 +46,9 @@ public class PasswordUpdateErr
    * @return the password requirements returned from the attempted
    * password change.
    */
-  public List<PasswordRequirementResult> getPasswordRequirementResults()
+  public List<PasswordRequirementResult> getPasswordRequirements()
   {
-    return passwordRequirementResults;
+    return passwordRequirements;
   }
 
   /**
@@ -57,10 +57,10 @@ public class PasswordUpdateErr
    * @param passwordRequirementResults the password requirements returned from
    *                             the attempted password change.
    */
-  public void setPasswordRequirementResults(
+  public void setPasswordRequirements(
       final List<PasswordRequirementResult> passwordRequirementResults)
   {
-    this.passwordRequirementResults = passwordRequirementResults;
+    this.passwordRequirements = passwordRequirementResults;
   }
 
 }

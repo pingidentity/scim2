@@ -47,7 +47,7 @@ public class PasswordQualityRequirementResponse extends BaseScimResource
   @Attribute(
       description = "A list of password requirements that must be met.",
       multiValueClass = PasswordRequirementResult.class)
-  private List<PasswordRequirementResult> passwordRequirementResults =
+  private List<PasswordRequirementResult> passwordRequirements =
       new ArrayList<PasswordRequirementResult>();
 
   /**
@@ -122,8 +122,8 @@ public class PasswordQualityRequirementResponse extends BaseScimResource
    *
    * @return the list of password requirements.
    */
-  public List<PasswordRequirementResult> getPasswordRequirementResults()
+  public List<PasswordRequirementResult> getPasswordRequirements()
   {
-    return passwordRequirementResults;
+    return passwordRequirements;
   }
 }
