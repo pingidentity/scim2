@@ -44,6 +44,7 @@ public final class Scope
   {
     private String name;
     private String description;
+    private String consentPromptText;
     private String consent;
 
     /**
@@ -61,12 +62,25 @@ public final class Scope
     /**
      * Sets the description of this scope.
      *
-     * @param description the description of this scope.
+     * @param description a description of this scope that is intended
+     *                    for end-users.
      * @return this.
      */
     public Builder setDescription(final String description)
     {
       this.description = description;
+      return this;
+    }
+
+    /**
+     * Sets the consent prompt text of this scope.
+     *
+     * @param consentPromptText the consent prompt text for this scope.
+     * @return this.
+     */
+    public Builder setConsentPromptText(final String consentPromptText)
+    {
+      this.consentPromptText = consentPromptText;
       return this;
     }
 
@@ -101,6 +115,10 @@ public final class Scope
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
+  @Attribute(description = "The consent prompt text of the scope.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private final String consentPromptText;
+
   @Attribute(description = "Consent (Granted, Denied, Revoked).",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final String consent;
@@ -116,6 +134,7 @@ public final class Scope
     this.name = builder.name;
     this.description = builder.description;
     this.consent = builder.consent;
+    this.consentPromptText = builder.consentPromptText;
   }
 
   /**
@@ -146,6 +165,16 @@ public final class Scope
   public String getConsent()
   {
     return consent;
+  }
+
+  /**
+   * Returns the consent prompt text for this scope.
+   *
+   * @return the consent prompt text for this scope.
+   */
+  public String getConsentPromptText()
+  {
+    return consentPromptText;
   }
 
   /**
