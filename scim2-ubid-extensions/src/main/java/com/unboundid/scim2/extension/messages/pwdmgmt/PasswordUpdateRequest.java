@@ -22,15 +22,71 @@ import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Schema;
 
 /**
- * The request for validating a password for a user.
+ * The request for changing a password for a user.
  */
 @Schema(description = "Password change request",
     id = "urn:unboundid:scim:api:messages:2.0:PasswordUpdateRequest",
     name = "PasswordUpdateRequest")
-public class PasswordUpdateRequest extends BaseScimResource
+public final class PasswordUpdateRequest extends BaseScimResource
 {
   private String currentPassword;
   private String newPassword;
+
+  /**
+   * Builder for a password update request object.
+   */
+  public static class PasswordUpdateRequestBuilder
+  {
+    private String currentPassword;
+    private String newPassword;
+
+    /**
+     * Sets the current password for the password update request.
+     *
+     * @param currentPassword  the current password.
+     * @return this.
+     */
+    public PasswordUpdateRequestBuilder setCurrentPassword(
+        final String currentPassword)
+    {
+      this.currentPassword = currentPassword;
+      return this;
+    }
+
+    /**
+     * Sets the new password for the password update request.
+     *
+     * @param newPassword  the new password.
+     * @return this.
+     */
+    public PasswordUpdateRequestBuilder setNewPassword(
+        final String newPassword)
+    {
+      this.newPassword = newPassword;
+      return this;
+    }
+
+    /**
+     * Call build to build a password reset token request with the parameters
+     * that have been supplied to the builder.
+     *
+     * @return a password reset token built from the parameters supplied
+     * to the builder.
+     */
+    public PasswordUpdateRequest build()
+    {
+      PasswordUpdateRequest request = new PasswordUpdateRequest();
+      request.currentPassword = this.currentPassword;
+      request.newPassword = this.newPassword;
+      return request;
+    }
+  }
+
+  // Use the builder instead of constructing directly.
+  private PasswordUpdateRequest()
+  {
+
+  }
 
   /**
    * Gets the current password.
@@ -43,16 +99,6 @@ public class PasswordUpdateRequest extends BaseScimResource
   }
 
   /**
-   * Sets the current password.
-   *
-   * @param currentPassword the current password.
-   */
-  public void setCurrentPassword(final String currentPassword)
-  {
-    this.currentPassword = currentPassword;
-  }
-
-  /**
    * Gets the new password.
    *
    * @return the new password.
@@ -61,15 +107,4 @@ public class PasswordUpdateRequest extends BaseScimResource
   {
     return newPassword;
   }
-
-  /**
-   * Sets the new password.
-   *
-   * @param newPassword the new password.
-   */
-  public void setNewPassword(final String newPassword)
-  {
-    this.newPassword = newPassword;
-  }
-
 }
