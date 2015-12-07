@@ -600,8 +600,9 @@ public class Parser
             // by Jackson. The Jackson parser is buffered and reads everything
             // until the end of string.
             reader.mark(0);
-            JsonParser parser =
-                JsonUtils.getObjectReader().getFactory().createParser(reader);
+            ScimJsonFactory scimJsonFactory = (ScimJsonFactory)
+                JsonUtils.getObjectReader().getFactory();
+            JsonParser parser = scimJsonFactory.createScimFilterParser(reader);
             // The object mapper will return a Java null for JSON null.
             // Have to distinguish between reading a JSON null and encountering
             // the end of string.

@@ -1247,7 +1247,7 @@ public class JsonUtils
    */
   public static ObjectMapper createObjectMapper()
   {
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new ObjectMapper(new ScimJsonFactory());
 
     // Don't serialize POJO nulls as JSON nulls.
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

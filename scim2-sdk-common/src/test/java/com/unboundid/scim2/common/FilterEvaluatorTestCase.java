@@ -135,6 +135,7 @@ public class FilterEvaluatorTestCase
             new Object[] { "naMe.First ew \"nAme:fiRst\"", true },
             new Object[] { "name.first sw \"nAme:\"", true },
             new Object[] { "name.first ew \":fiRst\"", true },
+            new Object[] { "not (weight gt 175.2)", false },
             new Object[] { "weight gt 175.2", true },
             new Object[] { "weight gt 175", true },
             new Object[] { "weight gt 175.6", false },
