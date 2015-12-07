@@ -49,7 +49,10 @@ public class ScimFilterJsonParser extends ReaderBasedJsonParser {
       final CharsToNameCanonicalizer st) {
 
     super(ctxt, features, r, codec, st);
-    // set the parsing context to "none of the above"
+    // By default the JSON read context is set to JsonStreamContext.TYPE_ROOT,
+    // which will require whitespace after any unquoted token (e.g. a number).
+    // We don't want this restriction when parsing a SCIM filter , so set the
+    // context type to -1, which is effectively "none".
     this._parsingContext = new JsonReadContext(null, null, -1, 1, 0);
   }
 }
