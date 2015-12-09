@@ -123,11 +123,11 @@ public class ResourcePreparer<T extends ScimResource>
       this.queryAttributes = new LinkedHashSet<Path>(attributeSet.size());
       for(String attribute : attributeSet)
       {
+        Path normalizedPath;
         try
         {
-          this.queryAttributes.add(
-              resourceType.normalizePath(Path.fromString(attribute)).
-                  withoutFilters());
+          normalizedPath = resourceType.normalizePath(
+              Path.fromString(attribute)).withoutFilters();
         }
         catch (BadRequestException e)
         {
@@ -135,6 +135,14 @@ public class ResourcePreparer<T extends ScimResource>
               "' is not a valid value for the attributes parameter: " +
               e.getMessage());
         }
+        if (normalizedPath.size() > 1)
+        {
+          throw BadRequestException.invalidValue("'" + attribute +
+              "' is not allowed in the attributes parameter: sub-attribute " +
+              "specifications are not supported.");
+        }
+        this.queryAttributes.add(normalizedPath);
+
       }
       this.excluded = false;
     }
@@ -146,11 +154,11 @@ public class ResourcePreparer<T extends ScimResource>
       this.queryAttributes = new LinkedHashSet<Path>(attributeSet.size());
       for(String attribute : attributeSet)
       {
+        Path normalizedPath;
         try
         {
-          this.queryAttributes.add(
-              resourceType.normalizePath(Path.fromString(attribute)).
-                  withoutFilters());
+          normalizedPath = resourceType.normalizePath(
+              Path.fromString(attribute)).withoutFilters();
         }
         catch (BadRequestException e)
         {
@@ -158,6 +166,13 @@ public class ResourcePreparer<T extends ScimResource>
               "' is not a valid value for the excludedAttributes parameter: " +
               e.getMessage());
         }
+        if (normalizedPath.size() > 1)
+        {
+          throw BadRequestException.invalidValue("'" + attribute +
+              "' is not allowed in the excludedAttributes parameter: " +
+              "sub-attribute specifications are not supported.");
+        }
+        this.queryAttributes.add(normalizedPath);
       }
       this.excluded = true;
     }
