@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
+import com.unboundid.scim2.common.filters.FilterType;
 import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.BeforeClass;
@@ -32,6 +33,8 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Tests for evaluating SCIM 2 filters.
@@ -216,6 +219,116 @@ public class FilterEvaluatorTestCase
                 "\"urn:unboundid:schemas:something\"]", false },
         };
   }
+
+
+
+  /**
+   * Test the less than filter.
+   * @throws Exception if there are exceptions in the test.
+   */
+  @Test
+  public void testLessThanFilter() throws Exception
+  {
+    // node value is greater than that in filter
+    Filter badFilter_greater = Filter.lt("children", new Integer(4));
+
+    // node value is equal to that in filter
+    Filter badFilter_equal = Filter.lt("children", new Integer(5));
+
+    // node value is less than that in filter
+    Filter goodFilter_less = Filter.lt("children", new Integer(7));
+
+    assertFalse(FilterEvaluator.evaluate(badFilter_greater, node));
+    assertFalse(FilterEvaluator.evaluate(badFilter_equal, node));
+    assertTrue(FilterEvaluator.evaluate(goodFilter_less, node));
+
+    assertEquals(badFilter_greater.getFilterType(), FilterType.LESS_THAN);
+    assertEquals(badFilter_equal.getFilterType(), FilterType.LESS_THAN);
+    assertEquals(goodFilter_less.getFilterType(), FilterType.LESS_THAN);
+  }
+
+
+
+  /**
+   * Test the less or equal filter.
+   * @throws Exception if there are exceptions in the test.
+   */
+  @Test
+  public void testLessOrEqualFilter() throws Exception
+  {
+    // node value is greater than that in filter
+    Filter badFilter_greater = Filter.le("children", new Integer(4));
+
+    // node value is equal to that in filter
+    Filter goodFilter_equal = Filter.le("children", new Integer(5));
+
+    // node value is less than that in filter
+    Filter goodFilter_less = Filter.le("children", new Integer(7));
+
+    assertFalse(FilterEvaluator.evaluate(badFilter_greater, node));
+    assertTrue(FilterEvaluator.evaluate(goodFilter_equal, node));
+    assertTrue(FilterEvaluator.evaluate(goodFilter_less, node));
+
+    assertEquals(badFilter_greater.getFilterType(), FilterType.LESS_OR_EQUAL);
+    assertEquals(goodFilter_equal.getFilterType(), FilterType.LESS_OR_EQUAL);
+    assertEquals(goodFilter_less.getFilterType(), FilterType.LESS_OR_EQUAL);
+  }
+
+
+
+  /**
+   * Test the greater than filter.
+   * @throws Exception if there are exceptions in the test.
+   */
+  @Test
+  public void testGreaterThanFilter() throws Exception
+  {
+    // node value is greater than that in filter
+    Filter goodFilter_greater = Filter.gt("children", new Integer(4));
+
+    // node value is equal to that in filter
+    Filter badFilter_equal = Filter.gt("children", new Integer(5));
+
+    // node value is less than that in filter
+    Filter badFilter_less = Filter.gt("children", new Integer(7));
+
+    assertTrue(FilterEvaluator.evaluate(goodFilter_greater, node));
+    assertFalse(FilterEvaluator.evaluate(badFilter_equal, node));
+    assertFalse(FilterEvaluator.evaluate(badFilter_less, node));
+
+    assertEquals(goodFilter_greater.getFilterType(), FilterType.GREATER_THAN);
+    assertEquals(badFilter_equal.getFilterType(), FilterType.GREATER_THAN);
+    assertEquals(badFilter_less.getFilterType(), FilterType.GREATER_THAN);
+  }
+
+
+  /**
+   * Test the greater or equal filter.
+   * @throws Exception if there are exceptions in the test.
+   */
+  @Test
+  public void testGreaterOrEqualFilter() throws Exception
+  {
+    // node value is greater than that in filter
+    Filter goodFilter_greater = Filter.ge("children", new Integer(4));
+
+    // node value is equal to that in filter
+    Filter goodFilter_equal = Filter.ge("children", new Integer(5));
+
+    // node value is less than that in filter
+    Filter badFilter_less = Filter.ge("children", new Integer(7));
+
+    assertTrue(FilterEvaluator.evaluate(goodFilter_greater, node));
+    assertTrue(FilterEvaluator.evaluate(goodFilter_equal, node));
+    assertFalse(FilterEvaluator.evaluate(badFilter_less, node));
+
+    assertEquals(goodFilter_greater.getFilterType(),
+        FilterType.GREATER_OR_EQUAL);
+    assertEquals(goodFilter_equal.getFilterType(), FilterType.GREATER_OR_EQUAL);
+    assertEquals(badFilter_less.getFilterType(), FilterType.GREATER_OR_EQUAL);
+  }
+
+
 
   /**
    * Test that filters matching.

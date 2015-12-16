@@ -52,7 +52,7 @@ public final class LessThanFilter extends ComparisonFilter
   @Override
   public FilterType getFilterType()
   {
-    return FilterType.LESS_OR_EQUAL;
+    return FilterType.LESS_THAN;
   }
 
   /**
