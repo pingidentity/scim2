@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
@@ -28,9 +29,8 @@ import com.unboundid.scim2.common.utils.GenericScimObjectDeserializer;
 import com.unboundid.scim2.common.utils.GenericScimObjectSerializer;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,13 +42,13 @@ import java.util.List;
  * methods that can read attributes from those objects without needing
  * to know the schema ahead of time.  Another way to work with SCIM
  * objects is when you know ahead of time what the schema will be.  In
- * that case you could still use this object, but BaseScimResourceObject
+ * that case you could still use this object, but BaseScimResource
  * might be a better choice.
  *
- * If you have a BaseScimResourceObject derived object, you can always get a
- * GenericScimResourceObject by serializing The BaseScimResourceObject
+ * If you have a BaseScimResource derived object, you can always get a
+ * GenericScimResource by serializing The BaseScimResource
  * derived object into a JSON string, and deserializing back to a
- * GenericScimResourceObject.  You could also go the other way.
+ * GenericScimResource.  You could also go the other way.
  *
  * {@link BaseScimResource}
  */
@@ -64,7 +64,7 @@ public final class GenericScimResource implements ScimResource
   private final ObjectNode objectNode;
 
   /**
-   * Create a new empty GenericScimResourceObject.
+   * Create a new empty GenericScimResource.
    */
   public GenericScimResource()
   {
@@ -72,7 +72,7 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Create a new GenericScimResourceObject backed by an ObjectNode.
+   * Create a new GenericScimResource backed by an ObjectNode.
    *
    * @param objectNode The ObjectNode that backs this object.
    */
@@ -98,7 +98,12 @@ public final class GenericScimResource implements ScimResource
   {
     try
     {
-      return getValue(META, Meta.class);
+      List<JsonNode> values = JsonUtils.getValues(META, objectNode);
+      if(values.isEmpty())
+      {
+        return null;
+      }
+      return JsonUtils.nodeToValue(values.get(0), Meta.class);
     }
     catch (Exception e)
     {
@@ -115,7 +120,7 @@ public final class GenericScimResource implements ScimResource
   {
     try
     {
-      setValue(META, meta);
+      JsonUtils.replaceValue(META, objectNode, JsonUtils.valueToNode(meta));
     }
     catch (Exception e)
     {
@@ -132,7 +137,12 @@ public final class GenericScimResource implements ScimResource
   {
     try
     {
-      return getValue(ID, String.class);
+      List<JsonNode> values = JsonUtils.getValues(ID, objectNode);
+      if(values.isEmpty())
+      {
+        return null;
+      }
+      return JsonUtils.nodeToValue(values.get(0), String.class);
     }
     catch (Exception e)
     {
@@ -149,7 +159,7 @@ public final class GenericScimResource implements ScimResource
   {
     try
     {
-      setValue(ID, id);
+      JsonUtils.replaceValue(ID, objectNode, JsonUtils.valueToNode(id));
     }
     catch (Exception e)
     {
@@ -165,7 +175,12 @@ public final class GenericScimResource implements ScimResource
   {
     try
     {
-      return getValues(SCHEMAS, String.class);
+      List<JsonNode> values = JsonUtils.getValues(SCHEMAS, objectNode);
+      if(values.isEmpty() || !values.get(0).isArray())
+      {
+        return Collections.emptyList();
+      }
+      return JsonUtils.nodeToValues((ArrayNode) values.get(0), String.class);
     }
     catch (Exception e)
     {
@@ -181,7 +196,8 @@ public final class GenericScimResource implements ScimResource
   {
     try
     {
-      setValue(SCHEMAS, schemaUrns);
+      JsonUtils.replaceValue(SCHEMAS, objectNode,
+          JsonUtils.valueToNode(schemaUrns));
     }
     catch (Exception e)
     {
@@ -198,7 +214,12 @@ public final class GenericScimResource implements ScimResource
   {
     try
     {
-      return getValue(EXTERNAL_ID, String.class);
+      List<JsonNode> values = JsonUtils.getValues(EXTERNAL_ID, objectNode);
+      if(values.isEmpty())
+      {
+        return null;
+      }
+      return JsonUtils.nodeToValue(values.get(0), String.class);
     }
     catch (Exception e)
     {
@@ -215,7 +236,8 @@ public final class GenericScimResource implements ScimResource
   {
     try
     {
-      setValue(EXTERNAL_ID, externalId);
+      JsonUtils.replaceValue(EXTERNAL_ID, objectNode,
+          JsonUtils.valueToNode(externalId));
     }
     catch (ScimException e)
     {
@@ -225,327 +247,156 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Retrieve the value of the attribute specified by the path.
+   * Retrieve all JSON nodes referenced by the provided path. Equivalent to
+   * using the {@link JsonUtils#getValues(Path, ObjectNode)} method:
+   * JsonUtils.getValues(Path.fromString(path), getObjectNode()).
+   *
+   * The {@link JsonUtils#nodeToValue(JsonNode, Class)} method may be used to
+   * bind the retrieved JSON node into specific value type instances.
    *
    * @param path The path to the attribute whose value to retrieve.
-   * @param cls The Java class object used to determine the type to return.
-   * @param <T> The generic type parameter of the Java class used to determine
-   *            the type to return.
-   * @return The value of the attribute specified by the path.
-   * @throws JsonProcessingException If the value can not be parsed to the
-   *         type specified by the Java class object.
+   *
+   * @return List of all JSON nodes referenced by the provided path.
    * @throws ScimException If the path is invalid.
-   * @throws IllegalArgumentException If the attribute contains more than one
-   *         value, in which case, the getValues method should be used to
-   *         retrieve all values.
    */
-  public <T> T getValue(final String path, final Class<T> cls)
-      throws JsonProcessingException, ScimException, IllegalArgumentException
+  public List<JsonNode> getValues(final String path)
+      throws ScimException
   {
-    return getValue(Path.fromString(path), cls);
+    return getValues(Path.fromString(path));
   }
 
   /**
-   * Retrieve the value of the attribute specified by the path.
+   * Retrieve all JSON nodes referenced by the provided path. Equivalent to
+   * using the {@link JsonUtils#getValues(Path, ObjectNode)} method:
+   * JsonUtils.getValues(path, getObjectNode()).
+   *
+   * The {@link JsonUtils#nodeToValue(JsonNode, Class)} method may be used to
+   * convert the retrieved JSON node into specific value type instances.
    *
    * @param path The path to the attribute whose value to retrieve.
-   * @param cls The Java class object used to determine the type to return.
-   * @param <T> The generic type parameter of the Java class used to determine
-   *            the type to return.
-   * @return The value of the attribute specified by the path.
-   * @throws JsonProcessingException If the value can not be parsed to the
-   *         type specified by the Java class object.
-   * @throws ScimException If the path is invalid.
-   * @throws IllegalArgumentException If the attribute contains more than one
-   *         value, in which case, the getValues method should be used to
-   *         retrieve all values.
-   */
-  public <T> T getValue(final Path path, final Class<T> cls)
-      throws JsonProcessingException, ScimException, IllegalArgumentException
-  {
-    List<JsonNode> nodes = JsonUtils.getValues(path, objectNode);
-    if(nodes.isEmpty())
-    {
-      return null;
-    }
-    if(nodes.size() > 1)
-    {
-      throw new IllegalArgumentException("Path references multiple values");
-    }
-    JsonNode node = nodes.get(0);
-    if (node.isArray())
-    {
-      if (node.size() == 0)
-      {
-        return null;
-      }
-      if (node.size() > 1)
-      {
-        throw new IllegalArgumentException("Path references multiple values");
-      }
-      node = node.elements().next();
-    }
-    return JsonUtils.getObjectReader().treeToValue(
-        node, cls);
-  }
-
-  /**
-   * Retrieve all values of the attribute specified by the path.
    *
-   * @param path The path to the attribute whose value to retrieve.
-   * @param cls The Java class object used to determine the type to return.
-   * @param <T> The generic type parameter of the Java class used to determine
-   *            the type to return.
-   * @return The values of the attribute specified by the path.
-   * @throws JsonProcessingException If the value can not be parsed to the
-   *         type specified by the Java class object.
+   * @return List of all JSON nodes referenced by the provided path.
    * @throws ScimException If the path is invalid.
    */
-  public <T> List<T> getValues(final String path, final Class<T> cls)
-      throws JsonProcessingException, ScimException
+  public List<JsonNode> getValues(final Path path)
+      throws ScimException
   {
-    return getValues(Path.fromString(path), cls);
+    return JsonUtils.getValues(path, objectNode);
   }
 
   /**
-   * Retrieve all values of the attribute specified by the path.
+   * Update the value at the provided path. Equivalent to using the
+   * {@link JsonUtils#replaceValue(Path, ObjectNode, JsonNode)} method:
+   * JsonUtils.replaceValues(Path.fromString(path), getObjectNode(), value).
    *
-   * @param path The path to the attribute whose value to retrieve.
-   * @param cls The Java class object used to determine the type to return.
-   * @param <T> The generic type parameter of the Java class used to determine
-   *            the type to return.
-   * @return The values of the attribute specified by the path.
-   * @throws JsonProcessingException If the value can not be parsed to the
-   *         type specified by the Java class object.
-   * @throws ScimException If the path is invalid.
-   */
-  public <T> List<T> getValues(final Path path, final Class<T> cls)
-      throws JsonProcessingException, ScimException
-  {
-    List<JsonNode> nodes = JsonUtils.getValues(path, objectNode);
-    ArrayList<T> objects = new ArrayList<T>(nodes.size());
-    for(JsonNode node : nodes)
-    {
-      if (node.isArray())
-      {
-        Iterator<JsonNode> iter = node.elements();
-        while (iter.hasNext())
-        {
-          objects.add(JsonUtils.getObjectReader().treeToValue(
-                  iter.next(), cls));
-        }
-      }
-      else
-      {
-        objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
-      }
-    }
-    return objects;
-  }
-
-  /**
-   * Set value of the attribute specified by the path, replacing any existing
-   * value(s).
+   * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
+   * the given value instance to a JSON node.
    *
    * @param path The path to the attribute whose value to set.
-   * @param object The value to set.
+   * @param value The value(s) to set.
    * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public GenericScimResource setValue(final String path, final Object object)
+  public GenericScimResource replaceValue(final String path,
+                                          final JsonNode value)
       throws ScimException
   {
-    setValue(Path.fromString(path), object);
+    replaceValue(Path.fromString(path), value);
     return this;
   }
 
   /**
-   * Set value of the attribute specified by the path, replacing any existing
-   * value(s).
+   * Update the value at the provided path. Equivalent to using the
+   * {@link JsonUtils#replaceValue(Path, ObjectNode, JsonNode)} method:
+   * JsonUtils.replaceValues(path, getObjectNode(), value).
+   *
+   * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
+   * the given value instance to a JSON node.
    *
    * @param path The path to the attribute whose value to set.
-   * @param object The value to set.
+   * @param value The value(s) to set.
    * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public GenericScimResource setValue(final Path path, final Object object)
+  public GenericScimResource replaceValue(final Path path,
+                                          final JsonNode value)
       throws ScimException
   {
-    JsonNode newObjectNode =
-        JsonUtils.valueToTree(object);
-    JsonUtils.replaceValue(path, objectNode, newObjectNode);
+    JsonUtils.replaceValue(path, objectNode, value);
     return this;
   }
 
   /**
-   * Set values of the attribute specified by the path, replacing any existing
-   * values.
+   * Add new values at the provided path. Equivalent to using the
+   * {@link JsonUtils#addValue(Path, ObjectNode, JsonNode)} method:
+   * JsonUtils.addValue(Path.fromString(path), getObjectNode(), values).
    *
-   * @param path The path to the attribute whose value to set.
-   * @param objects The value(s) to set.
-   * @return This object.
-   * @throws ScimException If the path is invalid.
-   */
-  public GenericScimResource setValues(final String path,
-                                       final Collection<Object> objects)
-      throws ScimException
-  {
-    setValue(Path.fromString(path), objects);
-    return this;
-  }
-
-  /**
-   * Set values of the attribute specified by the path, replacing any existing
-   * values.
+   * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
+   * the given value instance to a JSON node.
    *
-   * @param path The path to the attribute whose value to set.
-   * @param object The value(s) to set.
-   * @return This object.
-   * @throws ScimException If the path is invalid.
-   */
-  public GenericScimResource setValues(final Path path,
-                                       final Collection<Object> object)
-      throws ScimException
-  {
-    JsonNode newObjectNode =
-        JsonUtils.valueToTree(object);
-    JsonUtils.replaceValue(path, objectNode, newObjectNode);
-    return this;
-  }
-
-  /**
-   * Set values of the attribute specified by the path, replacing any existing
-   * values.
-   *
-   * @param path The path to the attribute whose value to set.
-   * @param objects The value(s) to set.
-   * @return This object.
-   * @throws ScimException If the path is invalid.
-   */
-  public GenericScimResource setValues(final String path,
-                                       final Object... objects)
-      throws ScimException
-  {
-    setValue(Path.fromString(path), objects);
-    return this;
-  }
-
-  /**
-   * Set values of the attribute specified by the path, replacing any existing
-   * values.
-   *
-   * @param path The path to the attribute whose value to set.
-   * @param object The value(s) to set.
-   * @return This object.
-   * @throws ScimException If the path is invalid.
-   */
-  public GenericScimResource setValues(final Path path, final Object... object)
-      throws ScimException
-  {
-    JsonNode newObjectNode =
-        JsonUtils.valueToTree(object);
-    JsonUtils.replaceValue(path, objectNode, newObjectNode);
-    return this;
-  }
-
-  /**
-   * Add values to the multi-valued attribute specified by the path.
-   *
-   * @param path The path to the multi-valued attribute.
-   * @param objects The values to add.
+   * @param path The path to the attribute whose values to add.
+   * @param values The value(s) to add.
    * @return This object.
    * @throws ScimException If the path is invalid.
    */
   public GenericScimResource addValues(final String path,
-                                       final Collection<?> objects)
+                                       final ArrayNode values)
       throws ScimException
   {
-    addValues(Path.fromString(path), objects);
+    addValues(Path.fromString(path), values);
     return this;
   }
 
   /**
-   * Add values to the multi-valued attribute specified by the path.
+   * Add new values at the provided path. Equivalent to using the
+   * {@link JsonUtils#addValue(Path, ObjectNode, JsonNode)} method:
+   * JsonUtils.addValue(path, getObjectNode(), values).
    *
-   * @param path The path to the multi-valued attribute.
-   * @param objects The values to add.
+   * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
+   * the given value instance to a JSON node.
+   *
+   * @param path The path to the attribute whose values to add.
+   * @param values The value(s) to add.
    * @return This object.
    * @throws ScimException If the path is invalid.
    */
   public GenericScimResource addValues(final Path path,
-                                       final Collection<?> objects)
+                                       final ArrayNode values)
       throws ScimException
   {
-    JsonNode newObjectNode =
-        JsonUtils.valueToTree(objects);
-    JsonUtils.addValue(path, objectNode, newObjectNode);
+    JsonUtils.addValue(path, objectNode, values);
     return this;
   }
 
   /**
-   * Add values to the multi-valued attribute specified by the path.
+   * Removes values at the provided path. Equivalent
+   * to using the {@link JsonUtils#removeValues(Path, ObjectNode)} method:
+   * JsonUtils.removeValue(Path.fromString(path), getObjectNode(), values).
    *
-   * @param path The path to the multi-valued attribute.
-   * @param objects The values to add.
-   * @return This object.
+   * @param path The path to the attribute whose values to remove.
+   * @return Whether one or more values where removed.
    * @throws ScimException If the path is invalid.
    */
-  public GenericScimResource addValues(final String path,
-                                       final Object... objects)
-      throws ScimException
-  {
-    addValues(Path.fromString(path), objects);
-    return this;
-  }
-
-  /**
-   * Add values to the multi-valued attribute specified by the path.
-   *
-   * @param path The path to the multi-valued attribute.
-   * @param objects The values to add.
-   * @return This object.
-   * @throws ScimException If the path is invalid.
-   */
-  public GenericScimResource addValues(final Path path,
-                                       final Object... objects)
-      throws ScimException
-  {
-    JsonNode newObjectNode =
-        JsonUtils.valueToTree(objects);
-    JsonUtils.addValue(path, objectNode, newObjectNode);
-    return this;
-  }
-
-  /**
-   * Remove all values of the attribute specified by the path.
-   *
-   * @param path The path to the attribute whose value to remove.
-   * @return The number of values removed.
-   * @throws ScimException If the path is invalid.
-   */
-  public int removeValues(final String path)
+  public boolean removeValues(final String path)
       throws ScimException
   {
     return removeValues(Path.fromString(path));
   }
 
   /**
-   * Remove all values of the attribute specified by the path.
+   * Removes values at the provided path. Equivalent
+   * to using the {@link JsonUtils#removeValues(Path, ObjectNode)} method:
+   * JsonUtils.removeValue(Path.fromString(path), getObjectNode(), values).
    *
-   * @param path The path to the attribute whose value to remove.
-   * @return The number of values removed.
+   * @param path The path to the attribute whose values to remove.
+   * @return Whether one or more values where removed.
    * @throws ScimException If the path is invalid.
    */
-  public int removeValues(final Path path)
+  public boolean removeValues(final Path path)
       throws ScimException
   {
     List<JsonNode> nodes = JsonUtils.removeValues(path, objectNode);
-    int numRemoved = 0;
-    for (JsonNode node : nodes)
-    {
-      numRemoved += node.isArray() ? node.size() : 1;
-    }
-    return numRemoved;
+    return !nodes.isEmpty();
   }
 
   /**

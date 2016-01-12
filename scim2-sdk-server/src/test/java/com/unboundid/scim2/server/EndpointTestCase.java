@@ -20,6 +20,7 @@ package com.unboundid.scim2.server;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimService;
+import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.Meta;
@@ -460,8 +461,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     UserResource newUser = new UserResource().setUserName("createUser");
     EnterpriseUserExtension extension =
         new EnterpriseUserExtension().setEmployeeNumber("1234");
-    newUser.setExtensionValue(
-        SchemaUtils.getSchemaUrn(EnterpriseUserExtension.class), extension);
+    newUser.replaceExtensionValue(
+        Path.root(EnterpriseUserExtension.class),
+        JsonUtils.valueToNode(extension));
 
     UserResource createdUser =
         scimService.create("SingletonUsers", newUser);
@@ -469,9 +471,13 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertEquals(createdUser.getUserName(), newUser.getUserName());
     try
     {
-      assertEquals(createdUser.getExtensionValue(
-          SchemaUtils.getSchemaUrn(EnterpriseUserExtension.class),
+      assertEquals(JsonUtils.nodeToValue(createdUser.getExtensionValues(
+          Path.root(EnterpriseUserExtension.class)).get(0),
           EnterpriseUserExtension.class), extension);
+
+      assertEquals(createdUser.getExtensionValues(
+          Path.root(EnterpriseUserExtension.class).attribute("employeeNumber"))
+          .get(0).textValue(), "1234");
     }
     catch (JsonProcessingException e)
     {

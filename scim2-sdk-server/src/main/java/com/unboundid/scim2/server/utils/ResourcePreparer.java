@@ -135,12 +135,6 @@ public class ResourcePreparer<T extends ScimResource>
               "' is not a valid value for the attributes parameter: " +
               e.getMessage());
         }
-        if (normalizedPath.size() > 1)
-        {
-          throw BadRequestException.invalidValue("'" + attribute +
-              "' is not allowed in the attributes parameter: sub-attribute " +
-              "specifications are not supported.");
-        }
         this.queryAttributes.add(normalizedPath);
 
       }
@@ -165,12 +159,6 @@ public class ResourcePreparer<T extends ScimResource>
           throw BadRequestException.invalidValue("'" + attribute +
               "' is not a valid value for the excludedAttributes parameter: " +
               e.getMessage());
-        }
-        if (normalizedPath.size() > 1)
-        {
-          throw BadRequestException.invalidValue("'" + attribute +
-              "' is not allowed in the excludedAttributes parameter: " +
-              "sub-attribute specifications are not supported.");
         }
         this.queryAttributes.add(normalizedPath);
       }

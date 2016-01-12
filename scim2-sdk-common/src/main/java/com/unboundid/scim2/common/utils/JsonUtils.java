@@ -18,6 +18,7 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -36,6 +38,7 @@ import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.ArrayList;
@@ -442,8 +445,56 @@ public class JsonUtils
   }
 
   /**
-   * Retrieve all JSON nodes referenced by the provided path. If a path
-   * references a JSON array, all nodes the the array will be traversed.
+   * Retrieve all JSON nodes referenced by the provided path. If the path
+   * traverses through a JSON array, all nodes the array will be traversed.
+   * For example, given the following ObjectNode:
+   *
+   * <pre>
+   *   {
+   *     "emails": [
+   *       {
+   *         "type": "work",
+   *         "value": "bob@work.com"
+   *       },
+   *       {
+   *         "type": "home",
+   *         "value": "bob@home.com"
+   *       }
+   *     ]
+   *   }
+   * </pre>
+   *
+   * Calling getValues with path of emails.value will return a list of all
+   * TextNodes of the "value" field in the "emails" array:
+   *
+   * <pre>
+   *   [ TextNode("bob@work.com"), TextNode("bob@home.com") ]
+   * </pre>
+   *
+   * However, if the last element of the path references a JSON array, the
+   * entire ArrayNode will returned. For example given the following ObjectNode:
+   *
+   * <pre>
+   *   {
+   *     "books": [
+   *       {
+   *         "title": "Brown Bear, Brown Bear, What Do You See?",
+   *         "authors": ["Bill Martin, Jr.", "Eric Carle"]
+   *       },
+   *       {
+   *         "title": "The Cat In The Hat",
+   *         "authors": ["Dr. Seuss"]
+   *       }
+   *     ]
+   *   }
+   * </pre>
+   *
+   * Calling getValues with path of books.authors will return a list of all
+   * ArrayNodes of the "authors" field in the "books" array:
+   *
+   * <pre>
+   * [ ArrayNode(["Bill Martin, Jr.", "Eric Carle"]), ArrayNode(["Dr. Seuss"]) ]
+   * </pre>
    *
    * @param path The path to the attributes whose values to retrieve.
    * @param node The JSON node representing the SCIM resource.
@@ -1223,16 +1274,66 @@ public class JsonUtils
   }
 
   /**
-   * Utility method to convert a POJO to Jackson tree model. This behaves
+   * Utility method to convert a POJO to Jackson JSON node. This behaves
    * exactly the same as Jackson's ObjectMapper.valueToTree.
    *
    * @param <T> Actual node type.
    * @param fromValue POJO to convert.
    * @return converted JsonNode.
    */
-  public static <T extends JsonNode> T valueToTree(final Object fromValue)
+  public static <T extends JsonNode> T valueToNode(final Object fromValue)
   {
     return SDK_OBJECT_MAPPER.valueToTree(fromValue);
+  }
+
+  /**
+   * Utility method to convert Jackson JSON node to a POJO. This behaves
+   * exactly the same as Jackson's ObjectMapper.treeToValue.
+   *
+   * @param <T> Actual node type.
+   * @param fromNode node to convert.
+   * @param valueType The value type.
+   * @return converted POJO.
+   * @throws JsonProcessingException if an error occurs while binding the JSON
+   * node to the value type.
+   */
+  public static <T> T nodeToValue(final JsonNode fromNode,
+                                  final Class<T> valueType)
+      throws JsonProcessingException
+  {
+    return SDK_OBJECT_MAPPER.treeToValue(fromNode, valueType);
+  }
+
+  /**
+   * Utility method to convert Jackson JSON array node to a list of POJOs.
+   *
+   * @param <T> Actual node type.
+   * @param fromNode node to convert.
+   * @param valueType The value type.
+   * @return converted list of POJOs.
+   * @throws JsonProcessingException if an error occurs while binding the JSON
+   * node to the value type.
+   */
+  public static <T> List<T> nodeToValues(final ArrayNode fromNode,
+                                         final Class<T> valueType)
+      throws JsonProcessingException
+  {
+    final CollectionType collectionType =
+        SDK_OBJECT_MAPPER.getTypeFactory().constructCollectionType(
+            List.class, valueType);
+
+    try
+    {
+      return SDK_OBJECT_MAPPER.readValue(
+          SDK_OBJECT_MAPPER.treeAsTokens(fromNode), collectionType);
+    } catch (JsonProcessingException e)
+    {
+      throw e;
+    }
+    catch (IOException e)
+    {
+      throw new IllegalArgumentException(e.getMessage(), e);
+    }
   }
 
   /**

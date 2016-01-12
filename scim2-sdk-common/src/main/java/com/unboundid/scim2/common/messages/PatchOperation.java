@@ -214,8 +214,8 @@ public abstract class PatchOperation
       super(path);
       if(path == null)
       {
-        throw BadRequestException.invalidSyntax(
-            "path field must not be null");
+        throw BadRequestException.noTarget(
+            "path field must not be null for remove operations");
       }
     }
 

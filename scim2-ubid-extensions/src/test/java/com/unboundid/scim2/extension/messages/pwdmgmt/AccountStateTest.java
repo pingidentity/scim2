@@ -35,35 +35,62 @@ public class AccountStateTest
   public void testAccountState() throws Exception
   {
     String accountStateString =
-        "{  \n" +
-        "  \"accountDisabled\":false," + "\n" +
-        "  \"accountExpirationTime\":\"2015-07-06T04:03:02Z\"," + "\n" +
-        "  \"secondsUntilAccountExpiration\":10," + "\n" +
-        "  \"passwordChangedTime\":\"2015-07-06T04:04:02Z\"," + "\n" +
-        "  \"passwordExpirationWarnedTime\":\"2015-07-06T04:05:02Z\"," + "\n" +
-        "  \"secondsUntilPasswordExpiration\":11," + "\n" +
-        "  \"secondsUntilPasswordExpirationWarning\":12," + "\n" +
-        "  \"authenticationFailureTimes\":[\"2015-07-06T04:10:02Z\", " +
-            "\"2015-07-06T04:11:02Z\",\"2015-07-06T04:12:02Z\"]," + "\n" +
-        "  \"secondsUntilAuthenticationFailureUnlock\":13," + "\n" +
-        "  \"remainingAuthenticationFailureCount\":14," + "\n" +
-        "  \"lastLoginTime\":\"2015-07-06T04:06:02Z\"," + "\n" +
-        "  \"secondsUntilIdleLockout\":15," + "\n" +
-        "  \"mustChangePassword\":true," + "\n" +
-        "  \"graceLoginTimes\":[\"2015-07-06T04:20:02Z\", " +
-            "\"2015-07-06T04:21:02Z\",\"2015-07-06T04:22:02Z\"]," + "\n" +
-        "  \"remainingGraceLoginCount\":17," + "\n" +
-        "  \"passwordChangedByRequiredTime\":\"2015-07-06T04:07:02Z\"," + "\n" +
-        "  \"passwordHistory\":[\"pw_one\",\"pw_two\",\"pw_three\"]," + "\n" +
-        "  \"retiredPassword\":" + "\n" +
-        "    {" + "\n" +
-        "      \"passwordRetiredTime\":\"2015-07-06T04:20:02Z\"," + "\n" +
-        "      \"passwordExpirationTime\":\"2015-07-06T04:20:02Z\"" + "\n" +
-        "    }," + "\n" +
-        "  \"accountActivationTime\":\"2015-07-06T04:07:02Z\"," + "\n" +
-        "  \"secondsUntilAccountActivation\":18," + "\n" +
-        "  \"lastLoginIpAddress\":\"lastLoginIp\"" + "\n" +
-        "}";
+        "{\n" +
+            "  \"accountDisabled\": false,\n" +
+            "  \"accountExpirationTime\": \"2015-07-06T04:03:02Z\",\n" +
+            "  \"secondsUntilAccountExpiration\": 10,\n" +
+            "  \"passwordChangedTime\": \"2015-07-06T04:04:02Z\",\n" +
+            "  \"passwordExpirationWarnedTime\": \"2015-07-06T04:05:02Z\",\n" +
+            "  \"secondsUntilPasswordExpiration\": 11,\n" +
+            "  \"secondsUntilPasswordExpirationWarning\": 12,\n" +
+            "  \"authenticationFailureTimes\": [\n" +
+            "    \"2015-07-06T04:10:02Z\",\n" +
+            "    \"2015-07-06T04:11:02Z\",\n" +
+            "    \"2015-07-06T04:12:02Z\"\n" +
+            "  ],\n" +
+            "  \"secondsUntilAuthenticationFailureUnlock\": 13,\n" +
+            "  \"remainingAuthenticationFailureCount\": 14,\n" +
+            "  \"lastLoginTime\": \"2015-07-06T04:06:02Z\",\n" +
+            "  \"secondsUntilIdleLockout\": 15,\n" +
+            "  \"mustChangePassword\": true,\n" +
+            "  \"graceLoginTimes\": [\n" +
+            "    \"2015-07-06T04:20:02Z\",\n" +
+            "    \"2015-07-06T04:21:02Z\",\n" +
+            "    \"2015-07-06T04:22:02Z\"\n" +
+            "  ],\n" +
+            "  \"remainingGraceLoginCount\": 17,\n" +
+            "  \"passwordChangedByRequiredTime\": \"2015-07-06T04:07:02Z\",\n" +
+            "  \"passwordHistory\": [\n" +
+            "    \"pw_one\",\n" +
+            "    \"pw_two\",\n" +
+            "    \"pw_three\"\n" +
+            "  ],\n" +
+            "  \"retiredPassword\": {\n" +
+            "    \"passwordRetiredTime\": \"2015-07-06T04:20:02Z\",\n" +
+            "    \"passwordExpirationTime\": \"2015-07-06T04:20:02Z\"\n" +
+            "  },\n" +
+            "  \"accountActivationTime\": \"2015-07-06T04:07:02Z\",\n" +
+            "  \"secondsUntilAccountActivation\": 18,\n" +
+            "  \"lastLoginIpAddress\": \"lastLoginIp\",\n" +
+            "  \"accountUsabilityNotices\": [\n" +
+            "    {\n" +
+            "      \"name\": \"test1\",\n" +
+            "      \"message\": \"test is a test\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"accountUsabilityWarnings\": [\n" +
+            "    {\n" +
+            "      \"name\": \"test1\",\n" +
+            "      \"message\": \"test is a test\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"accountUsabilityErrors\": [\n" +
+            "    {\n" +
+            "      \"name\": \"test1\",\n" +
+            "      \"message\": \"test is a test\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
 
     AccountState accountState =
         JsonUtils.getObjectReader().forType(AccountState.class).
