@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 UnboundID Corp.
+ * Copyright 2015-2016 UnboundID Corp.
  */
 
 package com.unboundid.scim2.common.utils;
