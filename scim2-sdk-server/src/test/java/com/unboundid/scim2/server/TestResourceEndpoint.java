@@ -19,9 +19,9 @@ package com.unboundid.scim2.server;
 
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
-import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.UserResource;
+import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.utils.ResourcePreparer;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
 import com.unboundid.scim2.server.utils.SimpleSearchResults;
@@ -92,6 +92,8 @@ public class TestResourceEndpoint
     {
       UserResource resource = new UserResource().setUserName("test");
       resource.setId("123");
+      resource.setDisplayName("UserDisplayName");
+      resource.setNickName("UserNickName");
 
       ResourcePreparer<UserResource> resourcePreparer =
           new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);

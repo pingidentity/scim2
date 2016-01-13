@@ -25,6 +25,7 @@ import com.unboundid.scim2.server.utils.ServerUtils;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
@@ -32,6 +33,7 @@ import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * A ContainerRequestFilter implementation to resolve the /Me alias to the
@@ -64,6 +66,14 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
               requestContext.getUriInfo().getBaseUriBuilder();
           newRequestUri.path(authSubjectPath +
               requestPath.substring(alias.length()));
+          MultivaluedMap<String, String> queryParams =
+              requestContext.getUriInfo().getQueryParameters();
+          for (String key : queryParams.keySet())
+          {
+            List<String> values = queryParams.get(key);
+            newRequestUri.queryParam(key, values.toArray());
+          }
+
           requestContext.setRequestUri(newRequestUri.build());
         }
         catch (ScimException e)

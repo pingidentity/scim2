@@ -20,29 +20,29 @@ package com.unboundid.scim2.server;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimService;
-import com.unboundid.scim2.common.messages.SearchRequest;
-import com.unboundid.scim2.common.messages.SortOrder;
-import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.types.ResourceTypeResource;
-import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.ScimResource;
-import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.messages.ListResponse;
+import com.unboundid.scim2.common.messages.SearchRequest;
+import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.Email;
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
+import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
+import com.unboundid.scim2.common.types.ResourceTypeResource;
+import com.unboundid.scim2.common.types.SchemaResource;
+import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.ApiConstants;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.server.providers.DotSearchFilter;
 import com.unboundid.scim2.server.providers.JsonProcessingExceptionMapper;
-import com.unboundid.scim2.server.providers.ScimExceptionMapper;
 import com.unboundid.scim2.server.providers.RuntimeExceptionMapper;
+import com.unboundid.scim2.server.providers.ScimExceptionMapper;
 import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
@@ -61,7 +61,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashSet;
@@ -444,6 +443,39 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     {
       // Expected.
     }
+  }
+
+  /**
+   * Tests the authentication subject alias filter with included and excluded
+   * attributes.  These take the form of query parameters and were being
+   * dropped.  This test will ensure that the query parameters remain intact.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testGetMe_includedAndExcludedAttributes() throws ScimException
+  {
+    ScimService scimService = new ScimService(target());
+    UserResource user =
+        scimService.retrieve(ScimService.ME_URI, UserResource.class);
+    assertEquals(user.getId(), "123");
+    assertEquals(user.getMeta().getResourceType(), "User");
+    assertEquals(user.getDisplayName(), "UserDisplayName");
+    assertEquals(user.getNickName(), "UserNickName");
+
+    user = scimService.retrieveRequest(ScimService.ME_URI).
+        excludedAttributes("nickName").invoke(UserResource.class);
+    assertEquals(user.getId(), "123");
+    assertEquals(user.getMeta().getResourceType(), "User");
+    assertEquals(user.getDisplayName(), "UserDisplayName");
+    assertNull(user.getNickName());
+
+    user = scimService.retrieveRequest(ScimService.ME_URI).
+        attributes("nickName").invoke(UserResource.class);
+    assertEquals(user.getId(), "123");
+    assertEquals(user.getMeta().getResourceType(), "User");
+    assertNull(user.getDisplayName());
+    assertEquals(user.getNickName(), "UserNickName");
   }
 
   /**
