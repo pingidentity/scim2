@@ -20,7 +20,7 @@
     <parent>
         <artifactId>scim2-parent</artifactId>
         <groupId>com.unboundid.product.scim2</groupId>
-        <version>1.1.27</version>
+        <version>1.1.28-SNAPSHOT</version>
     </parent>
     <artifactId>scim2-sdk-common</artifactId>
     <packaging>jar</packaging>

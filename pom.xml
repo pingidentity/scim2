@@ -21,7 +21,7 @@
     <artifactId>scim2-parent</artifactId>
     <packaging>pom</packaging>
     <name>UnboundID SCIM 2 SDK Parent</name>
-    <version>1.1.27</version>
+    <version>1.1.28-SNAPSHOT</version>
     <inceptionYear>2015</inceptionYear>
 
     <properties>
