@@ -43,41 +43,7 @@ public abstract class ResourceTrimmer
    */
   public ObjectNode trimObjectNode(final ObjectNode objectNode)
   {
-    ObjectNode objectToReturn = JsonUtils.getJsonNodeFactory().objectNode();
-    Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while(i.hasNext())
-    {
-      Map.Entry<String, JsonNode> field = i.next();
-      final boolean isUrn = SchemaUtils.isUrn(field.getKey());
-      final Path path;
-      if (isUrn)
-      {
-        path = Path.root(field.getKey());
-      }
-      else
-      {
-        path = Path.root().attribute(field.getKey());
-      }
-
-      if(isUrn || shouldReturn(path))
-      {
-        if (field.getValue().isArray())
-        {
-          objectToReturn.set(field.getKey(), trimArrayNode(
-              (ArrayNode) field.getValue(), path));
-        }
-        else if (field.getValue().isObject())
-        {
-          objectToReturn.set(field.getKey(), trimObjectNodeInner(
-              (ObjectNode) field.getValue(), path));
-        }
-        else
-        {
-          objectToReturn.set(field.getKey(), field.getValue());
-        }
-      }
-    }
-    return objectToReturn;
+    return trimObjectNode(objectNode, Path.root());
   }
 
   /**
@@ -87,26 +53,44 @@ public abstract class ResourceTrimmer
    * @param parentPath  The parent path of attributes in the object.
    * @return The trimmed object node ready to return to the client.
    */
-  private ObjectNode trimObjectNodeInner(final ObjectNode objectNode,
-                                         final Path parentPath)
+  private ObjectNode trimObjectNode(final ObjectNode objectNode,
+                                    final Path parentPath)
   {
     ObjectNode objectToReturn = JsonUtils.getJsonNodeFactory().objectNode();
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
     while(i.hasNext())
     {
       Map.Entry<String, JsonNode> field = i.next();
-      Path path = parentPath.attribute(field.getKey());
-      if(shouldReturn(path))
+      final Path path;
+      if (parentPath.isRoot() && parentPath.getSchemaUrn() == null &&
+          SchemaUtils.isUrn(field.getKey()))
+      {
+        path = Path.root(field.getKey());
+      }
+      else
+      {
+        path = parentPath.attribute(field.getKey());
+      }
+
+      if(path.isRoot() || shouldReturn(path))
       {
         if (field.getValue().isArray())
         {
-          objectToReturn.set(field.getKey(), trimArrayNode(
-              (ArrayNode) field.getValue(), path));
+          ArrayNode trimmedNode = trimArrayNode(
+              (ArrayNode) field.getValue(), path);
+          if(trimmedNode.size() > 0)
+          {
+            objectToReturn.set(field.getKey(), trimmedNode);
+          }
         }
         else if (field.getValue().isObject())
         {
-          objectToReturn.set(field.getKey(), trimObjectNodeInner(
-              (ObjectNode) field.getValue(), path));
+          ObjectNode trimmedNode = trimObjectNode(
+              (ObjectNode) field.getValue(), path);
+          if(trimmedNode.size() > 0)
+          {
+            objectToReturn.set(field.getKey(), trimmedNode);
+          }
         }
         else
         {
@@ -132,13 +116,20 @@ public abstract class ResourceTrimmer
     {
       if(value.isArray())
       {
-        arrayToReturn.add(trimArrayNode((ArrayNode) value,
-            parentPath));
+        ArrayNode trimmedNode = trimArrayNode((ArrayNode) value, parentPath);
+        if(trimmedNode.size() > 0)
+        {
+          arrayToReturn.add(trimmedNode);
+        }
       }
       else if(value.isObject())
       {
-        arrayToReturn.add(trimObjectNodeInner((ObjectNode) value,
-                                              parentPath));
+        ObjectNode trimmedNode = trimObjectNode(
+            (ObjectNode) value, parentPath);
+        if(trimmedNode.size() > 0)
+        {
+          arrayToReturn.add(trimmedNode);
+        }
       }
       else
       {

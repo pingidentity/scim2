@@ -220,8 +220,8 @@ public class UserResourceTestCase
       assertNotNull(userResource.getEmails().get(1).getValue());
 
     EnterpriseUserExtension enterpriseUserExtension =
-        userResource.getExtensionValue(
-            Path.root(EnterpriseUserExtension.class),
+        JsonUtils.nodeToValue(userResource.getExtensionValues(
+            Path.root(EnterpriseUserExtension.class)).get(0),
             EnterpriseUserExtension.class);
 
     assertNotNull(enterpriseUserExtension);

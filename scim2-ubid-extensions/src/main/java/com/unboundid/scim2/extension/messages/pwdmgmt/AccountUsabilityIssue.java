@@ -17,6 +17,9 @@
 
 package com.unboundid.scim2.extension.messages.pwdmgmt;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Model class for an account usability issues.
  */
@@ -32,7 +35,10 @@ public class AccountUsabilityIssue
    * @param message The human-readable message that provides specific details
    *                about this account usability issue.
    */
-  public AccountUsabilityIssue(final String name, final String message)
+  @JsonCreator
+  public AccountUsabilityIssue(
+      @JsonProperty(value = "name") final String name,
+      @JsonProperty(value = "message") final String message)
   {
     this.name = name;
     this.message = message;
@@ -59,5 +65,42 @@ public class AccountUsabilityIssue
   public String getMessage()
   {
     return message;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean equals(final Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass())
+    {
+      return false;
+    }
+
+    AccountUsabilityIssue that = (AccountUsabilityIssue) o;
+
+    if (name != null ? !name.equals(that.name) : that.name != null)
+    {
+      return false;
+    }
+    return !(message != null ? !message.equals(that.message) :
+        that.message != null);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int hashCode()
+  {
+    int result = name != null ? name.hashCode() : 0;
+    result = 31 * result + (message != null ? message.hashCode() : 0);
+    return result;
   }
 }

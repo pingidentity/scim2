@@ -232,7 +232,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T replaceValue(final Path path, final Object object)
   {
-    JsonNode newObjectNode = JsonUtils.valueToTree(object);
+    JsonNode newObjectNode = JsonUtils.valueToNode(object);
     return addOperation(PatchOperation.replace(path, newObjectNode));
   }
 
@@ -263,7 +263,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T replaceValues(final Path path, final Collection<Object> objects)
   {
-    JsonNode newObjectNode = JsonUtils.valueToTree(objects);
+    JsonNode newObjectNode = JsonUtils.valueToNode(objects);
     return addOperation(PatchOperation.replace(path, newObjectNode));
   }
 
@@ -295,7 +295,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T replaceValues(final Path path, final Object... objects)
   {
-    JsonNode newObjectNode = JsonUtils.valueToTree(objects);
+    JsonNode newObjectNode = JsonUtils.valueToNode(objects);
     return addOperation(PatchOperation.replace(path, newObjectNode));
   }
 
@@ -324,7 +324,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T addValues(final Path path, final Collection<?> objects)
   {
-    JsonNode newObjectNode = JsonUtils.valueToTree(objects);
+    JsonNode newObjectNode = JsonUtils.valueToNode(objects);
     return addOperation(PatchOperation.add(path, newObjectNode));
   }
 
@@ -355,7 +355,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   public T addValues(final Path path, final Object... objects)
   {
-    JsonNode newObjectNode = JsonUtils.valueToTree(objects);
+    JsonNode newObjectNode = JsonUtils.valueToNode(objects);
     return addOperation(PatchOperation.add(path, newObjectNode));
   }
 

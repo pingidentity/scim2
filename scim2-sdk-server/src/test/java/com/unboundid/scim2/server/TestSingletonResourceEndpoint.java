@@ -202,7 +202,7 @@ public class TestSingletonResourceEndpoint
     {
       throw new ResourceNotFoundException("No resource with ID " + id);
     }
-    ObjectNode node = JsonUtils.valueToTree(found);
+    ObjectNode node = JsonUtils.valueToNode(found);
     for(PatchOperation operation : patchRequest)
     {
       operation.apply(node);

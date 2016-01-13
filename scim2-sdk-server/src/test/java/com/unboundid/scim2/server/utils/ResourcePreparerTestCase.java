@@ -35,6 +35,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -137,6 +138,7 @@ public class ResourcePreparerTestCase
             "    \"always\":\"here\",\n" +
             "    \"neVEr\":\"here\",\n" +
             "    \"default\":\"here\",\n" +
+            "    \"notDeclared\":\"here\",\n" +
             "    \"rEquest\":\"here\"\n" +
             "  },\n" +
             "  \"rEquest\":\n" +
@@ -202,12 +204,14 @@ public class ResourcePreparerTestCase
         {
             new Object[] { null, null },
             new Object[] { null, "always" },
+            new Object[] { null, "always.default"},
             new Object[] { null, "never" },
             new Object[] { null, "urn:test:default" },
             new Object[] { null, "reQuest" },
             new Object[] { "Always", null },
             new Object[] { "neveR", null },
             new Object[] { "urn:test:DEFAULT", null },
+            new Object[] { "default.DEFAULT", null},
             new Object[] { "request", null },
             new Object[] { null, "urn:ext:1:always" },
             new Object[] { null, "urn:ext:1:never" },
@@ -239,18 +243,36 @@ public class ResourcePreparerTestCase
     assertTrue(prepared.getObjectNode().has("always"));
     ObjectNode innerNode = (ObjectNode)prepared.getObjectNode().get("always");
     assertTrue(innerNode.has("always"));
+    if(excludedAttributes != null &&
+        excludedAttributes.equalsIgnoreCase("always.default"))
+    {
+      assertFalse(innerNode.has("default"));
+    }
     assertFalse(innerNode.has("never"));
 
     assertFalse(prepared.getObjectNode().has("never"));
 
     if((attributes == null && excludedAttributes == null) ||
         (excludedAttributes != null &&
-            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
-        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
+            !excludedAttributes.equalsIgnoreCase("urn:test:default") &&
+            !excludedAttributes.equalsIgnoreCase("default.default")) ||
+        (attributes != null &&
+            (attributes.equalsIgnoreCase("urn:test:default") ||
+                attributes.equalsIgnoreCase("default.default"))))
     {
       assertTrue(prepared.getObjectNode().has("default"));
-      innerNode = (ObjectNode)prepared.getObjectNode().get("default");
-      assertTrue(innerNode.has("default"), prepared.toString());
+      if(attributes != null && attributes.equalsIgnoreCase("default.default"))
+      {
+        // Only the requested default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
+      if(attributes != null && attributes.equalsIgnoreCase("urn:test:default"))
+      {
+        // All default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
     }
     else
     {
@@ -316,13 +338,33 @@ public class ResourcePreparerTestCase
     GenericScimResource prepared =
         preparer.trimCreatedResource(testResource, null);
     assertTrue(prepared.getObjectNode().has("always"));
+    if(excludedAttributes != null &&
+        excludedAttributes.equalsIgnoreCase("always.default"))
+    {
+      assertFalse(prepared.getObjectNode().get("always").has("default"));
+    }
     assertFalse(prepared.getObjectNode().has("never"));
     if((attributes == null && excludedAttributes == null) ||
         (excludedAttributes != null &&
-            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
-        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
+            !excludedAttributes.equalsIgnoreCase("urn:test:default") &&
+            !excludedAttributes.equalsIgnoreCase("default.default")) ||
+        (attributes != null &&
+            (attributes.equalsIgnoreCase("urn:test:default") ||
+                attributes.equalsIgnoreCase("default.default"))))
     {
       assertTrue(prepared.getObjectNode().has("default"));
+      if(attributes != null && attributes.equalsIgnoreCase("default.default"))
+      {
+        // Only the requested default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
+      if(attributes != null && attributes.equalsIgnoreCase("urn:test:default"))
+      {
+        // All default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
     }
     else
     {
@@ -339,13 +381,33 @@ public class ResourcePreparerTestCase
 
     prepared = preparer.trimCreatedResource(testResource, testResource);
     assertTrue(prepared.getObjectNode().has("always"));
+    if(excludedAttributes != null &&
+        excludedAttributes.equalsIgnoreCase("always.default"))
+    {
+      assertFalse(prepared.getObjectNode().get("always").has("default"));
+    }
     assertFalse(prepared.getObjectNode().has("never"));
     if((attributes == null && excludedAttributes == null) ||
         (excludedAttributes != null &&
-            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
-        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
+            !excludedAttributes.equalsIgnoreCase("urn:test:default") &&
+            !excludedAttributes.equalsIgnoreCase("default.default")) ||
+        (attributes != null &&
+            (attributes.equalsIgnoreCase("urn:test:default") ||
+                attributes.equalsIgnoreCase("default.default"))))
     {
       assertTrue(prepared.getObjectNode().has("default"));
+      if(attributes != null && attributes.equalsIgnoreCase("default.default"))
+      {
+        // Only the requested default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
+      if(attributes != null && attributes.equalsIgnoreCase("urn:test:default"))
+      {
+        // All default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
     }
     else
     {
@@ -372,13 +434,33 @@ public class ResourcePreparerTestCase
     GenericScimResource prepared =
         preparer.trimReplacedResource(testResource, null);
     assertTrue(prepared.getObjectNode().has("always"));
+    if(excludedAttributes != null &&
+        excludedAttributes.equalsIgnoreCase("always.default"))
+    {
+      assertFalse(prepared.getObjectNode().get("always").has("default"));
+    }
     assertFalse(prepared.getObjectNode().has("never"));
     if((attributes == null && excludedAttributes == null) ||
         (excludedAttributes != null &&
-            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
-        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
+            !excludedAttributes.equalsIgnoreCase("urn:test:default") &&
+            !excludedAttributes.equalsIgnoreCase("default.default")) ||
+        (attributes != null &&
+            (attributes.equalsIgnoreCase("urn:test:default") ||
+                attributes.equalsIgnoreCase("default.default"))))
     {
       assertTrue(prepared.getObjectNode().has("default"));
+      if(attributes != null && attributes.equalsIgnoreCase("default.default"))
+      {
+        // Only the requested default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
+      if(attributes != null && attributes.equalsIgnoreCase("urn:test:default"))
+      {
+        // All default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
     }
     else
     {
@@ -395,13 +477,33 @@ public class ResourcePreparerTestCase
 
     prepared = preparer.trimReplacedResource(testResource, testResource);
     assertTrue(prepared.getObjectNode().has("always"));
+    if(excludedAttributes != null &&
+        excludedAttributes.equalsIgnoreCase("always.default"))
+    {
+      assertFalse(prepared.getObjectNode().get("always").has("default"));
+    }
     assertFalse(prepared.getObjectNode().has("never"));
     if((attributes == null && excludedAttributes == null) ||
         (excludedAttributes != null &&
-            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
-        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
+            !excludedAttributes.equalsIgnoreCase("urn:test:default") &&
+            !excludedAttributes.equalsIgnoreCase("default.default")) ||
+        (attributes != null &&
+            (attributes.equalsIgnoreCase("urn:test:default") ||
+                attributes.equalsIgnoreCase("default.default"))))
     {
       assertTrue(prepared.getObjectNode().has("default"));
+      if(attributes != null && attributes.equalsIgnoreCase("default.default"))
+      {
+        // Only the requested default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
+      if(attributes != null && attributes.equalsIgnoreCase("urn:test:default"))
+      {
+        // All default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
     }
     else
     {
@@ -430,13 +532,33 @@ public class ResourcePreparerTestCase
     GenericScimResource prepared =
         preparer.trimModifiedResource(testResource, null);
     assertTrue(prepared.getObjectNode().has("always"));
+    if(excludedAttributes != null &&
+        excludedAttributes.equalsIgnoreCase("always.default"))
+    {
+      assertFalse(prepared.getObjectNode().get("always").has("default"));
+    }
     assertFalse(prepared.getObjectNode().has("never"));
     if((attributes == null && excludedAttributes == null) ||
         (excludedAttributes != null &&
-            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
-        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
+            !excludedAttributes.equalsIgnoreCase("urn:test:default") &&
+            !excludedAttributes.equalsIgnoreCase("default.default")) ||
+        (attributes != null &&
+            (attributes.equalsIgnoreCase("urn:test:default") ||
+                attributes.equalsIgnoreCase("default.default"))))
     {
       assertTrue(prepared.getObjectNode().has("default"));
+      if(attributes != null && attributes.equalsIgnoreCase("default.default"))
+      {
+        // Only the requested default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
+      if(attributes != null && attributes.equalsIgnoreCase("urn:test:default"))
+      {
+        // All default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
     }
     else
     {
@@ -453,18 +575,112 @@ public class ResourcePreparerTestCase
 
     prepared = preparer.trimModifiedResource(testResource, testPatch);
     assertTrue(prepared.getObjectNode().has("always"));
+    if(excludedAttributes != null &&
+        excludedAttributes.equalsIgnoreCase("always.default"))
+    {
+      assertFalse(prepared.getObjectNode().get("always").has("default"));
+    }
     assertFalse(prepared.getObjectNode().has("never"));
     if((attributes == null && excludedAttributes == null) ||
         (excludedAttributes != null &&
-            !excludedAttributes.equalsIgnoreCase("urn:test:default")) ||
-        (attributes != null && attributes.equalsIgnoreCase("urn:test:default")))
+            !excludedAttributes.equalsIgnoreCase("urn:test:default") &&
+            !excludedAttributes.equalsIgnoreCase("default.default")) ||
+        (attributes != null &&
+            (attributes.equalsIgnoreCase("urn:test:default") ||
+                attributes.equalsIgnoreCase("default.default"))))
     {
       assertTrue(prepared.getObjectNode().has("default"));
+      if(attributes != null && attributes.equalsIgnoreCase("default.default"))
+      {
+        // Only the requested default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
+      if(attributes != null && attributes.equalsIgnoreCase("urn:test:default"))
+      {
+        // All default returned sub-attribute should be included
+        assertTrue(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+      }
     }
     else
     {
       assertFalse(prepared.getObjectNode().has("default"));
     }
     assertTrue(prepared.getObjectNode().has("request"));
+  }
+
+  /**
+   * Test that empty containers are never included.
+   *
+   * @throws Exception If an error occurs.
+   */
+  @Test
+  public void testEmptyContainer()
+      throws Exception
+  {
+    ResourcePreparer<ScimResource> preparer =
+        new ResourcePreparer<ScimResource>(resourceTypeDefinition,
+            "default", null, testBaseUri);
+
+    ObjectNode node =
+        (ObjectNode) JsonUtils.getObjectReader().readTree(
+            "{\n" +
+                "  \"default\": {\n" +
+                "    \"never\": \"here\"\n" +
+                "  }\n" +
+                "}");
+
+    GenericScimResource prepared = preparer.trimRetrievedResource(
+        new GenericScimResource(node));
+    assertFalse(prepared.getObjectNode().has("default"));
+
+    node =
+        (ObjectNode) JsonUtils.getObjectReader().readTree(
+            "{\n" +
+                "  \"default\": [\n" +
+                "    {\n" +
+                "      \"never\": \"here\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"always\": \"here\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}");
+
+    prepared = preparer.trimRetrievedResource(
+        new GenericScimResource(node));
+    assertTrue(prepared.getObjectNode().has("default"));
+    assertEquals(prepared.getObjectNode().get("default").size(), 1);
+
+
+    node =
+        (ObjectNode) JsonUtils.getObjectReader().readTree(
+            "{\n" +
+                "  \"default\": [\n" +
+                "    {\n" +
+                "      \"never\": \"here\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"never\": \"here\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}");
+
+    prepared = preparer.trimRetrievedResource(
+        new GenericScimResource(node));
+    assertFalse(prepared.getObjectNode().has("default"));
+
+    node =
+        (ObjectNode) JsonUtils.getObjectReader().readTree(
+            "{\n" +
+                "  \"urn:ext:1\": {\n" +
+                "    \"never\": \"here\"\n" +
+                "  }\n" +
+                "}");
+
+    prepared = preparer.trimRetrievedResource(
+        new GenericScimResource(node));
+    assertFalse(prepared.getObjectNode().has("urn:ext:1"));
   }
 }

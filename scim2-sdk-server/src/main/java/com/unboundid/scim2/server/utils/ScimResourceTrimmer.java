@@ -103,11 +103,24 @@ public class ScimResourceTrimmer extends ResourceTrimmer
 
   private boolean pathContains(final Set<Path> paths, final Path path)
   {
+    // Exact path match
     if (paths.contains(path))
     {
       return true;
     }
 
+    // See if a sub-attribute of the given path is included in the list
+    // ie. include name if name.givenName is in the list.
+    for (Path p : paths)
+    {
+      if(p.size() > path.size() && path.equals(p.subPath(path.size())))
+      {
+        return true;
+      }
+    }
+
+    // See if the parent attribute of the given path is included in the list
+    // ie. include name.{anything} if name is in the list.
     for (Path p = path; p.size() > 0; p = p.subPath(p.size() - 1))
     {
       if (paths.contains(p))

@@ -105,7 +105,7 @@ public class DiffTestCase
     ObjectNode source = JsonUtils.getJsonNodeFactory().objectNode();
     ObjectNode target = JsonUtils.getJsonNodeFactory().objectNode();
 
-    ObjectNode name = JsonUtils.valueToTree(new Name().
+    ObjectNode name = JsonUtils.valueToNode(new Name().
         setFormatted("Ms. Barbara J Jensen III").
         setFamilyName("Jensen").
         setMiddleName("J").
@@ -339,11 +339,11 @@ public class DiffTestCase
     ObjectNode target = JsonUtils.getJsonNodeFactory().objectNode();
 
     // - unchanged
-    ObjectNode email1 = JsonUtils.valueToTree(new Email().
+    ObjectNode email1 = JsonUtils.valueToNode(new Email().
         setValue("bjensen@example.com").
         setType("work").
         setPrimary(true));
-    ObjectNode email2 = JsonUtils.valueToTree(new Email().
+    ObjectNode email2 = JsonUtils.valueToNode(new Email().
         setValue("babs@jensen.org").
         setType("home").
         setPrimary(false));
@@ -352,11 +352,11 @@ public class DiffTestCase
     target.putArray("emails").add(email1).add(email2);
 
     // - added
-    ObjectNode phone1 = JsonUtils.valueToTree(new PhoneNumber().
+    ObjectNode phone1 = JsonUtils.valueToNode(new PhoneNumber().
         setValue("1234567890").
         setType("work").
         setPrimary(true));
-    ObjectNode phone2 = JsonUtils.valueToTree(new PhoneNumber().
+    ObjectNode phone2 = JsonUtils.valueToNode(new PhoneNumber().
         setValue("0987654321").
         setType("home").
         setPrimary(false));
@@ -364,11 +364,11 @@ public class DiffTestCase
     target.putArray("phones").add(phone1).add(phone2);
 
     // - removed
-    ObjectNode im1 = JsonUtils.valueToTree(new InstantMessagingAddress().
+    ObjectNode im1 = JsonUtils.valueToNode(new InstantMessagingAddress().
         setValue("babs").
         setType("aim").
         setPrimary(true));
-    ObjectNode im2 = JsonUtils.valueToTree(new InstantMessagingAddress().
+    ObjectNode im2 = JsonUtils.valueToNode(new InstantMessagingAddress().
         setValue("bjensen").
         setType("gtalk").
         setPrimary(false));
@@ -378,59 +378,59 @@ public class DiffTestCase
 
     // - updated
     // -- unchanged
-    ObjectNode photo0 = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo0 = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo0")).
         setType("photo0").
         setPrimary(false));
-    ObjectNode photo1 = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo1 = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo1")).
         setType("photo1").
         setPrimary(false));
     // -- non-asserted
-    ObjectNode photo2 = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo2 = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo2")).
         setType("photo2").
         setPrimary(false));
-    ObjectNode photo2a = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo2a = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo2")).
         setType("photo2"));
     // -- add a new value
-    ObjectNode photo3 = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo3 = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo3")).
         setType("photo3").
         setPrimary(true));
     // -- update an existing value
-    ObjectNode photo4 = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo4 = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo4")).
         setType("photo4").
         setPrimary(true));
-    ObjectNode photo4a = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo4a = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo4")).
         setType("photo4").
         setPrimary(false));
     // -- add a new value
-    ObjectNode photo5 = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo5 = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo5")).
         setType("photo5").
         setPrimary(false));
-    ObjectNode photo5a = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo5a = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo5")).
         setType("photo5").
         setPrimary(false).
         setDisplay("Photo 5"));
     // -- remove an existing value
-    ObjectNode photo6 = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo6 = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo6")).
         setType("photo6").
         setPrimary(false).
         setDisplay("Photo 6"));
-    ObjectNode photo6a = JsonUtils.valueToTree(new Photo().
+    ObjectNode photo6a = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://photo6")).
         setType("photo6").
         setPrimary(false));
     photo6a.putNull("display");
     // -- remove a value
-    ObjectNode thumbnail = JsonUtils.valueToTree(new Photo().
+    ObjectNode thumbnail = JsonUtils.valueToNode(new Photo().
         setValue(new URL("http://thumbnail1")).
         setType("thumbnail").
         setPrimary(true));
@@ -441,13 +441,13 @@ public class DiffTestCase
         add(photo4a).add(photo5a).add(photo6a).add(photo3);
 
     // -- updated with all new values
-    ObjectNode entitlement1 = JsonUtils.valueToTree(new Entitlement().
+    ObjectNode entitlement1 = JsonUtils.valueToNode(new Entitlement().
         setValue("admin").
         setPrimary(false));
-    ObjectNode entitlement2 = JsonUtils.valueToTree(new Entitlement().
+    ObjectNode entitlement2 = JsonUtils.valueToNode(new Entitlement().
         setValue("user").
         setPrimary(false));
-    ObjectNode entitlement3 = JsonUtils.valueToTree(new Entitlement().
+    ObjectNode entitlement3 = JsonUtils.valueToNode(new Entitlement().
         setValue("inactive").
         setPrimary(true));
     source.putArray("entitlements").add(entitlement1).add(entitlement2);
