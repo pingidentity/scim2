@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2.client;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.unboundid.scim2.client.requests.CreateRequestBuilder;
 import com.unboundid.scim2.client.requests.DeleteRequestBuilder;
 import com.unboundid.scim2.client.requests.ModifyRequestBuilder;
@@ -70,7 +70,8 @@ public class ScimService
   public ScimService(final WebTarget baseTarget)
   {
     this.baseTarget = baseTarget.register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJaxbJsonProvider(JsonUtils.createObjectMapper(),
+            JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
   }
 
   /**
