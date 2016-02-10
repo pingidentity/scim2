@@ -71,7 +71,6 @@ public class AccountStateTest
             "  },\n" +
             "  \"accountActivationTime\": \"2015-07-06T04:07:02Z\",\n" +
             "  \"secondsUntilAccountActivation\": 18,\n" +
-            "  \"lastLoginIpAddress\": \"lastLoginIp\",\n" +
             "  \"accountUsabilityNotices\": [\n" +
             "    {\n" +
             "      \"name\": \"test1\",\n" +

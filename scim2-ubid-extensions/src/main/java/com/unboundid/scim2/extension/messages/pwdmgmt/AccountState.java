@@ -664,29 +664,6 @@ public class AccountState extends BaseScimResource
   }
 
   /**
-   * Gets the last login IP address.
-   *
-   * @return the last login IP address.
-   */
-  public String getLastLoginIpAddress()
-  {
-    return (lastLoginIpAddress == null) ?
-        null : lastLoginIpAddress.getObj();
-  }
-
-  /**
-   * Sets the last login IP address.
-   *
-   * @param lastLoginIpAddress the last login IP address.
-   */
-  private void setLastLoginIpAddress(
-      final String lastLoginIpAddress)
-  {
-    this.lastLoginIpAddress =
-        new JsonReference<String>(lastLoginIpAddress);
-  }
-
-  /**
    * Gets the account usability notices.
    *
    * @return the account usability notices.
