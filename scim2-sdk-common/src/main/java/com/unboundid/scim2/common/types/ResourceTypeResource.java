@@ -228,7 +228,7 @@ public class ResourceTypeResource extends BaseScimResource
     @JsonCreator
     public SchemaExtension(@JsonProperty(value = "schema", required = true)
                            final URI schema,
-                           @JsonProperty(value = "requried", required = true)
+                           @JsonProperty(value = "required", required = true)
                            final boolean required)
     {
       this.schema = schema;

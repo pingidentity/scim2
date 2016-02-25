@@ -18,6 +18,7 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
@@ -29,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 /**
  * Test for list responses.
@@ -51,7 +54,7 @@ public class ListResponseTestCase
             "  \"schemas\":[  \n" +
             "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n" +
             "  ],\n" +
-                // Test case-insensitivity
+                // Test required property case-insensitivity
             "  \"totalresults\":2,\n" +
             "  \"startIndex\":1,\n" +
                 // Test case-insensitivity
@@ -65,6 +68,36 @@ public class ListResponseTestCase
             "    }\n" +
             "  ]\n" +
             "}");
+
+    try
+    {
+      listResponse =
+        JsonUtils.getObjectReader().forType(
+          new TypeReference<ListResponse<ObjectNode>>() {}).readValue(
+          "{  \n" +
+            "  \"schemas\":[  \n" +
+            "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n" +
+            "  ],\n" +
+            // Test missing required property: totalResults
+            "  \"startIndex\":1,\n" +
+            // Test case-insensitivity
+            "  \"ItemsPerPage\":3,\n" +
+            "  \"Resources\":[  \n" +
+            "    {  \n" +
+            "      \"userName\":\"bjensen\"\n" +
+            "    },\n" +
+            "    {  \n" +
+            "      \"userName\":\"jsmith\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}");
+      fail("Expected failure for missing required property 'totalResults'");
+    }
+    catch (final JsonMappingException je)
+    {
+      assertTrue(je.getMessage().contains("Missing required creator property"),
+        je.getMessage());
+    }
 
     assertEquals(listResponse.getTotalResults(), 2);
     assertEquals(listResponse.getStartIndex(), Integer.valueOf(1));

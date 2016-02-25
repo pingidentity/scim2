@@ -21,8 +21,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.client.SearchResultHandler;
 import com.unboundid.scim2.common.messages.ListResponse;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A builder for ListResponses that is also a SearchResultHandler
@@ -79,12 +81,18 @@ public class ListResponseBuilder<T>
   }
 
   /**
-   * {@inheritDoc}
+   * Builds a List Response.
+   *
+   * @return generated ListResponse.
    */
   public ListResponse<T> build()
   {
-    return new ListResponse<T>(
-        totalResults == null ? resources.size() : totalResults,
-        resources, startIndex, itemsPerPage);
+    final Map<String,Object> properties = new LinkedHashMap<String,Object>();
+    properties.put("totalResults", totalResults == null ?
+      resources.size() : totalResults);
+    properties.put("resources", resources);
+    properties.put("startIndex", startIndex);
+    properties.put("itemsPerPage", itemsPerPage);
+    return new ListResponse<T>(properties);
   }
 }

@@ -19,15 +19,22 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
+import com.unboundid.scim2.common.utils.JsonUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Class representing a SCIM 2.0 list response.
@@ -63,6 +70,34 @@ public final class ListResponse<T> extends BaseScimResource
   /**
    * Create a new List Response.
    *
+   * @param props  Properties to construct the List Response.
+   */
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  @SuppressWarnings("unchecked")
+  public ListResponse(final Map<String,Object> props)
+  {
+    final Map<String,Object> properties =
+      new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+    properties.putAll(props);
+
+    checkRequiredProperties(properties, new String[] {"totalResults",
+      "resources"});
+
+    this.totalResults = (Integer)properties.get("totalResults");
+    this.resources =  (List<T>)properties.get("resources");
+    this.startIndex = properties.containsKey("startIndex") ?
+      (Integer)properties.get("startIndex") : null;
+    this.itemsPerPage =  properties.containsKey("itemsPerPage") ?
+      (Integer)properties.get("itemsPerPage") : null;
+    if (properties.containsKey("schemas"))
+    {
+      this.setSchemaUrns((Collection<String>)properties.get("schemas"));
+    }
+  }
+
+  /**
+   * Create a new List Response.
+   *
    * @param totalResults The total number of results returned.
    * @param resources A multi-valued list of complex objects containing the
    *                  requested resources
@@ -71,20 +106,27 @@ public final class ListResponse<T> extends BaseScimResource
    * @param itemsPerPage The number of resources returned in a list response
    *                     page.
    */
-  @JsonCreator
-  public ListResponse(@JsonProperty(value="totalResults", required = true)
-                      final int totalResults,
-                      @JsonProperty(value = "Resources", required = true)
+  public ListResponse(final int totalResults,
                       final List<T> resources,
-                      @JsonProperty("startIndex")
                       final Integer startIndex,
-                      @JsonProperty("itemsPerPage")
                       final Integer itemsPerPage)
   {
     this.totalResults = totalResults;
-    this.resources = resources;
-    this.startIndex = startIndex;
+    this.startIndex   = startIndex;
     this.itemsPerPage = itemsPerPage;
+
+    final ObjectReader reader = JsonUtils.getObjectReader();
+    final ObjectWriter writer = JsonUtils.getObjectWriter();
+    try
+    {
+      final String rawResources = writer.writeValueAsString(resources);
+      this.resources = reader.forType(
+        new TypeReference<List<T>>(){}).readValue(rawResources);
+    }
+    catch (final IOException ie)
+    {
+      throw new IllegalArgumentException("Resources exception", ie);
+    }
   }
 
   /**
@@ -212,4 +254,18 @@ public final class ListResponse<T> extends BaseScimResource
     result = 31 * result + (itemsPerPage != null ? itemsPerPage.hashCode() : 0);
     return result;
   }
+
+  private void checkRequiredProperties(final Map<String,Object> properties,
+                                       final String[] requiredProperties)
+  {
+    for (final String property : requiredProperties)
+    {
+      if (!properties.containsKey(property))
+      {
+        throw new IllegalStateException(String.format(
+          "Missing required creator property '%s'", property));
+      }
+    }
+  }
+
 }
