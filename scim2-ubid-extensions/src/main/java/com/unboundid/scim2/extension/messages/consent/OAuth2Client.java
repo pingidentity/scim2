@@ -20,6 +20,8 @@ package com.unboundid.scim2.extension.messages.consent;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
+import java.util.Calendar;
+
 public final class OAuth2Client
 {
 
@@ -128,6 +130,10 @@ public final class OAuth2Client
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String emailAddress;
 
+  @Attribute(description = "The last time this client obtained a token using " +
+      "this session.", mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private Calendar lastAuthorization;
+
   // private no-arg constructor for Jackson
   private OAuth2Client()
   {
@@ -194,8 +200,25 @@ public final class OAuth2Client
   }
 
   /**
-   * {@inheritDoc}
+   * Gets the date of the last authorization.
+   *
+   * @return the date of the last authorization.
    */
+  public Calendar getLastAuthorization()
+  {
+    return lastAuthorization;
+  }
+
+  /**
+   * Sets the date of the last authorization.
+   *
+   * @param lastAuthorization the date of the last authorization.
+   */
+  public void setLastAuthorization(final Calendar lastAuthorization)
+  {
+    this.lastAuthorization = lastAuthorization;
+  }
+
   @Override
   public boolean equals(final Object o)
   {
@@ -203,7 +226,6 @@ public final class OAuth2Client
     {
       return true;
     }
-
     if (o == null || getClass() != o.getClass())
     {
       return false;
@@ -215,31 +237,29 @@ public final class OAuth2Client
     {
       return false;
     }
-
     if (description != null ? !description.equals(that.description) :
         that.description != null)
     {
       return false;
     }
-
     if (url != null ? !url.equals(that.url) : that.url != null)
     {
       return false;
     }
-
     if (iconUrl != null ? !iconUrl.equals(that.iconUrl) : that.iconUrl != null)
     {
       return false;
     }
-
-    return !(emailAddress != null ? !emailAddress.equals(that.emailAddress) :
-        that.emailAddress != null);
-
+    if (emailAddress != null ? !emailAddress.equals(that.emailAddress) :
+        that.emailAddress != null)
+    {
+      return false;
+    }
+    return lastAuthorization != null ?
+        lastAuthorization.equals(that.lastAuthorization) :
+        that.lastAuthorization == null;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public int hashCode()
   {
@@ -248,6 +268,8 @@ public final class OAuth2Client
     result = 31 * result + (url != null ? url.hashCode() : 0);
     result = 31 * result + (iconUrl != null ? iconUrl.hashCode() : 0);
     result = 31 * result + (emailAddress != null ? emailAddress.hashCode() : 0);
+    result = 31 * result +
+        (lastAuthorization != null ? lastAuthorization.hashCode() : 0);
     return result;
   }
 }
