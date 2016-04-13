@@ -51,6 +51,10 @@ public class PathParsingTestCase
             new Object[] { "attr[subAttr eq \"78750\"].subAttr",
                 Path.root().attribute("attr", eq("subAttr", "78750")).
                     attribute("subAttr") },
+            new Object[] { "attr.$ref",
+                Path.root().attribute("attr").attribute("$ref") },
+            new Object[] { "attr[$ref eq \"/Users/xxx\"",
+                Path.root().attribute("attr", eq("$ref", "/Users/xxx")) },
             new Object[] { "urn:extension:attr[subAttr eq \"78750\"].subAttr",
                 Path.root("urn:extension").attribute("attr",
                     eq("subAttr", "78750")).attribute("subAttr") },
@@ -108,7 +112,7 @@ public class PathParsingTestCase
             new Object[] { ".attr" },
             new Object[] { "urn:extension:." },
             new Object[] { "urn:extension:.attr" },
-            new Object[] { "attr[subAttr eq 123]." },
+            new Object[] { "attr[subAttr eq 123]." }
         };
   }
 
