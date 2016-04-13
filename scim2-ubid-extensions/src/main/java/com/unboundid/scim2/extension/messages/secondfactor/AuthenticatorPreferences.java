@@ -159,7 +159,7 @@ public final class AuthenticatorPreferences extends BaseScimResource
    *         the parameter is not found.
    */
   @JsonIgnore
-  public JsonNode getAuthentiatorParameter(final String parameterName)
+  public JsonNode getAuthenticatorParameter(final String parameterName)
   {
     return authenticatorParameters.get(parameterName);
   }
@@ -170,7 +170,7 @@ public final class AuthenticatorPreferences extends BaseScimResource
    * @return The ObjectNode containing all authenticator parameters.
    */
   @JsonIgnore
-  public ObjectNode getAuthentiatorParameters()
+  public ObjectNode getAuthenticatorParameters()
   {
     return authenticatorParameters.deepCopy();
   }
