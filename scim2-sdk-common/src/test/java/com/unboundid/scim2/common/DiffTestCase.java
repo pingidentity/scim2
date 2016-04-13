@@ -75,13 +75,13 @@ public class DiffTestCase
 
     assertEquals(d.size(), 3);
 
-    assertTrue(d.contains(PatchOperation.add(null,
+    assertTrue(d.contains(PatchOperation.add(
         JsonUtils.getJsonNodeFactory().objectNode().put("nickName","bjj3"))));
     assertTrue(d.contains(PatchOperation.remove(
         Path.root().attribute("title"))));
     ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.put("userType", "manager");
-    assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
+    assertTrue(d.contains(PatchOperation.replace(replaceValue)));
 
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
     for(PatchOperation op : d2)
@@ -135,7 +135,7 @@ public class DiffTestCase
 
     d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 1);
-    assertTrue(d.contains(PatchOperation.add(null,
+    assertTrue(d.contains(PatchOperation.add(
         JsonUtils.getJsonNodeFactory().objectNode().set("name",name))));
 
     d2 = JsonUtils.diff(source, target, true);
@@ -197,7 +197,7 @@ public class DiffTestCase
     assertEquals(d.size(), 1);
     ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.putObject("name").put("familyName", "Johnson");
-    assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
+    assertTrue(d.contains(PatchOperation.replace(replaceValue)));
 
     d2 = JsonUtils.diff(source, target, true);
     for(PatchOperation op : d2)
@@ -288,11 +288,11 @@ public class DiffTestCase
             Filter.eq("value", thumbnail)))));
     ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.putArray("entitlements").add(entitlement3);
-    assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
+    assertTrue(d.contains(PatchOperation.replace(replaceValue)));
     ObjectNode addValue = JsonUtils.getJsonNodeFactory().objectNode();
     addValue.putArray("phones").add(phone1).add(phone2);
     addValue.putArray("photos").add(photo3);
-    assertTrue(d.contains(PatchOperation.add(null, addValue)));
+    assertTrue(d.contains(PatchOperation.add(addValue)));
 
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
     for(PatchOperation op : d2)
@@ -483,11 +483,11 @@ public class DiffTestCase
                 "primary eq true")))));
     ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.putArray("entitlements").add(entitlement3);
-    assertTrue(d.contains(PatchOperation.replace(null, replaceValue)));
+    assertTrue(d.contains(PatchOperation.replace(replaceValue)));
     ObjectNode addValue = JsonUtils.getJsonNodeFactory().objectNode();
     addValue.putArray("phones").add(phone1).add(phone2);
     addValue.putArray("photos").add(photo3);
-    assertTrue(d.contains(PatchOperation.add(null, addValue)));
+    assertTrue(d.contains(PatchOperation.add(addValue)));
 
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
     for(PatchOperation op : d2)

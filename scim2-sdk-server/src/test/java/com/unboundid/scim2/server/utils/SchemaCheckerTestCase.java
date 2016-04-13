@@ -657,12 +657,12 @@ public class SchemaCheckerTestCase
 
     // Partial patch
     results = checker.checkModify(Collections.singleton(
-        PatchOperation.add(null, node)), null);
+        PatchOperation.add(node)), null);
     assertEquals(results.getSyntaxIssues().size(), expectedErrorOnPatch,
         results.getSyntaxIssues().toString());
 
     results = checker.checkModify(Collections.singleton(
-        PatchOperation.replace(null, node)), null);
+        PatchOperation.replace(node)), null);
     assertEquals(results.getSyntaxIssues().size(), expectedErrorOnPatch,
         results.getSyntaxIssues().toString());
   }
@@ -1662,13 +1662,13 @@ public class SchemaCheckerTestCase
     {
       // Partial patch
       results = checker.checkModify(Collections.singleton(
-          PatchOperation.add(null, o)), null);
+          PatchOperation.add(o)), null);
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
       results = checker.checkModify(Collections.singleton(
-          PatchOperation.replace(null, o)), null);
+          PatchOperation.replace(o)), null);
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
@@ -1710,13 +1710,13 @@ public class SchemaCheckerTestCase
       {
         // Partial patch
         results = checker.checkModify(Collections.singleton(
-            PatchOperation.add(null, o)), null);
+            PatchOperation.add(o)), null);
         assertEquals(results.getSyntaxIssues().size(), 1,
             results.getSyntaxIssues().toString());
         assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
         results = checker.checkModify(Collections.singleton(
-            PatchOperation.replace(null, o)), null);
+            PatchOperation.replace(o)), null);
         assertEquals(results.getSyntaxIssues().size(), 1,
             results.getSyntaxIssues().toString());
         assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
@@ -1753,13 +1753,13 @@ public class SchemaCheckerTestCase
       {
         // Partial patch
         results = checker.checkModify(Collections.singleton(
-            PatchOperation.add(null, o)), null);
+            PatchOperation.add(o)), null);
         assertEquals(results.getSyntaxIssues().size(), 1,
             results.getSyntaxIssues().toString());
         assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
         results = checker.checkModify(Collections.singleton(
-            PatchOperation.replace(null, o)), null);
+            PatchOperation.replace(o)), null);
         assertEquals(results.getSyntaxIssues().size(), 1,
             results.getSyntaxIssues().toString());
         assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
@@ -1793,13 +1793,13 @@ public class SchemaCheckerTestCase
     {
       // Partial patch
       results = checker.checkModify(Collections.singleton(
-          PatchOperation.add(null, o)), null);
+          PatchOperation.add(o)), null);
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
       results = checker.checkModify(Collections.singleton(
-          PatchOperation.replace(null, o)), null);
+          PatchOperation.replace(o)), null);
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
@@ -1836,13 +1836,13 @@ public class SchemaCheckerTestCase
       {
         // Partial patch
         results = checker.checkModify(Collections.singleton(
-            PatchOperation.add(null, o)), null);
+            PatchOperation.add(o)), null);
         assertEquals(results.getSyntaxIssues().size(), 1,
             results.getSyntaxIssues().toString());
         assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
         results = checker.checkModify(Collections.singleton(
-            PatchOperation.replace(null, o)), null);
+            PatchOperation.replace(o)), null);
         assertEquals(results.getSyntaxIssues().size(), 1,
             results.getSyntaxIssues().toString());
         assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));

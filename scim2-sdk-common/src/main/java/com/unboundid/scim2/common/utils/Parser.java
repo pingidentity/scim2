@@ -425,7 +425,7 @@ public class Parser
         }
         return b.toString();
       }
-      if (c == '-' || c == '_' || c == '.' || c == ':' ||
+      if (c == '-' || c == '_' || c == '.' || c == ':' || c == '$' ||
           Character.isLetterOrDigit(c))
       {
         b.append((char)c);

@@ -61,7 +61,7 @@ public abstract class PatchOperation
      *
      * @param path The path targeted by this patch operation.
      * @param value The value(s) to add.
-     * @throws ScimException If an value is not valid.
+     * @throws ScimException If a value is not valid.
      */
     @JsonCreator
     private AddOperation(
@@ -204,7 +204,7 @@ public abstract class PatchOperation
      * Create a new remove patch operation.
      *
      * @param path The path targeted by this patch operation.
-     * @throws ScimException If an path is null.
+     * @throws ScimException If a path is null.
      */
     @JsonCreator
     private RemoveOperation(
@@ -581,6 +581,35 @@ public abstract class PatchOperation
   /**
    * Create a new add patch operation.
    *
+   * @param value The value(s) to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation add(final JsonNode value)
+      throws ScimException
+  {
+    return add((Path) null, value);
+  }
+
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation add(final String path, final JsonNode value)
+      throws ScimException
+  {
+    return add(Path.fromString(path), value);
+  }
+
+  /**
+   * Create a new add patch operation.
+   *
    * @param path The path targeted by this patch operation.
    * @param value The value(s) to add.
    *
@@ -596,6 +625,35 @@ public abstract class PatchOperation
     {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param value The value(s) to replace.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation replace(final JsonNode value)
+      throws ScimException
+  {
+    return replace((Path) null, value);
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation replace(final String path, final JsonNode value)
+      throws ScimException
+  {
+    return replace(Path.fromString(path), value);
   }
 
   /**
@@ -624,6 +682,19 @@ public abstract class PatchOperation
    * @param path The path targeted by this patch operation.
    *
    * @return The new delete patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation remove(final String path) throws ScimException
+  {
+    return remove(Path.fromString(path));
+  }
+
+  /**
+   * Create a new remove patch operation.
+   *
+   * @param path The path targeted by this patch operation.
+   *
+   * @return The new delete patch operation.
    */
   public static PatchOperation remove(final Path path)
   {
@@ -635,6 +706,23 @@ public abstract class PatchOperation
     {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  /**
+   * Create a new patch operation based on the parameters provided.
+   *
+   * @param opType The operation type.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s).
+   *
+   * @return The new patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation create(final PatchOpType opType,
+                                      final String path,
+                                      final JsonNode value) throws ScimException
+  {
+    return create(opType, Path.fromString(path), value);
   }
 
   /**
