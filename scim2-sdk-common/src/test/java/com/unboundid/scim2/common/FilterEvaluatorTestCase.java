@@ -111,7 +111,13 @@ public class FilterEvaluatorTestCase
             "    \"urn:unboundid:schemas:favoriteColor\": {\n" +
             "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
             "    },\n" +
-            "    \"userName\": \"user:username\"\n" +
+            "    \"userName\": \"user:username\",\n" +
+            "    \"friends\":[\n" +
+            "      {\n" +
+            "        \"displayName\": \"Babs Jensen\",\n" +
+            "        \"$ref\": \"Users/BabsJensen\"\n" +
+            "      }\n" +
+            "    ]\n" +
             "}");
   }
 
@@ -177,6 +183,8 @@ public class FilterEvaluatorTestCase
                 "addresses.streetAddress co \"Hollywood\"", true },
             new Object[] { "addresses[priority gt 5 and " +
                 "StreetAddress co \"Hollywood\"]", true },
+            new Object[] { "friends[$ref eq \"Users/BabsJensen\"]", true },
+            new Object[] { "friends[$ref eq \"Users/Nonexistent\"]", false },
             new Object[] { "addresses.priority ge 10", true },
             new Object[] { "addresses.priority le 0", true },
             new Object[] { "meta.created eq \"" +
