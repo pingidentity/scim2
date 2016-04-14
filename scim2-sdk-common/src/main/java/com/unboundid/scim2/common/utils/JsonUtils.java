@@ -777,11 +777,11 @@ public class JsonUtils
     diff(Path.root(), source, targetToAdd, targetToReplace, ops, removeMissing);
     if(targetToReplace.size() > 0)
     {
-      ops.add(PatchOperation.replace(null, targetToReplace));
+      ops.add(PatchOperation.replace(targetToReplace));
     }
     if(targetToAdd.size() > 0)
     {
-      ops.add(PatchOperation.add(null, targetToAdd));
+      ops.add(PatchOperation.add(targetToAdd));
     }
     return ops;
   }
