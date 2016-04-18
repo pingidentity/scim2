@@ -118,13 +118,11 @@ public class ResourceTypeResource extends BaseScimResource
   public ResourceTypeResource(@JsonProperty("id") final String id,
                               @JsonProperty(value = "name", required = true)
                               final String name,
-                              @JsonProperty(value = "description",
-                                  required = true)
+                              @JsonProperty(value = "description")
                               final String description,
-                              @JsonProperty(value = "endpoint",
-                                  required = true)
+                              @JsonProperty(value = "endpoint", required = true)
                               final URI endpoint,
-                              @JsonProperty(value = "schema")
+                              @JsonProperty(value = "schema", required = true)
                               final URI schema,
                               @JsonProperty("schemaExtensions")
                               final Collection<SchemaExtension>
