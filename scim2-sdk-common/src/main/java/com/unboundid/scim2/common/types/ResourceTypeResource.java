@@ -72,7 +72,7 @@ public class ResourceTypeResource extends BaseScimResource
   @Attribute(description =
       "The resource types primary/base schema URI.",
       referenceTypes = {"uri"},
-      isRequired = false,
+      isRequired = true,
       isCaseExact = true,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
