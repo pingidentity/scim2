@@ -18,14 +18,17 @@
 package com.unboundid.scim2.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.messages.ListResponse;
+import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.Email;
@@ -59,6 +62,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -84,6 +88,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   private ResourceTypeResource resourceType;
   private ResourceTypeResource singletonResourceType;
   private ServiceProviderConfigResource serviceProviderConfig;
+  private TestRequestFilter requestFilter;
 
   /**
    * {@inheritDoc}
@@ -101,6 +106,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     // Filters
     config.register(DotSearchFilter.class);
     config.register(TestAuthenticatedSubjectAliasFilter.class);
+    requestFilter = new TestRequestFilter();
+    config.register(requestFilter);
 
     // Standard endpoints
     config.register(ResourceTypesEndpoint.class);
@@ -689,6 +696,175 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         "{\"undefinedField\": \"value\"}", MediaType.APPLICATION_JSON_TYPE));
     assertEquals(response.getStatus(), 400);
     assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+  }
+
+  /**
+   * Test ability of client to submit requests with arbitrary query parameters.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testQueryParams() throws ScimException
+  {
+    final ScimService service = new ScimService(target());
+    final String expectedKey = "expectedKey";
+    final String expectedValue = "expectedValue";
+
+    requestFilter.addExpectedQueryParam(expectedKey, expectedValue);
+
+    try
+    {
+      try
+      {
+        service.retrieveRequest(ScimService.ME_URI).
+            queryParam(expectedKey, "unexpectedValue").
+            invoke(UserResource.class);
+        fail("Expected BadRequestException");
+      }
+      catch(BadRequestException e)
+      {
+        // Expected.
+      }
+
+      service.retrieveRequest(ScimService.ME_URI).
+          queryParam(expectedKey, expectedValue).
+          invoke(UserResource.class);
+
+      UserResource newUser = new UserResource().setUserName("queryParamUser");
+      UserResource createdUser =
+          service.createRequest("SingletonUsers", newUser).
+              queryParam(expectedKey, expectedValue).
+              invoke();
+
+      createdUser.setDisplayName("Bob");
+      UserResource updatedUser =
+          service.replaceRequest(createdUser).
+              queryParam(expectedKey, expectedValue).
+              invoke();
+
+      UserResource patchedUser =
+          service.modifyRequest("SingletonUsers", updatedUser.getId()).
+              addOperation(PatchOperation.replace("displayName",
+                                                  TextNode.valueOf("Joe"))).
+              queryParam(expectedKey, expectedValue).
+              invoke(UserResource.class);
+
+      service.deleteRequest("SingletonUsers", patchedUser.getId()).
+          queryParam(expectedKey, expectedValue).
+          invoke();
+
+      // Confirm that query parameters set by other means are included.
+      String filter = "meta.resourceType eq \"User\"";
+      requestFilter.addExpectedQueryParam(ApiConstants.QUERY_PARAMETER_FILTER,
+                                          filter);
+      service.searchRequest("Users").
+          filter(filter).
+          queryParam(expectedKey, expectedValue).
+          invoke(UserResource.class);
+
+      // Test a request including a query parameter with multiple expected
+      // values.
+      requestFilter.reset();
+      requestFilter.addExpectedQueryParam(expectedKey, "expectedValue1");
+      requestFilter.addExpectedQueryParam(expectedKey, "expectedValue2");
+
+      service.retrieveRequest(ScimService.ME_URI).
+          queryParam(expectedKey, "expectedValue1").
+          queryParam(expectedKey, "expectedValue2").
+          invoke(UserResource.class);
+    }
+    finally
+    {
+      requestFilter.reset();
+    }
+  }
+
+  /**
+   * Test ability of client to submit requests with arbitrary headers.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testHeaders() throws ScimException
+  {
+    final ScimService service = new ScimService(target());
+    final String expectedKey = "expectedKey";
+    final String expectedValue = "expectedValue";
+
+    requestFilter.addExpectedHeader(expectedKey, expectedValue);
+    // Confirm that the default Accept header is preserved.
+    requestFilter.addExpectedHeader(HttpHeaders.ACCEPT,
+                                    ScimService.MEDIA_TYPE_SCIM_TYPE.
+                                        toString());
+    requestFilter.addExpectedHeader(HttpHeaders.ACCEPT,
+                                    MediaType.APPLICATION_JSON_TYPE.
+                                        toString());
+
+    try
+    {
+      try
+      {
+        service.retrieveRequest(ScimService.ME_URI).
+            header(expectedKey, "unexpectedValue").
+            invoke(UserResource.class);
+        fail("Expected BadRequestException");
+      }
+      catch(BadRequestException e)
+      {
+        // Expected.
+      }
+
+      service.retrieveRequest(ScimService.ME_URI).
+          header(expectedKey, expectedValue).
+          invoke(UserResource.class);
+
+      UserResource newUser = new UserResource().setUserName("queryParamUser");
+      UserResource createdUser =
+          service.createRequest("SingletonUsers", newUser).
+              header(expectedKey, expectedValue).
+              invoke();
+
+      createdUser.setDisplayName("Bob");
+      UserResource updatedUser =
+          service.replaceRequest(createdUser).
+              header(expectedKey, expectedValue).
+              invoke();
+
+      UserResource patchedUser =
+          service.modifyRequest("SingletonUsers", updatedUser.getId()).
+              addOperation(PatchOperation.replace("displayName",
+                                                  TextNode.valueOf("Joe"))).
+              header(expectedKey, expectedValue).
+              invoke(UserResource.class);
+
+      service.deleteRequest("SingletonUsers", patchedUser.getId()).
+          header(expectedKey, expectedValue).
+          invoke();
+
+      service.searchRequest("Users").
+          filter("meta.resourceType eq \"User\"").
+          header(expectedKey, expectedValue).
+          invoke(UserResource.class);
+
+      service.searchRequest("Users").
+          filter("meta.resourceType eq \"User\"").
+          header(expectedKey, expectedValue).
+          invokePost(UserResource.class);
+
+      // Test a request including a header with multiple expected values.
+      requestFilter.reset();
+      requestFilter.addExpectedHeader(expectedKey, "expectedValue1");
+      requestFilter.addExpectedHeader(expectedKey, "expectedValue2");
+
+      service.retrieveRequest(ScimService.ME_URI).
+          header(expectedKey, "expectedValue1").
+          header(expectedKey, "expectedValue2").
+          invoke(UserResource.class);
+    }
+    finally
+    {
+      requestFilter.reset();
+    }
   }
 
 

@@ -30,14 +30,18 @@ import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.utils.ApiConstants;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.StaticUtils;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.unboundid.scim2.client.ScimService.MEDIA_TYPE_SCIM_TYPE;
@@ -233,11 +237,18 @@ public final class SearchRequestBuilder
       SearchRequest searchRequest = new SearchRequest(attributeSet,
           excludedAttributeSet, filter, sortBy, sortOrder, startIndex, count);
 
-      response = target.path(
-          ApiConstants.SEARCH_WITH_POST_PATH_EXTENSION).
+      Invocation.Builder builder = target().
+          path(ApiConstants.SEARCH_WITH_POST_PATH_EXTENSION).
           request(ScimService.MEDIA_TYPE_SCIM_TYPE,
-              MediaType.APPLICATION_JSON_TYPE).
-          post(Entity.entity(searchRequest, MEDIA_TYPE_SCIM_TYPE));
+                  MediaType.APPLICATION_JSON_TYPE);
+      for (Map.Entry<String, List<Object>> header : headers.entrySet())
+      {
+        builder = builder.header(header.getKey(),
+                                 StaticUtils.listToString(header.getValue(),
+                                                          ", "));
+      }
+      response = builder.post(Entity.entity(searchRequest,
+                                            MEDIA_TYPE_SCIM_TYPE));
     }
     else
     {

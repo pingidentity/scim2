@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
 /**
  * A builder for SCIM delete requests.
  */
-public class DeleteRequestBuilder extends RequestBuilder
+public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
 {
   /**
    * Create a new DeleteRequestBuilder.

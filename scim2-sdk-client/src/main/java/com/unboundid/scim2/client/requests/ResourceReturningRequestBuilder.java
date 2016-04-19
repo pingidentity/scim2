@@ -27,7 +27,7 @@ import java.util.Set;
  * Abstract SCIM request builder for resource returning requests.
  */
 public abstract class ResourceReturningRequestBuilder
-    <T extends ResourceReturningRequestBuilder<T>> extends RequestBuilder
+    <T extends ResourceReturningRequestBuilder> extends RequestBuilder<T>
 {
   /**
    * Whether the attribute list is for excluded attributes.
