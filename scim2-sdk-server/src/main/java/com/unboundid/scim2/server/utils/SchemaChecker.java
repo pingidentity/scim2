@@ -821,7 +821,7 @@ public class SchemaChecker
       else if(currentObjectNode != null)
       {
         List<JsonNode> currentValues =
-            JsonUtils.getValues(path, currentObjectNode);
+            JsonUtils.findMatchingPaths(path, currentObjectNode);
         if(currentValues.size() > 1 ||
             (currentValues.size() == 1 && !currentValues.get(0).equals(node)))
         {

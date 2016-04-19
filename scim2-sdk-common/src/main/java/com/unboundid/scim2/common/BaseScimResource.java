@@ -53,12 +53,12 @@ import java.util.Set;
  * object since you will just have plain old getters and setters
  * for core attributes. Extension attributes can not be bound to
  * members of the class but they can still be accessed using the
- * getExtensionObjectNode method or the getExtensionValue and
- * setExtensionValue methods.
+ * getExtensionObjectNode method or the getExtensionValue,
+ * replaceExtensionValue, and addExtensionValue methods.
  *
  *
  * If you have a BaseScimResource derived object, you can always get a
- * GenericScimResource by serializing The BaseScimResource
+ * GenericScimResource by serializing the BaseScimResource
  * derived object into a JSON string, and deserializing back to a
  * GenericScimResource.  You could also go the other way.
  *
@@ -247,8 +247,9 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Retrieve all JSON nodes of extension attribute referenced by the provided
-   * path. Equivalent to using the {@link JsonUtils#getValues(Path, ObjectNode)}
+   * Retrieve all JSON nodes of the extension attribute referenced by the
+   * provided path. Equivalent to using the
+   * {@link JsonUtils#findMatchingPaths(Path, ObjectNode)}
    * method: JsonUtils.getValues(Path.fromString(path),
    * getExtensionObjectNode()).
    *
@@ -267,8 +268,9 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Retrieve all JSON nodes of extension attribute referenced by the provided
-   * path. Equivalent to using the {@link JsonUtils#getValues(Path, ObjectNode)}
+   * Retrieve all JSON nodes of the extension attribute referenced by the
+   * provided path. Equivalent to using the
+   * {@link JsonUtils#findMatchingPaths(Path, ObjectNode)}
    * method: JsonUtils.getValues(path, getExtensionObjectNode()).
    *
    * The {@link JsonUtils#nodeToValue(JsonNode, Class)} method may be used to
@@ -282,7 +284,7 @@ public abstract class BaseScimResource
   public List<JsonNode> getExtensionValues(final Path path)
       throws ScimException
   {
-    return JsonUtils.getValues(path, extensionObjectNode);
+    return JsonUtils.findMatchingPaths(path, extensionObjectNode);
   }
 
   /**

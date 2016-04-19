@@ -479,7 +479,7 @@ public class JsonUtilsTestCase
   }
 
   /**
-   * Test the getValues method.
+   * Test the findMatchingPaths method.
    *
    * @throws Exception If an error occurred.
    */
@@ -490,42 +490,42 @@ public class JsonUtilsTestCase
     GenericScimResource gso =
         new GenericScimResource(getTestResource());
 
-    List<JsonNode> stringResult = gso.getValues(
-        "String");
+    List<JsonNode> stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("String"), gso.getObjectNode());
     assertEquals(stringResult.size(), 1);
     assertEquals(stringResult.get(0).textValue(), "string");
 
-    List<JsonNode> intResult = gso.getValues(
-        "integeR");
+    List<JsonNode> intResult = JsonUtils.findMatchingPaths(
+        Path.fromString("integeR"), gso.getObjectNode());
     assertEquals(intResult.size(), 1);
     assertEquals(intResult.get(0).intValue(), 1);
 
-    List<JsonNode> decimalResult = gso.getValues(
-        "deCimal");
+    List<JsonNode> decimalResult = JsonUtils.findMatchingPaths(
+        Path.fromString("deCimal"), gso.getObjectNode());
     assertEquals(decimalResult.size(), 1);
     assertEquals(decimalResult.get(0).doubleValue(), 1.582);
 
-    List<JsonNode> booleanResult = gso.getValues(
-        "boolean");
+    List<JsonNode> booleanResult = JsonUtils.findMatchingPaths(
+        Path.fromString("boolean"), gso.getObjectNode());
     assertEquals(booleanResult.size(), 1);
     assertEquals(booleanResult.get(0).booleanValue(), true);
 
-    List<JsonNode> dateResult = gso.getValues(
-        "date");
+    List<JsonNode> dateResult = JsonUtils.findMatchingPaths(
+        Path.fromString("date"), gso.getObjectNode());
     assertEquals(dateResult.size(), 1);
     assertEquals(
         ISO8601Utils.parse(dateResult.get(0).textValue(), new ParsePosition(0)),
         ISO8601Utils.parse("2015-02-27T11:28:39Z", new ParsePosition(0)));
 
 
-    List<JsonNode> binaryResult = gso.getValues(
-        "binary");
+    List<JsonNode> binaryResult = JsonUtils.findMatchingPaths(
+        Path.fromString("binary"), gso.getObjectNode());
     assertEquals(binaryResult.size(), 1);
     assertEquals(binaryResult.get(0).binaryValue(), "binary".getBytes());
   }
 
   /**
-   * Test the getValues method.
+   * Test the findMatchingPaths method.
    *
    * @throws ScimException If an error occurred.
    * @throws IOException If an error occurred.
@@ -537,40 +537,43 @@ public class JsonUtilsTestCase
     GenericScimResource gso =
         new GenericScimResource(getTestResource());
 
-    List<JsonNode> stringResult = gso.getValues(
-        "array.complex.array.string");
+    List<JsonNode> stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex.array.string"), gso.getObjectNode());
     assertEquals(stringResult.size(), 4);
     assertEquals(stringResult.get(0).textValue(), "string");
 
-    stringResult = gso.getValues(
-        "array[id eq \"1\"].complex.array.string");
+    stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array[id eq \"1\"].complex.array.string"),
+        gso.getObjectNode());
     assertEquals(stringResult.size(), 2);
     assertEquals(stringResult.get(0).textValue(), "string");
 
-    stringResult = gso.getValues(
-        "array.complex.array[id eq \"1\"].string");
+    stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex.array[id eq \"1\"].string"),
+        gso.getObjectNode());
     assertEquals(stringResult.size(), 2);
     assertEquals(stringResult.get(0).textValue(), "string");
 
-    stringResult = gso.getValues(
-        "array[id eq \"1\"].complex.arRay[id eq \"1\"].stRing");
+    stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array[id eq \"1\"].complex.arRay[id eq \"1\"].stRing"),
+        gso.getObjectNode());
     assertEquals(stringResult.size(), 1);
     assertEquals(stringResult.get(0).textValue(), "string");
 
-    stringResult = gso.getValues(
-        "complex.array.array.string");
+    stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array.array.string"), gso.getObjectNode());
     assertEquals(stringResult.size(), 4);
     assertEquals(stringResult.get(0).textValue(), "string");
 
-    List<JsonNode> mapResult = gso.getValues(
-        "array.complex");
+    List<JsonNode> mapResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex"), gso.getObjectNode());
     assertEquals(mapResult.size(), 2);
     assertEquals(mapResult.get(0).size(), 9);
 
   }
 
   /**
-   * Test the getValues method.
+   * Test the findMatchingPaths method.
    *
    * @throws ScimException If an error occurred.
    * @throws IOException If an error occurred.
@@ -582,19 +585,19 @@ public class JsonUtilsTestCase
     GenericScimResource gso =
         new GenericScimResource(getTestResource());
 
-    List<JsonNode> mapResult = gso.getValues(
-        "array.complex");
+    List<JsonNode> mapResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex"), gso.getObjectNode());
     assertEquals(mapResult.size(), 2);
     assertEquals(mapResult.get(0).size(), 9);
 
-    mapResult = gso.getValues(
-        "aRray[ID eq \"2\"].cOmplex");
+    mapResult = JsonUtils.findMatchingPaths(
+        Path.fromString("aRray[ID eq \"2\"].cOmplex"), gso.getObjectNode());
     assertEquals(mapResult.size(), 1);
     assertEquals(mapResult.get(0).size(), 9);
   }
 
   /**
-   * Test the getValues method.
+   * Test the findMatchingPaths method.
    *
    * @throws ScimException If an error occurred.
    * @throws IOException If an error occurred.
@@ -606,14 +609,14 @@ public class JsonUtilsTestCase
     GenericScimResource gso =
         new GenericScimResource(getTestResource());
 
-    List<JsonNode> mapResult = gso.getValues(
-        "array");
+    List<JsonNode> mapResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array"), gso.getObjectNode());
     assertEquals(mapResult.size(), 1);
     assertEquals(mapResult.get(0).size(), 2);
     assertEquals(mapResult.get(0).get(0).size(), 11);
 
-    mapResult = gso.getValues(
-        "complex.array[id eq \"2\"]");
+    mapResult = JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array[id eq \"2\"]"), gso.getObjectNode());
     assertEquals(mapResult.size(), 1);
     assertEquals(mapResult.get(0).size(), 1);
     assertEquals(mapResult.get(0).get(0).size(), 11);
@@ -621,7 +624,7 @@ public class JsonUtilsTestCase
 
 
   /**
-   * Test the getValues method.
+   * Test the findMatchingPaths method.
    *
    * @throws ScimException If an error occurred.
    * @throws IOException If an error occurred.
@@ -636,8 +639,8 @@ public class JsonUtilsTestCase
     boolean removed = gso.removeValues("array.complex.array.string");
     assertEquals(removed, true);
 
-    List<JsonNode> stringResult = gso.getValues(
-        "array.complex.array.string");
+    List<JsonNode> stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex.array.string"), gso.getObjectNode());
     assertEquals(stringResult.size(), 0);
 
     gso = new GenericScimResource(getTestResource());
@@ -645,8 +648,9 @@ public class JsonUtilsTestCase
     removed = gso.removeValues("array[id eq \"1\"].complex.array.string");
     assertEquals(removed, true);
 
-    stringResult = gso.getValues(
-        "array[id eq \"1\"].complex.array.string");
+    stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array[id eq \"1\"].complex.array.string"),
+        gso.getObjectNode());
     assertEquals(stringResult.size(), 0);
 
     gso = new GenericScimResource(getTestResource());
@@ -654,8 +658,9 @@ public class JsonUtilsTestCase
     removed = gso.removeValues("array.complex.array[id eq \"1\"].string");
     assertEquals(removed, true);
 
-    stringResult = gso.getValues(
-        "array.complex.array[id eq \"1\"].string");
+    stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex.array[id eq \"1\"].string"),
+        gso.getObjectNode());
     assertEquals(stringResult.size(), 0);
 
     gso = new GenericScimResource(getTestResource());
@@ -664,8 +669,9 @@ public class JsonUtilsTestCase
         "array[id eq \"1\"].complex.array[id eq \"1\"].string");
     assertEquals(removed, true);
 
-    stringResult = gso.getValues(
-        "array[id eq \"1\"].complex.array[id eq \"1\"].string");
+    stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array[id eq \"1\"].complex.array[id eq \"1\"].string"),
+        gso.getObjectNode());
     assertEquals(stringResult.size(), 0);
 
     gso = new GenericScimResource(getTestResource());
@@ -673,8 +679,8 @@ public class JsonUtilsTestCase
     removed = gso.removeValues("complex.array.array.string");
     assertEquals(removed, true);
 
-    stringResult = gso.getValues(
-        "complex.array.array.string");
+    stringResult = JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array.array.string"), gso.getObjectNode());
     assertEquals(stringResult.size(), 0);
 
     gso = new GenericScimResource(getTestResource());
@@ -682,14 +688,15 @@ public class JsonUtilsTestCase
     removed = gso.removeValues("array.complex");
     assertEquals(removed, true);
 
-    List<JsonNode> mapResult = gso.getValues(
-        "array.complex");
+    List<JsonNode> mapResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex"), gso.getObjectNode());
     assertEquals(mapResult.size(), 0);
 
     removed = gso.removeValues("array");
     assertEquals(removed, true);
 
-    mapResult = gso.getValues("array");
+    mapResult = JsonUtils.findMatchingPaths(
+        Path.fromString("array"), gso.getObjectNode());
     assertEquals(mapResult.size(), 0);
   }
 
@@ -840,34 +847,37 @@ public class JsonUtilsTestCase
     gso.replaceValue("string", JsonUtils.valueToNode("new"));
 
     assertEquals(JsonUtils.nodeToValue(
-        gso.getValues("string").get(0), String.class), "new");
+        JsonUtils.findMatchingPaths(Path.fromString("string"),
+            gso.getObjectNode()).get(0), String.class), "new");
 
     gso.replaceValue("array.string", JsonUtils.valueToNode("new"));
     gso.replaceValue("complex.array.array[id eq \"2\"].string",
         JsonUtils.valueToNode("new"));
 
-    assertEquals(JsonUtils.nodeToValue(
-        gso.getValues("array.string").get(0), String.class), "new");
-    assertEquals(JsonUtils.nodeToValue(
-        gso.getValues("array.string").get(1), String.class), "new");
-    assertEquals(JsonUtils.nodeToValue(
-        gso.getValues("complex.array.array.string").get(0), String.class),
-        "string");
-    assertEquals(JsonUtils.nodeToValue(
-        gso.getValues("complex.array.array.string").get(1), String.class),
-        "new");
-    assertEquals(JsonUtils.nodeToValue(
-        gso.getValues("complex.array.array.string").get(2), String.class),
-        "string");
-    assertEquals(JsonUtils.nodeToValue(
-        gso.getValues("complex.array.array.string").get(3), String.class),
-        "new");
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array.string"), gso.getObjectNode()).get(0),
+        String.class), "new");
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array.string"), gso.getObjectNode()).get(1),
+        String.class), "new");
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array.array.string"),
+        gso.getObjectNode()).get(0), String.class), "string");
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array.array.string"),
+        gso.getObjectNode()).get(1), String.class), "new");
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array.array.string"),
+        gso.getObjectNode()).get(2), String.class), "string");
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array.array.string"),
+        gso.getObjectNode()).get(3), String.class), "new");
 
     gso.replaceValue(Path.root("urn:some:extension").attribute("attribute"),
         JsonUtils.valueToNode("extensionValue"));
-    assertEquals(JsonUtils.nodeToValue(
-        gso.getValues(Path.root("urn:some:extension").attribute("attribute")).
-            get(0), String.class), "extensionValue");
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.root("urn:some:extension").attribute("attribute"),
+        gso.getObjectNode()).get(0), String.class), "extensionValue");
   }
 
 
@@ -883,11 +893,13 @@ public class JsonUtilsTestCase
     GenericScimResource gso =
         new GenericScimResource(getTestResource());
 
-    ArrayValue value0 = JsonUtils.nodeToValue(
-        gso.getValues("array.complex").get(0), ArrayValue.class);
+    ArrayValue value0 = JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex"), gso.getObjectNode()).get(0),
+        ArrayValue.class);
     value0.set("version", "new");
-    ArrayValue value1 = JsonUtils.nodeToValue(
-        gso.getValues("array.complex").get(1), ArrayValue.class);
+    ArrayValue value1 = JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex"), gso.getObjectNode()).get(1),
+        ArrayValue.class);
     value1.set("version", "new");
 
     ArrayValue meta = new ArrayValue();
@@ -895,27 +907,28 @@ public class JsonUtilsTestCase
     gso.replaceValue("array.complex", JsonUtils.valueToNode(meta));
 
     // Sub-attributes should be merged.
-    assertEquals(JsonUtils.nodeToValue(
-            gso.getValues("array.complex").get(0), ArrayValue.class), value0);
-    assertEquals(JsonUtils.nodeToValue(
-            gso.getValues("array.complex").get(1), ArrayValue.class), value1);
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex"), gso.getObjectNode()).get(0),
+        ArrayValue.class), value0);
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array.complex"), gso.getObjectNode()).get(1),
+        ArrayValue.class), value1);
 
     gso.replaceValue("complex.array[id eq \"2\"].complex",
         JsonUtils.valueToNode(meta));
 
-    assertNotEquals(JsonUtils.nodeToValue(
-        gso.getValues("complex.array.complex").get(0), ArrayValue.class),
-        value0);
-    assertEquals(JsonUtils.nodeToValue(
-        gso.getValues("complex.array.complex").get(1), ArrayValue.class),
-        value1);
+    assertNotEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array.complex"), gso.getObjectNode()).get(0),
+        ArrayValue.class), value0);
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array.complex"), gso.getObjectNode()).get(1),
+        ArrayValue.class), value1);
 
     gso.replaceValue(Path.root("urn:some:extension"),
         JsonUtils.valueToNode(meta));
-    assertEquals(JsonUtils.nodeToValue(
-        gso.getValues(
-            Path.root("urn:some:extension")).get(0), ArrayValue.class),
-        meta);
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.root("urn:some:extension"), gso.getObjectNode()).get(0),
+        ArrayValue.class), meta);
   }
 
 
@@ -939,12 +952,13 @@ public class JsonUtilsTestCase
 
     gso.replaceValue("array",
         JsonUtils.valueToNode(new ArrayValue[]{meta1, meta2}));
-    assertEquals(JsonUtils.nodeToValue(gso.getValues("array").get(0),
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array"), gso.getObjectNode()).get(0),
         ArrayValue[].class), values);
 
-    ArrayValue[] value1 = JsonUtils.nodeToValue(
-        gso.getValues("complex.array[id eq \"2\"]").get(0),
-        ArrayValue[].class);
+    ArrayValue[] value1 = JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+            Path.fromString("complex.array[id eq \"2\"]"),
+            gso.getObjectNode()).get(0), ArrayValue[].class);
     value1[0].set("version", "1");
 
     gso.replaceValue("complex.array[id eq \"2\"]",
@@ -952,21 +966,21 @@ public class JsonUtilsTestCase
 
     // The sub-attributes of the second value where id eq 2 should have been
     // merged
-    assertNotEquals(JsonUtils.nodeToValue(
-            gso.getValues("complex.array").get(0), ArrayValue[].class)[0],
-        value1[0]);
-    assertNotEquals(JsonUtils.nodeToValue(
-            gso.getValues("complex.array").get(0), ArrayValue[].class)[0],
-        value1[0]);
-    assertEquals(JsonUtils.nodeToValue(
-            gso.getValues("complex.array").get(0), ArrayValue[].class)[1],
-        value1[0]);
+    assertNotEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array"), gso.getObjectNode()).get(0),
+        ArrayValue[].class)[0], value1[0]);
+    assertNotEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array"), gso.getObjectNode()).get(0),
+        ArrayValue[].class)[0], value1[0]);
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array"), gso.getObjectNode()).get(0),
+        ArrayValue[].class)[1], value1[0]);
 
     gso.replaceValue(Path.root("urn:some:extension").attribute("attribute"),
         JsonUtils.valueToNode(new ArrayValue[]{meta1, meta2}));
-    assertEquals(JsonUtils.nodeToValue(gso.getValues(
-        Path.root("urn:some:extension").attribute("attribute")).get(0),
-        ArrayValue[].class), values);
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+            Path.root("urn:some:extension").attribute("attribute"),
+            gso.getObjectNode()).get(0), ArrayValue[].class), values);
   }
 
 
@@ -989,13 +1003,17 @@ public class JsonUtilsTestCase
     ArrayValue[] metas = new ArrayValue[] { meta1, meta2 };
     gso.addValues("array", (ArrayNode) JsonUtils.valueToNode(metas));
 
-    assertNotEquals(JsonUtils.nodeToValue(gso.getValues("array").get(0),
+    assertNotEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array"), gso.getObjectNode()).get(0),
         ArrayValue[].class)[0], meta1);
-    assertNotEquals(JsonUtils.nodeToValue(gso.getValues("array").get(0),
+    assertNotEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array"), gso.getObjectNode()).get(0),
         ArrayValue[].class)[1], meta2);
-    assertEquals(JsonUtils.nodeToValue(gso.getValues("array").get(0),
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array"), gso.getObjectNode()).get(0),
         ArrayValue[].class)[2], meta1);
-    assertEquals(JsonUtils.nodeToValue(gso.getValues("array").get(0),
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("array"), gso.getObjectNode()).get(0),
         ArrayValue[].class)[3], meta2);
 
     gso.addValues("complex.array[id eq \"2\"]",
@@ -1003,18 +1021,20 @@ public class JsonUtilsTestCase
 
     // There should now be 4 values. The original values where id is 1 and 2 as
     // well as the two new meta values.
-    assertEquals(JsonUtils.nodeToValue(gso.getValues("complex.array").get(0),
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array"), gso.getObjectNode()).get(0),
         ArrayValue[].class).length, 4);
-    assertNotEquals(JsonUtils.nodeToValue(gso.getValues("complex.array").get(0),
-            ArrayValue[].class)[0],
-        meta1);
-    assertNotEquals(JsonUtils.nodeToValue(gso.getValues("complex.array").get(0),
-            ArrayValue[].class)[1],
-        meta2);
-    assertEquals(JsonUtils.nodeToValue(gso.getValues("complex.array").get(0),
-            ArrayValue[].class)[2],
-        meta1);
-    assertEquals(JsonUtils.nodeToValue(gso.getValues("complex.array").get(0),
+    assertNotEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array"), gso.getObjectNode()).get(0),
+        ArrayValue[].class)[0], meta1);
+    assertNotEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array"), gso.getObjectNode()).get(0),
+        ArrayValue[].class)[1], meta2);
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array"), gso.getObjectNode()).get(0),
+        ArrayValue[].class)[2], meta1);
+    assertEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
+        Path.fromString("complex.array"), gso.getObjectNode()).get(0),
             ArrayValue[].class)[3],
         meta2);
   }

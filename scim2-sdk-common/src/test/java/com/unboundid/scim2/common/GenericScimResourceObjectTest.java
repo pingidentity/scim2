@@ -18,14 +18,20 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
+import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -121,4 +127,336 @@ public class GenericScimResourceObjectTest
         ((GenericScimResource)cso).getObjectNode().path("shoeSize").asText(),
         "12W");
   }
+
+  /**
+   * Test string methods.
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testStringMethods() throws ScimException
+  {
+    String path1 = "path1";
+    String value1 = "value1";
+    String path2 = "path2";
+    String value2 = "value2";
+    String path3 = "path3";
+    String arrayValue1 = "arrayValue1";
+    String arrayValue2 = "arrayValue2";
+    String path4 = "path4";
+    String arrayValue3 = "arrayValue3";
+    String arrayValue4 = "arrayValue4";
+
+    GenericScimResource gsr = new GenericScimResource();
+    Assert.assertEquals(gsr.replaceValue(path1, value1).
+        getStringValue(Path.fromString(path1)), value1);
+    Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
+        getStringValue(path2), value2);
+
+    List<String> list1 = gsr.addStringValues(path3,
+        Lists.<String>newArrayList(arrayValue1, arrayValue2)).
+        getStringValueList(Path.fromString(path3));
+    Assert.assertEquals(list1.size(), 2);
+    Assert.assertTrue(list1.contains(arrayValue1));
+    Assert.assertTrue(list1.contains(arrayValue2));
+
+    List<String> list2 = gsr.addStringValues(Path.fromString(path4),
+        Lists.<String>newArrayList(arrayValue3, arrayValue4)).
+        getStringValueList(path4);
+    Assert.assertEquals(list2.size(), 2);
+    Assert.assertTrue(list2.contains(arrayValue3));
+    Assert.assertTrue(list2.contains(arrayValue4));
+
+  }
+
+  /**
+   * Test boolean methods.
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testBooleanMethods() throws ScimException
+  {
+    String path1 = "path1";
+    Boolean value1 = Boolean.TRUE;
+    String path2 = "path2";
+    Boolean value2 = Boolean.FALSE;
+    String path3 = "path3";
+    Boolean arrayValue1 = Boolean.TRUE;
+    Boolean arrayValue2 = Boolean.FALSE;
+    String path4 = "path4";
+    Boolean arrayValue3 = Boolean.FALSE;
+    Boolean arrayValue4 = Boolean.TRUE;
+
+    GenericScimResource gsr = new GenericScimResource();
+    Assert.assertEquals(gsr.replaceValue(path1, value1).
+        getBooleanValue(Path.fromString(path1)), value1);
+    Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
+        getBooleanValue(path2), value2);
+
+    List<Boolean> list1 = gsr.addBooleanValues(path3,
+        Lists.<Boolean>newArrayList(arrayValue1, arrayValue2)).
+        getBooleanValueList(Path.fromString(path3));
+    Assert.assertEquals(list1.size(), 2);
+    Assert.assertTrue(list1.contains(arrayValue1));
+    Assert.assertTrue(list1.contains(arrayValue2));
+
+     List<Boolean> list2 = gsr.addBooleanValues(Path.fromString(path4),
+         Lists.<Boolean>newArrayList(arrayValue3, arrayValue4)).
+        getBooleanValueList(path4);
+    Assert.assertEquals(list2.size(), 2);
+    Assert.assertTrue(list2.contains(arrayValue3));
+    Assert.assertTrue(list2.contains(arrayValue4));
+  }
+
+  /**
+   * test double methods.
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testDoubleMethods() throws ScimException
+  {
+    String path1 = "path1";
+    Double value1 = new Double(3.5);
+    String path2 = "path2";
+    Double value2 = new Double(7.3);
+    String path3 = "path3";
+    Double arrayValue1 = new Double(8.2);
+    Double arrayValue2 = new Double(12.3);
+    String path4 = "path4";
+    Double arrayValue3 = new Double(2.9);
+    Double arrayValue4 = new Double(1.2);
+
+    GenericScimResource gsr = new GenericScimResource();
+    Assert.assertEquals(gsr.replaceValue(path1, value1).
+        getDoubleValue(Path.fromString(path1)), value1, 0.01);
+    Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
+        getDoubleValue(path2), value2, 0.01);
+
+    List<Double> list1 = gsr.addDoubleValues(path3,
+        Lists.<Double>newArrayList(arrayValue1, arrayValue2)).
+        getDoubleValueList(Path.fromString(path3));
+    Assert.assertEquals(list1.size(), 2);
+
+     List<Double> list2 = gsr.addDoubleValues(Path.fromString(path4),
+         Lists.<Double>newArrayList(arrayValue3, arrayValue4)).
+        getDoubleValueList(path4);
+    Assert.assertEquals(list2.size(), 2);
+
+  }
+
+  /**
+   * test integer methods.
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testIntegerMethods() throws ScimException
+  {
+    String path1 = "path1";
+    Integer value1 = 3;
+    String path2 = "path2";
+    Integer value2 = 2;
+    String path3 = "path3";
+    Integer arrayValue1 = 89;
+    Integer arrayValue2 = 34;
+    String path4 = "path4";
+    Integer arrayValue3 = 82;
+    Integer arrayValue4 = 12;
+
+    GenericScimResource gsr = new GenericScimResource();
+    Assert.assertEquals(gsr.replaceValue(path1, value1).
+        getIntegerValue(Path.fromString(path1)), value1);
+    Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
+        getIntegerValue(path2), value2);
+
+    List<Integer> list1 = gsr.addIntegerValues(path3,
+        Lists.<Integer>newArrayList(arrayValue1, arrayValue2)).
+        getIntegerValueList(Path.fromString(path3));
+    Assert.assertEquals(list1.size(), 2);
+    Assert.assertTrue(list1.contains(arrayValue1));
+    Assert.assertTrue(list1.contains(arrayValue2));
+
+    List<Integer> list2 = gsr.addIntegerValues(Path.fromString(path4),
+        Lists.<Integer>newArrayList(arrayValue3, arrayValue4)).
+        getIntegerValueList(path4);
+    Assert.assertEquals(list2.size(), 2);
+    Assert.assertTrue(list2.contains(arrayValue3));
+    Assert.assertTrue(list2.contains(arrayValue4));
+  }
+
+  /**
+   * test long methods.
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testLongMethods() throws ScimException
+  {
+    String path1 = "path1";
+    Long value1 = 3L;
+    String path2 = "path2";
+    Long value2 = 2L;
+    String path3 = "path3";
+    Long arrayValue1 = 89L;
+    Long arrayValue2 = 34L;
+    String path4 = "path4";
+    Long arrayValue3 = 82L;
+    Long arrayValue4 = 12L;
+
+    GenericScimResource gsr = new GenericScimResource();
+    Assert.assertEquals(gsr.replaceValue(path1, value1).
+        getLongValue(Path.fromString(path1)), value1);
+    Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
+        getLongValue(path2), value2);
+
+    List<Long> list1 = gsr.addLongValues(path3,
+        Lists.<Long>newArrayList(arrayValue1, arrayValue2)).
+        getLongValueList(Path.fromString(path3));
+    Assert.assertEquals(list1.size(), 2);
+    Assert.assertTrue(list1.contains(arrayValue1));
+    Assert.assertTrue(list1.contains(arrayValue2));
+
+    List<Long> list2 = gsr.addLongValues(Path.fromString(path4),
+        Lists.<Long>newArrayList(arrayValue3, arrayValue4)).
+        getLongValueList(path4);
+    Assert.assertEquals(list2.size(), 2);
+    Assert.assertTrue(list2.contains(arrayValue3));
+    Assert.assertTrue(list2.contains(arrayValue4));
+  }
+
+  /**
+   * test date methods.
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testDateMethods() throws ScimException
+  {
+    String path1 = "path1";
+    Date value1 = new Date(9482087542L);
+    String path2 = "path2";
+    Date value2 = new Date(9482087523L);
+    String path3 = "path3";
+    Date arrayValue1 = new Date(9482087508L);
+    Date arrayValue2 = new Date(9482087574L);
+    String path4 = "path4";
+    Date arrayValue3 = new Date(9482087526L);
+    Date arrayValue4 = new Date(9482087579L);
+
+    GenericScimResource gsr = new GenericScimResource();
+    Assert.assertEquals(gsr.replaceValue(path1, value1).
+        getDateValue(Path.fromString(path1)), value1);
+    Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
+        getDateValue(path2), value2);
+
+    List<Date> list1 = gsr.addDateValues(path3,
+        Lists.<Date>newArrayList(arrayValue1, arrayValue2)).
+        getDateValueList(Path.fromString(path3));
+    Assert.assertEquals(list1.size(), 2);
+    Assert.assertTrue(list1.contains(arrayValue1));
+    Assert.assertTrue(list1.contains(arrayValue2));
+
+    List<Date> list2 = gsr.addDateValues(Path.fromString(path4),
+        Lists.<Date>newArrayList(arrayValue3, arrayValue4)).
+        getDateValueList(path4);
+    Assert.assertEquals(list2.size(), 2);
+    Assert.assertTrue(list2.contains(arrayValue3));
+    Assert.assertTrue(list2.contains(arrayValue4));
+  }
+
+  /**
+   * test uri methods.
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testURIMethods() throws Exception
+  {
+    String path1 = "path1";
+    URI value1 = new URI("http://localhost/value1");
+    String path2 = "path2";
+    URI value2 = new URI("http://localhost/value2");
+    String path3 = "path3";
+    URI arrayValue1 = new URI("http://localhost/arrayValue1");
+    URI arrayValue2 = new URI("http://localhost/arrayValue2");
+    String path4 = "path4";
+    URI arrayValue3 = new URI("http://localhost/arrayValue3");
+    URI arrayValue4 = new URI("http://localhost/arrayValue4");
+    String path5 = "path5";
+    URI relativeUri1 = new URI("Users/1dd6d752-1744-47e5-a4a8-5f5670aa8905");
+
+    GenericScimResource gsr = new GenericScimResource();
+    Assert.assertEquals(gsr.replaceValue(path1, value1).
+        getURIValue(Path.fromString(path1)), value1);
+    Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
+        getURIValue(path2), value2);
+
+    List<URI> list1 = gsr.addURIValues(path3,
+        Lists.<URI>newArrayList(arrayValue1, arrayValue2)).
+        getURIValueList(Path.fromString(path3));
+    Assert.assertEquals(list1.size(), 2);
+    Assert.assertTrue(list1.contains(arrayValue1));
+    Assert.assertTrue(list1.contains(arrayValue2));
+
+    List<URI> list2 = gsr.addURIValues(Path.fromString(path4),
+        Lists.<URI>newArrayList(arrayValue3, arrayValue4)).
+        getURIValueList(path4);
+    Assert.assertEquals(list2.size(), 2);
+    Assert.assertTrue(list2.contains(arrayValue3));
+    Assert.assertTrue(list2.contains(arrayValue4));
+
+    Assert.assertEquals(gsr.replaceValue(path5, relativeUri1).
+        getURIValue(path5), relativeUri1);
+  }
+
+  /**
+   * test binary methods.
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testBinaryMethods() throws Exception
+  {
+    String path1 = "path1";
+    byte[] value1 = new byte[] { 0x02, 0x32, 0x33, 0x2e };
+    String path2 = "path2";
+    byte[] value2 = new byte[] { 0x0f, 0x34, 0x33, 0x1e };
+    String path3 = "path3";
+    byte[] arrayValue1 = new byte[] { 0x0e, 0x30, 0x1a, 0x1e };
+    byte[] arrayValue2 = new byte[] { 0x0f, 0x34, 0x44, 0x0e };
+    String path4 = "path4";
+    byte[] arrayValue3 = new byte[] { 0x0f, 0x74, 0x33, 0x0e };
+    byte[] arrayValue4 = new byte[] { 0x10, 0x34, 0x11, 0x1e };
+
+    GenericScimResource gsr = new GenericScimResource();
+    Assert.assertEquals(gsr.replaceValue(path1, value1).
+        getBinaryValue(Path.fromString(path1)), value1);
+    Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
+        getBinaryValue(path2), value2);
+
+    List<byte[]> list1 = gsr.addBinaryValues(path3,
+        Lists.<byte[]>newArrayList(arrayValue1, arrayValue2)).
+        getBinaryValueList(Path.fromString(path3));
+    Assert.assertEquals(list1.size(), 2);
+    assertByteArrayListContainsBytes(list1, arrayValue1);
+    assertByteArrayListContainsBytes(list1, arrayValue2);
+
+    List<byte[]> list2 = gsr.addBinaryValues(Path.fromString(path4),
+        Lists.<byte[]>newArrayList(arrayValue3, arrayValue4)).
+        getBinaryValueList(path4);
+    Assert.assertEquals(list2.size(), 2);
+    assertByteArrayListContainsBytes(list2, arrayValue3);
+    assertByteArrayListContainsBytes(list2, arrayValue4);
+  }
+
+  private void assertByteArrayListContainsBytes(
+      List<byte[]> byteArrayList, byte[] bytes)
+  {
+    boolean found = false;
+    for(byte[] bytesFromList : byteArrayList)
+    {
+      if(Arrays.equals(bytesFromList, bytes))
+      {
+        found = true;
+        break;
+      }
+    }
+
+    Assert.assertTrue(found);
+  }
+
 }

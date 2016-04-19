@@ -66,7 +66,7 @@ public interface ScimResource
 
   /**
    * Gets the schema urns for this object.  This includes the one for the
-   * class that extens this class (taken from the annotation), as well as
+   * class that extends this class (taken from the annotation), as well as
    * any that are present in the extensions.
    *
    * @return the schema urns for this object.

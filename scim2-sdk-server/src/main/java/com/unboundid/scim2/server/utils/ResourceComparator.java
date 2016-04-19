@@ -86,7 +86,7 @@ public class ResourceComparator<T extends ScimResource>
 
     try
     {
-      List<JsonNode> v1s = JsonUtils.getValues(sortBy, n1);
+      List<JsonNode> v1s = JsonUtils.findMatchingPaths(sortBy, n1);
       if(!v1s.isEmpty())
       {
         // Always just use the primary or first value of the first found node.
@@ -100,7 +100,7 @@ public class ResourceComparator<T extends ScimResource>
 
     try
     {
-      List<JsonNode> v2s = JsonUtils.getValues(sortBy, n2);
+      List<JsonNode> v2s = JsonUtils.findMatchingPaths(sortBy, n2);
       if(!v2s.isEmpty())
       {
         // Always just use the primary or first value of the first found node.

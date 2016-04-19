@@ -374,7 +374,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     }
     if(jsonNode.isObject())
     {
-      List<JsonNode> nodes = JsonUtils.getValues(path, (ObjectNode) jsonNode);
+      List<JsonNode> nodes =
+          JsonUtils.findMatchingPaths(path, (ObjectNode) jsonNode);
       ArrayList<JsonNode> flattenedNodes =
           new ArrayList<JsonNode>(nodes.size());
       for(JsonNode node : nodes)
@@ -432,7 +433,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * Return true if the specified node list contains nothing
    * but empty arrays and/or null nodes.
-   * @param nodes list of nodes as returned from JsonUtils.getValues
+   * @param nodes list of nodes as returned from JsonUtils.findMatchingPaths
    * @return true if the list contains only empty array(s)
    */
   private boolean isEmpty(final Iterable<JsonNode> nodes)

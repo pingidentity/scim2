@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -445,6 +446,46 @@ public class JsonUtils
   }
 
   /**
+   * Gets a single value (node) from an ObjectNode at the supplied path.
+   * It is expected that there will only be one matching path.  If there
+   * are multiple matching paths (for example a path with filters can
+   * match multiple nodes), an exception will be thrown.
+   *
+   * For example:
+   *   With an ObjectNode representing:
+   *     {
+   *       "name":"Bob",
+   *       "favoriteColors":["red","green","blue"]
+   *     }
+   *
+   *   getValue(Path.fromString("name")
+   *   will return a TextNode containing "Bob"
+   *
+   *   getValue(Path.fromString("favoriteColors"))
+   *   will return an ArrayNode containing TextNodes with the following
+   *   values - "red", "green", and "blue".
+   *
+   * @param path The path to the attributes whose values to retrieve.
+   * @param node the ObjectNode to find the path in.
+   * @return the node located at the path, or a NullNode.
+   * @throws ScimException throw in case of errors.
+   */
+  public static JsonNode getValue(final Path path,
+      final ObjectNode node) throws ScimException
+  {
+    GatheringNodeVisitor visitor = new GatheringNodeVisitor(false);
+    traverseValues(visitor, node, 0, path);
+    if(visitor.values.isEmpty())
+    {
+      return NullNode.getInstance();
+    }
+    else
+    {
+      return visitor.values.get(0);
+    }
+  }
+
+  /**
    * Retrieve all JSON nodes referenced by the provided path. If the path
    * traverses through a JSON array, all nodes the array will be traversed.
    * For example, given the following ObjectNode:
@@ -502,7 +543,7 @@ public class JsonUtils
    * @return List of all JSON nodes referenced by the provided path.
    * @throws ScimException If an error occurs while traversing the JSON node.
    */
-  public static List<JsonNode> getValues(final Path path,
+  public static List<JsonNode> findMatchingPaths(final Path path,
                                          final ObjectNode node)
       throws ScimException
   {

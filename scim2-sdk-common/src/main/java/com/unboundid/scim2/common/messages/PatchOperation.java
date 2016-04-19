@@ -22,17 +22,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.Base64Variants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -608,7 +617,8 @@ public abstract class PatchOperation
   /**
    * Create a new add patch operation.
    *
-   * @param path The path targeted by this patch operation.
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
    * @param value The value(s) to add.
    *
    * @return The new add patch operation.
@@ -625,14 +635,616 @@ public abstract class PatchOperation
     }
   }
 
+  // String
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation addStringValues(
+      final String path, final List<String> values) throws ScimException
+  {
+    return addStringValues(Path.fromString(path), values);
+  }
+
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   */
+  public static PatchOperation addStringValues(
+      final Path path, final List<String> values)
+  {
+    ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
+    for(String value : values)
+    {
+      arrayNode.add(value);
+    }
+    return add(path, arrayNode);
+  }
+
   /**
    * Create a new replace patch operation.
    *
-   * @param value The value(s) to replace.
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation replace(
+      final String path, final String value) throws ScimException
+  {
+    return replace(path, TextNode.valueOf(value));
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be null.
    *
    * @return The new replace patch operation.
    */
-  public static PatchOperation replace(final JsonNode value)
+  public static PatchOperation replace(
+      final Path path, final String value)
+  {
+    return replace(path, TextNode.valueOf(value));
+  }
+
+  // Boolean
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation addBooleanValues(
+      final String path, final List<Boolean> values) throws ScimException
+  {
+    return addBooleanValues(Path.fromString(path), values);
+  }
+
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   */
+  public static PatchOperation addBooleanValues(
+      final Path path, final List<Boolean> values)
+  {
+    ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
+    for(Boolean value : values)
+    {
+      arrayNode.add(value);
+    }
+    return add(path, arrayNode);
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation replace(
+      final String path, final Boolean value) throws ScimException
+  {
+    return replace(path, BooleanNode.valueOf(value));
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   */
+  public static PatchOperation replace(
+      final Path path, final Boolean value)
+  {
+    return replace(path, BooleanNode.valueOf(value));
+  }
+
+
+  // Double
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation addDoubleValues(
+      final String path, final List<Double> values)
+      throws ScimException
+  {
+    return addDoubleValues(Path.fromString(path), values);
+  }
+
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   */
+  public static PatchOperation addDoubleValues(
+      final Path path, final List<Double> values)
+  {
+    ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
+    for(Double value : values)
+    {
+      arrayNode.add(value);
+    }
+    return add(path, arrayNode);
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation replace(
+      final String path, final Double value) throws ScimException
+  {
+    return replace(path, DoubleNode.valueOf(value));
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   */
+  public static PatchOperation replace(
+      final Path path, final Double value)
+  {
+    return replace(path, DoubleNode.valueOf(value));
+  }
+
+  // Integer
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation addIntegerValues(
+      final String path, final List<Integer> values) throws ScimException
+  {
+    return addIntegerValues(Path.fromString(path), values);
+  }
+
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   */
+  public static PatchOperation addIntegerValues(
+      final Path path, final List<Integer> values)
+  {
+    ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
+    for(Integer value : values)
+    {
+      arrayNode.add(value);
+    }
+    return add(path, arrayNode);
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation replace(
+      final String path, final Integer value) throws ScimException
+  {
+    return replace(path, IntNode.valueOf(value));
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   */
+  public static PatchOperation replace(
+      final Path path, final Integer value)
+  {
+    return replace(path, IntNode.valueOf(value));
+  }
+
+  // Long
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation addLongValues(
+      final String path, final List<Long> values) throws ScimException
+  {
+    return addLongValues(Path.fromString(path), values);
+  }
+
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   */
+  public static PatchOperation addLongValues(
+      final Path path, final List<Long> values)
+  {
+    ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
+    for(Long value : values)
+    {
+      arrayNode.add(value);
+    }
+    return add(path, arrayNode);
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation replace(
+      final String path, final Long value) throws ScimException
+  {
+    return replace(path, LongNode.valueOf(value));
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   */
+  public static PatchOperation replace(
+      final Path path, final Long value)
+  {
+    return replace(path, LongNode.valueOf(value));
+  }
+
+  // Date
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation addDateValues(
+      final String path, final List<Date> values) throws ScimException
+  {
+    return addDateValues(Path.fromString(path), values);
+  }
+
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException if an error occurs.
+   */
+  public static PatchOperation addDateValues(
+      final Path path, final List<Date> values) throws ScimException
+  {
+    ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
+    for(Date value : values)
+    {
+      arrayNode.add(GenericScimResource.getDateJsonNode(value).textValue());
+    }
+    return add(path, arrayNode);
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation replace(
+      final String path, final Date value) throws ScimException
+  {
+    String valueString =
+        GenericScimResource.getDateJsonNode(value).textValue();
+    return replace(path, valueString);
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException if an error occurs.
+   */
+  public static PatchOperation replace(
+      final Path path, final Date value) throws ScimException
+  {
+    String valueString =
+        GenericScimResource.getDateJsonNode(value).textValue();
+    return replace(path, valueString);
+  }
+
+  // Binary
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param values The value(s) to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation addBinaryValues(
+      final String path, final List<byte[]> values) throws ScimException
+  {
+    return addBinaryValues(Path.fromString(path), values);
+  }
+
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   */
+  public static PatchOperation addBinaryValues(
+      final Path path, final List<byte[]> values)
+  {
+    ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
+    for(byte[] value : values)
+    {
+      arrayNode.add(Base64Variants.getDefaultVariant().encode(value));
+    }
+    return add(path, arrayNode);
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation replace(
+      final String path, final byte[] value) throws ScimException
+  {
+    String valueString = Base64Variants.getDefaultVariant().encode(value);
+    return replace(path, valueString);
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   */
+  public static PatchOperation replace(
+      final Path path, final byte[] value)
+  {
+    String valueString = Base64Variants.getDefaultVariant().encode(value);
+    return replace(path, valueString);
+  }
+
+  // URI
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation addURIValues(
+      final String path, final List<URI> values) throws ScimException
+  {
+    return addURIValues(Path.fromString(path), values);
+  }
+
+  /**
+   * Create a new add patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param values The values to add.
+   *
+   * @return The new add patch operation.
+   */
+  public static PatchOperation addURIValues(
+      final Path path, final List<URI> values)
+  {
+    ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
+    for(URI value : values)
+    {
+      arrayNode.add(value.toString());
+    }
+    return add(path, arrayNode);
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param value The value(s) to replace.  The value must not be null.
+   *
+   * @return The new replace patch operation.
+   * @throws ScimException If the path is invalid.
+   */
+  public static PatchOperation replace(
+      final String path, final URI value) throws ScimException
+  {
+    return replace(path, value.toString());
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   */
+  public static PatchOperation replace(
+      final Path path, final URI value)
+  {
+    return replace(path, value.toString());
+  }
+
+  /**
+   * Create a new replace patch operation.
+   *
+   * @param value The value(s) to replace.  The value(s) must not be null.
+   *
+   * @return The new replace patch operation.
+   */
+  public static PatchOperation replace(final ObjectNode value)
   {
     return replace((Path) null, value);
   }
@@ -640,8 +1252,12 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.
-   * @param value The value(s) to replace.
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   *             Path string examples:
+   *               "userName eq 'bjensen'"
+   *               "userName"
+   * @param value The value(s) to replace.  The value(s) must not be null.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -655,8 +1271,9 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.
-   * @param value The value(s) to replace.
+   * @param path The path targeted by this patch operation.  The path
+   *             must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be null.
    *
    * @return The new replace patch operation.
    */

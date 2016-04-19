@@ -294,11 +294,11 @@ public class ExtensionsTest
     GenericScimResource commonScimObject = getGenericUser();
 
     ExtensionClass extensionClass = JsonUtils.nodeToValue(
-        commonScimObject.getValues(Path.root(ExtensionClass.class)).get(0),
+        commonScimObject.getValue(Path.root(ExtensionClass.class)),
         ExtensionClass.class);
     Map extensionAttrs = JsonUtils.nodeToValue(
-        commonScimObject.getValues(
-            "urn:unboundid:schemas:FavoriteColor:").get(0),
+        commonScimObject.getValue(
+            "urn:unboundid:schemas:FavoriteColor:"),
         Map.class);
 
     Assert.assertEquals(extensionClass.getFavoriteColor(),
