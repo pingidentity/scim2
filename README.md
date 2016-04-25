@@ -1,5 +1,7 @@
 # SCIM 2 SDK
-This is UnboundID's open source Java SDK for SCIM 2.0. SCIM, or _System for Cross-domain Identity Management_, is an IETF standard that defines an extensible schema mechanism and REST API for managing users.
+This is UnboundID's open source Java SDK for SCIM 2.0. 
+
+SCIM, or _System for Cross-domain Identity Management_, is an IETF standard that defines an extensible schema mechanism and REST API for managing users.
 
 The SCIM 2 SDK consists of the following components:
 * **scim2-sdk-client**: The SCIM 2 client library.
@@ -14,7 +16,7 @@ The SCIM 2 SDK is available as a component in Maven Central.
 <dependency>
   <groupId>com.unboundid.product.scim2</groupId>
   <artifactId>scim2-sdk-client</artifactId>
-  <version>1.1.33</version>
+  <version>1.1.34</version>
 </dependency>
 ```
 
@@ -52,4 +54,4 @@ service.modifyRequest(user3).addOperation(
 For detailed information about using the SCIM 2 SDK, including more examples, please see the [wiki](https://github.com/UnboundID/scim2/wiki).
 
 # License
-The SCIM 2 SDK is LGPL-licensed. See the [LICENSE.txt](resource/licenses/LICENSE.txt) file for more info.
+The SCIM 2 SDK is LGPL-licensed. See the [LICENSE.txt](LICENSE) file for more info.
