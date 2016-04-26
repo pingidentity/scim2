@@ -35,9 +35,9 @@ For clients using UnboundID-specific features:
 </dependency>
 ```
 
-You may also download SCIM 2 SDK builds from the [Releases](/UnboundID/scim2/releases) page.
+You may also download SCIM 2 SDK builds from the [Releases](https://github.com/UnboundID/scim2/releases) page.
 
-If you're looking for a Java SDK for SCIM 1.1, you can find it [here](/UnboundID/scim).
+If you're looking for a Java SDK for SCIM 1.1, you can find it [here](https://github.com/UnboundID/scim).
 
 # How to use it
 The SCIM 2 SDK requires Java 6 or greater. 
@@ -91,11 +91,11 @@ service.searchRequest("Users")
         .invoke(UserResource.class);
 ```
 
-For detailed information about using the SCIM 2 SDK, including more examples, please see the [wiki](/UnboundID/scim2/wiki).
+For detailed information about using the SCIM 2 SDK, including more examples, please see the [wiki](https://github.com/UnboundID/scim2/wiki).
 
 # Reporting issues
 
-Please report bug reports and enhancement requests through this project's [issue tracker](/UnboundID/scim2/issues).
+Please report bug reports and enhancement requests through this project's [issue tracker](https://github.com/UnboundID/scim2/issues).
 
 # License
 The SCIM 2 SDK is LGPL-licensed. See the [LICENSE](LICENSE) file for more info.
