@@ -1,16 +1,21 @@
 # SCIM 2 SDK
-This is UnboundID's open source Java SDK for SCIM 2.0. 
-
-SCIM, or _System for Cross-domain Identity Management_, is an IETF standard that defines an extensible schema mechanism and REST API for managing users.
+ [SCIM](http://www.simplecloud.info), or _System for Cross-domain Identity Management_, is an IETF standard that defines an extensible schema mechanism and REST API for **managing users and other identity data**. SCIM is used by a variety of vendors — including Facebook, Salesforce, Microsoft, Cisco, Sailpoint, and UnboundID — for a variety of cases, including user provisioning, directory services, attribute exchange, and more.
+  
+The UnboundID SCIM 2 SDK for Java provides a powerful and flexible set of APIs for interacting with SCIM service providers and resources. Use it to build applications and servers that interoperate with SCIM servers such as the [UnboundID Data Broker](https://www.unboundid.com/data-broker).
 
 The SCIM 2 SDK consists of the following components:
-* **scim2-sdk-client**: The SCIM 2 client library.
-* **scim2-sdk-common**: Shared model, exception, and utility classes.
-* **scim2-sdk-server**: Classes for use by SCIM 2 service providers.
-* **scim2-ubid-extensions**: Model classes representing UnboundID extensions to the SCIM standard.
+
+| Component name | What it is | Who needs it |
+| --- | --- | --- |
+| `scim2-sdk-client` | The SCIM 2 client API. | SCIM client developers. |
+| `scim2-ubid-extensions` | Model classes representing UnboundID extensions to the SCIM standard. | SCIM client developers using features specific to UnboundID servers. |
+| `scim2-sdk-server` | Classes for use by SCIM 2 service providers. | SCIM service provider implementers. |
+| `scim2-sdk-common` | Shared model, exception, and utility classes. | Included as a transitive dependency of all of the above. |
 
 # How to get it
-The SCIM 2 SDK is available as a component in Maven Central.
+The SCIM 2 SDK is available from Maven Central and can be included in your product like any other Maven dependency.
+
+For general-purpose clients:
 
 ```xml
 <dependency>
@@ -20,38 +25,77 @@ The SCIM 2 SDK is available as a component in Maven Central.
 </dependency>
 ```
 
-You may also download SCIM 2 SDK builds from the [Releases](https://github.com/UnboundID/scim2/releases) page.
+For clients using UnboundID-specific features:
+
+```xml
+<dependency>
+  <groupId>com.unboundid.product.scim2</groupId>
+  <artifactId>scim2-ubid-extensions</artifactId>
+  <version>1.1.34</version>
+</dependency>
+```
+
+You may also download SCIM 2 SDK builds from the [Releases](/UnboundID/scim2/releases) page.
+
+If you're looking for a Java SDK for SCIM 1.1, you can find it [here](/UnboundID/scim).
 
 # How to use it
 The SCIM 2 SDK requires Java 6 or greater. 
 
-The primary point of entry for a client is the `ScimService` class, which represents a SCIM service provider, such as the UnboundID Data Broker. This class acts as a wrapper for a JAX-RS client instance, providing methods for building requests and facilities for pathing through JSON objects.
+The primary point of entry for a client is the `ScimService` class, which represents a SCIM service provider, such as the UnboundID Data Broker. This class acts as a wrapper for a [JAX-RS](https://jax-rs-spec.java.net) client instance, providing methods for building and making requests. 
+
+Other classes provide facilities for selecting attributes by path, building query filters, and working with JSON documents. SCIM resources returned from a service provider can either be represented as POJOs or using an API based on the [Jackson](https://github.com/FasterXML/jackson-docs) tree model.
 
 ```java
 // Create a ScimService
-ClientConfig clientConfig = …
-Client client = ClientBuilder.newClient(clientConfig);
+Client client = ClientBuilder.newClient();
 WebTarget target = client.target("https://example.com/scim/v2");
 ScimService scimService = new ScimService(target);
 
+// Create a user
+UserResource user1 = new UserResource();
+user1.setUserName("babs");
+user1.setPassword("secret");
+Name name = new Name();
+name.setGivenName("Barbara");
+name.setFamilyName("Jensen");
+user1.setName(name);
+Email email = new Email();
+email.setType("home");
+email.setPrimary(true);
+email.setValue("babs@example.com");
+user1.setEmails(Collections.singletonList(email));
+user1 = scimClient.create("Users", user1);
+
 // Retrieve a user as a UserResource and modify using PUT
-UserResource user1 = scimClient.retrieve(ScimService.ME_URI, UserResource.class);
-user1.setNickName("Babs");
-scimClient.replace(user);
+UserResource user2 = scimClient.retrieve(ScimService.ME_URI, UserResource.class);
+user2.setNickName("Babs");
+user2 = scimClient.replace(user);
 
 // Retrieve a user as a GenericScimResource and modify using PUT
-GenericScimResource user2 = scimClient.retrieve(ScimService.ME_URI, GenericScimResource.class);
-user2.replaceValue("nickName", TextNode.valueOf("Babs"));
-service.replaceRequest(user2);
+GenericScimResource user3 = scimClient.retrieve(ScimService.ME_URI, GenericScimResource.class);
+user3.replaceValue("nickName", TextNode.valueOf("Babs"));
+user3 = service.replaceRequest(user3);
 
 // Modify using PATCH
-GenericScimResource user3 = scimClient.retrieve(ScimService.ME_URI, GenericScimResource.class);
-service.modifyRequest(user3).addOperation(
-          PatchOperation.replace("nickName", TextNode.valueOf("Babs")))
+GenericScimResource user4 = scimClient.retrieve(ScimService.ME_URI, GenericScimResource.class);
+service.modifyRequest(user4)
+          .replaceValue("nickName", "Babs")
           .invoke(GenericScimResource.class);
+
+// Search for a user
+service.searchRequest("Users")
+        .filter(Filter.eq("name.familyName", "Jensen").toString())
+        .page(1, 5)
+        .attributes("name")
+        .invoke(UserResource.class);
 ```
 
-For detailed information about using the SCIM 2 SDK, including more examples, please see the [wiki](https://github.com/UnboundID/scim2/wiki).
+For detailed information about using the SCIM 2 SDK, including more examples, please see the [wiki](/UnboundID/scim2/wiki).
+
+# Reporting issues
+
+Please report bug reports and enhancement requests through this project's [issue tracker](/UnboundID/scim2/issues).
 
 # License
-The SCIM 2 SDK is LGPL-licensed. See the [LICENSE.txt](LICENSE) file for more info.
+The SCIM 2 SDK is LGPL-licensed. See the [LICENSE](LICENSE) file for more info.
