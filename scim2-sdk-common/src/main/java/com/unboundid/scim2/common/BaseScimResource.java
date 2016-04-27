@@ -42,27 +42,25 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The base SCIM object.  This object contains all of the
- * attributes required of SCIM objects.
+ * <p>The base SCIM object.  This object contains all of the
+ * attributes required of SCIM objects.</p>
  *
- *
- * BaseScimResource is used when the schema is known ahead of
+ * <p>BaseScimResource is used when the schema is known ahead of
  * time.  In that case a developer can derive a class from
  * BaseScimResource and annotate the class.  The class should
  * be a Java bean.  This will make it easier to work with the SCIM
  * object since you will just have plain old getters and setters
  * for core attributes. Extension attributes can not be bound to
  * members of the class but they can still be accessed using the
- * getExtensionObjectNode method or the getExtensionValue,
- * replaceExtensionValue, and addExtensionValue methods.
+ * {@link #getExtensionObjectNode} method or the {@link #getExtensionValues},
+ * {@link #replaceExtensionValue}, and {@link #addExtensionValue} methods.</p>
  *
- *
- * If you have a BaseScimResource derived object, you can always get a
- * GenericScimResource by serializing the BaseScimResource
+ * <p>If you have a BaseScimResource derived object, you can always get a
+ * {@link GenericScimResource} by serializing the BaseScimResource
  * derived object into a JSON string, and deserializing back to a
- * GenericScimResource.  You could also go the other way.
+ * GenericScimResource.  You could also go the other way.</p>
  *
- * {@link GenericScimResource}
+ * @see GenericScimResource
  */
 @JsonPropertyOrder({ "schemas", "id", "externalId" })
 public abstract class BaseScimResource

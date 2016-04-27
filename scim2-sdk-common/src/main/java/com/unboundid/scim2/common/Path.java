@@ -34,7 +34,7 @@ import java.util.List;
  * This class represents a path to one or more JSON values that are the targets
  * of a SCIM PATCH operation. A path may also be used to describe which JSON
  * values to get or set when manipulating SCIM resources using the
- * GenericScimResourceObject class.
+ * {@link GenericScimResource} class.
  */
 public final class Path implements Iterable<Path.Element>
 {

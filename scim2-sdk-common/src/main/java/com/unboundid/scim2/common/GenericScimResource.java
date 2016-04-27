@@ -47,23 +47,23 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A generic SCIM object.  This object can be used if you have no
- * Java object representing the SCIM object being returned.
+ * <p>A generic SCIM object.  This object can be used if you have no
+ * Java object representing the SCIM object being returned.</p>
  *
- * This object can be used when the exact structure of the SCIM object
+ * <p>This object can be used when the exact structure of the SCIM object
  * that will be received as JSON text is not known.  This will provide
  * methods that can read attributes from those objects without needing
  * to know the schema ahead of time.  Another way to work with SCIM
  * objects is when you know ahead of time what the schema will be.  In
  * that case you could still use this object, but {@link BaseScimResource}
- * might be a better choice.
+ * might be a better choice.</p>
  *
- * If you have a BaseScimResource derived object, you can always get a
- * GenericScimResource by serializing the BaseScimResource
+ * <p>If you have a BaseScimResource derived object, you can always get a
+ * {@link GenericScimResource} by serializing the BaseScimResource
  * derived object into a JSON string, and deserializing back to a
- * GenericScimResource.  You could also go the other way.
+ * GenericScimResource.  You could also go the other way.</p>
  *
- * {@link BaseScimResource}
+ * @see BaseScimResource
  */
 @JsonDeserialize(using = GenericScimObjectDeserializer.class)
 @JsonSerialize(using = GenericScimObjectSerializer.class)
