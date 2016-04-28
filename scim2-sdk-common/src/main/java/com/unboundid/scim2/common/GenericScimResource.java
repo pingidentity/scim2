@@ -693,7 +693,8 @@ public final class GenericScimResource implements ScimResource
    */
   public String getStringValue(final Path path) throws ScimException
   {
-    return getValue(path).textValue();
+    JsonNode jsonNode = getValue(path);
+    return jsonNode.isNull() ? null : jsonNode.textValue();
   }
 
   /**
@@ -988,7 +989,8 @@ public final class GenericScimResource implements ScimResource
    */
   public Boolean getBooleanValue(final Path path) throws ScimException
   {
-    return getValue(path).booleanValue();
+    JsonNode jsonNode = getValue(path);
+    return jsonNode.isNull() ? null : jsonNode.booleanValue();
   }
 
   /**
@@ -1282,7 +1284,8 @@ public final class GenericScimResource implements ScimResource
    */
   public Double getDoubleValue(final Path path) throws ScimException
   {
-    return getValue(path).doubleValue();
+    JsonNode jsonNode = getValue(path);
+    return jsonNode.isNull() ? null : jsonNode.doubleValue();
   }
 
   /**
@@ -1575,7 +1578,8 @@ public final class GenericScimResource implements ScimResource
    */
   public Integer getIntegerValue(final Path path) throws ScimException
   {
-    return getValue(path).intValue();
+    JsonNode jsonNode = getValue(path);
+    return jsonNode.isNull() ? null : jsonNode.intValue();
   }
 
   /**
@@ -1869,7 +1873,8 @@ public final class GenericScimResource implements ScimResource
    */
   public Long getLongValue(final Path path) throws ScimException
   {
-    return getValue(path).longValue();
+    JsonNode jsonNode = getValue(path);
+    return jsonNode.isNull() ? null : jsonNode.longValue();
   }
 
   /**
@@ -2162,7 +2167,12 @@ public final class GenericScimResource implements ScimResource
    */
   public Date getDateValue(final Path path) throws ScimException
   {
-    String dateString = getValue(path).textValue();
+    JsonNode jsonNode = getValue(path);
+    if(jsonNode.isNull())
+    {
+      return null;
+    }
+    String dateString = jsonNode.textValue();
     return getDateForString(dateString);
   }
 
@@ -2517,7 +2527,13 @@ public final class GenericScimResource implements ScimResource
    */
   public byte[] getBinaryValue(final Path path) throws ScimException
   {
-    String binaryString = getValue(path).textValue();
+    JsonNode jsonNode = getValue(path);
+    if(jsonNode.isNull())
+    {
+      return null;
+    }
+
+    String binaryString = jsonNode.textValue();
     return getBinaryForString(binaryString);
   }
 
@@ -2831,7 +2847,8 @@ public final class GenericScimResource implements ScimResource
   {
     try
     {
-      return new URI(getValue(path).textValue());
+      JsonNode jsonNode = getValue(path);
+      return jsonNode.isNull() ? null : new URI(jsonNode.textValue());
     }
     catch(URISyntaxException ex)
     {

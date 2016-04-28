@@ -166,6 +166,11 @@ public class GenericScimResourceObjectTest
     Assert.assertTrue(list2.contains(arrayValue3));
     Assert.assertTrue(list2.contains(arrayValue4));
 
+    Assert.assertNull(gsr.getStringValue("bogusPath"));
+    Assert.assertNull(gsr.getStringValue(Path.fromString("bogusPath")));
+    Assert.assertTrue(gsr.getStringValueList("bogusPath").isEmpty());
+    Assert.assertTrue(gsr.getStringValueList(
+        Path.fromString("bogusPath")).isEmpty());
   }
 
   /**
@@ -205,6 +210,12 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals(list2.size(), 2);
     Assert.assertTrue(list2.contains(arrayValue3));
     Assert.assertTrue(list2.contains(arrayValue4));
+
+    Assert.assertNull(gsr.getBooleanValue("bogusPath"));
+    Assert.assertNull(gsr.getBooleanValue(Path.fromString("bogusPath")));
+    Assert.assertTrue(gsr.getBooleanValueList("bogusPath").isEmpty());
+    Assert.assertTrue(gsr.getBooleanValueList(
+        Path.fromString("bogusPath")).isEmpty());
   }
 
   /**
@@ -241,6 +252,11 @@ public class GenericScimResourceObjectTest
         getDoubleValueList(path4);
     Assert.assertEquals(list2.size(), 2);
 
+    Assert.assertNull(gsr.getDoubleValue("bogusPath"));
+    Assert.assertNull(gsr.getDoubleValue(Path.fromString("bogusPath")));
+    Assert.assertTrue(gsr.getDoubleValueList("bogusPath").isEmpty());
+    Assert.assertTrue(gsr.getDoubleValueList(
+        Path.fromString("bogusPath")).isEmpty());
   }
 
   /**
@@ -280,6 +296,12 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals(list2.size(), 2);
     Assert.assertTrue(list2.contains(arrayValue3));
     Assert.assertTrue(list2.contains(arrayValue4));
+
+    Assert.assertNull(gsr.getIntegerValue("bogusPath"));
+    Assert.assertNull(gsr.getIntegerValue(Path.fromString("bogusPath")));
+    Assert.assertTrue(gsr.getIntegerValueList("bogusPath").isEmpty());
+    Assert.assertTrue(gsr.getIntegerValueList(
+        Path.fromString("bogusPath")).isEmpty());
   }
 
   /**
@@ -319,6 +341,12 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals(list2.size(), 2);
     Assert.assertTrue(list2.contains(arrayValue3));
     Assert.assertTrue(list2.contains(arrayValue4));
+
+    Assert.assertNull(gsr.getLongValue("bogusPath"));
+    Assert.assertNull(gsr.getLongValue(Path.fromString("bogusPath")));
+    Assert.assertTrue(gsr.getLongValueList("bogusPath").isEmpty());
+    Assert.assertTrue(gsr.getLongValueList(
+        Path.fromString("bogusPath")).isEmpty());
   }
 
   /**
@@ -358,6 +386,12 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals(list2.size(), 2);
     Assert.assertTrue(list2.contains(arrayValue3));
     Assert.assertTrue(list2.contains(arrayValue4));
+
+    Assert.assertNull(gsr.getDateValue("bogusPath"));
+    Assert.assertNull(gsr.getDateValue(Path.fromString("bogusPath")));
+    Assert.assertTrue(gsr.getDateValueList("bogusPath").isEmpty());
+    Assert.assertTrue(gsr.getDateValueList(
+        Path.fromString("bogusPath")).isEmpty());
   }
 
   /**
@@ -402,6 +436,12 @@ public class GenericScimResourceObjectTest
 
     Assert.assertEquals(gsr.replaceValue(path5, relativeUri1).
         getURIValue(path5), relativeUri1);
+
+    Assert.assertNull(gsr.getURIValue("bogusPath"));
+    Assert.assertNull(gsr.getURIValue(Path.fromString("bogusPath")));
+    Assert.assertTrue(gsr.getURIValueList("bogusPath").isEmpty());
+    Assert.assertTrue(gsr.getURIValueList(
+        Path.fromString("bogusPath")).isEmpty());
   }
 
   /**
@@ -441,6 +481,12 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals(list2.size(), 2);
     assertByteArrayListContainsBytes(list2, arrayValue3);
     assertByteArrayListContainsBytes(list2, arrayValue4);
+
+    Assert.assertNull(gsr.getBinaryValue("bogusPath"));
+    Assert.assertNull(gsr.getBinaryValue(Path.fromString("bogusPath")));
+    Assert.assertTrue(gsr.getBinaryValueList("bogusPath").isEmpty());
+    Assert.assertTrue(gsr.getBinaryValueList(
+        Path.fromString("bogusPath")).isEmpty());
   }
 
   private void assertByteArrayListContainsBytes(
