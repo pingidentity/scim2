@@ -56,14 +56,14 @@ ScimService scimService = new ScimService(target);
 UserResource user1 = new UserResource();
 user1.setUserName("babs");
 user1.setPassword("secret");
-Name name = new Name();
-name.setGivenName("Barbara");
-name.setFamilyName("Jensen");
+Name name = new Name()
+  .setGivenName("Barbara")
+  .setFamilyName("Jensen");
 user1.setName(name);
-Email email = new Email();
-email.setType("home");
-email.setPrimary(true);
-email.setValue("babs@example.com");
+Email email = new Email()
+  .setType("home")
+  .setPrimary(true)
+  .setValue("babs@example.com");
 user1.setEmails(Collections.singletonList(email));
 user1 = scimClient.create("Users", user1);
 
