@@ -59,9 +59,10 @@ import java.util.List;
  * might be a better choice.</p>
  *
  * <p>If you have a BaseScimResource derived object, you can always get a
- * {@link GenericScimResource} by serializing the BaseScimResource
- * derived object into a JSON string, and deserializing back to a
- * GenericScimResource.  You could also go the other way.</p>
+ * {@link GenericScimResource} by calling {@link #asGenericScimResource()}.
+ * You could also go the other way by calling
+ * {@link GenericScimResource#getObjectNode()}, followed by
+ * {@link JsonUtils#nodeToValue(JsonNode, Class)}.</p>
  *
  * @see BaseScimResource
  */

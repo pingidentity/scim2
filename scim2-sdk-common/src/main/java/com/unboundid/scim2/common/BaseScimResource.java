@@ -50,15 +50,16 @@ import java.util.Set;
  * BaseScimResource and annotate the class.  The class should
  * be a Java bean.  This will make it easier to work with the SCIM
  * object since you will just have plain old getters and setters
- * for core attributes. Extension attributes can not be bound to
+ * for core attributes. Extension attributes cannot be bound to
  * members of the class but they can still be accessed using the
  * {@link #getExtensionObjectNode} method or the {@link #getExtensionValues},
  * {@link #replaceExtensionValue}, and {@link #addExtensionValue} methods.</p>
  *
  * <p>If you have a BaseScimResource derived object, you can always get a
- * {@link GenericScimResource} by serializing the BaseScimResource
- * derived object into a JSON string, and deserializing back to a
- * GenericScimResource.  You could also go the other way.</p>
+ * {@link GenericScimResource} by calling {@link #asGenericScimResource()}.
+ * You could also go the other way by calling
+ * {@link GenericScimResource#getObjectNode()}, followed by
+ * {@link JsonUtils#nodeToValue(JsonNode, Class)}.</p>
  *
  * @see GenericScimResource
  */
