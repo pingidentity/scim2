@@ -1,5 +1,5 @@
 # SCIM 2 SDK
- [SCIM](http://www.simplecloud.info), or _System for Cross-domain Identity Management_, is an IETF standard that defines an extensible schema mechanism and REST API for **managing users and other identity data**. SCIM is used by a variety of vendors — including Facebook, Salesforce, Microsoft, Cisco, Sailpoint, and UnboundID — for a variety of cases, including user provisioning, directory services, attribute exchange, and more.
+ [SCIM](http://www.simplecloud.info), or _System for Cross-domain Identity Management_, is an IETF standard that defines an extensible schema mechanism and REST API for **managing users and other identity data**. SCIM is used by a variety of vendors — including Facebook, Salesforce, Microsoft, Cisco, Sailpoint, and UnboundID — for a variety of purposes, including user provisioning, directory services, attribute exchange, and more.
   
 The UnboundID SCIM 2 SDK for Java provides a powerful and flexible set of APIs for interacting with SCIM service providers and resources. Use it to build applications and servers that interoperate with SCIM servers such as the [UnboundID Data Broker](https://www.unboundid.com/data-broker).
 
@@ -21,7 +21,7 @@ For general-purpose clients:
 <dependency>
   <groupId>com.unboundid.product.scim2</groupId>
   <artifactId>scim2-sdk-client</artifactId>
-  <version>1.1.34</version>
+  <version>1.1.35</version>
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ For clients using UnboundID-specific features:
 <dependency>
   <groupId>com.unboundid.product.scim2</groupId>
   <artifactId>scim2-ubid-extensions</artifactId>
-  <version>1.1.34</version>
+  <version>1.1.35</version>
 </dependency>
 ```
 
@@ -65,26 +65,35 @@ Email email = new Email()
   .setPrimary(true)
   .setValue("babs@example.com");
 user1.setEmails(Collections.singletonList(email));
-user1 = scimClient.create("Users", user1);
+user1 = scimService.create("Users", user1);
 
-// Retrieve a user as a UserResource and modify using PUT
-UserResource user2 = scimClient.retrieve(ScimService.ME_URI, UserResource.class);
+// Retrieve a user as a UserResource and 
+// replace with a modified instance using PUT
+UserResource user2 = 
+  scimClient.retrieve(ScimService.ME_URI, UserResource.class);
 user2.setNickName("Babs");
-user2 = scimClient.replace(user);
+user2 = scimService.replace(user);
 
-// Retrieve a user as a GenericScimResource and modify using PUT
-GenericScimResource user3 = scimClient.retrieve(ScimService.ME_URI, GenericScimResource.class);
+// Retrieve a user as a GenericScimResource and 
+// replace with a modified instance using PUT
+GenericScimResource user3 = 
+  scimService.retrieve(ScimService.ME_URI, GenericScimResource.class);
 user3.replaceValue("nickName", TextNode.valueOf("Babs"));
 user3 = service.replaceRequest(user3);
 
-// Modify using PATCH
-GenericScimResource user4 = scimClient.retrieve(ScimService.ME_URI, GenericScimResource.class);
-service.modifyRequest(user4)
-          .replaceValue("nickName", "Babs")
-          .invoke(GenericScimResource.class);
+// Perform a partial modification of a user using PATCH
+scimService.modifyRequest(ScimService.ME_URI)
+           .replaceValue("nickName", "Babs")
+           .invoke(GenericScimResource.class);
 
-// Search for a user
-service.searchRequest("Users")
+// Perform a password change using PATCH
+scimService.modifyRequest(ScimService.ME_URI)
+           .replaceValue("password", "new-password")
+           .invoke(GenericScimResource.class);
+
+// Search for users
+ListResponse<UserResource> searchResponse =
+  scimService.searchRequest("Users")
         .filter(Filter.eq("name.familyName", "Jensen").toString())
         .page(1, 5)
         .attributes("name")
