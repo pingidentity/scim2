@@ -20,6 +20,8 @@ package com.unboundid.scim2.server;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.common.collect.Lists;
+import com.unboundid.scim2.client.ScimInterface;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
@@ -29,6 +31,7 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.messages.PatchOperation;
+import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.Email;
@@ -67,8 +70,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
@@ -627,6 +632,95 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         replaceValue("name.middleName", "the").
         replaceValue("emails[type eq \"work\"].value", "bobNew@tester.com").
         addValues("phoneNumbers", phone1, phone2).invoke();
+
+    assertNull(updatedUser.getDisplayName());
+    assertEquals(updatedUser.getName().getMiddleName(), "the");
+    assertEquals(updatedUser.getEmails().get(0).getValue(),
+        "bobNew@tester.com");
+    assertEquals(updatedUser.getPhoneNumbers().size(), 2);
+    assertTrue(contains(updatedUser.getPhoneNumbers(), phone1));
+    assertTrue(contains(updatedUser.getPhoneNumbers(), phone2));
+  }
+
+  /**
+   * Test patch operation.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testPatchThroughScimInterface_resource() throws ScimException
+  {
+    ScimInterface scimInterface = new ScimService(target());
+
+    // Create a new user.
+    UserResource newUser = new UserResource().setUserName("patchUser");
+    newUser.setDisplayName("removeMe");
+    newUser.setName(new Name().setGivenName("Bob").setFamilyName("Tester"));
+    newUser.setEmails(Collections.singletonList(
+        new Email().setValue("bob@tester.com").setType("work")));
+    UserResource createdUser =
+        scimInterface.create("SingletonUsers", newUser);
+
+    PhoneNumber phone1 = new PhoneNumber().
+        setValue("1234567890").setType("home");
+    PhoneNumber phone2 = new PhoneNumber().
+        setValue("123123123").setType("work").setPrimary(true);
+
+    List<PatchOperation> patchOperations = new ArrayList<PatchOperation>();
+    patchOperations.add(PatchOperation.remove("displayName"));
+    patchOperations.add(PatchOperation.replace("name.middleName", "the"));
+    patchOperations.add(PatchOperation.replace(
+        "emails[type eq \"work\"].value", "bobNew@tester.com"));
+    patchOperations.add(PatchOperation.add("phoneNumbers",
+        JsonUtils.valueToNode(Lists.newArrayList(phone1, phone2))));
+
+    UserResource updatedUser = scimInterface.modifyRequest(
+        createdUser, new PatchRequest(patchOperations));
+
+    assertNull(updatedUser.getDisplayName());
+    assertEquals(updatedUser.getName().getMiddleName(), "the");
+    assertEquals(updatedUser.getEmails().get(0).getValue(),
+        "bobNew@tester.com");
+    assertEquals(updatedUser.getPhoneNumbers().size(), 2);
+    assertTrue(contains(updatedUser.getPhoneNumbers(), phone1));
+    assertTrue(contains(updatedUser.getPhoneNumbers(), phone2));
+  }
+
+  /**
+   * Test patch operation.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testPatchThroughScimInterface_typeId() throws ScimException
+  {
+    ScimInterface scimInterface = new ScimService(target());
+
+    // Create a new user.
+    UserResource newUser = new UserResource().setUserName("patchUser");
+    newUser.setDisplayName("removeMe");
+    newUser.setName(new Name().setGivenName("Bob").setFamilyName("Tester"));
+    newUser.setEmails(Collections.singletonList(
+        new Email().setValue("bob@tester.com").setType("work")));
+    UserResource createdUser =
+        scimInterface.create("SingletonUsers", newUser);
+
+    PhoneNumber phone1 = new PhoneNumber().
+        setValue("1234567890").setType("home");
+    PhoneNumber phone2 = new PhoneNumber().
+        setValue("123123123").setType("work").setPrimary(true);
+
+    List<PatchOperation> patchOperations = new ArrayList<PatchOperation>();
+    patchOperations.add(PatchOperation.remove("displayName"));
+    patchOperations.add(PatchOperation.replace("name.middleName", "the"));
+    patchOperations.add(PatchOperation.replace(
+        "emails[type eq \"work\"].value", "bobNew@tester.com"));
+    patchOperations.add(PatchOperation.add("phoneNumbers",
+        JsonUtils.valueToNode(Lists.newArrayList(phone1, phone2))));
+
+    UserResource updatedUser = scimInterface.modifyRequest(
+        "SingletonUsers", createdUser.getId(),
+        new PatchRequest(patchOperations), UserResource.class);
 
     assertNull(updatedUser.getDisplayName());
     assertEquals(updatedUser.getName().getMiddleName(), "the");

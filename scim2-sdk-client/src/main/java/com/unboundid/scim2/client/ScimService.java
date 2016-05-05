@@ -24,26 +24,34 @@ import com.unboundid.scim2.client.requests.ModifyRequestBuilder;
 import com.unboundid.scim2.client.requests.ReplaceRequestBuilder;
 import com.unboundid.scim2.client.requests.RetrieveRequestBuilder;
 import com.unboundid.scim2.client.requests.SearchRequestBuilder;
+import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.messages.ListResponse;
+import com.unboundid.scim2.common.messages.PatchOperation;
+import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.types.SchemaResource;
-import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
-import com.unboundid.scim2.common.exceptions.ScimException;
-import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import java.net.URI;
 
-import static com.unboundid.scim2.common.utils.ApiConstants.*;
+import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
+import static com.unboundid.scim2.common.utils.ApiConstants.ME_ENDPOINT;
+import static com.unboundid.scim2.common.utils.
+    ApiConstants.RESOURCE_TYPES_ENDPOINT;
+import static com.unboundid.scim2.common.utils.ApiConstants.SCHEMAS_ENDPOINT;
+import static com.unboundid.scim2.common.utils.
+    ApiConstants.SERVICE_PROVIDER_CONFIG_ENDPOINT;
 
 /**
  * The main entry point to the client API used to access a SCIM 2.0 service
  * provider.
  */
-public class ScimService
+public class ScimService implements ScimInterface
 {
   /**
    * The authenticated subject alias.
@@ -385,6 +393,23 @@ public class ScimService
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public <T extends ScimResource> T modifyRequest(final String endpoint,
+      final String id, final PatchRequest patchRequest, final Class<T> clazz)
+      throws ScimException
+  {
+    ModifyRequestBuilder.Typed requestBuilder = new ModifyRequestBuilder.Typed(
+        baseTarget.path(endpoint).path(id));
+    for(PatchOperation op : patchRequest.getOperations())
+    {
+      requestBuilder.addOperation(op);
+    }
+    return requestBuilder.invoke(clazz);
+  }
+
+  /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
    * of operations to "add", "remove", or "replace" values. The service provider
    * configuration maybe used to discover service provider support for PATCH.
@@ -403,6 +428,7 @@ public class ScimService
         baseTarget.path(endpoint).path(id));
   }
 
+
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
    * of operations to "add", "remove", or "replace" values. The service provider
@@ -417,6 +443,23 @@ public class ScimService
   {
     return new ModifyRequestBuilder.Typed(resolveWebTarget(url));
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public <T extends ScimResource> T modifyRequest(
+      final T resource, final PatchRequest patchRequest) throws ScimException
+  {
+    ModifyRequestBuilder.Generic<T> requestBuilder =
+        new ModifyRequestBuilder.Generic<T>(resolveWebTarget(
+            checkAndGetLocation(resource)), resource);
+    for(PatchOperation op : patchRequest.getOperations())
+    {
+      requestBuilder.addOperation(op);
+    }
+    return requestBuilder.invoke();
+ }
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
@@ -530,5 +573,12 @@ public class ScimService
     return meta.getLocation();
   }
 
-
+  /**
+   * {@inheritDoc}
+   */
+  public <T extends ScimResource> ListResponse<T> search(final String endpoint,
+      final String filter, final Class<T> clazz) throws ScimException
+  {
+    return searchRequest(endpoint).filter(filter).invoke(clazz);
+  }
 }
