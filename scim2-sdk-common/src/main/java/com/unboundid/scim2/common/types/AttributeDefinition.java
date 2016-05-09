@@ -64,7 +64,7 @@ public class AttributeDefinition
     /**
      * Datetime datatype.
      */
-    DATETIME("datetime"),
+    DATETIME("dateTime"),
 
     /**
      * Binary datatype.
@@ -116,7 +116,7 @@ public class AttributeDefinition
     {
       for(Type type : Type.values())
       {
-        if(type.getName().equals(name))
+        if(type.getName().equalsIgnoreCase(name))
         {
           return type;
         }
@@ -195,7 +195,7 @@ public class AttributeDefinition
     {
       for(Mutability mutability : Mutability.values())
       {
-        if(mutability.getName().equals(name))
+        if(mutability.getName().equalsIgnoreCase(name))
         {
           return mutability;
         }
@@ -275,7 +275,7 @@ public class AttributeDefinition
     {
       for(Returned returned : Returned.values())
       {
-        if(returned.getName().equals(name))
+        if(returned.getName().equalsIgnoreCase(name))
         {
           return returned;
         }
@@ -342,7 +342,7 @@ public class AttributeDefinition
     {
       for(Uniqueness uniqueness : Uniqueness.values())
       {
-        if(uniqueness.getName().equals(name))
+        if(uniqueness.getName().equalsIgnoreCase(name))
         {
           return uniqueness;
         }
