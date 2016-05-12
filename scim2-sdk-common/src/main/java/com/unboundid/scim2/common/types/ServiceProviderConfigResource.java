@@ -43,10 +43,10 @@ import java.util.List;
     description = "SCIM 2.0 Service Provider Config Resource")
 public class ServiceProviderConfigResource extends BaseScimResource
 {
-  @Attribute(description = "An HTTP addressable URL pointing to the " +
+  @Attribute(description = "An HTTP addressable URI pointing to the " +
       "service provider's human consumable help documentation.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private final String documentationUrl;
+  private final String documentationUri;
 
   @Attribute(description = "A complex type that specifies PATCH " +
       "configuration options.",
@@ -93,7 +93,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
   /**
    * Create a new ServiceProviderConfig.
    *
-   * @param documentationUrl An HTTP addressable URL pointing to the service
+   * @param documentationUri An HTTP addressable URI pointing to the service
    *                         provider's human consumable help documentation.
    * @param patch A complex type that specifies PATCH configuration options.
    * @param bulk A complex type that specifies Bulk configuration options.
@@ -107,7 +107,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    */
   @JsonCreator
   public ServiceProviderConfigResource(
-      @JsonProperty(value = "documentationUrl") final String documentationUrl,
+      @JsonProperty(value = "documentationUri") final String documentationUri,
       @JsonProperty(value = "patch", required = true) final PatchConfig patch,
       @JsonProperty(value = "bulk", required = true) final BulkConfig bulk,
       @JsonProperty(value = "filter", required = true)
@@ -119,7 +119,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
       @JsonProperty(value = "authenticationSchemes", required = true)
       final List<AuthenticationScheme> authenticationSchemes)
   {
-    this.documentationUrl = documentationUrl;
+    this.documentationUri = documentationUri;
     this.patch = patch;
     this.bulk = bulk;
     this.filter = filter;
@@ -131,15 +131,15 @@ public class ServiceProviderConfigResource extends BaseScimResource
   }
 
   /**
-   * Retrieves the HTTP addressable URL pointing to the service provider's
+   * Retrieves the HTTP addressable URI pointing to the service provider's
    * human consumable help documentation.
    *
-   * @return The HTTP addressable URL pointing to the service provider's
+   * @return The HTTP addressable URI pointing to the service provider's
    * human consumable help documentation.
    */
-  public String getDocumentationUrl()
+  public String getDocumentationUri()
   {
-    return documentationUrl;
+    return documentationUri;
   }
 
   /**
@@ -251,8 +251,8 @@ public class ServiceProviderConfigResource extends BaseScimResource
     {
       return false;
     }
-    if (documentationUrl != null ? !documentationUrl.equals(
-        that.documentationUrl) : that.documentationUrl != null)
+    if (documentationUri != null ? !documentationUri.equals(
+        that.documentationUri) : that.documentationUri != null)
     {
       return false;
     }
@@ -283,8 +283,8 @@ public class ServiceProviderConfigResource extends BaseScimResource
   public int hashCode()
   {
     int result = super.hashCode();
-    result = 31 * result + (documentationUrl != null ?
-        documentationUrl.hashCode() : 0);
+    result = 31 * result + (documentationUri != null ?
+        documentationUri.hashCode() : 0);
     result = 31 * result + (patch != null ? patch.hashCode() : 0);
     result = 31 * result + (bulk != null ? bulk.hashCode() : 0);
     result = 31 * result + (filter != null ? filter.hashCode() : 0);
