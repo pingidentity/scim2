@@ -19,7 +19,9 @@ package com.unboundid.scim2.client.requests;
 
 import com.unboundid.scim2.common.exceptions.ScimException;
 
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 /**
@@ -27,6 +29,8 @@ import javax.ws.rs.core.Response;
  */
 public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
 {
+  private String version;
+
   /**
    * Create a new DeleteRequestBuilder.
    *
@@ -35,6 +39,33 @@ public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
   public DeleteRequestBuilder(final WebTarget target)
   {
     super(target);
+  }
+
+  /**
+   * Delete the resource only if the resource has not been modified since the
+   * provided version.
+   *
+   * @param version The version of the resource to compare.
+   * @return This builder.
+   */
+  public DeleteRequestBuilder ifMatch(final String version)
+  {
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  Invocation.Builder buildRequest()
+  {
+    Invocation.Builder request = super.buildRequest();
+    if(version != null)
+    {
+      request.header(HttpHeaders.IF_MATCH, version);
+    }
+    return request;
   }
 
   /**
