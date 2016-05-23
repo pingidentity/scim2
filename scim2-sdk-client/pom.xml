@@ -15,15 +15,15 @@
 ~ along with this program; if not, see <http://www.gnu.org/licenses>.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>scim2-parent</artifactId>
-    <groupId>com.unboundid.product.scim2</groupId>
-    <version>1.1.36-SNAPSHOT</version>
-  </parent>
-  <artifactId>scim2-sdk-client</artifactId>
-  <packaging>jar</packaging>
-  <name>UnboundID SCIM2 SDK Client</name>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>scim2-parent</artifactId>
+        <groupId>com.unboundid.product.scim2</groupId>
+        <version>1.1.37-SNAPSHOT</version>
+    </parent>
+    <artifactId>scim2-sdk-client</artifactId>
+    <packaging>jar</packaging>
+    <name>UnboundID SCIM2 SDK Client</name>
 
   <properties>
     <build.product.name>${project.name}</build.product.name>
@@ -224,35 +224,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <configuration>
-              <target>
-                <echo message="create version class" />
-                <copy todir="target/java-gen">
-                  <fileset dir="src/main/stubs" />
-                  <globmapper from="*.java.stub" to="*.java" />
-                  <filterset>
-                    <filter token="PRODUCT_NAME" value="${build.product.name}" />
-                    <filter token="SHORT_NAME" value="${build.product.short.name}" />
-                    <filter token="VERSION" value="${build.version}" />
-                    <filter token="BUILD_TIMESTAMP" value="${build.timestamp}" />
-                    <filter token="GIT_PATH" value="${scmBranch}" />
-                    <filter token="GIT_REVISION" value="${buildNumber}" />
-                  </filterset>
-                </copy>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.5</version>
@@ -273,12 +244,12 @@
     </plugins>
   </build>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.unboundid.product.scim2</groupId>
-      <artifactId>scim2-sdk-common</artifactId>
-      <version>1.1.36-SNAPSHOT</version>
-    </dependency>
+    <dependencies>
+      <dependency>
+        <groupId>com.unboundid.product.scim2</groupId>
+        <artifactId>scim2-sdk-common</artifactId>
+        <version>1.1.37-SNAPSHOT</version>
+      </dependency>
 
     <dependency>
       <groupId>javax.ws.rs</groupId>

@@ -15,21 +15,21 @@
 ~ along with this program; if not, see <http://www.gnu.org/licenses>.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>scim2-parent</artifactId>
-    <groupId>com.unboundid.product.scim2</groupId>
-    <version>1.1.36-SNAPSHOT</version>
-  </parent>
-  <artifactId>scim2-sdk-common</artifactId>
-  <packaging>jar</packaging>
-  <name>UnboundID SCIM2 SDK Common</name>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>scim2-parent</artifactId>
+        <groupId>com.unboundid.product.scim2</groupId>
+        <version>1.1.37-SNAPSHOT</version>
+    </parent>
+    <artifactId>scim2-sdk-common</artifactId>
+    <packaging>jar</packaging>
+    <name>UnboundID SCIM2 SDK Common</name>
 
-  <properties>
-    <build.product.name>${project.name}</build.product.name>
-    <build.product.short.name>${project.artifactId}</build.product.short.name>
-    <build.version>${project.version}</build.version>
-  </properties>
+    <properties>
+      <build.product.name>${project.name}</build.product.name>
+      <build.product.short.name>${project.artifactId}</build.product.short.name>
+      <build.version>${project.version}</build.version>
+    </properties>
 
   <build>
     <plugins>
