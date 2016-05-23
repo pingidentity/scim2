@@ -1,213 +1,290 @@
 <!--
-  ~ Copyright 2015-2016 UnboundID Corp.
-  ~
-  ~ This program is free software; you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License (GPLv2 only)
-  ~ or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
-  ~ as published by the Free Software Foundation.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
-  -->
-
+~ Copyright 2015-2016 UnboundID Corp.
+~
+~ This program is free software; you can redistribute it and/or modify
+~ it under the terms of the GNU General Public License (GPLv2 only)
+~ or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
+~ as published by the Free Software Foundation.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU General Public License for more details.
+~
+~ You should have received a copy of the GNU General Public License
+~ along with this program; if not, see <http://www.gnu.org/licenses>.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <artifactId>scim2-parent</artifactId>
-        <groupId>com.unboundid.product.scim2</groupId>
-        <version>1.1.36-SNAPSHOT</version>
-    </parent>
-    <artifactId>scim2-sdk-client</artifactId>
-    <packaging>jar</packaging>
-    <name>UnboundID SCIM 2 SDK Client</name>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>scim2-parent</artifactId>
+    <groupId>com.unboundid.product.scim2</groupId>
+    <version>1.1.36-SNAPSHOT</version>
+  </parent>
+  <artifactId>scim2-sdk-client</artifactId>
+  <packaging>jar</packaging>
+  <name>UnboundID SCIM2 SDK Client</name>
 
-    <properties>
-        <build.product.name>${project.name}</build.product.name>
-        <build.product.short.name>${project.artifactId}</build.product.short.name>
-        <build.version>${project.version}</build.version>
-    </properties>
+  <properties>
+    <build.product.name>${project.name}</build.product.name>
+    <build.product.short.name>${project.artifactId}</build.product.short.name>
+    <build.version>${project.version}</build.version>
+  </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-source-plugin</artifactId>
-              <executions>
-                <execution>
-                  <!-- A jar of the project sources is required for publishing to
-                       Maven Central. -->
-                  <goals>
-                    <goal>jar</goal>
-                  </goals>
-                  <configuration>
-                    <archive>
-                      <addMavenDescriptor>false</addMavenDescriptor>
-                    </archive>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                  <execution>
-                    <id>create-test-jar</id>
-                    <goals>
-                      <goal>test-jar</goal>
-                    </goals>
-                  </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>create-zip-archive</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${project.basedir}/src/main/assemblies/zip.xml</descriptor>
-                            </descriptors>
-                            <attach>false</attach>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                    </execution>
-                    <execution>
-                    <!-- We use an assembly instead of the maven-javadoc-plugin to
-                         create the javadoc jar (required for publishing to Maven Central)
-                         because we have copied in certain resources to the javadoc directory.
-                         See the SCIM-Parent POM for more info. -->
-                        <id>create-javadoc-archive</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${project.basedir}/src/main/assemblies/javadoc.xml</descriptor>
-                            </descriptors>
-                            <attach>false</attach>
-                            <appendAssemblyId>true</appendAssemblyId>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-sonatype-bundle</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${project.basedir}/src/main/assemblies/sonatype-bundle.xml</descriptor>
-                            </descriptors>
-                            <attach>false</attach>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <finalName>sonatype-bundle</finalName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.3</version>
-                <executions>
-                    <execution>
-                        <id>create-revision-number</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>create-timestamp</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>create-timestamp</goal>
-                        </goals>
-                        <configuration>
-                            <timestampFormat>yyyy-MM-dd HH:mm:ss</timestampFormat>
-                            <timestampPropertyName>build.timestamp</timestampPropertyName>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <doCheck>false</doCheck>
-                    <doUpdate>false</doUpdate>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <target>
-                                <echo message="create version class" />
-                                <copy todir="target/java-gen">
-                                    <fileset dir="src/main/stubs" />
-                                    <globmapper from="*.java.stub" to="*.java" />
-                                    <filterset>
-                                        <filter token="PRODUCT_NAME" value="${build.product.name}" />
-                                        <filter token="SHORT_NAME" value="${build.product.short.name}" />
-                                        <filter token="VERSION" value="${build.version}" />
-                                        <filter token="BUILD_TIMESTAMP" value="${build.timestamp}" />
-                                        <filter token="GIT_PATH" value="${scmBranch}" />
-                                        <filter token="GIT_REVISION" value="${buildNumber}" />
-                                    </filterset>
-                                </copy>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>target/java-gen</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals><goal>run</goal></goals>
+            <configuration>
+              <target>
+                <echo>basedir: ${basedir}</echo>
+                <echo>version: ${project.version}</echo>
+                <echo>project.basedir: ${project.basedir}</echo>
+                <echo>project.baseUri: ${project.baseUri}</echo>
+                <echo>project.version: ${project.version}</echo>
+                <echo>project.groupId: ${project.groupId}</echo>
+                <echo>project.artifactId: ${project.artifactId}</echo>
+                <echo>project.name: ${project.name}</echo>
+                <echo>project.description: ${project.description}</echo>
+                <echo>project.build.sourceDirectory: ${project.build.sourceDirectory}</echo>
+                <echo>project.build.scriptSourceDirectory: ${project.build.scriptSourceDirectory}</echo>
+                <echo>project.build.testSourceDirectory: ${project.build.testSourceDirectory}</echo>
+                <echo>project.build.outputDirectory: ${project.build.outputDirectory}</echo>
+                <echo>project.build.testOutputDirectory: ${project.build.testOutputDirectory}</echo>
+                <echo>project.build.directory: ${project.build.directory}</echo>
+              </target>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- We can't use the maven-gpg-plugin for this because it only signs the actual project artifacts.
+            Also, gpg can only sign one file at a time, so we have to run the command four times. -->
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals><goal>run</goal></goals>
+            <configuration>
+              <target if="gpg.sign">
+                <mkdir dir="${project.build.directory}/gpg" />
+                <exec dir="${project.build.directory}" executable="gpg" inputString="${env.GPG_PASSPHRASE}" failonerror="true">
+                  <arg line="-ab --no-tty --batch --passphrase-fd 0 --output gpg/pom.xml.asc ${project.basedir}/src/main/assemblies/pom.xml" />
+                </exec>
+                <exec dir="${project.build.directory}" executable="gpg" inputString="${env.GPG_PASSPHRASE}" failonerror="true">
+                  <arg line="-ab --no-tty --batch --passphrase-fd 0 --output gpg/${project.build.finalName}.jar.asc ${project.basedir}/target/${project.build.finalName}.jar" />
+                </exec>
+                <exec dir="${project.build.directory}" executable="gpg" inputString="${env.GPG_PASSPHRASE}" failonerror="true">
+                  <arg line="-ab --no-tty --batch --passphrase-fd 0 --output gpg/${project.build.finalName}-sources.jar.asc ${project.basedir}/target/${project.build.finalName}-sources.jar" />
+                </exec>
+                <exec dir="${project.build.directory}" executable="gpg" inputString="${env.GPG_PASSPHRASE}" failonerror="true">
+                  <arg line="-ab --no-tty --batch --passphrase-fd 0 --output gpg/${project.build.finalName}-javadoc.jar.asc ${project.basedir}/target/${project.build.finalName}-javadoc.jar" />
+                </exec>
+              </target>
+            </configuration>
+          </execution>
+          <execution>
+            <id>gen-sources</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <target>
+                <echo message="create version class" />
+                <copy todir="target/java-gen">
+                  <fileset dir="src/main/stubs" />
+                  <globmapper from="*.java.stub" to="*.java" />
+                  <filterset>
+                    <filter token="PRODUCT_NAME" value="${build.product.name}" />
+                    <filter token="SHORT_NAME" value="${build.product.short.name}" />
+                    <filter token="VERSION" value="${build.version}" />
+                    <filter token="BUILD_TIMESTAMP" value="${build.timestamp}" />
+                    <filter token="GIT_PATH" value="${scmBranch}" />
+                    <filter token="GIT_REVISION" value="${buildNumber}" />
+                  </filterset>
+                </copy>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- A jar of the project sources is required for publishing to
+            Maven Central. -->
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <addMavenDescriptor>false</addMavenDescriptor>
+              </archive>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-test-jar</id>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-zip-archive</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>${project.basedir}/src/main/assemblies/zip.xml</descriptor>
+              </descriptors>
+              <attach>false</attach>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- We use an assembly instead of the maven-javadoc-plugin to
+            create the javadoc jar (required for publishing to Maven Central)
+            because we have copied in certain resources to the javadoc directory.
+            See the SCIM-Parent POM for more info. -->
+            <id>create-javadoc-archive</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>${project.basedir}/src/main/assemblies/javadoc.xml</descriptor>
+              </descriptors>
+              <attach>false</attach>
+              <appendAssemblyId>true</appendAssemblyId>
+            </configuration>
+          </execution>
+          <execution>
+            <id>create-sonatype-bundle</id>
+            <phase>install</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>${project.basedir}/src/main/assemblies/sonatype-bundle.xml</descriptor>
+              </descriptors>
+              <attach>false</attach>
+              <appendAssemblyId>false</appendAssemblyId>
+              <finalName>sonatype-bundle</finalName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <id>create-revision-number</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-timestamp</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>create-timestamp</goal>
+            </goals>
+            <configuration>
+              <timestampFormat>yyyy-MM-dd HH:mm:ss</timestampFormat>
+              <timestampPropertyName>build.timestamp</timestampPropertyName>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <configuration>
+              <target>
+                <echo message="create version class" />
+                <copy todir="target/java-gen">
+                  <fileset dir="src/main/stubs" />
+                  <globmapper from="*.java.stub" to="*.java" />
+                  <filterset>
+                    <filter token="PRODUCT_NAME" value="${build.product.name}" />
+                    <filter token="SHORT_NAME" value="${build.product.short.name}" />
+                    <filter token="VERSION" value="${build.version}" />
+                    <filter token="BUILD_TIMESTAMP" value="${build.timestamp}" />
+                    <filter token="GIT_PATH" value="${scmBranch}" />
+                    <filter token="GIT_REVISION" value="${buildNumber}" />
+                  </filterset>
+                </copy>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>target/java-gen</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
-    <dependencies>
-      <dependency>
-        <groupId>com.unboundid.product.scim2</groupId>
-        <artifactId>scim2-sdk-common</artifactId>
-        <version>1.1.36-SNAPSHOT</version>
-      </dependency>
+  <dependencies>
+    <dependency>
+      <groupId>com.unboundid.product.scim2</groupId>
+      <artifactId>scim2-sdk-common</artifactId>
+      <version>1.1.36-SNAPSHOT</version>
+    </dependency>
 
-      <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>javax.ws.rs-api</artifactId>
-        <version>2.0.1</version>
-        <scope>provided</scope>
-      </dependency>
-    </dependencies>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>2.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

@@ -25,7 +25,7 @@
   </parent>
   <artifactId>scim2-sdk-server</artifactId>
   <packaging>jar</packaging>
-  <name>UnboundID SCIM 2 SDK Server</name>
+  <name>UnboundID SCIM2 SDK Server</name>
   <properties>
     <build.product.name>${project.name}</build.product.name>
     <build.product.short.name>${project.artifactId}</build.product.short.name>
