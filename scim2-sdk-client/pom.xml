@@ -39,34 +39,13 @@
         <version>1.7</version>
         <executions>
           <execution>
-            <phase>package</phase>
-            <goals><goal>run</goal></goals>
-            <configuration>
-              <target>
-                <echo>basedir: ${basedir}</echo>
-                <echo>version: ${project.version}</echo>
-                <echo>project.basedir: ${project.basedir}</echo>
-                <echo>project.baseUri: ${project.baseUri}</echo>
-                <echo>project.version: ${project.version}</echo>
-                <echo>project.groupId: ${project.groupId}</echo>
-                <echo>project.artifactId: ${project.artifactId}</echo>
-                <echo>project.name: ${project.name}</echo>
-                <echo>project.description: ${project.description}</echo>
-                <echo>project.build.sourceDirectory: ${project.build.sourceDirectory}</echo>
-                <echo>project.build.scriptSourceDirectory: ${project.build.scriptSourceDirectory}</echo>
-                <echo>project.build.testSourceDirectory: ${project.build.testSourceDirectory}</echo>
-                <echo>project.build.outputDirectory: ${project.build.outputDirectory}</echo>
-                <echo>project.build.testOutputDirectory: ${project.build.testOutputDirectory}</echo>
-                <echo>project.build.directory: ${project.build.directory}</echo>
-              </target>
-            </configuration>
-          </execution>
-          <execution>
             <!-- We can't use the maven-gpg-plugin for this because it only signs the actual project artifacts.
             Also, gpg can only sign one file at a time, so we have to run the command four times. -->
             <id>sign-artifacts</id>
             <phase>verify</phase>
-            <goals><goal>run</goal></goals>
+            <goals>
+              <goal>run</goal>
+            </goals>
             <configuration>
               <target if="gpg.sign">
                 <mkdir dir="${project.build.directory}/gpg" />
@@ -88,6 +67,9 @@
           <execution>
             <id>gen-sources</id>
             <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
             <configuration>
               <target>
                 <echo message="create version class" />
@@ -105,9 +87,6 @@
                 </copy>
               </target>
             </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>

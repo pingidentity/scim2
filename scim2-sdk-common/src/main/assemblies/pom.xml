@@ -28,7 +28,14 @@
     See http://www.simplecloud.info for more information.
   </description>
   <inceptionYear>2015</inceptionYear>
+  <properties>
+    <com.fasterxml.jackson.version>2.6.5</com.fasterxml.jackson.version>
+  </properties>
   <url>https://github.com/UnboundID/scim2</url>
+  <scm>
+    <url>https://github.com/UnboundID/scim2</url>
+    <connection>scm:git:https://github.com/UnboundID/scim2</connection>
+  </scm>
   <organization>
     <name>UnboundID Corp.</name>
     <url>https://www.unboundid.com</url>
@@ -52,7 +59,7 @@
     <license>
       <name>UnboundID SCIM2 SDK Free Use License</name>
       <url>https://github.com/UnboundID/scim2</url>
-      <comments>This license is available in the SCIM-SDK zip package from the UnboundID website.</comments>
+      <comments>This license is available in the source code repository at the provided URL.</comments>
     </license>
   </licenses>
   <dependencies>
@@ -62,36 +69,14 @@
       <version>${com.fasterxml.jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${com.fasterxml.jackson.version}</version>
-      <classifier>sources</classifier>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>18.0</version>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>18.0</version>
-      <classifier>sources</classifier>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <version>${com.fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${com.fasterxml.jackson.version}</version>
-      <classifier>sources</classifier>
     </dependency>
   </dependencies>
-  <scm>
-    <url>https://github.com/UnboundID/scim2</url>
-    <connection>scm:git:https://github.com/UnboundID/scim2</connection>
-  </scm>
 </project>

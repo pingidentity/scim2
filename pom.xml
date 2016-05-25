@@ -51,7 +51,7 @@
 
   <organization>
     <name>UnboundID</name>
-    <url>http://www.unboundid.com</url>
+    <url>https://www.unboundid.com</url>
   </organization>
   <scm>
     <connection>scm:git:git@github.com:UnboundID/scim2.git</connection>
