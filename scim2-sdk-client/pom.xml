@@ -25,11 +25,11 @@
     <packaging>jar</packaging>
     <name>UnboundID SCIM2 SDK Client</name>
 
-  <properties>
-    <build.product.name>${project.name}</build.product.name>
-    <build.product.short.name>${project.artifactId}</build.product.short.name>
-    <build.version>${project.version}</build.version>
-  </properties>
+    <properties>
+        <build.product.name>${project.name}</build.product.name>
+        <build.product.short.name>${project.artifactId}</build.product.short.name>
+        <build.version>${project.version}</build.version>
+    </properties>
 
   <build>
     <plugins>
@@ -208,6 +208,7 @@
         <version>1.5</version>
         <executions>
           <execution>
+            <id>add-generated-source</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>add-source</goal>
@@ -223,13 +224,12 @@
     </plugins>
   </build>
 
-    <dependencies>
-      <dependency>
-        <groupId>com.unboundid.product.scim2</groupId>
-        <artifactId>scim2-sdk-common</artifactId>
-        <version>1.1.37-SNAPSHOT</version>
-      </dependency>
-
+  <dependencies>
+    <dependency>
+      <groupId>com.unboundid.product.scim2</groupId>
+      <artifactId>scim2-sdk-common</artifactId>
+      <version>1.1.37-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>javax.ws.rs-api</artifactId>

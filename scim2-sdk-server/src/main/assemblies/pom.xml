@@ -1,0 +1,99 @@
+<!--
+~ Copyright 2015-2016 UnboundID Corp.
+~
+~ This program is free software; you can redistribute it and/or modify
+~ it under the terms of the GNU General Public License (GPLv2 only)
+~ or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
+~ as published by the Free Software Foundation.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU General Public License for more details.
+~
+~ You should have received a copy of the GNU General Public License
+~ along with this program; if not, see <http://www.gnu.org/licenses>.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.unboundid.product.scim2</groupId>
+  <artifactId>scim2-sdk-server</artifactId>
+  <version>1.1.34</version>
+  <packaging>jar</packaging>
+  <name>UnboundID SCIM2 SDK Server</name>
+  <description>
+    The UnboundID SCIM2 SDK is a library that may be used to interact with various
+    types of SCIM-enabled endpoints (such as the UnboundID server products) to
+    perform lightweight, cloud-based identity management via the SCIM Protocol.
+    See http://www.simplecloud.info for more information.
+  </description>
+  <inceptionYear>2015</inceptionYear>
+  <url>https://github.com/UnboundID/scim2</url>
+  <scm>
+    <url>https://github.com/UnboundID/scim2</url>
+    <connection>scm:git:https://github.com/UnboundID/scim2</connection>
+  </scm>
+  <organization>
+    <name>UnboundID Corp.</name>
+    <url>https://www.unboundid.com</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>unboundid</id>
+      <name>UnboundID Corp.</name>
+      <email>support@unboundid.com</email>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>GNU General Public License version 2 (GPLv2)</name>
+      <url>http://www.gnu.org/licenses/gpl-2.0.html</url>
+    </license>
+    <license>
+      <name>GNU Lesser General Public License version 2.1 (LGPLv2.1)</name>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+    </license>
+    <license>
+      <name>UnboundID SCIM2 SDK Free Use License</name>
+      <url>https://github.com/UnboundID/scim2</url>
+      <comments>This license is available in the source code repository at the provided URL.</comments>
+    </license>
+  </licenses>
+  <dependencies>
+    <dependency>
+      <groupId>com.unboundid.product.scim2</groupId>
+      <artifactId>scim2-sdk-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>2.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.test-framework</groupId>
+      <artifactId>jersey-test-framework-core</artifactId>
+      <version>2.17</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.test-framework.providers</groupId>
+      <artifactId>jersey-test-framework-provider-jetty</artifactId>
+      <version>2.17</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.connectors</groupId>
+      <artifactId>jersey-apache-connector</artifactId>
+      <version>2.17</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

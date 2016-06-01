@@ -208,7 +208,7 @@
         <version>1.5</version>
         <executions>
           <execution>
-            <id>1</id>
+            <id>add-generated-source</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>add-source</goal>
@@ -218,13 +218,6 @@
                 <source>target/java-gen</source>
               </sources>
             </configuration>
-          </execution>
-          <execution>
-            <id>2</id>
-            <phase>sign-artifacts</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
@@ -238,32 +231,14 @@
       <version>${com.fasterxml.jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${com.fasterxml.jackson.version}</version>
-      <classifier>sources</classifier>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>18.0</version>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>18.0</version>
-      <classifier>sources</classifier>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <version>${com.fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${com.fasterxml.jackson.version}</version>
-      <classifier>sources</classifier>
     </dependency>
   </dependencies>
 </project>
