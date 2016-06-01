@@ -107,13 +107,6 @@
     <module name="CovariantEquals" />
 
 
-    <!-- Ensure that there are no uses of double-checked locking. -->
-    <!-- This check has been commented out because it generates false positives.
-         The double-checked locking pattern is safe as of Java SE 5 provided
-         the member variable being protected is marked volatile. -->
-    <!--<module name="DoubleCheckedLocking" />-->
-
-
     <!-- Ensure that there are no empty statements in the code.  -->
     <module name="EmptyStatement" />
 
@@ -126,13 +119,6 @@
     <!-- Ensure that local variables do not hide class variables. -->
     <module name="HiddenField">
       <property name="tokens" value="VARIABLE_DEF" />
-    </module>
-
-
-    <!-- Ensure that there are no redundant throws statements. -->
-    <module name="RedundantThrows">
-      <property name="allowUnchecked"     value="true" />
-      <property name="suppressLoadErrors" value="true" />
     </module>
 
 

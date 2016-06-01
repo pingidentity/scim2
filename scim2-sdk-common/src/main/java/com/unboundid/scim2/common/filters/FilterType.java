@@ -119,7 +119,7 @@ public enum FilterType
    *
    * @param stringValue The lower case string value for this filter type.
    */
-  private FilterType(final String stringValue)
+  FilterType(final String stringValue)
   {
     this.stringValue = stringValue;
   }

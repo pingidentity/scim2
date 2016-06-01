@@ -35,43 +35,59 @@ public @interface Attribute
 {
   /**
    * Determines if the attribute value is case sensitive.
+   *
+   * @return A flag indicating the attribute value's case sensitivity.
    */
   boolean isCaseExact() default true;
 
   /**
    * Determines if the attribute value is required.
+   *
+   * @return A flag indicating if the attribute value is required.
    */
   boolean isRequired() default false;
 
   /**
    * The description of the attribute.
+   *
+   * @return The description of the attribute.
    */
   String description();
 
   /**
    * The canonical values that may appear in an attribute.
+   *
+   * @return The canonical values that may appear in an attribute.
    */
   String[] canonicalValues() default {};
 
   /**
    * The return constraint for the attribute.
+   *
+   * @return The return constraint for the attribute.
    */
   AttributeDefinition.Returned returned()
       default AttributeDefinition.Returned.DEFAULT;
 
   /**
    * The uniqueness constraint for the attribute.
+   *
+   * @return The uniqueness constraint for the attribute.
    */
   AttributeDefinition.Uniqueness uniqueness()
       default AttributeDefinition.Uniqueness.NONE;
 
   /**
    * The reference types for the attribute.
+   *
+   * @return The reference types for the attribute.
    */
   String[] referenceTypes() default {};
 
   /**
    * The mutability constraint for the attribute.
+   *
+   * @return The mutability constraint for the attribute.
    */
   AttributeDefinition.Mutability mutability() default
       AttributeDefinition.Mutability.READ_WRITE;
@@ -79,6 +95,8 @@ public @interface Attribute
   /**
    * If the attribute is multi-value, this holds the type of the
    * child object.
+   *
+   * @return For a multi-valued attribute, the type of the child object.
    */
   Class multiValueClass() default NullType.class;
 }

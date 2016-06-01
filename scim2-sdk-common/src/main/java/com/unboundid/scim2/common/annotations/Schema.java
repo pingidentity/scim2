@@ -30,18 +30,24 @@ import java.lang.annotation.Target;
 public @interface Schema
 {
   /**
-   * The id for the object.  This is the complete urn.
+   * The id for the object.  This is the complete URN.
+   *
+   * @return The object's id as a URN.
    */
   String id() default "urn:unboundid:scim:api:messages:2.0";
 
   /**
    * The description for the object.
+   *
+   * @return The object's description.
    */
   String description();
 
   /**
    * The name for the object.  This is a human readable
    * name.
+   *
+   * @return The object's human-readable name.
    */
   String name();
 }

@@ -31,27 +31,37 @@ public @interface ResourceType
 {
   /**
    * The description for the object.
+   *
+   * @return The object's description.
    */
   String description();
 
   /**
    * The name for the object.  This is a human readable
    * name.
+   *
+   * @return The object's human-readable name.
    */
   String name();
 
   /**
    * The primary/base resource class.
+   *
+   * @return The primary/base resource class.
    */
   Class<?> schema();
 
   /**
    * The required schema extension resource classes.
+   *
+   * @return The required schema extension resource classes.
    */
   Class<?>[] requiredSchemaExtensions() default {};
 
   /**
    * The optional schema extension resource classes.
+   *
+   * @return The optional schema extension resource classes.
    */
   Class<?>[] optionalSchemaExtensions() default {};
 
@@ -59,6 +69,9 @@ public @interface ResourceType
    * Whether this resource type and its associated schemas should be
    * discoverable using the SCIM 2.0 standard /resourceTypes and /schemas
    * endpoints.
+   *
+   * @return A flag indicating the discoverability of this resource type and
+   * its associated schemas.
    */
   boolean discoverable() default true;
 }
