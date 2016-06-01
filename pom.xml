@@ -1,261 +1,240 @@
 <!--
-  ~ Copyright 2015-2016 UnboundID Corp.
-  ~
-  ~ This program is free software; you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License (GPLv2 only)
-  ~ or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
-  ~ as published by the Free Software Foundation.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
-  -->
-
+~ Copyright 2015-2016 UnboundID Corp.
+~
+~ This program is free software; you can redistribute it and/or modify
+~ it under the terms of the GNU General Public License (GPLv2 only)
+~ or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
+~ as published by the Free Software Foundation.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU General Public License for more details.
+~
+~ You should have received a copy of the GNU General Public License
+~ along with this program; if not, see <http://www.gnu.org/licenses>.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.unboundid.product.scim2</groupId>
-    <artifactId>scim2-parent</artifactId>
-    <packaging>pom</packaging>
-    <name>UnboundID SCIM 2 SDK Parent</name>
-    <version>1.1.37-SNAPSHOT</version>
-    <inceptionYear>2015</inceptionYear>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.unboundid.product.scim2</groupId>
+  <artifactId>scim2-parent</artifactId>
+  <packaging>pom</packaging>
+  <name>UnboundID SCIM2 SDK Parent</name>
+  <version>1.1.37-SNAPSHOT</version>
+  <inceptionYear>2015</inceptionYear>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <compileSource>1.6</compileSource>
-        <main.basedir>${project.basedir}</main.basedir>
-        <ignore.test.failures>false</ignore.test.failures>
-        <com.fasterxml.jackson.version>2.6.5</com.fasterxml.jackson.version>
-    </properties>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <compileSource>1.6</compileSource>
+    <main.basedir>${project.basedir}</main.basedir>
+    <ignore.test.failures>false</ignore.test.failures>
+    <com.fasterxml.jackson.version>2.6.5</com.fasterxml.jackson.version>
+  </properties>
 
-    <profiles>
-        <profile>
-            <id>UnboundID</id>
-            <distributionManagement>
-                <repository>
-                    <id>releases</id>
-                    <name>Engineering Releases Repo</name>
-                    <url>${releaseRepoUrl}</url>
-                </repository>
-                <snapshotRepository>
-                    <id>snapshots</id>
-                    <name>Engineering Snapshots Repo</name>
-                    <url>${snapshotRepoUrl}</url>
-                </snapshotRepository>
-            </distributionManagement>
-        </profile>
-    </profiles>
+  <profiles>
+    <profile>
+      <id>UnboundID</id>
+      <distributionManagement>
+        <repository>
+          <id>releases</id>
+          <name>Engineering Releases Repo</name>
+          <url>${releaseRepoUrl}</url>
+        </repository>
+        <snapshotRepository>
+          <id>snapshots</id>
+          <name>Engineering Snapshots Repo</name>
+          <url>${snapshotRepoUrl}</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 
-    <organization>
-        <name>UnboundID</name>
-        <url>http://www.unboundid.com</url>
-    </organization>
-    <scm>
-        <connection>scm:git:git@github.com:UnboundID/scim2.git</connection>
-    </scm>
+  <organization>
+    <name>UnboundID</name>
+    <url>https://www.unboundid.com</url>
+  </organization>
+  <scm>
+    <connection>scm:git:git@github.com:UnboundID/scim2.git</connection>
+  </scm>
 
-    <modules>
-        <module>scim2-sdk-common</module>
-        <module>scim2-sdk-server</module>
-        <module>scim2-sdk-client</module>
-        <module>scim2-ubid-extensions</module>
-    </modules>
+  <modules>
+    <module>scim2-sdk-common</module>
+    <module>scim2-sdk-server</module>
+    <module>scim2-sdk-client</module>
+    <module>scim2-ubid-extensions</module>
+  </modules>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-
-
-
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-antrun-plugin</artifactId>
-		<version>1.7</version>
-		<executions>
-		    <execution>
-		    <phase>validate</phase>
-		    <goals><goal>run</goal></goals>
-		    <configuration>
-			<target>
-			    <echo>basedir: ${basedir}</echo>
-			    <echo>version: ${version}</echo>
-			    <echo>project.basedir: ${project.basedir}</echo>
-			    <echo>project.baseUri: ${project.baseUri}</echo>
-			    <echo>project.version: ${project.version}</echo>
-			    <echo>project.groupId: ${project.groupId}</echo>
-			    <echo>project.artifactId: ${project.artifactId}</echo>
-			    <echo>project.name: ${project.name}</echo>
-			    <echo>project.description: ${project.description}</echo>
-			    <echo>project.build.sourceDirectory: ${project.build.sourceDirectory}</echo>
-			    <echo>project.build.scriptSourceDirectory: ${project.build.scriptSourceDirectory}</echo>
-			    <echo>project.build.testSourceDirectory: ${project.build.testSourceDirectory}</echo>
-			    <echo>project.build.outputDirectory: ${project.build.outputDirectory}</echo>
-			    <echo>project.build.testOutputDirectory: ${project.build.testOutputDirectory}</echo>
-			    <echo>project.build.directory: ${project.build.directory}</echo>
-			</target>
-		    </configuration>
-		    </execution>
-		</executions>
-	    </plugin>
-
-
-                <plugin>
-                  <artifactId>maven-antrun-plugin</artifactId>
-                  <version>1.6</version>
-                </plugin>
-                <plugin>
-                  <artifactId>maven-assembly-plugin</artifactId>
-                  <version>2.4</version>
-                </plugin>
-                <plugin>
-                  <artifactId>maven-checkstyle-plugin</artifactId>
-                  <version>2.7</version>
-                </plugin>
-                <plugin>
-                  <artifactId>maven-surefire-plugin</artifactId>
-                  <version>2.9</version>
-                </plugin>
-                <plugin>
-                  <artifactId>maven-javadoc-plugin</artifactId>
-                  <version>2.9</version>
-                </plugin>
-                <plugin>
-                  <artifactId>maven-jar-plugin</artifactId>
-                  <version>2.3.1</version>
-                </plugin>
-                <plugin>
-                  <artifactId>maven-source-plugin</artifactId>
-                  <version>2.1.2</version>
-                </plugin>
-                <plugin>
-                  <artifactId>maven-deploy-plugin</artifactId>
-                  <version>2.7</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
-                <executions>
-                    <execution>
-                        <id>check-main</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <configLocation>config/scim2-parent-checkstyle.xml</configLocation>
-                            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>check-test</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <configLocation>config/scim2-parent-unit-checkstyle.xml</configLocation>
-                            <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <headerLocation>config/scim2-parent-gpl.sourceheader</headerLocation>
-                    <failOnViolation>true</failOnViolation>
-                    <propertyExpansion>cacheFile=${project.build.directory}/checkstyle-cachefile</propertyExpansion>
-                    <logViolationsToConsole>true</logViolationsToConsole>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <testFailureIgnore>${ignore.test.failures}</testFailureIgnore>
-                    <properties>
-                        <property>
-                            <name>useDefaultListeners</name>
-                            <value>false</value>
-                        </property>
-<!--
-                        <property>
-                            <name>listener</name>
-                            <value>com.unboundid.scim.SCIMRITestListener</value>
-                        </property>
--->
-                    </properties>
-                </configuration>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-jar-plugin</artifactId>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+          <executions>
+            <execution>
+              <phase>validate</phase>
+              <goals><goal>run</goal></goals>
               <configuration>
-                <archive>
-                  <addMavenDescriptor>false</addMavenDescriptor>
-                </archive>
+                <target>
+                  <echo>basedir: ${basedir}</echo>
+                  <echo>version: ${project.version}</echo>
+                  <echo>project.basedir: ${project.basedir}</echo>
+                  <echo>project.baseUri: ${project.baseUri}</echo>
+                  <echo>project.version: ${project.version}</echo>
+                  <echo>project.groupId: ${project.groupId}</echo>
+                  <echo>project.artifactId: ${project.artifactId}</echo>
+                  <echo>project.name: ${project.name}</echo>
+                  <echo>project.description: ${project.description}</echo>
+                  <echo>project.build.sourceDirectory: ${project.build.sourceDirectory}</echo>
+                  <echo>project.build.scriptSourceDirectory: ${project.build.scriptSourceDirectory}</echo>
+                  <echo>project.build.testSourceDirectory: ${project.build.testSourceDirectory}</echo>
+                  <echo>project.build.outputDirectory: ${project.build.outputDirectory}</echo>
+                  <echo>project.build.testOutputDirectory: ${project.build.testOutputDirectory}</echo>
+                  <echo>project.build.directory: ${project.build.directory}</echo>
+                </target>
               </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                  <execution>
-                    <id>generate-javadoc</id>
-                    <phase>prepare-package</phase>
-                    <goals>
-                      <goal>javadoc</goal>
-                    </goals>
-                    <configuration>
-                      <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
-                      <destDir>javadoc</destDir>
-                      <stylesheetfile>${main.basedir}/resource/unboundid-javadoc.css</stylesheetfile>
-                      <linksource>true</linksource>
-                      <quiet>true</quiet>
-                    </configuration>
-                  </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>emma-maven-plugin</artifactId>
-                <version>1.0-alpha-3</version>
-                <configuration>
-                    <metrics>class:90,method:90,line:70</metrics>
-                    <sort>+name,+line</sort>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.2.2</version>
-                <configuration>
-                  <tagNameFormat>scim-@{project.version}</tagNameFormat>
-<!--
-                  <goals>deploy scm:export -Doriginal.target.dir=${project.build.directory} -Dgpg.sign</goals>
--->
-                  <goals>deploy</goals>
-                  <useReleaseProfile>false</useReleaseProfile>
-                  <checkModificationExcludeList>pom.xml</checkModificationExcludeList>
-                  <waitBeforeTagging>3</waitBeforeTagging>
-                </configuration>
-            </plugin>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.9</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.9</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.3.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.1.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.17</version>
+        <executions>
+          <execution>
+            <id>check-main</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <configLocation>config/scim2-parent-checkstyle.xml</configLocation>
+              <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>check-test</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <configLocation>config/scim2-parent-unit-checkstyle.xml</configLocation>
+              <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <headerLocation>config/scim2-parent-gpl.sourceheader</headerLocation>
+          <failOnViolation>true</failOnViolation>
+          <propertyExpansion>cacheFile=${project.build.directory}/checkstyle-cachefile</propertyExpansion>
+          <logViolationsToConsole>true</logViolationsToConsole>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <testFailureIgnore>${ignore.test.failures}</testFailureIgnore>
+          <properties>
+            <property>
+              <name>useDefaultListeners</name>
+              <value>false</value>
+            </property>
+          </properties>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <addMavenDescriptor>false</addMavenDescriptor>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-javadoc</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+            <configuration>
+              <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
+              <destDir>javadoc</destDir>
+              <linksource>true</linksource>
+              <quiet>true</quiet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>emma-maven-plugin</artifactId>
+        <version>1.0-alpha-3</version>
+        <configuration>
+          <metrics>class:90,method:90,line:70</metrics>
+          <sort>+name,+line</sort>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.2.2</version>
+        <configuration>
+          <tagNameFormat>scim-@{project.version}</tagNameFormat>
+          <goals>deploy</goals>
+          <useReleaseProfile>false</useReleaseProfile>
+          <checkModificationExcludeList>pom.xml</checkModificationExcludeList>
+          <waitBeforeTagging>3</waitBeforeTagging>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
-        </plugins>
-    </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.4</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.4</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>
