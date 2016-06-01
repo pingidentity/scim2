@@ -107,10 +107,6 @@
     <module name="CovariantEquals" />
 
 
-    <!-- Ensure that there are no uses of double-checked locking. -->
-    <module name="DoubleCheckedLocking" />
-
-
     <!-- Ensure that there are no empty statements in the code.  -->
     <module name="EmptyStatement" />
 

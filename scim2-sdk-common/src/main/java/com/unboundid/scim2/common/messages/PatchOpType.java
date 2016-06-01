@@ -53,7 +53,7 @@ public enum PatchOpType
    *
    * @param stringValue The lower case string value for this operation type.
    */
-  private PatchOpType(final String stringValue)
+  PatchOpType(final String stringValue)
   {
     this.stringValue = stringValue;
   }

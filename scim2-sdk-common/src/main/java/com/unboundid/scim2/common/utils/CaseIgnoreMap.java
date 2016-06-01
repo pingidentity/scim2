@@ -42,7 +42,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   {
     private final String key;
 
-    public CaseIgnoreKey(final String key)
+    CaseIgnoreKey(final String key)
     {
       this.key = key;
     }
@@ -84,7 +84,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   {
     private final Set<CaseIgnoreKey> keys;
 
-    public KeySet(final Set<CaseIgnoreKey> keys)
+    KeySet(final Set<CaseIgnoreKey> keys)
     {
       this.keys = keys;
     }
@@ -109,7 +109,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   {
     private final Iterator<CaseIgnoreKey> iterator;
 
-    public KeyIterator(final Iterator<CaseIgnoreKey> iterator)
+    KeyIterator(final Iterator<CaseIgnoreKey> iterator)
     {
       this.iterator = iterator;
     }
@@ -137,7 +137,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   {
     private final Set<Entry<CaseIgnoreKey, JsonNode>> entries;
 
-    public EntrySet(final Set<Entry<CaseIgnoreKey, JsonNode>> entries)
+    EntrySet(final Set<Entry<CaseIgnoreKey, JsonNode>> entries)
     {
       this.entries = entries;
     }
@@ -163,7 +163,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   {
     private final Iterator<Entry<CaseIgnoreKey, JsonNode>> iterator;
 
-    public EntryIterator(
+    EntryIterator(
         final Iterator<Entry<CaseIgnoreKey, JsonNode>> iterator)
     {
       this.iterator = iterator;
