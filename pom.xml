@@ -197,7 +197,6 @@
             <configuration>
               <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
               <destDir>javadoc</destDir>
-              <stylesheetfile>${main.basedir}/resource/unboundid-javadoc.css</stylesheetfile>
               <linksource>true</linksource>
               <quiet>true</quiet>
             </configuration>
