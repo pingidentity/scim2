@@ -20,10 +20,16 @@ package com.unboundid.scim2.common;
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Some basic tests for serializing and de-serializing of the core user
@@ -31,16 +37,15 @@ import static org.testng.Assert.assertNotNull;
  */
 public class UserResourceTestCase
 {
+  private String fullRepresentation;
+
   /**
-   * Test de-serializing the full core user representation copied from
-   * draft-ietf-scim-core-schema-20.
-   *
-   * @throws Exception if an error occurs.
+   * Initializes the environment before each test method.
    */
-  @Test
-  public void testSpecFullRepresentation() throws Exception
+  @BeforeMethod
+  public void init()
   {
-    String fullRepresentation = "{  \n" +
+    fullRepresentation = "{  \n" +
         "  \"schemas\":[  \n" +
         "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
         "    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n" +
@@ -208,7 +213,17 @@ public class UserResourceTestCase
         "2819c223-7f76-453a-919d-413861904646\"\n" +
         "  }\n" +
         "}";
+  }
 
+  /**
+   * Test de-serializing the full core user representation copied from
+   * draft-ietf-scim-core-schema-20.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testSpecFullRepresentation() throws Exception
+  {
     UserResource userResource =
         JsonUtils.getObjectReader().forType(UserResource.class).readValue(
             fullRepresentation);
@@ -221,7 +236,7 @@ public class UserResourceTestCase
 
     EnterpriseUserExtension enterpriseUserExtension =
         JsonUtils.nodeToValue(userResource.getExtensionValues(
-            Path.root(EnterpriseUserExtension.class)).get(0),
+                Path.root(EnterpriseUserExtension.class)).get(0),
             EnterpriseUserExtension.class);
 
     assertNotNull(enterpriseUserExtension);
@@ -235,4 +250,78 @@ public class UserResourceTestCase
             serializedString),
         userResource);
   }
+
+  /**
+   * Test operations with POJO extension objects.
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testPOJOExtensions() throws Exception
+  {
+    String euExtensionSchema =
+        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User";
+    Path extensionPath = Path.root(EnterpriseUserExtension.class);
+    UserResource userResource =
+        JsonUtils.getObjectReader().forType(UserResource.class).readValue(
+            fullRepresentation);
+
+    EnterpriseUserExtension nodeEUExtension =
+        JsonUtils.nodeToValue(
+            userResource.getExtensionValues(extensionPath).get(0),
+            EnterpriseUserExtension.class);
+
+    EnterpriseUserExtension pojoEUExtension =
+                userResource.getExtension(EnterpriseUserExtension.class);
+
+    assertNotNull(pojoEUExtension);
+    assertEquals(pojoEUExtension, nodeEUExtension);
+    assertTrue(userResource.getSchemaUrns().contains(euExtensionSchema));
+
+    nodeEUExtension.setCostCenter("1111");
+    nodeEUExtension.setOrganization("New Organization 1");
+    nodeEUExtension.setDivision("New Division 1");
+    nodeEUExtension.setDepartment("New Department 1");
+
+    // replace with a path object
+    userResource.setExtension(nodeEUExtension);
+    pojoEUExtension = userResource.getExtension(EnterpriseUserExtension.class);
+
+    assertNotNull(pojoEUExtension);
+    assertEquals(pojoEUExtension, nodeEUExtension);
+    assertTrue(userResource.getSchemaUrns().contains(euExtensionSchema));
+
+    // remove with path object
+    Assert.assertTrue(
+        userResource.removeExtension(EnterpriseUserExtension.class));
+    Assert.assertNull(userResource.getExtension(EnterpriseUserExtension.class));
+    assertFalse(userResource.getSchemaUrns().contains(euExtensionSchema));
+
+    // now recreate the extension, and make sure it is present
+    userResource.setExtension(nodeEUExtension);
+    pojoEUExtension = userResource.getExtension(EnterpriseUserExtension.class);
+
+    assertNotNull(pojoEUExtension);
+    assertEquals(pojoEUExtension, nodeEUExtension);
+    assertTrue(userResource.getSchemaUrns().contains(euExtensionSchema));
+  }
+
+  /**
+   * Test conversion to GenericScimResource.
+   *
+   * @throws IOException indicates a test failure.
+   */
+  @Test
+  public void testToGenericScimResource() throws IOException
+  {
+    UserResource userResource1 =
+        JsonUtils.getObjectReader().forType(UserResource.class).readValue(
+            fullRepresentation);
+
+    GenericScimResource gsr = userResource1.toGenericScimResource();
+
+    UserResource userResource2 = JsonUtils.nodeToValue(gsr.getObjectNode(),
+        UserResource.class);
+    Assert.assertEquals(userResource1, userResource2);
+  }
+
 }

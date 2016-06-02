@@ -30,8 +30,8 @@ import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -325,6 +325,92 @@ public abstract class BaseScimResource
   }
 
   /**
+   * Retrieve a SCIM extension based on the annotations of the class
+   * provided.  The returned value will be converted to a POJO of the
+   * type specified.
+   *
+   * @param clazz The class used to determine the type of the object returned
+   *              and the schema of the extension.
+   * @param <T> the type of object to return.
+   *
+   * @return The matching extension object, or null if no extension of that
+   * type exists.
+   */
+  @JsonIgnore
+  public <T> T getExtension(final Class<T> clazz)
+  {
+    try
+    {
+      JsonNode extensionNode =
+          extensionObjectNode.path(getSchemaUrnOrThrowException(clazz));
+      if(extensionNode.isMissingNode())
+      {
+        return null;
+      }
+      else
+      {
+        return JsonUtils.nodeToValue(extensionNode, clazz);
+      }
+    }
+    catch(JsonProcessingException ex)
+    {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  /**
+   * Sets a SCIM extension to the given value based on the annotations
+   * of the class provided.  The value will be set for an extension named
+   * based on the annotations of the class supplied.
+   *
+   * @param extension The value to set.  This also is used to determine what
+   *              the extension's urn is.
+   * @param <T> the type of object.
+   */
+  @JsonIgnore
+  public <T> void setExtension(final T extension)
+  {
+    String schemaUrn = getSchemaUrnOrThrowException(extension.getClass());
+    extensionObjectNode.set(schemaUrn, JsonUtils.valueToNode(extension));
+    schemaUrns.add(schemaUrn);
+  }
+
+  /**
+   * Removes a SCIM extension.  The extension urn is based on the annotations
+   * of the class provided.
+   *
+   * @param clazz the class used to determine the schema urn.
+   * @param <T> the type of the class object.
+   *
+   * @return  true if the extension was removed, or false if the extension
+   *          was not present.
+   */
+  public <T> boolean removeExtension(final Class<T> clazz)
+  {
+    String schemaUrn = getSchemaUrnOrThrowException(clazz);
+    if(extensionObjectNode.remove(schemaUrn) == null)
+    {
+      return false;
+    }
+    else
+    {
+      schemaUrns.remove(schemaUrn);
+      return true;
+    }
+  }
+
+  private <T> String getSchemaUrnOrThrowException(final Class<T> clazz)
+  {
+    String schemaUrn = SchemaUtils.getSchemaUrn(clazz);
+    if(schemaUrn == null)
+    {
+      throw new IllegalArgumentException(
+          "Unable to determine the extension class schema.");
+    }
+    return schemaUrn;
+  }
+
+  /**
    * Add new values for the extension attribute at the provided path. Equivalent
    * to using the {@link JsonUtils#addValue(Path, ObjectNode, JsonNode)} method:
    * JsonUtils.addValue(Path.fromString(path), getExtensionObjectNode(),
@@ -479,4 +565,15 @@ public abstract class BaseScimResource
       throw new RuntimeException(e);
     }
   }
+
+  /**
+   * Converts this object into a GenericScimResource.
+   *
+   * @return a newly created GenericScimResource.
+   */
+  public GenericScimResource toGenericScimResource()
+  {
+    return new GenericScimResource((ObjectNode)JsonUtils.valueToNode(this));
+  }
+
 }

@@ -55,6 +55,10 @@ public class JsonRefBeanSerializer extends JsonSerializer<Object>
       {
         Field field = SchemaUtils.findField(
             clazz, propertyDescriptor.getName());
+        if(field == null)
+        {
+          continue;
+        }
         field.setAccessible(true);
         Object obj = field.get(value);
         if(obj instanceof JsonReference)
