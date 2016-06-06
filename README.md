@@ -8,7 +8,7 @@ The SCIM 2 SDK consists of the following components:
 | Component name | What it is | Who needs it |
 | --- | --- | --- |
 | `scim2-sdk-client` | The SCIM 2 client API. | SCIM client developers. |
-| `scim2-ubid-extensions` | Model classes representing UnboundID extensions to the SCIM standard. | SCIM client developers using features specific to UnboundID servers. |
+| `scim2-ubid-extensions` | Model classes representing UnboundID extensions to the SCIM standard. This component is subject to API changes and should be considered experimental. | SCIM client developers using features specific to UnboundID servers. |
 | `scim2-sdk-server` | Classes for use by SCIM 2 service providers. | SCIM service provider implementers. |
 | `scim2-sdk-common` | Shared model, exception, and utility classes. | Included as a transitive dependency of all of the above. |
 
