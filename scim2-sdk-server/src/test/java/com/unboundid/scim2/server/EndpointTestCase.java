@@ -23,6 +23,8 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.Lists;
 import com.unboundid.scim2.client.ScimInterface;
 import com.unboundid.scim2.client.ScimService;
+import com.unboundid.scim2.client.ScimServiceException;
+import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -54,6 +56,7 @@ import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
 import com.unboundid.scim2.server.utils.ServerUtils;
+import org.testng.Assert;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -958,6 +961,31 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     finally
     {
       requestFilter.reset();
+    }
+  }
+
+
+  /**
+   * Test bad/unexpected response from SCIM server.
+   *
+   * @throws Exception in case of error.
+   */
+  @Test
+  public void testBadErrorResult() throws Exception
+  {
+    final ScimService service = new ScimService(target());
+
+    try
+    {
+      service.create("Users/badException",
+          new GenericScimResource());
+      Assert.fail("Expecting a ScimServiceException");
+    }
+    catch(ScimServiceException ex)
+    {
+      ErrorResponse response = ex.getScimError();
+      Assert.assertEquals(response.getStatus(), Integer.valueOf(409));
+      Assert.assertNotNull(ex.getCause());
     }
   }
 

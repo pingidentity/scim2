@@ -18,11 +18,13 @@
 package com.unboundid.scim2.client.requests;
 
 import com.unboundid.scim2.client.ScimService;
+import com.unboundid.scim2.client.ScimServiceException;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -120,11 +122,19 @@ public class RequestBuilder<T extends RequestBuilder>
    */
   static ScimException toScimException(final Response response)
   {
-    ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
-    ScimException exception =
-      ScimException.createException(errorResponse, null);
-    response.close();
-    return exception;
+    try
+    {
+      ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+      ScimException exception =
+          ScimException.createException(errorResponse, null);
+      response.close();
+      return exception;
+    }
+    catch(ProcessingException ex)
+    {
+      return new ScimServiceException(
+          response.getStatus(), ex.getMessage(), ex);
+    }
   }
 
   /**

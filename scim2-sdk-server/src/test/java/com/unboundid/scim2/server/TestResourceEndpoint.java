@@ -27,11 +27,13 @@ import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
 import com.unboundid.scim2.server.utils.SimpleSearchResults;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
@@ -49,6 +51,34 @@ public class TestResourceEndpoint
   private static final ResourceTypeDefinition RESOURCE_TYPE_DEFINITION =
       ResourceTypeDefinition.fromJaxRsResource(
           TestResourceEndpoint.class);
+
+  /**
+   * This method will simply return a poorly formated SCIM exception and
+   * error response code.
+   *
+   * @return returns a json document that is not in the proper error response
+   * format.
+   */
+  @POST
+  @Path("badException")
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
+  public Response getBadException()
+  {
+    return Response.status(Response.Status.CONFLICT).
+        type(MediaType.APPLICATION_JSON).entity(
+            "{\n" +
+            "    \"Errors\": [\n" +
+            "        {\n" +
+            "            \"code\": 409, \n" +
+            "            \"description\": \"Insert failed. First exception on" +
+                " row 0; first error: FIELD_INTEGRITY_EXCEPTION, Salesforce " +
+                "CRM Content User is not allowed for this License Type.: " +
+                "__MISSING_LABEL_FOR_common.udd.impl.UddInfoImpl@4d7b688d: " +
+                "[UserPermissions]\"\n" +
+            "        }\n" +
+            "    ]\n" +
+            "}").build();
+  }
 
   /**
    * Test SCIM search.
