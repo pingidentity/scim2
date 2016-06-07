@@ -216,6 +216,9 @@
                       <stylesheetfile>${main.basedir}/resource/unboundid-javadoc.css</stylesheetfile>
                       <linksource>true</linksource>
                       <quiet>true</quiet>
+                      <!-- Inherited POMs may define the javadoc.excludedPackageNames
+                      property to exclude packages on a component-by-component basis. -->
+                      <excludePackageNames>${javadoc.excludedPackageNames}</excludePackageNames>
                     </configuration>
                   </execution>
                 </executions>

@@ -30,6 +30,7 @@
         <build.product.name>${project.name}</build.product.name>
         <build.product.short.name>${project.artifactId}</build.product.short.name>
         <build.version>${project.version}</build.version>
+        <javadoc.excludedPackageNames>com.unboundid.scim2.common.utils</javadoc.excludedPackageNames>
     </properties>
 
     <build>
