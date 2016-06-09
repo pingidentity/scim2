@@ -17,7 +17,6 @@
 
 package com.unboundid.scim2.common.types;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
 
@@ -40,15 +39,15 @@ public class AuthenticationScheme
       isRequired = true)
   private final String description;
 
-  @Attribute(description = "An HTTP addressable URL pointing to the " +
+  @Attribute(description = "An HTTP addressable URI pointing to the " +
       "Authentication Scheme's specification.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private final URL specUrl;
+  private final URL specUri;
 
-  @Attribute(description = "An HTTP addressable URL pointing to the " +
+  @Attribute(description = "An HTTP addressable URI pointing to the " +
       "Authentication Scheme's usage documentation.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private final URL documentationUrl;
+  private final URL documentationUri;
 
   @Attribute(description = "A label indicating the authentication " +
       "scheme type; e.g., \"oauth\" or \"oauth2\".",
@@ -63,37 +62,35 @@ public class AuthenticationScheme
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final boolean primary;
-
   /**
    * Create a new complex type that specifies supported Authentication Scheme
    * properties.
    *
    * @param name The common authentication scheme name.
    * @param description A description of the Authentication Scheme.
-   * @param specUrl An HTTP addressable URL pointing to the Authentication
+   * @param specUri An HTTP addressable URI pointing to the Authentication
    *                Scheme's specification.
-   * @param documentationUrl An HTTP addressable URL pointing to the
+   * @param documentationUri An HTTP addressable URI pointing to the
    *                         Authentication Scheme's usage documentation.
    * @param type A label indicating the authentication scheme type.
    * @param primary  Boolean value indicating whether this authentication
    *                 scheme is preferred.
    */
-  @JsonCreator
   public AuthenticationScheme(
       @JsonProperty(value = "name", required = true) final String name,
       @JsonProperty(value = "description", required = true)
       final String description,
-      @JsonProperty(value = "specUrl") final URL specUrl,
-      @JsonProperty(value = "documentationUrl")
-      final URL documentationUrl,
+      @JsonProperty(value = "specUri") final URL specUri,
+      @JsonProperty(value = "documentationUri")
+      final URL documentationUri,
       @JsonProperty(value = "type") final String type,
       @JsonProperty(value = "primary", defaultValue = "false")
       final boolean primary)
   {
     this.name = name;
     this.description = description;
-    this.specUrl = specUrl;
-    this.documentationUrl = documentationUrl;
+    this.specUri = specUri;
+    this.documentationUri = documentationUri;
     this.type = type;
     this.primary = primary;
   }
@@ -119,27 +116,27 @@ public class AuthenticationScheme
   }
 
   /**
-   * Retrieves the HTTP addressable URL pointing to the Authentication
+   * Retrieves the HTTP addressable URI pointing to the Authentication
    * Scheme's specification.
    *
-   * @return The HTTP addressable URL pointing to the Authentication
+   * @return The HTTP addressable URI pointing to the Authentication
    * Scheme's specification.
    */
-  public URL getSpecUrl()
+  public URL getSpecUri()
   {
-    return specUrl;
+    return specUri;
   }
 
   /**
-   * Retrieves the HTTP addressable URL pointing to the Authentication
+   * Retrieves the HTTP addressable URI pointing to the Authentication
    * Scheme's usage documentation.
    *
-   * @return The HTTP addressable URL pointing to the Authentication
+   * @return The HTTP addressable URI pointing to the Authentication
    * Scheme's usage documentation.
    */
-  public URL getDocumentationUrl()
+  public URL getDocumentationUri()
   {
-    return documentationUrl;
+    return documentationUri;
   }
 
   /**
@@ -190,8 +187,8 @@ public class AuthenticationScheme
     {
       return false;
     }
-    if (documentationUrl != null ? !documentationUrl.equals(
-        that.documentationUrl) : that.documentationUrl != null)
+    if (documentationUri != null ? !documentationUri.equals(
+        that.documentationUri) : that.documentationUri != null)
     {
       return false;
     }
@@ -199,8 +196,8 @@ public class AuthenticationScheme
     {
       return false;
     }
-    if (specUrl != null ? !specUrl.equals(that.specUrl) :
-        that.specUrl != null)
+    if (specUri != null ? !specUri.equals(that.specUri) :
+        that.specUri != null)
     {
       return false;
     }
@@ -220,9 +217,9 @@ public class AuthenticationScheme
   {
     int result = name != null ? name.hashCode() : 0;
     result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (specUrl != null ? specUrl.hashCode() : 0);
-    result = 31 * result + (documentationUrl != null ?
-        documentationUrl.hashCode() : 0);
+    result = 31 * result + (specUri != null ? specUri.hashCode() : 0);
+    result = 31 * result + (documentationUri != null ?
+        documentationUri.hashCode() : 0);
     result = 31 * result + (type != null ? type.hashCode() : 0);
     result = 31 * result + (primary ? 1 : 0);
     return result;
