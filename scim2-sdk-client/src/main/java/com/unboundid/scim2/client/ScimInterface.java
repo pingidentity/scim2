@@ -149,7 +149,7 @@ public interface ScimInterface
    * @return The modified resource.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> T modifyRequest(String endpoint,
+  <T extends ScimResource> T modify(String endpoint,
       String id, PatchRequest patchRequest, Class<T> clazz)
       throws ScimException;
 
@@ -164,7 +164,7 @@ public interface ScimInterface
    * @return The modified resource.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> T modifyRequest(
+  <T extends ScimResource> T modify(
       T resource, PatchRequest patchRequest) throws ScimException;
 
   /**

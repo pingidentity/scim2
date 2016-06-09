@@ -56,11 +56,11 @@ import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
 import com.unboundid.scim2.server.utils.ServerUtils;
-import org.testng.Assert;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTestNg;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -677,7 +677,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     patchOperations.add(PatchOperation.add("phoneNumbers",
         JsonUtils.valueToNode(Lists.newArrayList(phone1, phone2))));
 
-    UserResource updatedUser = scimInterface.modifyRequest(
+    UserResource updatedUser = scimInterface.modify(
         createdUser, new PatchRequest(patchOperations));
 
     assertNull(updatedUser.getDisplayName());
@@ -721,7 +721,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     patchOperations.add(PatchOperation.add("phoneNumbers",
         JsonUtils.valueToNode(Lists.newArrayList(phone1, phone2))));
 
-    UserResource updatedUser = scimInterface.modifyRequest(
+    UserResource updatedUser = scimInterface.modify(
         "SingletonUsers", createdUser.getId(),
         new PatchRequest(patchOperations), UserResource.class);
 
@@ -853,7 +853,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       // Confirm that query parameters set by other means are included.
       String filter = "meta.resourceType eq \"User\"";
       requestFilter.addExpectedQueryParam(ApiConstants.QUERY_PARAMETER_FILTER,
-                                          filter);
+          filter);
       service.searchRequest("Users").
           filter(filter).
           queryParam(expectedKey, expectedValue).
@@ -894,8 +894,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
                                     ScimService.MEDIA_TYPE_SCIM_TYPE.
                                         toString());
     requestFilter.addExpectedHeader(HttpHeaders.ACCEPT,
-                                    MediaType.APPLICATION_JSON_TYPE.
-                                        toString());
+        MediaType.APPLICATION_JSON_TYPE.
+            toString());
 
     try
     {

@@ -41,11 +41,11 @@ import java.net.URI;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 import static com.unboundid.scim2.common.utils.ApiConstants.ME_ENDPOINT;
-import static com.unboundid.scim2.common.utils.
-    ApiConstants.RESOURCE_TYPES_ENDPOINT;
+import static com.unboundid.scim2.common.utils.ApiConstants.
+    RESOURCE_TYPES_ENDPOINT;
 import static com.unboundid.scim2.common.utils.ApiConstants.SCHEMAS_ENDPOINT;
-import static com.unboundid.scim2.common.utils.
-    ApiConstants.SERVICE_PROVIDER_CONFIG_ENDPOINT;
+import static com.unboundid.scim2.common.utils.ApiConstants.
+    SERVICE_PROVIDER_CONFIG_ENDPOINT;
 
 /**
  * The main entry point to the client API used to access a SCIM 2.0 service
@@ -215,10 +215,6 @@ public class ScimService implements ScimInterface
       throws ScimException
   {
     RetrieveRequestBuilder.Generic<T> builder = retrieveRequest(resource);
-    if(getServiceProviderConfig().getEtag().isSupported())
-    {
-      builder.ifNoneMatch();
-    }
     return builder.invoke();
   }
 
@@ -237,10 +233,6 @@ public class ScimService implements ScimInterface
       final T resource) throws ScimException
   {
     ReplaceRequestBuilder<T> builder = replaceRequest(resource);
-    if(getServiceProviderConfig().getEtag().isSupported())
-    {
-      builder.ifMatch();
-    }
     return builder.invoke();
   }
 
@@ -280,7 +272,8 @@ public class ScimService implements ScimInterface
   public <T extends ScimResource> void delete(final T resource)
       throws ScimException
   {
-    deleteRequest(resource).invoke();
+    DeleteRequestBuilder builder = deleteRequest(resource);
+    builder.invoke();
   }
 
   /**
@@ -396,7 +389,7 @@ public class ScimService implements ScimInterface
    * {@inheritDoc}
    */
   @Override
-  public <T extends ScimResource> T modifyRequest(final String endpoint,
+  public <T extends ScimResource> T modify(final String endpoint,
       final String id, final PatchRequest patchRequest, final Class<T> clazz)
       throws ScimException
   {
@@ -448,12 +441,13 @@ public class ScimService implements ScimInterface
    * {@inheritDoc}
    */
   @Override
-  public <T extends ScimResource> T modifyRequest(
+  public <T extends ScimResource> T modify(
       final T resource, final PatchRequest patchRequest) throws ScimException
   {
     ModifyRequestBuilder.Generic<T> requestBuilder =
         new ModifyRequestBuilder.Generic<T>(resolveWebTarget(
             checkAndGetLocation(resource)), resource);
+
     for(PatchOperation op : patchRequest.getOperations())
     {
       requestBuilder.addOperation(op);
