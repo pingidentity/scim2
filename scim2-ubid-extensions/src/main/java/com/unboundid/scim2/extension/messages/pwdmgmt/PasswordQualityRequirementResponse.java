@@ -29,7 +29,7 @@ import java.util.List;
  * requirements.
  */
 @Schema(id="urn:unboundid:schemas:2.0:PasswordQualityRequirement",
-    description = "The password quality requirments for a particular user.",
+    description = "The password quality requirements for a particular user.",
     name = "PasswordQualityRequirement")
 public class PasswordQualityRequirementResponse extends BaseScimResource
 {

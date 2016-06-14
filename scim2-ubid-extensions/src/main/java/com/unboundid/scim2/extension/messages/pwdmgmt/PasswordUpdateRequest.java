@@ -19,7 +19,9 @@ package com.unboundid.scim2.extension.messages.pwdmgmt;
 
 
 import com.unboundid.scim2.common.BaseScimResource;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.types.AttributeDefinition;
 
 /**
  * The request for changing a password for a user.
@@ -29,8 +31,19 @@ import com.unboundid.scim2.common.annotations.Schema;
     name = "PasswordUpdateRequest")
 public final class PasswordUpdateRequest extends BaseScimResource
 {
+  @Attribute(description = "The current password.",
+      mutability = AttributeDefinition.Mutability.WRITE_ONLY)
   private String currentPassword;
+
+  @Attribute(description = "The new password.",
+      mutability = AttributeDefinition.Mutability.WRITE_ONLY)
   private String newPassword;
+
+  @Attribute(
+      description = "Contains a generated password" +
+          " if a password was generated.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private String generatedPassword;
 
   /**
    * Builder for a password update request object.
@@ -39,6 +52,7 @@ public final class PasswordUpdateRequest extends BaseScimResource
   {
     private String currentPassword;
     private String newPassword;
+    private String generatedPassword;
 
     /**
      * Sets the current password for the password update request.
@@ -67,6 +81,19 @@ public final class PasswordUpdateRequest extends BaseScimResource
     }
 
     /**
+     * Sets the server generated password.
+     *
+     * @param generatedPassword the generated password.
+     * @return this object.
+     */
+    public PasswordUpdateRequestBuilder setGeneratedPassword(
+        final String generatedPassword)
+    {
+      this.generatedPassword = generatedPassword;
+      return this;
+    }
+
+    /**
      * Call build to build a password reset token request with the parameters
      * that have been supplied to the builder.
      *
@@ -78,6 +105,7 @@ public final class PasswordUpdateRequest extends BaseScimResource
       PasswordUpdateRequest request = new PasswordUpdateRequest();
       request.currentPassword = this.currentPassword;
       request.newPassword = this.newPassword;
+      request.generatedPassword = this.generatedPassword;
       return request;
     }
   }
@@ -86,6 +114,45 @@ public final class PasswordUpdateRequest extends BaseScimResource
   private PasswordUpdateRequest()
   {
 
+  }
+
+  /**
+   * Create a new PasswordUpdateRequest.
+   *
+   * @param currentPassword  the current password.
+   * @param newPassword  the new password.
+   */
+  public PasswordUpdateRequest(final String currentPassword,
+                               final String newPassword)
+  {
+    this.currentPassword = currentPassword;
+    this.newPassword = newPassword;
+  }
+
+  /**
+   * Sets the current password for the password update request.
+   *
+   * @param currentPassword  the current password.
+   * @return this object.
+   */
+  public PasswordUpdateRequest setCurrentPassword(
+      final String currentPassword)
+  {
+    this.currentPassword = currentPassword;
+    return this;
+  }
+
+  /**
+   * Sets the new password for the password update request.
+   *
+   * @param newPassword  the new password.
+   * @return this object.
+   */
+  public PasswordUpdateRequest setNewPassword(
+      final String newPassword)
+  {
+    this.newPassword = newPassword;
+    return this;
   }
 
   /**
@@ -106,5 +173,15 @@ public final class PasswordUpdateRequest extends BaseScimResource
   public String getNewPassword()
   {
     return newPassword;
+  }
+
+  /**
+   * Gets the server generated password.
+   *
+   * @return the generated password.
+   */
+  public String getGeneratedPassword()
+  {
+    return generatedPassword;
   }
 }
