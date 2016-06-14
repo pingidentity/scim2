@@ -998,14 +998,16 @@ public class JsonUtils
 
     if(targetToAdd != targetToReplace)
     {
-      // Now iterate through the fields in targetToReplace and remove any that
-      // are not in the source. These new fields should only be in targetToAdd
-      Iterator<String> ri = targetToReplace.fieldNames();
-      while (ri.hasNext())
+      // Now iterate through the fields in targetToAdd and remove any that
+      // are not in the source. These new fields should only be in
+      // targetToReplace.
+      Iterator<String> ai = targetToAdd.fieldNames();
+      while (ai.hasNext())
       {
-        if (!source.has(ri.next()))
+        final String f = ai.next();
+        if (!source.has(f))
         {
-          ri.remove();
+          ai.remove();
         }
       }
     }

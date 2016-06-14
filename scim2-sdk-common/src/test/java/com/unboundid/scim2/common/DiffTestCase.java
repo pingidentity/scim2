@@ -73,14 +73,13 @@ public class DiffTestCase
 
     List<PatchOperation> d = JsonUtils.diff(source, target, false);
 
-    assertEquals(d.size(), 3);
+    assertEquals(d.size(), 2);
 
-    assertTrue(d.contains(PatchOperation.add(
-        JsonUtils.getJsonNodeFactory().objectNode().put("nickName","bjj3"))));
     assertTrue(d.contains(PatchOperation.remove(
         Path.root().attribute("title"))));
     ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.put("userType", "manager");
+    replaceValue.put("nickName","bjj3");
     assertTrue(d.contains(PatchOperation.replace(replaceValue)));
 
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
@@ -135,7 +134,7 @@ public class DiffTestCase
 
     d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 1);
-    assertTrue(d.contains(PatchOperation.add(
+    assertTrue(d.contains(PatchOperation.replace((ObjectNode)
         JsonUtils.getJsonNodeFactory().objectNode().set("name",name))));
 
     d2 = JsonUtils.diff(source, target, true);
@@ -288,9 +287,9 @@ public class DiffTestCase
             Filter.eq("value", thumbnail)))));
     ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.putArray("entitlements").add(entitlement3);
+    replaceValue.putArray("phones").add(phone1).add(phone2);
     assertTrue(d.contains(PatchOperation.replace(replaceValue)));
     ObjectNode addValue = JsonUtils.getJsonNodeFactory().objectNode();
-    addValue.putArray("phones").add(phone1).add(phone2);
     addValue.putArray("photos").add(photo3);
     assertTrue(d.contains(PatchOperation.add(addValue)));
 
@@ -483,9 +482,9 @@ public class DiffTestCase
                 "primary eq true")))));
     ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.putArray("entitlements").add(entitlement3);
+    replaceValue.putArray("phones").add(phone1).add(phone2);
     assertTrue(d.contains(PatchOperation.replace(replaceValue)));
     ObjectNode addValue = JsonUtils.getJsonNodeFactory().objectNode();
-    addValue.putArray("phones").add(phone1).add(phone2);
     addValue.putArray("photos").add(photo3);
     assertTrue(d.contains(PatchOperation.add(addValue)));
 
