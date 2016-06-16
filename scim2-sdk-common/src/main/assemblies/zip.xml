@@ -87,11 +87,6 @@
             <destName>sources.jar</destName>
             <fileMode>644</fileMode>
         </file>
-        <file>
-            <outputDirectory>.</outputDirectory>
-            <source>${main.basedir}/resource/Release-Notes.txt</source>
-            <fileMode>644</fileMode>
-        </file>
     </files>
     <dependencySets>
         <dependencySet>
