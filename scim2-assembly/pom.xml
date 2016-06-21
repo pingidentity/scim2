@@ -1,0 +1,74 @@
+<!--
+~ Copyright 2015-2016 UnboundID Corp.
+~
+~ This program is free software; you can redistribute it and/or modify
+~ it under the terms of the GNU General Public License (GPLv2 only)
+~ or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
+~ as published by the Free Software Foundation.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU General Public License for more details.
+~
+~ You should have received a copy of the GNU General Public License
+~ along with this program; if not, see <http://www.gnu.org/licenses>.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>scim2-parent</artifactId>
+    <groupId>com.unboundid.product.scim2</groupId>
+    <version>1.2.4-SNAPSHOT</version>
+  </parent>
+  <artifactId>scim2-assembly</artifactId>
+  <packaging>pom</packaging>
+  <name>UnboundID SCIM2 Assembly</name>
+
+  <properties>
+    <main.basedir>${project.parent.basedir}</main.basedir>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>UnboundID</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>create-zip-archive</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <finalName>scim2-sdk-${project.version}</finalName>
+                  <descriptors>
+                    <descriptor>${project.basedir}/assemblies/zip.xml</descriptor>
+                  </descriptors>
+                  <attach>false</attach>
+                  <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.unboundid.product.scim2</groupId>
+      <artifactId>scim2-sdk-server</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.unboundid.product.scim2</groupId>
+      <artifactId>scim2-ubid-extensions</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+</project>

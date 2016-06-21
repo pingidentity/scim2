@@ -1,0 +1,15 @@
+UnboundID SCIM2 SDK
+Copyright 2011-2016 UnboundID Corp.
+
+The UnboundID SCIM2 SDK and Reference Implementation are available under three
+licenses:  the GNU General Public License version 2 (GPLv2), the GNU Lesser
+General Public License version 2.1 (LGPLv2.1), and a free-right-to-use license
+created by UnboundID Corp.
+
+See the LICENSE-GPLv2.txt file for the GNU General Public License version 2.
+
+See the LICENSE-LGPLv2.1.txt file for the GNU Lesser General Public License
+version 2.1.
+
+See the LICENSE-UnboundID-SCIM2.txt file for the UnboundID SCIM 2.0 CLIENT 
+SDK Free Use License.

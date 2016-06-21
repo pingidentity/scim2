@@ -1,36 +1,74 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2015-2016 UnboundID Corp.
-  ~
-  ~ This program is free software; you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License (GPLv2 only)
-  ~ or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
-  ~ as published by the Free Software Foundation.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, see <http://www.gnu.org/licenses>.
-  -->
-
+~ Copyright 2015-2016 UnboundID Corp.
+~
+~ This program is free software; you can redistribute it and/or modify
+~ it under the terms of the GNU General Public License (GPLv2 only)
+~ or the terms of the GNU Lesser General Public License (LGPLv2.1 only)
+~ as published by the Free Software Foundation.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU General Public License for more details.
+~
+~ You should have received a copy of the GNU General Public License
+~ along with this program; if not, see <http://www.gnu.org/licenses>.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>scim2-parent</artifactId>
     <groupId>com.unboundid.product.scim2</groupId>
-    <version>1.2.3-SNAPSHOT</version>
+    <version>1.2.4-SNAPSHOT</version>
   </parent>
   <artifactId>scim2-sdk-server</artifactId>
   <packaging>jar</packaging>
-  <name>UnboundID SCIM 2 SDK Server</name>
+  <name>UnboundID SCIM2 SDK Server</name>
+  <description>
+    The UnboundID SCIM2 SDK is a library that may be used to interact with various
+    types of SCIM-enabled endpoints (such as the UnboundID server products) to
+    perform lightweight, cloud-based identity management via the SCIM Protocol.
+    See http://simplecloud.info for more information.
+  </description>
+  <inceptionYear>2015</inceptionYear>
+  <url>https://github.com/UnboundID/scim2</url>
+  <scm>
+    <url>https://github.com/UnboundID/scim2</url>
+    <connection>scm:git:https://github.com/UnboundID/scim2</connection>
+  </scm>
+  <organization>
+    <name>UnboundID Corp.</name>
+    <url>https://www.unboundid.com</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>unboundid</id>
+      <name>UnboundID Corp.</name>
+      <email>support@unboundid.com</email>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>GNU General Public License version 2 (GPLv2)</name>
+      <url>http://www.gnu.org/licenses/gpl-2.0.html</url>
+    </license>
+    <license>
+      <name>GNU Lesser General Public License version 2.1 (LGPLv2.1)</name>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+    </license>
+    <license>
+      <name>UnboundID SCIM2 SDK Free Use License</name>
+      <url>https://github.com/UnboundID/scim2</url>
+      <comments>This license is available in the source code repository at the provided URL.</comments>
+    </license>
+  </licenses>
+
   <properties>
     <build.product.name>${project.name}</build.product.name>
     <build.product.short.name>${project.artifactId}</build.product.short.name>
     <build.version>${project.version}</build.version>
     <javadoc.excludedPackageNames>com.unboundid.scim2.common.utils</javadoc.excludedPackageNames>
+    <main.basedir>${project.parent.basedir}</main.basedir>
   </properties>
 
   <build>
@@ -69,7 +107,11 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <id>gen-sources</id>
             <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
             <configuration>
               <target>
                 <echo message="create version class" />
@@ -87,9 +129,6 @@
                 </copy>
               </target>
             </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
@@ -117,7 +156,7 @@
         <executions>
           <execution>
             <!-- A jar of the project sources is required for publishing to
-                 Maven Central. -->
+            Maven Central. -->
             <goals>
               <goal>jar</goal>
             </goals>
@@ -129,19 +168,44 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-test-jar</id>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.4</version>
+        <executions>
+          <execution>
+            <id>create-javadoc-archive</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <quiet>true</quiet>
+              <linksource>true</linksource>
+              <excludePackageNames>${javadoc.excludedPackageNames}</excludePackageNames>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
   <dependencies>
     <dependency>
       <groupId>com.unboundid.product.scim2</groupId>
-      <artifactId>scim2-sdk-common</artifactId>
-      <version>1.2.3-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>com.unboundid.product.scim2</groupId>
       <artifactId>scim2-sdk-client</artifactId>
-      <version>1.2.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

@@ -19,15 +19,31 @@
         xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-  <id>javadoc</id>
+  <id>sonatype-bundle</id>
   <includeBaseDirectory>false</includeBaseDirectory>
   <formats>
     <format>jar</format>
   </formats>
   <fileSets>
     <fileSet>
-      <directory>${project.build.directory}/javadoc</directory>
       <outputDirectory>/</outputDirectory>
+      <directory>${project.build.directory}</directory>
+      <includes>
+        <include>${project.build.finalName}.pom</include>
+        <include>${project.build.finalName}.jar</include>
+        <include>${project.artifactId}-${project.version}-sources.jar</include>
+        <include>${project.artifactId}-${project.version}-javadoc.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <outputDirectory>/</outputDirectory>
+      <directory>${project.build.directory}</directory>
+      <includes>
+        <include>${project.build.finalName}.pom.asc</include>
+        <include>${project.build.finalName}.jar.asc</include>
+        <include>${project.artifactId}-${project.version}-sources.jar.asc</include>
+        <include>${project.artifactId}-${project.version}-javadoc.jar.asc</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>
