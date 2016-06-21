@@ -373,7 +373,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
             filter("meta.resourceType eq \"User\"").
             page(1, 10).
             sort("id", SortOrder.ASCENDING).
-            attributes("id", "name").
+            attributes("id", "name", "Meta").
             invoke(UserResource.class);
 
     assertEquals(returnedUsers.getTotalResults(), 1);
@@ -487,7 +487,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertNull(user.getNickName());
 
     user = scimService.retrieveRequest(ScimService.ME_URI).
-        attributes("nickName").invoke(UserResource.class);
+        attributes("nickName","Meta").invoke(UserResource.class);
     assertEquals(user.getId(), "123");
     assertEquals(user.getMeta().getResourceType(), "User");
     assertNull(user.getDisplayName());
@@ -962,6 +962,33 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     {
       requestFilter.reset();
     }
+  }
+
+
+  /**
+   * Test for the proper return behavior for Meta.  This test is in response
+   * to DS-15034.  If we are not careful about the order of populating location
+   * and resource type with respect to trimming the results, we can end up
+   * returning unwanted (or incorrect) information.
+   * @throws Exception indicates a test failure.
+   */
+  @Test
+  public void testMetaIsReturnedByDefaultOnly() throws Exception
+  {
+    ScimService scimService = new ScimService(target());
+    UserResource user = scimService.retrieveRequest(ScimService.ME_URI).
+        attributes("nickName").invoke(UserResource.class);
+    assertNull(user.getMeta());
+
+    user = scimService.retrieveRequest(ScimService.ME_URI).
+        excludedAttributes("meta").invoke(UserResource.class);
+    assertNull(user.getMeta());
+
+    user = scimService.retrieveRequest(ScimService.ME_URI).
+        invoke(UserResource.class);
+    assertNotNull(user.getMeta());
+    assertNotNull(user.getMeta().getLocation());
+    assertNotNull(user.getMeta().getResourceType());
   }
 
 
