@@ -19,6 +19,7 @@ package com.unboundid.scim2.extension.messages.sessionmgmt;
 
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.extension.messages.consent.OAuth2Client;
 
@@ -26,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+@Schema(description = "Session objects",
+    id = "urn:unboundid:scim:api:messages:2.0:session",
+    name = "Session")
 public class Session extends BaseScimResource
 {
   @Attribute(description = "True if this session was used to authorize the " +
@@ -35,12 +39,14 @@ public class Session extends BaseScimResource
 
   @Attribute(description = "Details about the authentication methods " +
       "successfully used during the last login event.",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      multiValueClass = String.class)
   private List<String> lastLoginMethods;
 
   @Attribute(description = "Details about the authentication methods " +
       "successfully used during the last second factor event.",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      multiValueClass = String.class)
   private List<String> lastSecondFactorMethods;
 
   @Attribute(description = "The last time of a successful login event.",
@@ -63,7 +69,8 @@ public class Session extends BaseScimResource
 
   @Attribute(description = "A list of all clients with access tokens or " +
       "offline tokens obtained using this session.",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      multiValueClass = OAuth2Client.class)
   private List<OAuth2Client> clients;
 
   /**

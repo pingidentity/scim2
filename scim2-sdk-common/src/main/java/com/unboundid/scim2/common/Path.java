@@ -124,6 +124,17 @@ public final class Path implements Iterable<Path.Element>
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+      final StringBuilder builder = new StringBuilder();
+      toString(builder);
+      return builder.toString();
+    }
+
+    /**
      * Append the string representation of the path element to the provided
      * buffer.
      *
