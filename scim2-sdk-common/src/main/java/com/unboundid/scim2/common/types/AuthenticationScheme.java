@@ -20,8 +20,8 @@ package com.unboundid.scim2.common.types;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * A complex type that specifies supported Authentication Scheme properties.
@@ -42,12 +42,12 @@ public class AuthenticationScheme
   @Attribute(description = "An HTTP addressable URI pointing to the " +
       "Authentication Scheme's specification.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private final URL specUri;
+  private final URI specUri;
 
   @Attribute(description = "An HTTP addressable URI pointing to the " +
       "Authentication Scheme's usage documentation.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private final URL documentationUri;
+  private final URI documentationUri;
 
   @Attribute(description = "A label indicating the authentication " +
       "scheme type; e.g., \"oauth\" or \"oauth2\".",
@@ -80,9 +80,9 @@ public class AuthenticationScheme
       @JsonProperty(value = "name", required = true) final String name,
       @JsonProperty(value = "description", required = true)
       final String description,
-      @JsonProperty(value = "specUri") final URL specUri,
+      @JsonProperty(value = "specUri") final URI specUri,
       @JsonProperty(value = "documentationUri")
-      final URL documentationUri,
+      final URI documentationUri,
       @JsonProperty(value = "type") final String type,
       @JsonProperty(value = "primary", defaultValue = "false")
       final boolean primary)
@@ -122,7 +122,7 @@ public class AuthenticationScheme
    * @return The HTTP addressable URI pointing to the Authentication
    * Scheme's specification.
    */
-  public URL getSpecUri()
+  public URI getSpecUri()
   {
     return specUri;
   }
@@ -134,7 +134,7 @@ public class AuthenticationScheme
    * @return The HTTP addressable URI pointing to the Authentication
    * Scheme's usage documentation.
    */
-  public URL getDocumentationUri()
+  public URI getDocumentationUri()
   {
     return documentationUri;
   }
@@ -244,11 +244,11 @@ public class AuthenticationScheme
               "(unless used in conjunction with some external secure system " +
               "such as SSL), as the user name and password are passed over " +
               "the network as cleartext.",
-          new URL("http://www.ietf.org/rfc/rfc2617.txt"),
+          new URI("http://www.ietf.org/rfc/rfc2617.txt"),
           null,
           "httpbasic", primary);
     }
-    catch (MalformedURLException e)
+    catch (URISyntaxException e)
     {
       throw new RuntimeException(e);
     }
@@ -274,11 +274,11 @@ public class AuthenticationScheme
               "token, which is defined in RFC 6750 as \"a string " +
               "representing an access authorization issued to the client\", " +
               "rather than using the resource owner's credentials directly.",
-          new URL("http://tools.ietf.org/html/rfc6750"),
+          new URI("http://tools.ietf.org/html/rfc6750"),
           null,
           "oauthbearertoken", primary);
     }
-    catch (MalformedURLException e)
+    catch (URISyntaxException e)
     {
       throw new RuntimeException(e);
     }

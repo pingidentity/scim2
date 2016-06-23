@@ -32,7 +32,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
-import java.net.URL;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
@@ -378,59 +378,59 @@ public class DiffTestCase
     // - updated
     // -- unchanged
     ObjectNode photo0 = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo0")).
+        setValue(new URI("http://photo0")).
         setType("photo0").
         setPrimary(false));
     ObjectNode photo1 = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo1")).
+        setValue(new URI("http://photo1")).
         setType("photo1").
         setPrimary(false));
     // -- non-asserted
     ObjectNode photo2 = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo2")).
+        setValue(new URI("http://photo2")).
         setType("photo2").
         setPrimary(false));
     ObjectNode photo2a = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo2")).
+        setValue(new URI("http://photo2")).
         setType("photo2"));
     // -- add a new value
     ObjectNode photo3 = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo3")).
+        setValue(new URI("http://photo3")).
         setType("photo3").
         setPrimary(true));
     // -- update an existing value
     ObjectNode photo4 = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo4")).
+        setValue(new URI("http://photo4")).
         setType("photo4").
         setPrimary(true));
     ObjectNode photo4a = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo4")).
+        setValue(new URI("http://photo4")).
         setType("photo4").
         setPrimary(false));
     // -- add a new value
     ObjectNode photo5 = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo5")).
+        setValue(new URI("http://photo5")).
         setType("photo5").
         setPrimary(false));
     ObjectNode photo5a = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo5")).
+        setValue(new URI("http://photo5")).
         setType("photo5").
         setPrimary(false).
         setDisplay("Photo 5"));
     // -- remove an existing value
     ObjectNode photo6 = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo6")).
+        setValue(new URI("http://photo6")).
         setType("photo6").
         setPrimary(false).
         setDisplay("Photo 6"));
     ObjectNode photo6a = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://photo6")).
+        setValue(new URI("http://photo6")).
         setType("photo6").
         setPrimary(false));
     photo6a.putNull("display");
     // -- remove a value
     ObjectNode thumbnail = JsonUtils.valueToNode(new Photo().
-        setValue(new URL("http://thumbnail1")).
+        setValue(new URI("http://thumbnail1")).
         setType("thumbnail").
         setPrimary(true));
 

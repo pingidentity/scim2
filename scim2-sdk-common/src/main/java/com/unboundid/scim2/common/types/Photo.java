@@ -19,20 +19,20 @@ package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
 
-import java.net.URL;
+import java.net.URI;
 
 /**
  * Photo for the user.
  */
 public class Photo
 {
-  @Attribute(description = "URL of a photo of the User.",
+  @Attribute(description = "URI of a photo of the User.",
       isRequired = false,
       referenceTypes = { "external" },
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE)
-  private URL value;
+  private URI value;
 
   @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
@@ -63,22 +63,22 @@ public class Photo
   private Boolean primary;
 
   /**
-   * Retrieves the URL of a photo of the User.
+   * Retrieves the URI of a photo of the User.
    *
    * @return The E-mail addresses for the user.
    */
-  public URL getValue()
+  public URI getValue()
   {
     return value;
   }
 
   /**
-   * Specifies the URL of a photo of the User.
+   * Specifies the URI of a photo of the User.
    *
    * @param value The E-mail addresses for the user.
    * @return This object.
    */
-  public Photo setValue(final URL value)
+  public Photo setValue(final URI value)
   {
     this.value = value;
     return this;

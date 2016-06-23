@@ -21,7 +21,7 @@ import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -77,7 +77,7 @@ public class UserResource extends BaseScimResource
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE)
-  private URL profileUrl;
+  private URI profileUrl;
 
   @Attribute(description = "The user's title, such as \"Vice " +
       "President\".",
@@ -176,7 +176,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = InstantMessagingAddress.class)
   private List<InstantMessagingAddress> ims;
 
-  @Attribute(description = "URLs of photos of the User.",
+  @Attribute(description = "URIs of photos of the User.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT,
@@ -321,20 +321,20 @@ public class UserResource extends BaseScimResource
    * @return The fully qualified URL to a page representing the User's online
    * profile.
    */
-  public URL getProfileUrl()
+  public URI getProfileUrl()
   {
     return profileUrl;
   }
 
   /**
-   * Specifies the fully qualified URL to a page representing the User's online
+   * Specifies the fully qualified URI to a page representing the User's online
    * profile.
    *
    * @param profileUrl the fully qualified URL to a page representing the User's
    *                   online profile.
    * @return This object.
    */
-  public UserResource setProfileUrl(final URL profileUrl)
+  public UserResource setProfileUrl(final URI profileUrl)
   {
     this.profileUrl = profileUrl;
     return this;
@@ -577,9 +577,9 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Retrieves the URLs of photos of the User.
+   * Retrieves the URIs of photos of the User.
    *
-   * @return The URLs of photos of the User.
+   * @return The URIs of photos of the User.
    */
   public List<Photo> getPhotos()
   {
@@ -587,9 +587,9 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Specifies the URLs of photos of the User.
+   * Specifies the URIs of photos of the User.
    *
-   * @param photos The URLs of photos of the User.
+   * @param photos The URIs of photos of the User.
    * @return This object.
    */
   public UserResource setPhotos(final List<Photo> photos)
