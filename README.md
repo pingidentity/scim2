@@ -1,6 +1,6 @@
 # SCIM 2 SDK
  [SCIM](http://www.simplecloud.info), or _System for Cross-domain Identity Management_, is an IETF standard that defines an extensible schema mechanism and REST API for **managing users and other identity data**. SCIM is used by a variety of vendors — including Facebook, Salesforce, Microsoft, Cisco, Sailpoint, and UnboundID — for a variety of purposes, including user provisioning, directory services, attribute exchange, and more.
-  
+
 The UnboundID SCIM 2 SDK for Java provides a powerful and flexible set of APIs for interacting with SCIM service providers and resources. Use it to build applications and servers that interoperate with SCIM servers such as the [UnboundID Data Broker](https://www.unboundid.com/data-broker).
 
 The SCIM 2 SDK consists of the following components:
@@ -40,9 +40,9 @@ You may also download SCIM 2 SDK builds from the [Releases](https://github.com/U
 If you're looking for a Java SDK for SCIM 1.1, you can find it [here](https://github.com/UnboundID/scim).
 
 # How to use it
-The SCIM 2 SDK requires Java 6 or greater. 
+The SCIM 2 SDK requires Java 6 or greater.
 
-The primary point of entry for a client is the `ScimService` class, which represents a SCIM service provider, such as the UnboundID Data Broker. This class acts as a wrapper for a [JAX-RS](https://jax-rs-spec.java.net) client instance, providing methods for building and making requests. 
+The primary point of entry for a client is the `ScimService` class, which represents a SCIM service provider, such as the UnboundID Data Broker. This class acts as a wrapper for a [JAX-RS](https://jax-rs-spec.java.net) client instance, providing methods for building and making requests.
 
 Other classes provide facilities for selecting attributes by path, building query filters, and working with JSON documents. SCIM resources returned from a service provider can either be represented as POJOs or using an API based on the [Jackson](https://github.com/FasterXML/jackson-docs) tree model.
 
@@ -67,16 +67,16 @@ Email email = new Email()
 user1.setEmails(Collections.singletonList(email));
 user1 = scimService.create("Users", user1);
 
-// Retrieve a user as a UserResource and 
+// Retrieve a user as a UserResource and
 // replace with a modified instance using PUT
-UserResource user2 = 
+UserResource user2 =
   scimClient.retrieve(ScimService.ME_URI, UserResource.class);
 user2.setNickName("Babs");
 user2 = scimService.replace(user);
 
-// Retrieve a user as a GenericScimResource and 
+// Retrieve a user as a GenericScimResource and
 // replace with a modified instance using PUT
-GenericScimResource user3 = 
+GenericScimResource user3 =
   scimService.retrieve(ScimService.ME_URI, GenericScimResource.class);
 user3.replaceValue("nickName", TextNode.valueOf("Babs"));
 user3 = service.replaceRequest(user3);
@@ -107,4 +107,4 @@ For detailed information about using the SCIM 2 SDK, including more examples, pl
 Please report bug reports and enhancement requests through this project's [issue tracker](https://github.com/UnboundID/scim2/issues).
 
 # License
-The SCIM 2 SDK is LGPL-licensed. See the [LICENSE](LICENSE) file for more info.
+The UnboundID SCIM2 SDK is available under three licenses: the GNU General Public License version 2 (GPLv2), the GNU Lesser General Public License version 2.1 (LGPLv2.1), and a free-right-to-use license created by UnboundID Corp. See the [LICENSE](https://github.com/UnboundID/scim2/blob/master/resource/LICENSE.txt) file for more info.
