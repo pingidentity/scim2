@@ -38,6 +38,11 @@ public class EmailValidationRequest extends BaseScimResource
       returned = AttributeDefinition.Returned.ALWAYS)
   private String attributePath;
 
+  @Attribute(description = "The email address.",
+      mutability = AttributeDefinition.Mutability.IMMUTABLE,
+      returned = AttributeDefinition.Returned.ALWAYS)
+  private String attributeValue;
+
   @Attribute(description = "The subject of the email message when sending " +
       "the verification code.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE,
@@ -55,11 +60,6 @@ public class EmailValidationRequest extends BaseScimResource
       mutability = AttributeDefinition.Mutability.WRITE_ONLY,
       returned = AttributeDefinition.Returned.NEVER)
   private String verifyCode;
-
-  @Attribute(description = "The current email address.",
-      mutability = AttributeDefinition.Mutability.READ_ONLY,
-      returned = AttributeDefinition.Returned.ALWAYS)
-  private String attributeValue;
 
   @Attribute(description = "Whether the current email address was " +
       "successfully validated.",

@@ -39,6 +39,11 @@ public class TelephonyValidationRequest extends BaseScimResource
       returned = AttributeDefinition.Returned.ALWAYS)
   private String attributePath;
 
+  @Attribute(description = "The telephone number.",
+      mutability = AttributeDefinition.Mutability.IMMUTABLE,
+      returned = AttributeDefinition.Returned.ALWAYS)
+  private String attributeValue;
+
   @Attribute(description = "The message used to send the verification code.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE,
       isRequired = true,
@@ -56,11 +61,6 @@ public class TelephonyValidationRequest extends BaseScimResource
       mutability = AttributeDefinition.Mutability.WRITE_ONLY,
       returned = AttributeDefinition.Returned.NEVER)
   private String verifyCode;
-
-  @Attribute(description = "The current telephone number.",
-      mutability = AttributeDefinition.Mutability.READ_ONLY,
-      returned = AttributeDefinition.Returned.ALWAYS)
-  private String attributeValue;
 
   @Attribute(description = "Whether the current telephone number was " +
       "successfully validated.",
