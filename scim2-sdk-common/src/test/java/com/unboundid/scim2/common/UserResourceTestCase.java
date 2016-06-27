@@ -311,13 +311,13 @@ public class UserResourceTestCase
    * @throws IOException indicates a test failure.
    */
   @Test
-  public void testToGenericScimResource() throws IOException
+  public void testAsGenericScimResource() throws IOException
   {
     UserResource userResource1 =
         JsonUtils.getObjectReader().forType(UserResource.class).readValue(
             fullRepresentation);
 
-    GenericScimResource gsr = userResource1.toGenericScimResource();
+    GenericScimResource gsr = userResource1.asGenericScimResource();
 
     UserResource userResource2 = JsonUtils.nodeToValue(gsr.getObjectNode(),
         UserResource.class);

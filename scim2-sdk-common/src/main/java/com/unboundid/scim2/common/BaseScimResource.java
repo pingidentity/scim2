@@ -566,14 +566,4 @@ public abstract class BaseScimResource
     }
   }
 
-  /**
-   * Converts this object into a GenericScimResource.
-   *
-   * @return a newly created GenericScimResource.
-   */
-  public GenericScimResource toGenericScimResource()
-  {
-    return new GenericScimResource((ObjectNode)JsonUtils.valueToNode(this));
-  }
-
 }
