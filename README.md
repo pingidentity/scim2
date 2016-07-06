@@ -79,7 +79,7 @@ user2 = scimService.replace(user);
 GenericScimResource user3 =
   scimService.retrieve(ScimService.ME_URI, GenericScimResource.class);
 user3.replaceValue("nickName", TextNode.valueOf("Babs"));
-user3 = service.replaceRequest(user3);
+user3 = scimService.replaceRequest(user3);
 
 // Perform a partial modification of a user using PATCH
 scimService.modifyRequest(ScimService.ME_URI)
