@@ -19,7 +19,7 @@
     <parent>
         <artifactId>scim2-parent</artifactId>
         <groupId>com.unboundid.product.scim2</groupId>
-        <version>1.2.9</version>
+        <version>1.2.10-SNAPSHOT</version>
     </parent>
     <artifactId>scim2-sdk-client</artifactId>
     <packaging>jar</packaging>
