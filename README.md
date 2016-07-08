@@ -21,7 +21,7 @@ For general-purpose clients:
 <dependency>
   <groupId>com.unboundid.product.scim2</groupId>
   <artifactId>scim2-sdk-client</artifactId>
-  <version>1.1.35</version>
+  <version>1.2.9</version>
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ For clients using UnboundID-specific features:
 <dependency>
   <groupId>com.unboundid.product.scim2</groupId>
   <artifactId>scim2-ubid-extensions</artifactId>
-  <version>1.1.35</version>
+  <version>1.2.9</version>
 </dependency>
 ```
 
