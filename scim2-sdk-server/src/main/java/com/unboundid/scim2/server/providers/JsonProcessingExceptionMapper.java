@@ -19,6 +19,7 @@ package com.unboundid.scim2.server.providers;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.exceptions.ServerErrorException;
@@ -51,7 +52,8 @@ public class JsonProcessingExceptionMapper implements
   public Response toResponse(final JsonProcessingException exception)
   {
     ErrorResponse errorResponse;
-    if(exception instanceof JsonParseException)
+    if((exception instanceof JsonParseException) ||
+        (exception instanceof JsonMappingException))
     {
       StringBuilder builder = new StringBuilder();
       builder.append("Unable to parse request: ");
