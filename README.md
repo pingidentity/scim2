@@ -41,7 +41,7 @@ You may also download SCIM 2 SDK builds from the [Releases](https://github.com/U
 If you're looking for a Java SDK for SCIM 1.1, you can find it [here](https://github.com/UnboundID/scim).
 
 # How to use it
-The SCIM 2 SDK requires Java 6 or greater.
+The SCIM 2 SDK requires Java 7 or greater.
 
 The primary point of entry for a client is the `ScimService` class, which represents a SCIM service provider, such as the UnboundID Data Broker. This class acts as a wrapper for a [JAX-RS](https://jax-rs-spec.java.net) client instance, providing methods for building and making requests.
 
