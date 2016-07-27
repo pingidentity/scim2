@@ -44,7 +44,6 @@ public class ExternalIdentityTest
             "   \"providerUserId\":\"testUserId\",\n" +
             "   \"accessToken\":\"testAccessToken\",\n" +
             "   \"refreshToken\":\"testRefreshToken\",\n" +
-            "   \"flowState\":\"testFlowState\",\n" +
             "   \"callbackUrl\":\"testCallbackUrl\",\n" +
             "   \"callbackParameters\":\n" +
             "   {\n" +

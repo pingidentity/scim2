@@ -98,7 +98,8 @@ public final class Provider
   }
 
   @Attribute(description = "The name of the IDP.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE)
+      mutability = AttributeDefinition.Mutability.READ_WRITE,
+      isRequired = true)
   private final String name;
 
   @Attribute(description = "The description of the IDP.",
@@ -109,8 +110,7 @@ public final class Provider
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String iconUrl;
 
-  @Attribute(description = "The IDP type. May be one of:  " +
-      "'oidc', 'facebook', or 'googlePlus'.",
+  @Attribute(description = "The IDP type.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String type;
 
