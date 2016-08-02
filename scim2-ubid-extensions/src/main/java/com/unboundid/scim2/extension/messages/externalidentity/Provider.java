@@ -37,6 +37,7 @@ public final class Provider
     private String description;
     private String iconUrl;
     private String type;
+    private String samlResponseBinding;
 
     /**
      * Sets the name of this provider.
@@ -87,6 +88,23 @@ public final class Provider
     }
 
     /**
+     * Sets the SAML response binding. Only applicable to providers of
+     * type "saml".
+     *
+     * @param samlResponseBinding The SAML response binding, either
+     *                            "artifact" or "post".
+     *
+     * @return this
+     */
+    public Builder setSamlResponseBinding(final String samlResponseBinding)
+    {
+      this.samlResponseBinding = samlResponseBinding;
+      return this;
+    }
+
+
+
+    /**
      * Builds a new provider object from the attributes in this builder.
      *
      * @return a new provider object.
@@ -114,6 +132,12 @@ public final class Provider
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String type;
 
+  @Attribute(description = "The SAML response binding, either 'artifact' " +
+                           "or 'post'. Only applicable to providers of " +
+                           "type 'saml'.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private String samlResponseBinding;
+
 
   // private no-arg constructor for Jackson
   private Provider()
@@ -127,6 +151,7 @@ public final class Provider
     this.description = builder.description;
     this.iconUrl = builder.iconUrl;
     this.type = builder.type;
+    this.samlResponseBinding = builder.samlResponseBinding;
   }
 
   /**
@@ -169,6 +194,19 @@ public final class Provider
     return iconUrl;
   }
 
+  /**
+   * Gets the SAML response binding, either "artifact" or "post".
+   * Only applicable to providers of type "saml".
+   *
+   * @return The SAML response binding, either "artifact" or "post".
+   */
+  public String getSamlResponseBinding()
+  {
+    return samlResponseBinding;
+  }
+
+
+
   @Override
   public boolean equals(final Object o)
   {
@@ -181,7 +219,7 @@ public final class Provider
       return false;
     }
 
-    Provider provider = (Provider) o;
+    final Provider provider = (Provider) o;
 
     if (name != null ? !name.equals(provider.name) : provider.name != null)
     {
@@ -197,10 +235,16 @@ public final class Provider
     {
       return false;
     }
-    return !(type != null ? !type.equals(provider.type) :
-        provider.type != null);
+    if (type != null ? !type.equals(provider.type) : provider.type != null)
+    {
+      return false;
+    }
+    return samlResponseBinding != null ? samlResponseBinding.equals(
+        provider.samlResponseBinding) : provider.samlResponseBinding == null;
 
   }
+
+
 
   @Override
   public int hashCode()
@@ -209,6 +253,8 @@ public final class Provider
     result = 31 * result + (description != null ? description.hashCode() : 0);
     result = 31 * result + (iconUrl != null ? iconUrl.hashCode() : 0);
     result = 31 * result + (type != null ? type.hashCode() : 0);
+    result = 31 * result + (samlResponseBinding != null ?
+                            samlResponseBinding.hashCode() : 0);
     return result;
   }
 }

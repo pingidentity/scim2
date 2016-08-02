@@ -37,12 +37,14 @@ public class ProviderTest
     String description = "testDescription";
     String iconUrl = "https://localhost:12345/test/url";
     String type = "testType";
+    String samlResponseBinding = "artifact";
 
     ObjectNode objectNode = JsonUtils.getJsonNodeFactory().objectNode();
     objectNode.put("name", name);
     objectNode.put("description", description);
     objectNode.put("iconUrl", iconUrl);
     objectNode.put("type", type);
+    objectNode.put("samlResponseBinding", samlResponseBinding);
 
     Provider provider1 = JsonUtils.getObjectReader().forType(Provider.class).
         readValue(objectNode.toString());
@@ -50,6 +52,8 @@ public class ProviderTest
     Assert.assertEquals(provider1.getDescription(), description);
     Assert.assertEquals(provider1.getType(), type);
     Assert.assertEquals(provider1.getIconUrl(), iconUrl);
+    Assert.assertEquals(provider1.getSamlResponseBinding(),
+                        samlResponseBinding);
 
     Provider provider2 =
         JsonUtils.getObjectReader().forType(Provider.class).readValue(
