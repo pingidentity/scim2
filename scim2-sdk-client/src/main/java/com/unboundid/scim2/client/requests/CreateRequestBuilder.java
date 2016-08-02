@@ -71,16 +71,21 @@ public final class CreateRequestBuilder<T extends ScimResource>
   {
     Response response = buildRequest().post(
         Entity.entity(resource, MEDIA_TYPE_SCIM_TYPE));
-    if(response.getStatusInfo().getFamily() ==
-        Response.Status.Family.SUCCESSFUL)
+    try
     {
-      C entity = response.readEntity(cls);
-      response.close();
-      return entity;
+      if(response.getStatusInfo().getFamily() ==
+          Response.Status.Family.SUCCESSFUL)
+      {
+        return response.readEntity(cls);
+      }
+      else
+      {
+        throw toScimException(response);
+      }
     }
-    else
+    finally
     {
-      throw toScimException(response);
+      response.close();
     }
   }
 }

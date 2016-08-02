@@ -137,13 +137,20 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
       PatchRequest patchRequest = new PatchRequest(operations);
       Response response = buildRequest().method("PATCH",
           Entity.entity(patchRequest, MEDIA_TYPE_SCIM_TYPE));
-      if (response.getStatusInfo().getFamily() ==
-          Response.Status.Family.SUCCESSFUL)
+      try
       {
-        return response.readEntity(cls);
-      } else
+        if (response.getStatusInfo().getFamily() ==
+            Response.Status.Family.SUCCESSFUL)
+        {
+          return response.readEntity(cls);
+        } else
+        {
+          throw toScimException(response);
+        }
+      }
+      finally
       {
-        throw toScimException(response);
+        response.close();
       }
     }
   }
@@ -191,16 +198,21 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
       PatchRequest patchRequest = new PatchRequest(operations);
       Response response = buildRequest().method("PATCH",
           Entity.entity(patchRequest, MEDIA_TYPE_SCIM_TYPE));
-      if(response.getStatusInfo().getFamily() ==
-          Response.Status.Family.SUCCESSFUL)
+      try
       {
-        T entity = response.readEntity(cls);
-        response.close();
-        return entity;
+        if(response.getStatusInfo().getFamily() ==
+            Response.Status.Family.SUCCESSFUL)
+        {
+          return response.readEntity(cls);
+        }
+        else
+        {
+          throw toScimException(response);
+        }
       }
-      else
+      finally
       {
-        throw toScimException(response);
+        response.close();
       }
     }
   }

@@ -254,6 +254,9 @@ public final class SearchRequestBuilder
     {
       response = buildRequest().get();
     }
+
+    try
+    {
       if (response.getStatusInfo().getFamily() ==
           Response.Status.Family.SUCCESSFUL)
       {
@@ -305,10 +308,6 @@ public final class SearchRequestBuilder
           }
           finally
           {
-            if(response != null)
-            {
-              response.close();
-            }
             if(inputStream != null)
             {
               inputStream.close();
@@ -325,5 +324,10 @@ public final class SearchRequestBuilder
       {
         throw toScimException(response);
       }
+    }
+    finally
+    {
+      response.close();
+    }
   }
 }

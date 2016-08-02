@@ -121,14 +121,21 @@ public abstract class RetrieveRequestBuilder
     public <C> C invoke(final Class<C> cls) throws ScimException
     {
       Response response = buildRequest().get();
-      if(response.getStatusInfo().getFamily() ==
-          Response.Status.Family.SUCCESSFUL)
+      try
       {
-        return response.readEntity(cls);
+        if(response.getStatusInfo().getFamily() ==
+            Response.Status.Family.SUCCESSFUL)
+        {
+          return response.readEntity(cls);
+        }
+        else
+        {
+          throw toScimException(response);
+        }
       }
-      else
+      finally
       {
-        throw toScimException(response);
+        response.close();
       }
     }
   }
@@ -175,16 +182,21 @@ public abstract class RetrieveRequestBuilder
     public <T> T invoke(final Class<T> cls) throws ScimException
     {
       Response response = buildRequest().get();
-      if(response.getStatusInfo().getFamily() ==
-          Response.Status.Family.SUCCESSFUL)
+      try
       {
-        T entity = response.readEntity(cls);
-        response.close();
-        return entity;
+        if(response.getStatusInfo().getFamily() ==
+            Response.Status.Family.SUCCESSFUL)
+        {
+          return response.readEntity(cls);
+        }
+        else
+        {
+          throw toScimException(response);
+        }
       }
-      else
+      finally
       {
-        throw toScimException(response);
+        response.close();
       }
     }
   }
