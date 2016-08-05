@@ -36,7 +36,6 @@ public class SessionTest
   {
     String sessionString =
         "{  \n" +
-            "   \"currentSession\":true, \n" +
             "   \"lastLoginMethods\": \n" +
             "    [ \"Method One\", \"Method Two\", \"Method Three\" ], \n" +
             "   \"lastSecondFactorMethods\": \n" +

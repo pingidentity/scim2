@@ -32,11 +32,6 @@ import java.util.List;
     name = "Session")
 public class Session extends BaseScimResource
 {
-  @Attribute(description = "True if this session was used to authorize the " +
-      "token used to access the REST API.",
-      mutability = AttributeDefinition.Mutability.READ_ONLY)
-  private Boolean currentSession;
-
   @Attribute(description = "Details about the authentication methods " +
       "successfully used during the last login event.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -81,30 +76,6 @@ public class Session extends BaseScimResource
     this.clients = new ArrayList<OAuth2Client>();
     this.lastLoginMethods = new ArrayList<String>();
     this.lastSecondFactorMethods = new ArrayList<String>();
-  }
-
-  /**
-   * Returns a boolean indicating whether or not this session was used
-   * to authorize the token used to access the REST API.
-   *
-   * @return true if this session was used to authorize the token used to
-   * access the REST API.
-   */
-  public Boolean getCurrentSession()
-  {
-    return currentSession;
-  }
-
-  /**
-   * Sets a boolean indicating whether or not this session was used
-   * to authorize the token used to access the REST API.
-   *
-   * @param currentSession true if this session was used to authorize the
-   * token used to access the REST API.
-   */
-  public void setCurrentSession(final Boolean currentSession)
-  {
-    this.currentSession = currentSession;
   }
 
   /**
@@ -252,11 +223,6 @@ public class Session extends BaseScimResource
 
     Session session = (Session) o;
 
-    if (currentSession != null ? !currentSession.equals(session.currentSession)
-        : session.currentSession != null)
-    {
-      return false;
-    }
     if (lastLoginMethods != null ?
         !lastLoginMethods.equals(session.lastLoginMethods)
         : session.lastLoginMethods != null)
@@ -299,8 +265,6 @@ public class Session extends BaseScimResource
   public int hashCode()
   {
     int result = super.hashCode();
-    result = 31 * result + (currentSession != null
-        ? currentSession.hashCode() : 0);
     result = 31 * result + (lastLoginMethods != null
         ? lastLoginMethods.hashCode() : 0);
     result = 31 * result + (lastSecondFactorMethods != null
