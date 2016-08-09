@@ -32,7 +32,7 @@ public class ScimServiceException extends ScimException
    * @param statusCode    The HTTP status code for this exception.
    * @param errorMessage  The error message for this SCIM exception.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      {@link #getCause()} method).  (A {@code null} value
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */

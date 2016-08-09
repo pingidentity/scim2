@@ -21,7 +21,8 @@ package com.unboundid.scim2.common.types;
  * This class can be used in a bean that is converted to json.  If
  * used with the JsonReferenceBeanSerializer, the json that is created
  * will not contain a field of this type if it has never been set.  If
- * however it has been set explicitly to null, then null will be serialized.
+ * however it has been set explicitly to "{@code null}", then "{@code null}" will
+ * be serialized.
  *
  * @param <T> The type of object referred to.
  */

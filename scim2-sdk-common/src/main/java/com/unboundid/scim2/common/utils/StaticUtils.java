@@ -401,9 +401,9 @@ public final class StaticUtils
    * If the <code>cause</code> chain loops, the last element in the chain before
    * it loops is returned.
    *
-   * @param t the Throwable to get the root cause for. This may be null.
-   * @return the root cause of the Throwable, or null if none is found or the
-   *         input is null.
+   * @param t the Throwable to get the root cause for. This may be {@code null}.
+   * @return the root cause of the Throwable, or {@code null} if none is found or the
+   *         input is {@code null}.
    */
   public static Throwable getRootCause(final Throwable t)
   {

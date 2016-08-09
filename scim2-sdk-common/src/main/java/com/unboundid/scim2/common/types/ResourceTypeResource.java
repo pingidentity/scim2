@@ -32,9 +32,9 @@ import java.util.Collections;
  * The "ResourceType" schema specifies the meta-data about a resource
  * type.  Resource type resources are READ-ONLY and identified using the
  * following schema URI:
- * "urn:ietf:params:scim:schemas:core:2.0:ResourceType".  Unlike other
+ * "{@code urn:ietf:params:scim:schemas:core:2.0:ResourceType}".  Unlike other
  * core resources, all attributes are REQUIRED unless otherwise
- * specified.  The "id" attribute is not required for the resource type
+ * specified.  The "{@code id}" attribute is not required for the resource type
  * resource.
  */
 @Schema(id="urn:ietf:params:scim:schemas:core:2.0:ResourceType",

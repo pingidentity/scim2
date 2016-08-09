@@ -25,19 +25,19 @@ package com.unboundid.scim2.common.filters;
 public enum FilterType
 {
   /**
-   * The filter type for and filters.
+   * The filter type for {@code and} filters.
    */
   AND("and"),
 
 
   /**
-   * The filter type for or filters.
+   * The filter type for {@code or} filters.
    */
   OR("or"),
 
 
   /**
-   * The filter type for not filters.
+   * The filter type for {@code not} filters.
    */
   NOT("not"),
 
@@ -49,61 +49,61 @@ public enum FilterType
 
 
   /**
-   * The filter type for equal filters.
+   * The filter type for {@code equal} filters.
    */
   EQUAL("eq"),
 
 
   /**
-   * The filter type for not equal filters.
+   * The filter type for {@code not equal} filters.
    */
   NOT_EQUAL("ne"),
 
 
   /**
-   * The filter type for contains filters.
+   * The filter type for {@code contains} filters.
    */
   CONTAINS("co"),
 
 
   /**
-   * The filter type for starts with filters.
+   * The filter type for {@code starts with} filters.
    */
   STARTS_WITH("sw"),
 
 
   /**
-   * The filter type for ends with filters.
+   * The filter type for {@code starts ends} filters.
    */
   ENDS_WITH("ew"),
 
 
   /**
-   * The filter type for present filters.
+   * The filter type for {@code present} filters.
    */
   PRESENT("pr"),
 
 
   /**
-   * The filter type for greater than filters.
+   * The filter type for {@code greater than} filters.
    */
   GREATER_THAN("gt"),
 
 
   /**
-   * The filter type for greater or equal filters.
+   * The filter type for {@code greater or equal} filters.
    */
   GREATER_OR_EQUAL("ge"),
 
 
   /**
-   * The filter type for less than filters.
+   * The filter type for {@code less than} filters.
    */
   LESS_THAN("lt"),
 
 
   /**
-   * The filter type for less or equal filters.
+   * The filter type for {@code less or equal} filters.
    */
   LESS_OR_EQUAL("le");
 

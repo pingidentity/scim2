@@ -407,7 +407,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
 
 
   /**
-   * Return true if the node is either null or an empty array.
+   * Return true if the node is either {@code null} or an empty array.
    * @param node node to examine
    * @return boolean
    */
@@ -432,7 +432,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
 
   /**
    * Return true if the specified node list contains nothing
-   * but empty arrays and/or null nodes.
+   * but empty arrays and/or {@code null} nodes.
    * @param nodes list of nodes as returned from JsonUtils.findMatchingPaths
    * @return true if the list contains only empty array(s)
    */

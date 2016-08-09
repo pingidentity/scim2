@@ -188,7 +188,7 @@ public abstract class BaseScimResource
    * @param value value of the field.
    *
    * @throws ScimException if the key is not an extension attribute namespace
-   * (the key name doesn't start with "urn:").
+   * (the key name doesn't start with "{@code urn:}").
    */
   @JsonAnySetter
   protected void setAny(final String key,
@@ -333,8 +333,8 @@ public abstract class BaseScimResource
    *              and the schema of the extension.
    * @param <T> the type of object to return.
    *
-   * @return The matching extension object, or null if no extension of that
-   * type exists.
+   * @return The matching extension object, or {@code null} if no extension of
+   * that type exists.
    */
   @JsonIgnore
   public <T> T getExtension(final Class<T> clazz)

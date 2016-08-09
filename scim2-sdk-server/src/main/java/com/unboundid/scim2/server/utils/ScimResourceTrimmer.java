@@ -40,7 +40,8 @@ public class ScimResourceTrimmer extends ResourceTrimmer
    * Create a new SCIMResourceTrimmer.
    * @param resourceType       The resource type definition for resources to
    *                           trim.
-   * @param requestAttributes  The attributes in the request object or null for
+   * @param requestAttributes  The attributes in the request object or
+   *                           {@code null} for
    *                           other requests.
    * @param queryAttributes    The attributes from the 'attributes' or
    *                           'excludedAttributes' query parameter.

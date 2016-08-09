@@ -296,7 +296,7 @@ public final class ResourceTypeDefinition
 
   /**
    * Whether this resource type and its associated schemas should be
-   * discoverable using the SCIM 2.0 standard /resourceTypes and /schemas
+   * discoverable using the SCIM 2 standard /resourceTypes and /schemas
    * endpoints.
    *
    * @return {@code true} if discoverable or {@code false} otherwise.

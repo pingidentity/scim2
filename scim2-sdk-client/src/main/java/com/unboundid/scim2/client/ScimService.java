@@ -48,7 +48,7 @@ import static com.unboundid.scim2.common.utils.ApiConstants.
     SERVICE_PROVIDER_CONFIG_ENDPOINT;
 
 /**
- * The main entry point to the client API used to access a SCIM 2.0 service
+ * The main entry point to the client API used to access a SCIM 2 service
  * provider.
  */
 public class ScimService implements ScimInterface
@@ -68,11 +68,11 @@ public class ScimService implements ScimInterface
   private volatile ServiceProviderConfigResource serviceProviderConfig;
 
   /**
-   * Create a new client instance to the SICM 2.0 service provider at the
+   * Create a new client instance to the SCIM 2 service provider at the
    * provided WebTarget. The path of the WebTarget should be the base URI
-   * SCIM 2.0 service (ie. http://host/scim/v2).
+   * SCIM 2 service (ie. http://host/scim/v2).
    *
-   * @param baseTarget The web target for the base URI of the SCIM 2.0 service
+   * @param baseTarget The web target for the base URI of the SCIM 2 service
    *                   provider.
    */
   public ScimService(final WebTarget baseTarget)
@@ -154,7 +154,7 @@ public class ScimService implements ScimInterface
   /**
    * Create the provided new SCIM resource at the service provider.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "Groups" as
    *                 defined by the associated resource type.
    * @param resource The new resource to create.
    * @param <T> The Java type of the resource.
@@ -170,9 +170,9 @@ public class ScimService implements ScimInterface
   /**
    * Retrieve a known SCIM resource from the service provider.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
-   * @param id The resource identifier (for example the value of the "id"
+   * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @param cls The Java class object used to determine the type to return.
    * @param <T> The Java type of the resource.
@@ -239,9 +239,9 @@ public class ScimService implements ScimInterface
   /**
    * Delete a SCIM resource at the service provider.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
-   * @param id The resource identifier (for example the value of the "id"
+   * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @throws ScimException if an error occurs.
    */
@@ -280,7 +280,7 @@ public class ScimService implements ScimInterface
    * Build a request to create the provided new SCIM resource at the service
    * provider.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
    * @param resource The new resource to create.
    * @param <T> The Java type of the resource.
@@ -297,9 +297,9 @@ public class ScimService implements ScimInterface
    * Build a request to retrieve a known SCIM resource from the service
    * provider.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
-   * @param id The resource identifier (for example the value of the "id"
+   * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
@@ -343,7 +343,7 @@ public class ScimService implements ScimInterface
    * Build a request to query and retrieve resources of a single resource type
    * from the service provider.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
@@ -404,12 +404,12 @@ public class ScimService implements ScimInterface
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
-   * of operations to "add", "remove", or "replace" values. The service provider
+   * of operations to "{@code add}", "{@code remove}", or "{@code replace}" values. The service provider
    * configuration maybe used to discover service provider support for PATCH.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
-   * @param id The resource identifier (for example the value of the "id"
+   * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
@@ -424,7 +424,7 @@ public class ScimService implements ScimInterface
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
-   * of operations to "add", "remove", or "replace" values. The service provider
+   * of operations to "{@code add}", "{@code remove}", or "{@code replace}" values. The service provider
    * configuration maybe used to discover service provider support for PATCH.
    *
    * @param url The URL of the resource to modify.
@@ -457,7 +457,7 @@ public class ScimService implements ScimInterface
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
-   * of operations to "add", "remove", or "replace" values. The service provider
+   * of operations to "{@code add}", "{@code remove}", or "{@code replace}" values. The service provider
    * configuration maybe used to discover service provider support for PATCH.
    *
    * @param resource The resource to modify.
@@ -475,9 +475,9 @@ public class ScimService implements ScimInterface
   /**
    * Build a request to delete a SCIM resource at the service provider.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
-   * @param id The resource identifier (for example the value of the "id"
+   * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.

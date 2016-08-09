@@ -20,7 +20,7 @@ package com.unboundid.scim2.common.messages;
 
 /**
  * This enumeration defines the set of possible operation types that may
- * be used for SCIM 2.0 patch operations.
+ * be used for SCIM 2 patch operations.
  */
 public enum PatchOpType
 {

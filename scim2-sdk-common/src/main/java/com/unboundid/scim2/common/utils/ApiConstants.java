@@ -32,7 +32,7 @@ public class ApiConstants
 
   /**
    * An HTTP GET to this endpoint is used to discover the types of
-   * resources available on a SCIM service provider (e.g., Users and
+   * resources available on a SCIM service provider (for example, Users and
    * Groups).
    */
   public static final String RESOURCE_TYPES_ENDPOINT = "ResourceTypes";
@@ -44,7 +44,7 @@ public class ApiConstants
   public static final String SCHEMAS_ENDPOINT = "Schemas";
 
   /**
-   * The "/Me" authenticated subject URI alias for the User or other resource
+   * The "{@code /Me}" authenticated subject URI alias for the User or other resource
    * associated with the currently authenticated subject for any SCIM operation.
    */
   public static final String ME_ENDPOINT = "Me";

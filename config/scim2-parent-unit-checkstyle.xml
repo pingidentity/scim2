@@ -84,9 +84,9 @@
     <module name="UnusedImports" />
 
 
-    <!-- Ensure that there are no lines longer than 80 characters. -->
+    <!-- Ensure that there are no lines longer than 120 characters. -->
     <module name="LineLength">
-      <property name="max" value="80" />
+      <property name="max" value="120" />
     </module>
 
 

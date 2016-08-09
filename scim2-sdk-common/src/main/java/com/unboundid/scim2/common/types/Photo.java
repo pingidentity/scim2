@@ -65,7 +65,7 @@ public class Photo
   /**
    * Retrieves the URI of a photo of the User.
    *
-   * @return The E-mail addresses for the user.
+   * @return The email addresses for the user.
    */
   public URI getValue()
   {
@@ -75,7 +75,7 @@ public class Photo
   /**
    * Specifies the URI of a photo of the User.
    *
-   * @param value The E-mail addresses for the user.
+   * @param value The email addresses for the user.
    * @return This object.
    */
   public Photo setValue(final URI value)
@@ -85,9 +85,9 @@ public class Photo
   }
 
   /**
-   * Retrieves the human readable name, primarily used for display purposes.
+   * Retrieves the display name, primarily used for display purposes.
    *
-   * @return The human readable name.
+   * @return The display name.
    */
   public String getDisplay()
   {
@@ -95,9 +95,9 @@ public class Photo
   }
 
   /**
-   * Specifies the human readable name, primarily used for display purposes.
+   * Specifies the display name, primarily used for display purposes.
    *
-   * @param display The human readable name.
+   * @param display The display name.
    * @return This object.
    */
   public Photo setDisplay(final String display)

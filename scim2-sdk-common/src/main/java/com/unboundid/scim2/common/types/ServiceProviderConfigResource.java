@@ -29,13 +29,13 @@ import java.util.List;
 /**
  * SCIM provides a schema for representing the service provider's configuration
  * identified using the following schema URI:
- * "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig"
+ * "{@code urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig}"
  *
  * The Service Provider configuration resource enables a Service
  * Provider to discover SCIM specification features in a standardized
  * form as well as provide additional implementation details to clients.
- * All attributes have a mutability of "readOnly".  Unlike other core
- * resources, the "id" attribute is not required for the Service
+ * All attributes have a mutability of "{@code readOnly}".  Unlike other core
+ * resources, the "{@code id}" attribute is not required for the Service
  * Provider configuration resource.
  **/
 @Schema(id="urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig",

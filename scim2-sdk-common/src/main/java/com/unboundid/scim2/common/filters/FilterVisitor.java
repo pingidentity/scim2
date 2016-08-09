@@ -26,7 +26,7 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 public interface FilterVisitor<R, P>
 {
   /**
-   * Operate on an equal filter.
+   * Operate on an {@code equal} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -36,7 +36,7 @@ public interface FilterVisitor<R, P>
   R visit(final EqualFilter filter, final P param) throws ScimException;
 
   /**
-   * Operate on a not equal filter.
+   * Operate on a {@code not equal} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -47,7 +47,7 @@ public interface FilterVisitor<R, P>
       throws ScimException;
 
   /**
-   * Operate on a contains filter.
+   * Operate on a {@code contains} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -58,7 +58,7 @@ public interface FilterVisitor<R, P>
       throws ScimException;
 
   /**
-   * Operate on a starts with filter.
+   * Operate on a {@code starts with} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -69,7 +69,7 @@ public interface FilterVisitor<R, P>
       throws ScimException;
 
   /**
-   * Operate on an ends with filter.
+   * Operate on an {@code ends with} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -80,7 +80,7 @@ public interface FilterVisitor<R, P>
       throws ScimException;
 
   /**
-   * Operate on a present filter.
+   * Operate on a {@code present} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -91,7 +91,7 @@ public interface FilterVisitor<R, P>
       throws ScimException;
 
   /**
-   * Operate on a greater than filter.
+   * Operate on a {@code greater than} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -102,7 +102,7 @@ public interface FilterVisitor<R, P>
       throws ScimException;
 
   /**
-   * Operate on a greater than or equal filter.
+   * Operate on a {@code greater than or equal} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -113,7 +113,7 @@ public interface FilterVisitor<R, P>
       throws ScimException;
 
   /**
-   * Operate on a less than filter.
+   * Operate on a {@code less than} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -124,7 +124,7 @@ public interface FilterVisitor<R, P>
       throws ScimException;
 
   /**
-   * Operate on a less then or equal filter.
+   * Operate on a {@code less then or equal} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -135,7 +135,7 @@ public interface FilterVisitor<R, P>
       throws ScimException;
 
   /**
-   * Operate on a and filter.
+   * Operate on an {@code and} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -145,7 +145,7 @@ public interface FilterVisitor<R, P>
   R visit(final AndFilter filter, final P param) throws ScimException;
 
   /**
-   * Operate on a or filter.
+   * Operate on a {@code or} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.
@@ -155,7 +155,7 @@ public interface FilterVisitor<R, P>
   R visit(final OrFilter filter, final P param) throws ScimException;
 
   /**
-   * Operate on a not filter.
+   * Operate on a {@code not} filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.

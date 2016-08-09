@@ -67,7 +67,7 @@ public @interface ResourceType
 
   /**
    * Whether this resource type and its associated schemas should be
-   * discoverable using the SCIM 2.0 standard /resourceTypes and /schemas
+   * discoverable using the SCIM 2 standard /resourceTypes and /schemas
    * endpoints.
    *
    * @return A flag indicating the discoverability of this resource type and

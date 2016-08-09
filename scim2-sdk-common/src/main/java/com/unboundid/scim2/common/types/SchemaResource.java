@@ -54,7 +54,7 @@ public class SchemaResource extends BaseScimResource
    * Create a new Schema resource.
    *
    * @param id The schema's ID.
-   * @param name The schema's human readable name.
+   * @param name The schema's display name.
    * @param description The schema's human readable description.
    * @param attributes The schema's attributes.
    */

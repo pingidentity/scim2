@@ -44,7 +44,7 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
 
 /**
  * A ContainerRequestFilter implementation to convert a search request using
- * HTTP POST combine with the ".search" path extension to a regular search
+ * HTTP POST combine with the "{@code .search}" path extension to a regular search
  * using HTTP GET.
  */
 @Provider

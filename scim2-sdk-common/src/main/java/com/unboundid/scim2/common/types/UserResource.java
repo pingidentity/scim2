@@ -25,9 +25,9 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * SCIM provides a resource type for "User" resources.  The core schema
- * for "User" is identified using the URI:
- * "urn:ietf:params:scim:schemas:core:2.0:User".
+ * SCIM provides a resource type for "{@code User}" resources.  The core schema
+ * for "{@code User}" is identified using the URI:
+ * "{@code urn:ietf:params:scim:schemas:core:2.0:User}".
  */
 @Schema(id="urn:ietf:params:scim:schemas:core:2.0:User",
     name="User", description = "User Account")
@@ -247,9 +247,9 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Retrieves the components of the user's real name.
+   * Retrieves the components of the user's full name.
    *
-   * @return The components of the user's real name.
+   * @return The components of the user's full name.
    */
   public Name getName()
   {
@@ -257,10 +257,10 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Specifies the components of the user's real name.
+   * Specifies the components of the user's full name.
    *
-   * @param name The components of the user's real name.
-   * @return The components of the user's real name.
+   * @param name The components of the user's full name.
+   * @return The components of the user's full name.
    */
   public UserResource setName(final Name name)
   {
@@ -291,7 +291,7 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Retrieves the casual way to address the user in real life, e.g.'Bob' or
+   * Retrieves the casual way to address the user in real life, for example, 'Bob' or
    * 'Bobby' instead of 'Robert'.
    *
    * @return The casual way to address the user in real life.
@@ -302,7 +302,7 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Specifies the casual way to address the user in real life, e.g.'Bob' or
+   * Specifies the casual way to address the user in real life, for example, 'Bob' or
    * 'Bobby' instead of 'Robert'.
    *
    * @param nickName The casual way to address the user in real life.
@@ -341,7 +341,7 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Retrieves the user's title, such as "Vice President".
+   * Retrieves the user's title, such as "{@code Vice President}".
 
    * @return The user's title.
    */
@@ -351,7 +351,7 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Specifies the user's title, such as "Vice President".
+   * Specifies the user's title, such as "{@code Vice President}".
    *
    * @param title The user's title.
    * @return This object.
@@ -392,7 +392,7 @@ public class UserResource extends BaseScimResource
 
   /**
    * Retrieves the User's preferred written or spoken language.  Generally
-   * used for selecting a localized User interface. e.g., 'en_US' specifies the
+   * used for selecting a localized User interface. for example, 'en_US' specifies the
    * language English and country US.
    *
    * @return The User's preferred written or spoken language.
@@ -404,7 +404,7 @@ public class UserResource extends BaseScimResource
 
   /**
    * Specifies the User's preferred written or spoken language.  Generally
-   * used for selecting a localized User interface. e.g., 'en_US' specifies the
+   * used for selecting a localized User interface. for example, 'en_US' specifies the
    * language English and country US.
    *
    * @param preferredLanguage The User's preferred written or spoken language.
@@ -442,7 +442,7 @@ public class UserResource extends BaseScimResource
 
   /**
    * Retrieves the User's time zone in the 'Olson' timezone database format;
-   * e.g.,'America/Los_Angeles'.
+   * for example, 'America/Los_Angeles'.
    *
    * @return The User's time zone in the 'Olson' timezone database format.
    */
@@ -453,7 +453,7 @@ public class UserResource extends BaseScimResource
 
   /**
    * Specifies the User's time zone in the 'Olson' timezone database format;
-   * e.g.,'America/Los_Angeles'.
+   * for example, 'America/Los_Angeles'.
    *
    * @param timezone The User's time zone in the 'Olson' timezone database
    *                 format.
@@ -511,9 +511,9 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Retrieves the E-mail addresses for the user.
+   * Retrieves the email addresses for the user.
    *
-   * @return The E-mail addresses for the user.
+   * @return The email addresses for the user.
    */
   public List<Email> getEmails()
   {
@@ -521,9 +521,9 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Specifies the E-mail addresses for the user.
+   * Specifies the email addresses for the user.
    *
-   * @param emails The E-mail addresses for the user.
+   * @param emails The email addresses for the user.
    * @return This object.
    */
   public UserResource setEmails(final List<Email> emails)
@@ -670,7 +670,7 @@ public class UserResource extends BaseScimResource
 
   /**
    * Retrieves the list of roles for the User that collectively represent who
-   * the User is; e.g., 'Student', 'Faculty'.
+   * the User is; for example, 'Student', 'Faculty'.
    *
    * @return The list of roles for the User.
    */
@@ -681,7 +681,7 @@ public class UserResource extends BaseScimResource
 
   /**
    * Specifies the list of roles for the User that collectively represent who
-   * the User is; e.g., 'Student', 'Faculty'.
+   * the User is; for example, 'Student', 'Faculty'.
    *
    * @param roles The list of roles for the User.
    * @return This object.

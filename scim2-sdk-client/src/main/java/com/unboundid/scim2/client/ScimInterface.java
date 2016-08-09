@@ -81,7 +81,7 @@ public interface ScimInterface
   /**
    * Create the provided new SCIM resource at the service provider.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
    * @param resource The new resource to create.
    * @param <T> The Java type of the resource.
@@ -94,9 +94,9 @@ public interface ScimInterface
   /**
    * Retrieve a known SCIM resource from the service provider.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
-   * @param id The resource identifier (for example the value of the "id"
+   * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @param cls The Java class object used to determine the type to return.
    * @param <T> The Java type of the resource.
@@ -136,12 +136,12 @@ public interface ScimInterface
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
-   * of operations to "add", "remove", or "replace" values. The service provider
+   * of operations to "{@code add}", "{@code remove}", or "{@code replace}" values. The service provider
    * configuration maybe used to discover service provider support for PATCH.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
-   * @param id The resource identifier (for example the value of the "id"
+   * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @param patchRequest the patch request to use for the update.
    * @param clazz the class of the SCIM resource.
@@ -155,7 +155,7 @@ public interface ScimInterface
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
-   * of operations to "add", "remove", or "replace" values. The service provider
+   * of operations to "{@code add}", "{@code remove}", or "{@code replace}" values. The service provider
    * configuration maybe used to discover service provider support for PATCH.
    *
    * @param resource The resource to modify.
@@ -170,9 +170,9 @@ public interface ScimInterface
   /**
    * Delete a SCIM resource at the service provider.
    *
-   * @param endpoint The resource endpoint such as: "Users" or "Groups" as
+   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
-   * @param id The resource identifier (for example the value of the "id"
+   * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @throws ScimException if an error occurs.
    */

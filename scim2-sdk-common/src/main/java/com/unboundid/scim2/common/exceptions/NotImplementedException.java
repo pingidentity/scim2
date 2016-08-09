@@ -21,7 +21,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
  * Signals the service provider does nto support the request operation;
- * e.g., PATCH.
+ * for example, PATCH.
  *
  * This exception corresponds to HTTP response code 501 NOT IMPLEMENTED.
  */
@@ -44,7 +44,7 @@ public class NotImplementedException extends ScimException
    * @param errorMessage  The error message for this SCIM exception.
    * @param scimType      The SCIM detailed error keyword.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      {@link #getCause()} method).  (A {@code null} value
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
@@ -60,7 +60,7 @@ public class NotImplementedException extends ScimException
    *
    * @param scimError     The SCIM error response.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      {@link #getCause()} method).  (A {@code null} value
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */

@@ -49,12 +49,12 @@ import static com.unboundid.scim2.common.utils.StaticUtils.*;
  * <H2>Example</H2>
  * The following example demonstrates the process that may be used to enable
  * debugging within the SCIM SDK and write information about all messages with
- * a {@code WARNING} level or higher to a file named "/tmp/test.log":
+ * a {@code WARNING} level or higher to a file named "{@code /tmp/test.log}":
  * <PRE>
  *   Debug.setEnabled(true);
  *   Logger logger = Debug.getLogger();
  *
- *   FileHandler fileHandler = new FileHandler("/tmp/test.log");
+ *   FileHandler fileHandler = new FileHandler("{@code /tmp/test.log}");
  *   fileHandler.setLevel(Level.WARNING);
  *   logger.addHandler(fileHandler);
  * </PRE>
@@ -66,7 +66,7 @@ public final class Debug
    * The name of the system property that will be used to enable debugging in
    * the UnboundID SCIM SDK for Java.  The fully-qualified name for this
    * property is "{@code com.unboundid.scim2.sdk.debug.enabled}".  If it is set,
-   * then it should have a value of either "true" or "false".
+   * then it should have a value of either "{@code true}" or "{@code false}".
    */
   public static final String PROPERTY_DEBUG_ENABLED =
        "com.unboundid.scim2.sdk.debug.enabled";
@@ -78,7 +78,7 @@ public final class Debug
    * trace information for the thread calling the debug method should be
    * included in debug log messages.  The fully-qualified name for this property
    * is "{@code com.unboundid.scim2.sdk.debug.includeStackTrace}".  If it is
-   * set, then it should have a value of either "true" or "false".
+   * set, then it should have a value of either {@code "true"} or {@code "false"}.
    */
   public static final String PROPERTY_INCLUDE_STACK_TRACE =
        "com.unboundid.scim2.sdk.debug.includeStackTrace";

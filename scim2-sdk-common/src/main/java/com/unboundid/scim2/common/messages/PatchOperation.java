@@ -618,7 +618,7 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    * @param value The value(s) to add.
    *
    * @return The new add patch operation.
@@ -640,10 +640,10 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -659,7 +659,7 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -679,11 +679,11 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -698,8 +698,8 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *             must not be {@code null}.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    */
@@ -714,10 +714,10 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -733,7 +733,7 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -753,11 +753,11 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -772,8 +772,8 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *             must not be {@code null}.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    */
@@ -789,10 +789,10 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -809,7 +809,7 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -829,11 +829,11 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -848,8 +848,8 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *             must not be {@code null}.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    */
@@ -864,10 +864,10 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -883,7 +883,7 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -903,11 +903,11 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -922,8 +922,8 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *             must not be {@code null}.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    */
@@ -938,10 +938,10 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -957,7 +957,7 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -977,11 +977,11 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -996,8 +996,8 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *             must not be {@code null}.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    */
@@ -1012,10 +1012,10 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1031,7 +1031,7 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1052,11 +1052,11 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1073,8 +1073,8 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *             must not be {@code null}.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    * @throws ScimException if an error occurs.
@@ -1092,10 +1092,10 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
    * @param values The value(s) to add.
    *
    * @return The new add patch operation.
@@ -1111,7 +1111,7 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1131,11 +1131,11 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1151,8 +1151,8 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *             must not be {@code null}.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    */
@@ -1168,10 +1168,10 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1187,7 +1187,7 @@ public abstract class PatchOperation
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1207,11 +1207,11 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
-   *               "userName"
-   * @param value The value(s) to replace.  The value must not be null.
+   *               "{@code userName eq 'bjensen'}"
+   *               "{@code userName}"
+   * @param value The value(s) to replace.  The value must not be {@code null}.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1226,8 +1226,8 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *             must not be {@code null}.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    */
@@ -1240,7 +1240,7 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    */
@@ -1253,11 +1253,11 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
+   *             must not be {@code null}.
    *             Path string examples:
-   *               "userName eq 'bjensen'"
+   *               "{@code userName eq 'bjensen'}"
    *               "userName"
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1272,8 +1272,8 @@ public abstract class PatchOperation
    * Create a new replace patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
-   *             must not be null.
-   * @param value The value(s) to replace.  The value(s) must not be null.
+   *             must not be {@code null}.
+   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
    *
    * @return The new replace patch operation.
    */

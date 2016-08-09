@@ -28,7 +28,7 @@ import java.util.Set;
 import static com.unboundid.scim2.common.utils.ApiConstants.*;
 
 /**
- * Class representing a SCIM 2.0 search request.
+ * Class representing a SCIM 2 search request.
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:SearchRequest",
     name="Search Operation", description = "SCIM 2.0 Search Request")

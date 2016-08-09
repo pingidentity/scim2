@@ -65,9 +65,9 @@ public abstract class Filter
   public abstract void toString(final StringBuilder builder);
 
   /**
-   * Whether this filter is an 'and' or 'or' logical combining filter.
+   * Whether this filter is an {@code and} or {@code or} logical combining filter.
    *
-   * @return {@code true} if this filter is an 'and' or 'or' logical
+   * @return {@code true} if this filter is an {@code and} or {@code or} logical
    * combining filter or {@code false} otherwise.
    */
   public boolean isCombiningFilter()
@@ -86,9 +86,9 @@ public abstract class Filter
   }
 
   /**
-   * Whether this filter is 'not' filter.
+   * Whether this filter is {@code not} filter.
    *
-   * @return {@code true} if this filter is an 'not' filter or
+   * @return {@code true} if this filter is a {@code not} filter or
    * {@code false} otherwise.
    */
   public boolean isNotFilter()
@@ -97,11 +97,11 @@ public abstract class Filter
   }
 
   /**
-   * Retrieve the inverted filter for a 'not' filter or {@code null} if this
-   * filter is not a 'not' filter.
+   * Retrieve the inverted filter for a {@code not} filter or {@code null} if this
+   * filter is not a {@code not} filter.
    *
-   * @return The inverted filter for a 'not' filter or {@code null} if this
-   * filter is not a 'not' filter.
+   * @return The inverted filter for a {@code not} filter or {@code null} if this
+   * filter is not a {@code not}' filter.
    */
   public Filter getInvertedFilter()
   {
@@ -146,7 +146,8 @@ public abstract class Filter
   /**
    * Whether this filter is a filter that compares attribute values against
    * a comparison value. The following are comparison filters:
-   * eq, ne, co, sw, ew, gt, ge, lt, le.
+   * {@code eq}, {@code ne}, {@code co}, {@code sw}, {@code ew}, {@code gt},
+   * {@code ge}, {@code lt}, {@code le}.
    *
    * @return {@code true} if this is a comparison filter or {@code false}
    * otherwise.
@@ -180,11 +181,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new equality filter.
+   * Create a new {@code equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new equality filter.
+   * @return A new {@code equal} filter.
    */
   public static Filter eq(final Path attributePath,
                           final ValueNode filterValue)
@@ -193,11 +194,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new equality filter.
+   * Create a new {@code equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new equality filter.
+   * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath,
@@ -209,11 +210,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new equality filter.
+   * Create a new {@code equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new equality filter.
+   * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final Long filterValue)
@@ -224,11 +225,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new equality filter.
+   * Create a new {@code equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new equality filter.
+   * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final Double filterValue)
@@ -239,11 +240,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new equality filter.
+   * Create a new {@code equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new equality filter.
+   * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final Float filterValue)
@@ -254,11 +255,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new equality filter.
+   * Create a new {@code equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new equality filter.
+   * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final String filterValue)
@@ -269,7 +270,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new equality filter.
+   * Create a new {@code equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -285,11 +286,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new equality filter.
+   * Create a new {@code equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new equality filter.
+   * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final byte[] filterValue)
@@ -300,11 +301,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new equality filter.
+   * Create a new {@code equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new equality filter.
+   * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter eq(final String attributePath, final Date filterValue)
@@ -316,11 +317,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not equal filter.
+   * Create a new {@code not equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new not equal filter.
+   * @return A new {@code not equal} filter.
    */
   public static Filter ne(final Path attributePath,
                           final ValueNode filterValue)
@@ -329,11 +330,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not equal filter.
+   * Create a new {@code not equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new not equal filter.
+   * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath,
@@ -345,11 +346,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not equal filter.
+   * Create a new {@code not equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new not equal filter.
+   * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final Long filterValue)
@@ -360,11 +361,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not equal filter.
+   * Create a new {@code not equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new not equal filter.
+   * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final Double filterValue)
@@ -375,11 +376,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not equal filter.
+   * Create a new {@code not equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new not equal filter.
+   * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final Float filterValue)
@@ -390,11 +391,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not equal filter.
+   * Create a new {@code not equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new not equal filter.
+   * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final String filterValue)
@@ -405,11 +406,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not equal filter.
+   * Create a new {@code not equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new not equal filter.
+   * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath,
@@ -421,11 +422,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not equal filter.
+   * Create a new {@code not equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new not equal filter.
+   * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final byte[] filterValue)
@@ -436,11 +437,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not equal filter.
+   * Create a new {@code not equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new not equal filter.
+   * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ne(final String attributePath, final Date filterValue)
@@ -452,11 +453,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new contains filter.
+   * Create a new {@code contains} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new contains filter.
+   * @return A new {@code contains} filter.
    */
   public static Filter co(final Path attributePath,
                           final ValueNode filterValue)
@@ -465,11 +466,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new contains filter.
+   * Create a new {@code contains} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new contains filter.
+   * @return A new {@code contains} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter co(final String attributePath, final String filterValue)
@@ -480,11 +481,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new starts with filter.
+   * Create a new {@code starts with} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new starts with filter.
+   * @return A new {@code starts with} filter.
    */
   public static Filter sw(final Path attributePath,
                           final ValueNode filterValue)
@@ -493,11 +494,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new starts with filter.
+   * Create a new {@code starts with} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new starts with filter.
+   * @return A new {@code starts with} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter sw(final String attributePath, final String filterValue)
@@ -508,11 +509,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new ends with filter.
+   * Create a new {@code ends with} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new starts with filter.
+   * @return A new {@code starts with} filter.
    */
   public static Filter ew(final Path attributePath,
                           final ValueNode filterValue)
@@ -521,11 +522,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new ends with filter.
+   * Create a new {@code ends with} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new starts with filter.
+   * @return A new {@code starts with} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ew(final String attributePath, final String filterValue)
@@ -536,10 +537,10 @@ public abstract class Filter
   }
 
   /**
-   * Create a new presence filter.
+   * Create a new {@code present} filter.
    *
    * @param attributePath The path to the attribute to filter by.
-   * @return A new presence filter.
+   * @return A new {@code present} filter.
    */
   public static Filter pr(final Path attributePath)
   {
@@ -547,10 +548,10 @@ public abstract class Filter
   }
 
   /**
-   * Create a new presence filter.
+   * Create a new {@code present} filter.
    *
    * @param attributePath The path to the attribute to filter by.
-   * @return A new presence filter.
+   * @return A new {@code present} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter pr(final String attributePath)
@@ -560,11 +561,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than filter.
+   * Create a new {@code greater than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than filter.
+   * @return A new {@code greater than} filter.
    */
   public static Filter gt(final Path attributePath,
                           final ValueNode filterValue)
@@ -573,11 +574,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than filter.
+   * Create a new {@code greater than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than filter.
+   * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath,
@@ -589,11 +590,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than filter.
+   * Create a new {@code greater than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than filter.
+   * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath, final Long filterValue)
@@ -604,11 +605,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than filter.
+   * Create a new {@code greater than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than filter.
+   * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath, final Double filterValue)
@@ -619,11 +620,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than filter.
+   * Create a new {@code greater than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than filter.
+   * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath, final Float filterValue)
@@ -634,11 +635,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than filter.
+   * Create a new {@code greater than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than filter.
+   * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath, final String filterValue)
@@ -649,11 +650,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than filter.
+   * Create a new {@code greater than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than filter.
+   * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter gt(final String attributePath, final Date filterValue)
@@ -665,11 +666,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than or equal filter.
+   * Create a new {@code greater than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal filter.
+   * @return A new {@code greater than or equal} filter.
    */
   public static Filter ge(final Path attributePath,
                           final ValueNode filterValue)
@@ -678,11 +679,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than or equal filter.
+   * Create a new {@code greater than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath,
@@ -694,11 +695,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than or equal filter.
+   * Create a new {@code greater than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath, final Long filterValue)
@@ -709,11 +710,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than or equal filter.
+   * Create a new {@code greater than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath, final Double filterValue)
@@ -724,11 +725,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than or equal filter.
+   * Create a new {@code greater than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath, final Float filterValue)
@@ -739,11 +740,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than or equal filter.
+   * Create a new {@code greater than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath, final String filterValue)
@@ -754,11 +755,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new greater than or equal filter.
+   * Create a new {@code greater than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter ge(final String attributePath, final Date filterValue)
@@ -770,11 +771,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than filter.
+   * Create a new {@code less than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal to filter.
+   * @return A new {@code greater than or equal} filter.
    */
   public static Filter lt(final Path attributePath,
                           final ValueNode filterValue)
@@ -783,11 +784,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than filter.
+   * Create a new {@code less than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal to filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath,
@@ -799,11 +800,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than filter.
+   * Create a new {@code less than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal to filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath, final Long filterValue)
@@ -814,11 +815,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than filter.
+   * Create a new {@code less than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal to filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath, final Double filterValue)
@@ -829,11 +830,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than filter.
+   * Create a new {@code less than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal to filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath, final Float filterValue)
@@ -844,11 +845,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than filter.
+   * Create a new {@code less than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal to filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath, final String filterValue)
@@ -859,11 +860,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than filter.
+   * Create a new {@code less than} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new greater than or equal to filter.
+   * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter lt(final String attributePath, final Date filterValue)
@@ -875,11 +876,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than or equal filter.
+   * Create a {@code new less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new less than or equal filter.
+   * @return A {@code new less than or equal} filter.
    */
   public static Filter le(final Path attributePath,
                           final ValueNode filterValue)
@@ -888,11 +889,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than or equal filter.
+   * Create a {@code new less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new less than or equal filter.
+   * @return A {@code new less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath,
@@ -904,11 +905,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than or equal filter.
+   * Create a {@code new less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new less than or equal filter.
+   * @return A {@code new less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Long filterValue)
@@ -919,11 +920,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than or equal filter.
+   * Create a {@code new less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new less than or equal filter.
+   * @return A {@code new less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Double filterValue)
@@ -934,11 +935,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than or equal filter.
+   * Create a {@code new less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new less than or equal filter.
+   * @return A {@code new less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Float filterValue)
@@ -949,11 +950,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than or equal filter.
+   * Create a {@code new less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new less than or equal filter.
+   * @return A {@code new less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final String filterValue)
@@ -964,11 +965,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a new less than or equal filter.
+   * Create a {@code new less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A new less than or equal filter.
+   * @return A {@code new less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Date filterValue)
@@ -980,12 +981,12 @@ public abstract class Filter
   }
 
   /**
-   * Create a new and filter.
+   * Create a new {@code and} filter.
    *
    * @param filter1 The first filter.
    * @param filter2 The second filter.
    * @param filters Additional filter components.
-   * @return A new and filter.
+   * @return A new {@code and} filter.
    */
   public static Filter and(final Filter filter1, final Filter filter2,
                            final Filter... filters)
@@ -1002,12 +1003,12 @@ public abstract class Filter
   }
 
   /**
-   * Create a new and filter.
+   * Create a new {@code and} filter.
    *
    * @param filter1 The first filter.
    * @param filter2 The second filter.
    * @param filters Additional filter components.
-   * @return A new and filter.
+   * @return A new {@code and} filter.
    * @throws BadRequestException If one of the filters could not be parsed.
    */
   public static Filter and(final String filter1, final String filter2,
@@ -1029,12 +1030,12 @@ public abstract class Filter
   }
 
   /**
-   * Create a new or filter.
+   * Create a new {@code or} filter.
    *
    * @param filter1 The first filter.
    * @param filter2 The second filter.
    * @param filters Additional filter components.
-   * @return A new or filter.
+   * @return A new {@code or} filter.
    */
   public static Filter or(final Filter filter1, final Filter filter2,
                           final Filter... filters)
@@ -1051,12 +1052,12 @@ public abstract class Filter
   }
 
   /**
-   * Create a new or filter.
+   * Create a new {@code or} filter.
    *
    * @param filter1 The first filter.
    * @param filter2 The second filter.
    * @param filters Additional filter components.
-   * @return A new or filter.
+   * @return A new {@code or} filter.
    * @throws BadRequestException If one of the filters could not be parsed.
    */
   public static Filter or(final String filter1, final String filter2,
@@ -1078,10 +1079,10 @@ public abstract class Filter
   }
 
   /**
-   * Create a new and filter.
+   * Create a new {@code and} filter.
    *
    * @param filters The filter components.
-   * @return A new and filter.
+   * @return A new {@code and} filter.
    */
   public static Filter and(final List<Filter> filters)
   {
@@ -1094,10 +1095,10 @@ public abstract class Filter
   }
 
   /**
-   * Create a new or filter.
+   * Create a new {@code or} filter.
    *
    * @param filters The filter components.
-   * @return A new or filter.
+   * @return A new {@code or} filter.
    */
   public static Filter or(final List<Filter> filters)
   {
@@ -1110,10 +1111,10 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not filter.
+   * Create a new {@code not} filter.
    *
    * @param filter The inverted filter.
-   * @return A new not filter.
+   * @return A new {@code not} filter.
    */
   public static Filter not(final Filter filter)
   {
@@ -1121,10 +1122,10 @@ public abstract class Filter
   }
 
   /**
-   * Create a new not filter.
+   * Create a new {@code not} filter.
    *
    * @param filter The inverted filter.
-   * @return A new not filter.
+   * @return A new {@code not} filter.
    * @throws BadRequestException If the filter could not be parsed.
    */
   public static Filter not(final String filter) throws BadRequestException
@@ -1166,7 +1167,7 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param valueFilter   The value filter.
    * @return A new complex multi-valued attribute value filter.
-   * @throws BadRequestException If the path or filter could not be parsed.
+   * @throws BadRequestException If the path {@code or} filter could not be parsed.
    */
   public static Filter hasComplexValue(final String attributePath,
                                        final String valueFilter)

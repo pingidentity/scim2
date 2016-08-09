@@ -52,7 +52,7 @@ public class ScimException extends Exception
    * @param scimType      The SCIM detailed error keyword.
    * @param errorMessage  The error message for this SCIM exception.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      {@link #getCause()} method).  (A {@code null} value
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
@@ -74,7 +74,7 @@ public class ScimException extends Exception
    *
    * @param scimError     The SCIM Error response.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      {@link #getCause()} method).  (A {@code null} value
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
@@ -123,7 +123,7 @@ public class ScimException extends Exception
    * @param statusCode    The HTTP status code for this SCIM exception.
    * @param errorMessage  The error message for this SCIM exception.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      {@link #getCause()} method).  (A {@code null} value
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    * @return The appropriate SCIMException from the provided information.
@@ -142,7 +142,7 @@ public class ScimException extends Exception
    *
    * @param scimError     The SCIM error response.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      {@link #getCause()} method).  (A {@code null} value
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    * @return The appropriate SCIMException from the provided information.

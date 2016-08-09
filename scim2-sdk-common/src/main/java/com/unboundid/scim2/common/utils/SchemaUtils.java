@@ -47,27 +47,27 @@ import java.util.Stack;
 public class SchemaUtils
 {
   /**
-   * The attribute definition for the SCIM 2.0 standard schemas attribute.
+   * The attribute definition for the SCIM 2 standard schemas attribute.
    */
   public static final AttributeDefinition SCHEMAS_ATTRIBUTE_DEFINITION;
 
   /**
-   * The attribute definition for the SCIM 2.0 standard id attribute.
+   * The attribute definition for the SCIM 2 standard id attribute.
    */
   public static final AttributeDefinition ID_ATTRIBUTE_DEFINITION;
 
   /**
-   * The attribute definition for the SCIM 2.0 standard externalId attribute.
+   * The attribute definition for the SCIM 2 standard externalId attribute.
    */
   public static final AttributeDefinition EXTERNAL_ID_ATTRIBUTE_DEFINITION;
 
   /**
-   * The attribute definition for the SCIM 2.0 standard meta attribute.
+   * The attribute definition for the SCIM 2 standard meta attribute.
    */
   public static final AttributeDefinition META_ATTRIBUTE_DEFINITION;
 
   /**
-   * The collection of attribute definitions for SCIM 2.0 standard common
+   * The collection of attribute definitions for SCIM 2 standard common
    * attributes: schemas, id, externalId, and meta.
    */
   public static final Collection<AttributeDefinition>
@@ -625,7 +625,7 @@ public class SchemaUtils
    * passed in.
    *
    * @param cls class to find the schema id property of the annotation from.
-   * @return the id of the schema, or null if it was not provided.
+   * @return the id of the schema, or {@code null} if it was not provided.
    */
   public static String getSchemaIdFromAnnotation(final Class<?> cls)
   {
@@ -635,10 +635,10 @@ public class SchemaUtils
 
   /**
    * Gets the id property from schema annotation.  If the the id
-   * attribute was null, a schema id is generated.
+   * attribute was {@code null}, a schema id is generated.
    *
    * @param schemaAnnotation the SCIM SchemaInfo annotation.
-   * @return the id of the schema, or null if it was not provided.
+   * @return the id of the schema, or {@code null} if it was not provided.
    */
   private static String getSchemaIdFromAnnotation(
       final Schema schemaAnnotation)
@@ -708,7 +708,7 @@ public class SchemaUtils
   /**
    * Returns true if the string passed in appears to be a urn.
    * That determination is made by looking to see if the string
-   * starts with "urn:".
+   * starts with "{@code urn:}".
    *
    * @param string the string to check.
    * @return true if it's a urn, or false if not.
@@ -721,9 +721,9 @@ public class SchemaUtils
 
   /**
    * Will force the string passed in to look like a urn.  If the
-   * string starts with "urn:" it will be returned as is, however
+   * string starts with "{@code urn:}" it will be returned as is, however
    * if the string starts with anything else, this method will
-   * prepend "urn:".  This is mainly so that if we have a class that
+   * prepend "{@code urn:}".  This is mainly so that if we have a class that
    * will be used as an extension schema, we will ensure that its
    * schema will be a urn and distinguishable from all other unmmapped
    * values.

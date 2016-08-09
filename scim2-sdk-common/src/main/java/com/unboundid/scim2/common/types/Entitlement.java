@@ -81,9 +81,9 @@ public class Entitlement
   }
 
   /**
-   * Specifies the human readable name, primarily used for display purposes.
+   * Specifies the display name, primarily used for display purposes.
    *
-   * @return The human readable name.
+   * @return The display name.
    */
   public String getDisplay()
   {
@@ -91,9 +91,9 @@ public class Entitlement
   }
 
   /**
-   * Specifies the human readable name, primarily used for display purposes.
+   * Specifies the display name, primarily used for display purposes.
    *
-   * @param display The human readable name.
+   * @param display The display name.
    * @return This object.
    */
   public Entitlement setDisplay(final String display)

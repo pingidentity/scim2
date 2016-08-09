@@ -459,11 +459,11 @@ public class JsonUtils
    *     }
    *
    *   getValue(Path.fromString("name")
-   *   will return a TextNode containing "Bob"
+   *   will return a TextNode containing "{@code Bob}"
    *
    *   getValue(Path.fromString("favoriteColors"))
    *   will return an ArrayNode containing TextNodes with the following
-   *   values - "red", "green", and "blue".
+   *   values - "{@code red}", "{@code green}", and "{@code blue}".
    *
    * @param path The path to the attributes whose values to retrieve.
    * @param node the ObjectNode to find the path in.
@@ -506,7 +506,7 @@ public class JsonUtils
    * </pre>
    *
    * Calling getValues with path of emails.value will return a list of all
-   * TextNodes of the "value" field in the "emails" array:
+   * TextNodes of the "{@code value}" field in the "{@code emails}" array:
    *
    * <pre>
    *   [ TextNode("bob@work.com"), TextNode("bob@home.com") ]
@@ -531,7 +531,7 @@ public class JsonUtils
    * </pre>
    *
    * Calling getValues with path of books.authors will return a list of all
-   * ArrayNodes of the "authors" field in the "books" array:
+   * ArrayNodes of the "{@code authors}" field in the "{@code books}" array:
    *
    * <pre>
    * [ ArrayNode(["Bill Martin, Jr.", "Eric Carle"]), ArrayNode(["Dr. Seuss"]) ]
@@ -675,7 +675,7 @@ public class JsonUtils
    *   <li>
    *     If the path targets a complex multi-valued attribute with a value
    *     filter and a specific sub-attribute
-   *     (e.g. "addresses[type eq "work"].streetAddress"), the matching
+   *     (for example, "addresses[type eq "work"].streetAddress"), the matching
    *     sub-attribute of all matching records is replaced.
    *   </li>
    *   <li>
@@ -699,15 +699,15 @@ public class JsonUtils
 
   /**
    * Checks for the existence of a path.  This will return true if the
-   * path is present (even if the value is null).  This allows the caller
+   * path is present (even if the value is {@code null}).  This allows the caller
    * to know if the original json string  had something like
-   * ... "myPath":null ... rather than just leaving the value out of the
+   * ... "{@code myPath}":{@code null} ... rather than just leaving the value out of the
    * json string entirely.
    *
    * @param path The path to the attribute.
    * @param node The JSON object node to search for the path in.
    * @return true if the path has a value set (even if that value is
-   * set to null), or false if not.
+   * set to {@code null}), or false if not.
    * @throws ScimException If an error occurs while traversing the JSON node.
    */
   public static boolean pathExists(final Path path,
@@ -1149,9 +1149,9 @@ public class JsonUtils
 
 
   /**
-   * Removes any fields with the null value or an empty array.
+   * Removes any fields with the {@code null} value or an empty array.
    *
-   * @param node The node with null and empty array values removed.
+   * @param node The node with {@code null} and empty array values removed.
    */
   private static void removeNullAndEmptyValues(final JsonNode node)
   {

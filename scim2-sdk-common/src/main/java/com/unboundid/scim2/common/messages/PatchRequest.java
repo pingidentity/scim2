@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Class representing a SCIM 2.0 patch request.
+ * Class representing a SCIM 2 patch request.
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:PatchOp",
     name="Patch Operation", description = "SCIM 2.0 Patch Operation Request")

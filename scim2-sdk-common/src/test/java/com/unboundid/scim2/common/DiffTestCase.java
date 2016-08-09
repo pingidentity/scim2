@@ -498,7 +498,7 @@ public class DiffTestCase
   }
 
   /**
-   * Test comparison against 1st null object.
+   * Test comparison against 1st {@code null} object.
    *
    * @throws Exception
    *           if an error occurs.
@@ -527,7 +527,7 @@ public class DiffTestCase
   }
 
   /**
-   * Test comparison against 2nd null object.
+   * Test comparison against 2nd {@code null} object.
    *
    * @throws Exception
    *           if an error occurs.
@@ -556,7 +556,7 @@ public class DiffTestCase
   }
 
   /**
-   * Test comparison of null objects.
+   * Test comparison of {@code null} objects.
    *
    * @throws Exception
    *           if an error occurs.

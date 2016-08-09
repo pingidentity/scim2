@@ -254,8 +254,7 @@ public final class GenericScimResource implements ScimResource
           JsonUtils.valueToNode(externalId));
     }
     catch (ScimException e)
-    {
-      // This should never happen.
+    { // This should never happen.
       throw new RuntimeException(e);
     }
   }
@@ -339,7 +338,7 @@ public final class GenericScimResource implements ScimResource
    * @param value The value(s) to set.
    * @return This object.
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final String path,
                                           final JsonNode value)
@@ -363,7 +362,7 @@ public final class GenericScimResource implements ScimResource
    * @param value The value(s) to set.
    * @return This object.
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final Path path,
                                           final JsonNode value)
@@ -508,7 +507,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final String path,
       final String value) throws ScimException
@@ -546,7 +545,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final Path path,
       final String value) throws ScimException
@@ -583,7 +582,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addStringValues(final String path,
       final List<String> values) throws ScimException
@@ -621,7 +620,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addStringValues(final Path path,
       final List<String> values) throws ScimException
@@ -638,7 +637,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a String value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a String.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -669,7 +668,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a String value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a String.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -801,7 +800,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final String path,
       final Boolean value) throws ScimException
@@ -840,7 +839,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(
       final Path path, final Boolean value) throws ScimException
@@ -878,7 +877,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addBooleanValues(final String path,
       final List<Boolean> values) throws ScimException
@@ -916,7 +915,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addBooleanValues(final Path path,
       final List<Boolean> values) throws ScimException
@@ -933,7 +932,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a Boolean value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a Boolean.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -965,7 +964,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a Boolean value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a Boolean.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -1098,7 +1097,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final String path,
       final Double value) throws ScimException
@@ -1136,7 +1135,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final Path path,
       final Double value) throws ScimException
@@ -1174,7 +1173,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addDoubleValues(final String path,
       final List<Double> values) throws ScimException
@@ -1212,7 +1211,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addDoubleValues(final Path path,
       final List<Double> values) throws ScimException
@@ -1229,7 +1228,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a Double value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a Double.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -1260,7 +1259,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a Double value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a Double.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -1392,7 +1391,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final String path,
       final Integer value) throws ScimException
@@ -1430,7 +1429,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final Path path,
       final Integer value) throws ScimException
@@ -1468,7 +1467,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addIntegerValues(final String path,
       final List<Integer> values) throws ScimException
@@ -1506,7 +1505,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addIntegerValues(final Path path,
       final List<Integer> values) throws ScimException
@@ -1523,7 +1522,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets an Integer value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be an Integer.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -1554,7 +1553,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets an Integer value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be an Integer.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -1687,7 +1686,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(
       final String path, final Long value) throws ScimException
@@ -1725,7 +1724,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(
       final Path path, final Long value) throws ScimException
@@ -1763,7 +1762,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addLongValues(
       final String path, final List<Long> values) throws ScimException
@@ -1801,7 +1800,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addLongValues(
       final Path path, final List<Long> values) throws ScimException
@@ -1818,7 +1817,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a Long value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a Long.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -1849,7 +1848,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a Long value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a Long.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -1981,7 +1980,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(
       final String path, final Date value) throws ScimException
@@ -2019,7 +2018,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(
       final Path path, final Date value) throws ScimException
@@ -2057,7 +2056,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addDateValues(
       final String path, final List<Date> values) throws ScimException
@@ -2095,7 +2094,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addDateValues(
       final Path path, final List<Date> values) throws ScimException
@@ -2112,7 +2111,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a Date value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a Date.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -2143,7 +2142,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a Date value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a Date.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -2340,7 +2339,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(
       final String path, final byte[] value) throws ScimException
@@ -2378,7 +2377,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(
       final Path path, final byte[] value) throws ScimException
@@ -2416,7 +2415,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addBinaryValues(
       final String path, final List<byte[]> values) throws ScimException
@@ -2454,7 +2453,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addBinaryValues(
       final Path path, final List<byte[]> values) throws ScimException
@@ -2471,7 +2470,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a binary value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a binary value.  If the path does not
-   * exist, null will be returned.
+   * exist, "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -2503,7 +2502,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a binary value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a binary value.  If the path does
-   * not exist, null will be returned.
+   * not exist, "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -2654,7 +2653,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final String path, final URI value)
       throws ScimException
@@ -2690,7 +2689,7 @@ public final class GenericScimResource implements ScimResource
    * @param value the new value.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource replaceValue(final Path path, final URI value)
       throws ScimException
@@ -2732,7 +2731,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addURIValues(
       final String path, final List<URI> values) throws ScimException
@@ -2773,7 +2772,7 @@ public final class GenericScimResource implements ScimResource
    * @param values a list containing the new values.
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is null or invalid).
+   * if the path or value is "{@code null}" or invalid).
    */
   public GenericScimResource addURIValues(
       final Path path, final List<URI> values) throws ScimException
@@ -2790,7 +2789,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a URI value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a URI.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:
@@ -2821,7 +2820,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * Gets a URI value from a generic SCIM resource.  If the path exists,
    * the JSON node at the path must be a URI.  If the path does not exist,
-   * null will be returned.
+   * "{@code null}" will be returned.
    *   <p>
    *
    * For example:

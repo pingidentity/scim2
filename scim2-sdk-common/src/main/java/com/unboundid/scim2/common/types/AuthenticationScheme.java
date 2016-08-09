@@ -256,11 +256,11 @@ public class AuthenticationScheme
 
   /**
    * Convenience method that creates a new AuthenticationScheme instances for
-   * OAuth 2 Bearer Token.
+   * OAuth 2 bearer token.
    *
    * @param primary Whether this authentication scheme is primary
    *
-   * @return A new AuthenticationScheme instances for OAuth 2 Bearer Token.
+   * @return A new AuthenticationScheme instances for OAuth 2 bearer token.
    */
   public static AuthenticationScheme createOAuth2BearerToken(
       final boolean primary)

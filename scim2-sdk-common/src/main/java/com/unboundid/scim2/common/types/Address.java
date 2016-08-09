@@ -236,9 +236,9 @@ public class Address
 
   /**
    * Retrieves the label indicating the attribute's function;
-   * e.g., 'work' or 'home'.
+   * for example, 'work' or 'home'.
    *
-   * @return A label indicating the attribute's function; e.g., 'work' or
+   * @return A label indicating the attribute's function; for example, 'work' or
    * 'home'.
    */
   public String getType()
@@ -248,7 +248,7 @@ public class Address
 
   /**
    * Specifies the label indicating the attribute's function;
-   * e.g., 'work' or 'home'.
+   * for example, 'work' or 'home'.
    *
    * @param type a label indicating the attribute's function.
    * @return This object.
@@ -261,7 +261,7 @@ public class Address
 
   /**
    * Retrieves the Boolean value indicating the 'primary' or preferred attribute
-   * value for this attribute, e.g., the preferred address. The primary
+   * value for this attribute, for example, the preferred address. The primary
    * attribute value 'true' MUST appear no more than once.
    *
    * @return The Boolean value indicating the 'primary' or preferred attribute
@@ -274,7 +274,7 @@ public class Address
 
   /**
    * Specifies the Boolean value indicating the 'primary' or preferred attribute
-      * value for this attribute, e.g., the preferred address. The primary
+      * value for this attribute, for example, the preferred address. The primary
       * attribute value 'true' MUST appear no more than once.
    *
    * @param primary The Boolean value indicating the 'primary' or preferred

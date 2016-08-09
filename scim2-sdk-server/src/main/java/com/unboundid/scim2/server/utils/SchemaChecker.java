@@ -141,14 +141,14 @@ public class SchemaChecker
   public enum Option
   {
     /**
-     * Relax SCIM 2.0 standard schema requirements by allowing core or extended
+     * Relax SCIM 2 standard schema requirements by allowing core or extended
      * attributes in the resource that are not defined by any schema in the
      * resource type definition.
      */
     ALLOW_UNDEFINED_ATTRIBUTES,
 
     /**
-     * Relax SCIM 2.0 standard schema requirements by allowing sub-attributes
+     * Relax SCIM 2 standard schema requirements by allowing sub-attributes
      * that are not defined by the definition of the parent attribute.
      */
     ALLOW_UNDEFINED_SUB_ATTRIBUTES;

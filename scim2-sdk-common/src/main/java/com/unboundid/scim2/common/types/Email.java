@@ -20,7 +20,7 @@ package com.unboundid.scim2.common.types;
 import com.unboundid.scim2.common.annotations.Attribute;
 
 /**
- * E-mail address for the user.
+ * email address for the user.
  */
 public class Email
 {
@@ -64,9 +64,9 @@ public class Email
   private Boolean primary;
 
   /**
-   * Retrieves the E-mail addresses for the user.
+   * Retrieves the email addresses for the user.
    *
-   * @return The E-mail addresses for the user.
+   * @return The email addresses for the user.
    */
   public String getValue()
   {
@@ -74,9 +74,9 @@ public class Email
   }
 
   /**
-   * Specifies the E-mail addresses for the user.
+   * Specifies the email addresses for the user.
    *
-   * @param value The E-mail addresses for the user.
+   * @param value The email addresses for the user.
    * @return This object.
    */
   public Email setValue(final String value)
@@ -86,9 +86,9 @@ public class Email
   }
 
   /**
-   * Retrieves the human readable name, primarily used for display purposes.
+   * Retrieves the display name, primarily used for display purposes.
    *
-   * @return The human readable name.
+   * @return The display name.
    */
   public String getDisplay()
   {
@@ -96,9 +96,9 @@ public class Email
   }
 
   /**
-   * Specifies the human readable name, primarily used for display purposes.
+   * Specifies the display name, primarily used for display purposes.
    *
-   * @param display The human readable name.
+   * @param display The display name.
    * @return This object.
    */
   public Email setDisplay(final String display)

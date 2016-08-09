@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Class representing a SCIM 2.0 list response.
+ * Class representing a SCIM 2 list response.
  *
  * @param <T> The type of the returned resources.
  */

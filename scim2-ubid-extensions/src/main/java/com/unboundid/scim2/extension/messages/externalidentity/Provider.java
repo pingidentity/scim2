@@ -89,10 +89,10 @@ public final class Provider
 
     /**
      * Sets the SAML response binding. Only applicable to providers of
-     * type "saml".
+     * type "{@code saml}".
      *
      * @param samlResponseBinding The SAML response binding, either
-     *                            "artifact" or "post".
+     *                            "{@code artifact}" or "{@code post}".
      *
      * @return this
      */
@@ -195,10 +195,10 @@ public final class Provider
   }
 
   /**
-   * Gets the SAML response binding, either "artifact" or "post".
-   * Only applicable to providers of type "saml".
+   * Gets the SAML response binding, either "{@code artifact}" or "{@code post}".
+   * Only applicable to providers of type "{@code saml}".
    *
-   * @return The SAML response binding, either "artifact" or "post".
+   * @return The SAML response binding, either "{@code artifact}" or "{@code post}".
    */
   public String getSamlResponseBinding()
   {
