@@ -19,6 +19,7 @@ package com.unboundid.scim2.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.jaxrs.cfg.JaxRSFeature;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.Lists;
 import com.unboundid.scim2.client.ScimInterface;
@@ -48,6 +49,7 @@ import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.ApiConstants;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.server.providers.DefaultContentTypeFilter;
 import com.unboundid.scim2.server.providers.DotSearchFilter;
 import com.unboundid.scim2.server.providers.JsonProcessingExceptionMapper;
 import com.unboundid.scim2.server.providers.RuntimeExceptionMapper;
@@ -66,6 +68,7 @@ import org.testng.annotations.Test;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
@@ -109,11 +112,16 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     config.register(ScimExceptionMapper.class);
     config.register(RuntimeExceptionMapper.class);
     config.register(JsonProcessingExceptionMapper.class);
-    config.register(new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+
+    JacksonJsonProvider provider =
+        new JacksonJsonProvider(JsonUtils.createObjectMapper());
+    provider.configure(JaxRSFeature.ALLOW_EMPTY_INPUT, false);
+    config.register(provider);
 
     // Filters
     config.register(DotSearchFilter.class);
     config.register(TestAuthenticatedSubjectAliasFilter.class);
+    config.register(DefaultContentTypeFilter.class);
     requestFilter = new TestRequestFilter();
     config.register(requestFilter);
 
@@ -423,6 +431,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(Entity.json(searchRequest));
     assertEquals(response.getStatus(), 200);
     assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    response.close();
 
     // Now with application/json; charset=UTF-8
     response = target.path("Users").path(".search").
@@ -432,6 +441,27 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         Entity.entity(searchRequest, "application/json; charset=UTF-8"));
     assertEquals(response.getStatus(), 200);
     assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    response.close();
+
+    // Now with invalid MIME type
+    response = target.path("Users").path(".search").
+        request().accept(
+        MediaType.APPLICATION_JSON_TYPE,
+        ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(
+        Entity.text("bad"));
+    assertEquals(response.getStatus(), 415);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    response.close();
+
+    // Now with invalid empty body
+    response = target.path("Users").path(".search").
+        request().accept(
+        MediaType.APPLICATION_JSON_TYPE,
+        ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(
+        Entity.json(null));
+    assertEquals(response.getStatus(), 400);
+    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    response.close();
   }
 
   /**
@@ -793,6 +823,58 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         "{\"undefinedField\": \"value\"}", MediaType.APPLICATION_JSON_TYPE));
     assertEquals(response.getStatus(), 400);
     assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+  }
+
+  /**
+   * Test empty entity in PATCH, and POST requests are handled correctly.
+   * Jersey client can't issue PUT request with empty entity.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testEmptyEntity() throws ScimException
+  {
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+
+    // No content-type header and no entity
+    Invocation.Builder b = target.path("SingletonUsers").
+        request("application/scim+json");
+    Response response = b.build("POST").invoke();
+    assertEquals(response.getStatus(), 400);
+    ErrorResponse error = response.readEntity(ErrorResponse.class);
+    assertTrue(error.getDetail().contains("No content provided"));
+    response.close();
+
+    b = target.path("SingletonUsers").path("123").
+        request("application/scim+json");
+    response = b.build("PATCH").invoke();
+    assertEquals(response.getStatus(), 400);
+    assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+    error = response.readEntity(ErrorResponse.class);
+    assertTrue(error.getDetail().contains("No content provided"));
+    response.close();
+
+    // Content-type header set but no entity
+    b = target.path("SingletonUsers").
+        request("application/scim+json").
+        header(HttpHeaders.CONTENT_TYPE, "application/scim+json");
+    response = b.build("POST").invoke();
+    assertEquals(response.getStatus(), 400);
+    assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+    error = response.readEntity(ErrorResponse.class);
+    assertTrue(error.getDetail().contains("No content provided"));
+    response.close();
+
+    b = target.path("SingletonUsers").path("123").
+        request("application/scim+json").
+        header(HttpHeaders.CONTENT_TYPE, "application/scim+json");
+    response = b.build("PATCH").invoke();
+    assertEquals(response.getStatus(), 400);
+    assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+    error = response.readEntity(ErrorResponse.class);
+    assertTrue(error.getDetail().contains("No content provided"));
+    response.close();
   }
 
   /**

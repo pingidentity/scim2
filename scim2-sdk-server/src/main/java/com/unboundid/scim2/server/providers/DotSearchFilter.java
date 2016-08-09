@@ -17,16 +17,23 @@
 
 package com.unboundid.scim2.server.providers;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
 import com.unboundid.scim2.server.utils.ServerUtils;
 
+import javax.annotation.Priority;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.NotSupportedException;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NoContentException;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
@@ -42,6 +49,7 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
  */
 @Provider
 @PreMatching
+@Priority(Priorities.ENTITY_CODER)
 public class DotSearchFilter implements ContainerRequestFilter
 {
   /**
@@ -52,15 +60,28 @@ public class DotSearchFilter implements ContainerRequestFilter
   {
     if(requestContext.getMethod().equals(HttpMethod.POST) &&
         requestContext.getUriInfo().getPath().endsWith(
-            SEARCH_WITH_POST_PATH_EXTENSION) &&
-        (requestContext.getMediaType().isCompatible(
-            ServerUtils.MEDIA_TYPE_SCIM_TYPE) ||
-            requestContext.getMediaType().isCompatible(
-                MediaType.APPLICATION_JSON_TYPE)))
+            SEARCH_WITH_POST_PATH_EXTENSION))
+
     {
-      SearchRequest searchRequest =
-          JsonUtils.getObjectReader().forType(SearchRequest.class).readValue(
-              requestContext.getEntityStream());
+      if(requestContext.getMediaType() == null ||
+          !(requestContext.getMediaType().isCompatible(
+              ServerUtils.MEDIA_TYPE_SCIM_TYPE) ||
+              requestContext.getMediaType().isCompatible(
+                  MediaType.APPLICATION_JSON_TYPE)))
+      {
+        throw new NotSupportedException();
+      }
+
+      ObjectReader reader =
+          JsonUtils.getObjectReader().forType(SearchRequest.class);
+      JsonParser p = reader.getFactory().createParser(
+          requestContext.getEntityStream());
+      if(p.nextToken() == null)
+      {
+        throw new BadRequestException(
+            new NoContentException("Empty Entity"));
+      }
+      SearchRequest searchRequest = reader.readValue(p);
       UriBuilder builder = requestContext.getUriInfo().getBaseUriBuilder();
       List<PathSegment> pathSegments =
           requestContext.getUriInfo().getPathSegments();

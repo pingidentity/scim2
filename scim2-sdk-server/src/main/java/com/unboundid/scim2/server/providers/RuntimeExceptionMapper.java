@@ -17,12 +17,14 @@
 
 package com.unboundid.scim2.server.providers;
 
+import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.server.utils.ServerUtils;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.NoContentException;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -50,9 +52,20 @@ public class RuntimeExceptionMapper implements
 
     if(exception instanceof WebApplicationException)
     {
-      errorResponse = new ErrorResponse(
-          ((WebApplicationException)exception).getResponse().getStatus());
-      errorResponse.setDetail(exception.getMessage());
+      if(exception.getCause() != null && exception.getCause()
+          instanceof NoContentException)
+      {
+        errorResponse = new ErrorResponse(400);
+        errorResponse.setScimType(BadRequestException.INVALID_SYNTAX);
+        errorResponse.setDetail("No content provided. A valid SCIM object " +
+            "represented as a json document is required");
+      }
+      else
+      {
+        errorResponse = new ErrorResponse(
+            ((WebApplicationException) exception).getResponse().getStatus());
+        errorResponse.setDetail(exception.getMessage());
+      }
     }
     else
     {

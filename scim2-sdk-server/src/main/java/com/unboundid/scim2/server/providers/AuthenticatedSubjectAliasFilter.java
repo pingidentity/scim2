@@ -22,6 +22,8 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.ApiConstants;
 import com.unboundid.scim2.server.utils.ServerUtils;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
@@ -44,6 +46,7 @@ import java.util.List;
  */
 @Provider
 @PreMatching
+@Priority(Priorities.HEADER_DECORATOR)
 public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
 {
   /**
