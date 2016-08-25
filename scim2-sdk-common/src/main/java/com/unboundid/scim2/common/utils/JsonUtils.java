@@ -17,14 +17,11 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -56,7 +53,8 @@ import java.util.logging.Level;
  */
 public class JsonUtils
 {
-  private static final ObjectMapper SDK_OBJECT_MAPPER = createObjectMapper();
+  private static MapperFactory mapperFactory = new MapperFactory();
+  private static ObjectMapper SDK_OBJECT_MAPPER = createObjectMapper();
   public abstract static class NodeVisitor
   {
     /**
@@ -1391,22 +1389,21 @@ public class JsonUtils
    */
   public static ObjectMapper createObjectMapper()
   {
-    ObjectMapper mapper = new ObjectMapper(new ScimJsonFactory());
-
-    // Don't serialize POJO nulls as JSON nulls.
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-
-    // Only use ISO8601 format for dates.
-    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-    mapper.setDateFormat(new ScimDateFormat());
-
-    // Do not care about case when de-serializing POJOs.
-    mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-
-    // Use the case-insensitive JsonNodes.
-    mapper.setNodeFactory(new ScimJsonNodeFactory());
-
-    return mapper;
+    return mapperFactory.createObjectMapper();
   }
+
+  /**
+   * Sets the MapperFactory used to create the object mappers used by the SCIM 2
+   * SDK.  If this method is called, it should be called prior to the first use
+   * of any other method that may use an ObjectMapper (most of the methods of
+   * JsonUtils use an object mapper).
+   *
+   * @param customMapperFactory the custom JSON object mapper.
+   */
+  public static void setCustomMapperFactory(final MapperFactory customMapperFactory)
+  {
+    JsonUtils.mapperFactory = customMapperFactory;
+    SDK_OBJECT_MAPPER = customMapperFactory.createObjectMapper();
+  }
+
 }

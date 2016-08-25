@@ -19,13 +19,17 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import com.google.common.collect.ImmutableMap;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
+import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.common.utils.MapperFactory;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -1165,5 +1169,37 @@ public class JsonUtilsTestCase
             true
         }
     };
+  }
+
+  /**
+   * Test that setting a custom object mapper factory allows for custom
+   * options such as setting fail on unknown properties deserialization option
+   * to false (defaults to true).
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testCustomMapper() throws Exception
+  {
+    MapperFactory mapperFactory = new MapperFactory();
+    mapperFactory.setDeserializationCustomFeatures(
+        ImmutableMap.<DeserializationFeature, Boolean>builder().
+            put(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE).build());
+    JsonUtils.setCustomMapperFactory(mapperFactory);
+
+    String jsonNameString =
+        "{" +
+        "\"familyName\":\"Smith\"," +
+        "\"givenName\":\"Bob\"," +
+        "\"middleName\":\"X\"," +
+        "\"bogusField\":\"bogusValue\"" +
+        "}";
+
+    Name name = JsonUtils.getObjectReader().
+        forType(Name.class).readValue(jsonNameString);
+
+    Assert.assertEquals(name.getFamilyName(), "Smith");
+    Assert.assertEquals(name.getGivenName(), "Bob");
+    Assert.assertEquals(name.getMiddleName(), "X");
   }
 }
