@@ -29,6 +29,7 @@ import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
+import com.unboundid.scim2.common.exceptions.MethodNotAllowedException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
@@ -973,8 +974,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     requestFilter.addExpectedHeader(expectedKey, expectedValue);
     // Confirm that the default Accept header is preserved.
     requestFilter.addExpectedHeader(HttpHeaders.ACCEPT,
-                                    ScimService.MEDIA_TYPE_SCIM_TYPE.
-                                        toString());
+        ScimService.MEDIA_TYPE_SCIM_TYPE.
+            toString());
     requestFilter.addExpectedHeader(HttpHeaders.ACCEPT,
         MediaType.APPLICATION_JSON_TYPE.
             toString());
@@ -1095,6 +1096,30 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       ErrorResponse response = ex.getScimError();
       Assert.assertEquals(response.getStatus(), Integer.valueOf(409));
       Assert.assertNotNull(ex.getCause());
+    }
+  }
+
+
+  /**
+   * Test that MethodNotAllowedExceptions are thrown properly.
+   *
+   * @throws ScimException uncaught exceptions indicate an error.
+   */
+  @Test
+  public void testMethodNotAllowed() throws ScimException
+  {
+    final ScimService service = new ScimService(target());
+
+    try
+    {
+      service.create("Users/schema", new GenericScimResource());
+      Assert.fail("Expecting a MethodNotFoundException");
+    }
+    catch(MethodNotAllowedException ex)
+    {
+      ErrorResponse response = ex.getScimError();
+      Assert.assertEquals(response.getStatus(), Integer.valueOf(405));
+      Assert.assertTrue(response.getDetail().contains("Method Not Allowed"));
     }
   }
 

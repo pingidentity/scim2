@@ -158,6 +158,7 @@ public class ScimException extends Exception
       case 401 : return new UnauthorizedException(scimError, cause);
       case 403 : return new ForbiddenException(scimError, cause);
       case 404 : return new ResourceNotFoundException(scimError, cause);
+      case 405 : return new MethodNotAllowedException(scimError, cause);
       case 409 : return new ResourceConflictException(scimError, cause);
       case 412 : return new PreconditionFailedException(scimError, null, cause);
 //      case 413 : return new RequestEntityTooLargeException(errorMessage);
