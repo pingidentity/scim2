@@ -94,29 +94,6 @@ public final class ExternalIdentity extends BaseScimResource
   }
 
   /**
-   * Creates an external identity link request from a provider user id and
-   * access token. Use this when the request is to create a link from a
-   * known provider user id.
-   *
-   * @param providerName the name of the external identity provider.
-   * @param providerUserId the provider user id to use.
-   * @param accessToken the access token.
-   * @param refreshToken the refresh token (optional.  May be null.).
-   */
-  public ExternalIdentity(final String providerName,
-                          final String providerUserId,
-                          final String accessToken,
-                          final String refreshToken)
-  {
-    this.provider = new Provider.Builder().setName(providerName).build();
-    this.providerUserId = providerUserId;
-    this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
-    this.providerRedirectUrl = null;
-    this.callbackUrl = null;
-  }
-
-  /**
    * Constructs a new ExternalIdentity object.  This should only be needed
    * by the server.
    *
