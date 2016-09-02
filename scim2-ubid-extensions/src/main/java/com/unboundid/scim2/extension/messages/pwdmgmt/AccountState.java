@@ -40,7 +40,7 @@ import java.util.List;
  * server to tell the difference between "{@code null}" and not present.
  */
 @JsonSerialize(using = JsonRefBeanSerializer.class)
-@Schema(id="urn:unboundid:schemas:2.0:AccountState", name="AccountState",
+@Schema(id="urn:pingidentity:schemas:2.0:AccountState", name="AccountState",
     description = "Account state is used to retrieve and update the user's " +
         "account state.")
 public class AccountState extends BaseScimResource

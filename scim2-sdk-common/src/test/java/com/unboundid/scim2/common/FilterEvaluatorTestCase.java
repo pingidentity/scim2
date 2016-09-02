@@ -105,10 +105,10 @@ public class FilterEvaluatorTestCase
             "    ],\n" +
             "    \"password\": \"user:password\",\n" +
             "    \"schemas\": [" +
-            "    \"urn:unboundid:schemas:baseSchema\", " +
-            "    \"urn:unboundid:schemas:favoriteColor\"" +
+            "    \"urn:pingidentity:schemas:baseSchema\", " +
+            "    \"urn:pingidentity:schemas:favoriteColor\"" +
             "    ],\n" +
-            "    \"urn:unboundid:schemas:favoriteColor\": {\n" +
+            "    \"urn:pingidentity:schemas:favoriteColor\": {\n" +
             "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
             "    },\n" +
             "    \"userName\": \"user:username\",\n" +
@@ -220,11 +220,11 @@ public class FilterEvaluatorTestCase
                 ISO8601Utils.format(new Date(date.getTime() - 1000), false,
                     TimeZone.getTimeZone("CST")) + "\"", false },
             new Object[] { "schemas[value eq " +
-                "\"urn:unboundid:schemas:baseSchema\"]", true },
+                "\"urn:pingidentity:schemas:baseSchema\"]", true },
             new Object[] { "schemas eq " +
-                "\"urn:unboundid:schemas:baseSchema\"", true },
+                "\"urn:pingidentity:schemas:baseSchema\"", true },
             new Object[] { "schemas[value eq " +
-                "\"urn:unboundid:schemas:something\"]", false },
+                "\"urn:pingidentity:schemas:something\"]", false },
         };
   }
 

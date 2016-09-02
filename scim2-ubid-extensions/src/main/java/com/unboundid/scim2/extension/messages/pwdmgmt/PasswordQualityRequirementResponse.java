@@ -28,7 +28,7 @@ import java.util.List;
  * This class will contain information about password quality
  * requirements.
  */
-@Schema(id="urn:unboundid:schemas:2.0:PasswordQualityRequirement",
+@Schema(id="urn:pingidentity:schemas:2.0:PasswordQualityRequirement",
     description = "The password quality requirements for a particular user.",
     name = "PasswordQualityRequirement")
 public class PasswordQualityRequirementResponse extends BaseScimResource

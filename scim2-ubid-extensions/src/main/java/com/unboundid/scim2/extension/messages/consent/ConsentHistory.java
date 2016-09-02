@@ -31,7 +31,7 @@ import java.util.List;
 @Schema(description = "Consent History objects.  These represent the " +
     "history of a user giving consent for a client to access " +
     "identity data.",
-    id = "urn:unboundid:scim:api:messages:2.0:consentHistory",
+    id = "urn:pingidentity:scim:api:messages:2.0:consentHistory",
     name = "ConsentHistory")
 public final class ConsentHistory extends BaseScimResource
 {

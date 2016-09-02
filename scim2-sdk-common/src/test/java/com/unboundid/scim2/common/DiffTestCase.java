@@ -727,7 +727,7 @@ public class DiffTestCase
         "      \"someField\": \"A\"\n" +
         "    }\n" +
         "  ],\n" +
-        "  \"urn:unboundid:schemas:sample:profile:1.0\": {\n" +
+        "  \"urn:pingidentity:schemas:sample:profile:1.0\": {\n" +
         "    \"birthdayDayMonth\": {\n" +
         "      \"day\": 24,\n" +
         "      \"month\": 12\n" +
@@ -871,16 +871,16 @@ public class DiffTestCase
         "  \"userName\": \"user.0\",\n" +
         "  \"id\": \"ad55a34a-763f-358f-93f9-da86f9ecd9e4\",\n" +
         "  \"schemas\": [\n" +
-        "    \"urn:unboundid:schemas:User:1.0\",\n" +
-        "    \"urn:unboundid:schemas:sample:profile:1.0\"\n" +
+        "    \"urn:pingidentity:schemas:User:1.0\",\n" +
+        "    \"urn:pingidentity:schemas:sample:profile:1.0\"\n" +
         "  ]\n" +
         "}");
 
     ObjectNode target = (ObjectNode) JsonUtils.getObjectReader().readTree(
         "{\n" +
         "  \"schemas\": [\n" +
-        "    \"urn:unboundid:schemas:User:1.0\",\n" +
-        "    \"urn:unboundid:schemas:sample:profile:1.0\"\n" +
+        "    \"urn:pingidentity:schemas:User:1.0\",\n" +
+        "    \"urn:pingidentity:schemas:sample:profile:1.0\"\n" +
         "  ],\n" +
         "  \"addresses\": [\n" +
         "    {\n" +
@@ -939,7 +939,7 @@ public class DiffTestCase
         "      \"primary\": true\n" +
         "    }\n" +
         "  ],\n" +
-        "  \"urn:unboundid:schemas:sample:profile:1.0\": {\n" +
+        "  \"urn:pingidentity:schemas:sample:profile:1.0\": {\n" +
         "    \"birthdayDayMonth\": {\n" +
         "      \"day\": 24,\n" +
         "      \"month\": 12\n" +
@@ -1045,7 +1045,7 @@ public class DiffTestCase
     assertEquals(d.size(), 2);
     assertEquals(d.get(0).getOpType(), PatchOpType.REPLACE);
     assertEquals(d.get(0).getPath().toString(),
-        "urn:unboundid:schemas:sample:profile:1.0:topicPreferences[" +
+        "urn:pingidentity:schemas:sample:profile:1.0:topicPreferences[" +
             "(id eq \"urn:X-UnboundID:topic:clothing:shoes\" and" +
             " strength eq 10 and timeStamp eq \"2015-10-12T14:57:36.494Z\")]");
     assertEquals(d.get(0).getJsonNode().path("timeStamp").textValue(),

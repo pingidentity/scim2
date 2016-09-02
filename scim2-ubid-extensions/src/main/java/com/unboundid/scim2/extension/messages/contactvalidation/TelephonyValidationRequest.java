@@ -28,7 +28,7 @@ import java.util.Calendar;
  * The request for validating a phone number.
  */
 @Schema(description = "Telephony Validation Request",
-    id = "urn:unboundid:scim:api:messages:2.0:TelephonyValidationRequest",
+    id = "urn:pingidentity:scim:api:messages:2.0:TelephonyValidationRequest",
     name = "TelephonyValidationRequest")
 public class TelephonyValidationRequest extends BaseScimResource
 {

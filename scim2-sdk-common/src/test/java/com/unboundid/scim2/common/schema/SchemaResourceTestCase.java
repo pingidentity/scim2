@@ -132,9 +132,9 @@ public class SchemaResourceTestCase
         "  \"meta\": {\n" +
         "    \"resourceType\": \"Schema\",\n" +
         "    \"location\": \"https://example.comscim/v2/Schemas/" +
-        "urn:unboundid:schemas:exampleSchema\"\n" +
+        "urn:pingidentity:schemas:exampleSchema\"\n" +
         "  },\n" +
-        "  \"id\": \"urn:unboundid:schemas:exampleSchema\",\n" +
+        "  \"id\": \"urn:pingidentity:schemas:exampleSchema\",\n" +
         "  \"name\": \"Example\",\n" +
         "  \"description\": \"Example schema\",\n" +
         "  \"attributes\": [\n" +

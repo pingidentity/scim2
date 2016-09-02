@@ -40,7 +40,7 @@ import java.net.URI;
  * shared secret will then be saved to the user resource and ready for use.
  */
 @Schema(description = "TOTP Secret Registration Request",
-    id = "urn:unboundid:scim:api:messages:2.0:TOTPSecretRegistrationRequest",
+    id = "urn:pingidentity:scim:api:messages:2.0:TOTPSecretRegistrationRequest",
     name = "TOTPSecretRegistrationRequest")
 public class TOTPSecretRegistrationRequest extends BaseScimResource
 {

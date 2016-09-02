@@ -26,7 +26,7 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
  * external identity providers.
  */
 @Schema(description = "External identity provider information.",
-    id = "urn:unboundid:scim:api:messages:2.0:provider",
+    id = "urn:pingidentity:scim:api:messages:2.0:provider",
     name = "Provider")
 public final class Provider
 {

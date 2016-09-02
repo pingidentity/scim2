@@ -27,7 +27,7 @@ import java.util.List;
 
 @Schema(description = "Consent objects.  These represent a user giving" +
     "consent for a client to access identity data.",
-    id = "urn:unboundid:scim:api:messages:2.0:consent",
+    id = "urn:pingidentity:scim:api:messages:2.0:consent",
     name = "Consent")
 public final class Consent extends BaseScimResource
 {

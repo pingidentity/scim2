@@ -28,7 +28,7 @@ import java.util.Calendar;
  * The request for validating an email address.
  */
 @Schema(description = "Email Validation Request",
-    id = "urn:unboundid:scim:api:messages:2.0:EmailValidationRequest",
+    id = "urn:pingidentity:scim:api:messages:2.0:EmailValidationRequest",
     name = "EmailValidationRequest")
 public class EmailValidationRequest extends BaseScimResource
 {

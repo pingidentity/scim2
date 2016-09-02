@@ -28,7 +28,7 @@ import java.util.Calendar;
 import java.util.List;
 
 @Schema(description = "Session objects",
-    id = "urn:unboundid:scim:api:messages:2.0:session",
+    id = "urn:pingidentity:scim:api:messages:2.0:session",
     name = "Session")
 public class Session extends BaseScimResource
 {

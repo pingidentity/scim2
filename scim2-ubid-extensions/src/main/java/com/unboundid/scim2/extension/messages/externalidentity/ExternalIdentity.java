@@ -27,7 +27,7 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
  * External identity provider information.
  */
 @Schema(description = "Contains information about external identities.",
-    id = "urn:unboundid:scim:api:messages:2.0:ExternalIdentity",
+    id = "urn:pingidentity:scim:api:messages:2.0:ExternalIdentity",
     name = "ExternalIdentity")
 public final class ExternalIdentity extends BaseScimResource
 {

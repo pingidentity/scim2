@@ -79,10 +79,10 @@ public class GenericScimResourceObjectTest
             "    \"shoeSize\" : \"12W\",\n" +
             "    \"password\": \"user:password\",\n" +
             "    \"Schemas\": [" +
-            "    \"urn:unboundid:schemas:baseSchema\", " +
-            "    \"urn:unboundid:schemas:favoriteColor\"" +
+            "    \"urn:pingidentity:schemas:baseSchema\", " +
+            "    \"urn:pingidentity:schemas:favoriteColor\"" +
             "    ],\n" +
-            "    \"urn:unboundid:schemas:favoriteColor\": {\n" +
+            "    \"urn:pingidentity:schemas:favoriteColor\": {\n" +
             "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
             "    },\n" +
             "    \"userName\": \"user:username\"\n" +
@@ -93,8 +93,8 @@ public class GenericScimResourceObjectTest
     ScimResource cso = gso;
 
     Set<String> schemaSet = new HashSet<String>();
-    schemaSet.add("urn:unboundid:schemas:baseSchema");
-    schemaSet.add("urn:unboundid:schemas:favoriteColor");
+    schemaSet.add("urn:pingidentity:schemas:baseSchema");
+    schemaSet.add("urn:pingidentity:schemas:favoriteColor");
 
     Assert.assertTrue(cso.getSchemaUrns().containsAll(schemaSet));
 

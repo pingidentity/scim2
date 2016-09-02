@@ -168,7 +168,7 @@ public class ExtensionsTest
   }
 
   @Schema(description = "Class to represent a favorite color",
-      id = "urn:unboundid:schemas:FavoriteColor",
+      id = "urn:pingidentity:schemas:FavoriteColor",
       name = "FavoriteColor")
   private static class ExtensionClass
   {
@@ -221,7 +221,7 @@ public class ExtensionsTest
 
     // check the extension values
     Assert.assertEquals(
-        userNode.path("urn:unboundid:schemas:FavoriteColor").
+        userNode.path("urn:pingidentity:schemas:FavoriteColor").
             path("favoriteColor").asText(),
         JsonUtils.nodeToValue(user.getExtensionValues(
             Path.root(ExtensionClass.class)).get(0),
@@ -252,10 +252,10 @@ public class ExtensionsTest
         "    },\n" +
         "    \"password\": \"user:password\",\n" +
         "    \"schemas\": [\n" +
-        "        \"urn:unboundid:schemas:FavoriteColor\",\n" +
+        "        \"urn:pingidentity:schemas:FavoriteColor\",\n" +
         "        \"urn:junit:CoreClass_User:Users\"\n" +
         "    ],\n" +
-        "    \"urn:unboundid:schemas:FavoriteColor\": {\n" +
+        "    \"urn:pingidentity:schemas:FavoriteColor\": {\n" +
         "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
         "    },\n" +
         "    \"userName\": \"user:username\"\n" +
@@ -271,7 +271,7 @@ public class ExtensionsTest
 
     // check the schemas
     Set<String> schemaSet = new HashSet<String>();
-    schemaSet.add("urn:unboundid:schemas:FavoriteColor");
+    schemaSet.add("urn:pingidentity:schemas:FavoriteColor");
     schemaSet.add("urn:junit:CoreClass_User:Users");
 
     Assert.assertEquals(user.getSchemaUrns(),
@@ -298,7 +298,7 @@ public class ExtensionsTest
         ExtensionClass.class);
     Map extensionAttrs = JsonUtils.nodeToValue(
         commonScimObject.getValue(
-            "urn:unboundid:schemas:FavoriteColor:"),
+            "urn:pingidentity:schemas:FavoriteColor:"),
         Map.class);
 
     Assert.assertEquals(extensionClass.getFavoriteColor(),
@@ -368,10 +368,10 @@ public class ExtensionsTest
         "    },\n" +
         "    \"password\": \"user:password\",\n" +
         "    \"schemas\": [\n" +
-        "        \"urn:unboundid:schemas:FavoriteColor\",\n" +
+        "        \"urn:pingidentity:schemas:FavoriteColor\",\n" +
         "        \"urn:junit:CoreClass_User:Users\"\n" +
         "    ],\n" +
-        "    \"urn:unboundid:schemas:FavoriteColor\": {\n" +
+        "    \"urn:pingidentity:schemas:FavoriteColor\": {\n" +
         "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
         "    },\n" +
         "    \"userName\": \"user:username\"\n" +

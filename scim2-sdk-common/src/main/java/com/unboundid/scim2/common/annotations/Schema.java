@@ -34,7 +34,7 @@ public @interface Schema
    *
    * @return The object's id as a URN.
    */
-  String id() default "urn:unboundid:scim:api:messages:2.0";
+  String id() default "urn:pingidentity:scim:api:messages:2.0";
 
   /**
    * The description for the object.

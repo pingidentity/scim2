@@ -27,7 +27,7 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
  * The request for changing a password for a user.
  */
 @Schema(description = "Password change request",
-    id = "urn:unboundid:scim:api:messages:2.0:PasswordUpdateRequest",
+    id = "urn:pingidentity:scim:api:messages:2.0:PasswordUpdateRequest",
     name = "PasswordUpdateRequest")
 public final class PasswordUpdateRequest extends BaseScimResource
 {
