@@ -543,14 +543,22 @@ public class Parser
         final Path filterAttribute;
         try
         {
-          filterAttribute = Path.fromString(
+          filterAttribute = parsePath(
               token.substring(0, token.length() - 1));
         }
         catch (final BadRequestException e)
         {
           Debug.debugException(e);
           final String msg = String.format(
-              "Invalid attribute: %s",e.getMessage());
+              "Invalid attribute path at position %d: %s",
+              reader.mark, e.getMessage());
+          throw BadRequestException.invalidFilter(msg);
+        }
+
+        if(filterAttribute.isRoot())
+        {
+          final String msg = String.format(
+              "Attribute path expected at position %d", reader.mark);
           throw BadRequestException.invalidFilter(msg);
         }
 
@@ -568,13 +576,21 @@ public class Parser
         final Path filterAttribute;
         try
         {
-          filterAttribute = Path.fromString(token);
+          filterAttribute = parsePath(token);
         }
         catch (final BadRequestException e)
         {
           Debug.debugException(e);
           final String msg = String.format(
-              "Invalid attribute: %s",e.getMessage());
+              "Invalid attribute path at position %d: %s",
+              reader.mark, e.getMessage());
+          throw BadRequestException.invalidFilter(msg);
+        }
+
+        if(filterAttribute.isRoot())
+        {
+          final String msg = String.format(
+              "Attribute path expected at position %d", reader.mark);
           throw BadRequestException.invalidFilter(msg);
         }
 

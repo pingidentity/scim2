@@ -164,6 +164,7 @@ public class FilterParsingTestCase
             new Object[] { "userName[userName pr)" },
             new Object[] { "userName[userName[bar pr]])" },
             new Object[] { "userName[userName pr]])" },
+            new Object[] { "[value eq \"false\"]" }
         };
   }
 
