@@ -29,8 +29,10 @@ import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.Photo;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Iterator;
@@ -1050,6 +1052,44 @@ public class DiffTestCase
             " strength eq 10 and timeStamp eq \"2015-10-12T14:57:36.494Z\")]");
     assertEquals(d.get(0).getJsonNode().path("timeStamp").textValue(),
         "2015-10-13T14:57:36.494Z");
+  }
+
+  /**
+   * Test the case of creating a patch for an object with multivalued
+   * attributes that have no values, and supplying the same object to
+   * diff with.  We should return no patch operations, however in previous
+   * iterations of this code, we would try and remove the attribute.
+   *
+   * @throws IOException if an error occurs
+   */
+  @Test
+  public void testMultiValuedAttributesWithEmptyValues() throws IOException
+  {
+    String jsonString = "{\n" +
+        "  \"schemas\" : [ \"urn:unboundid:configuration:2.0\" ],\n" +
+        "  \"id\" : \"userRoot2\",\n" +
+        "  \"meta\" : {\n" +
+        "    \"resourceType\" : \"LocalDbBackend\",\n" +
+        "    \"location\" : \"http://localhost:5033/config/v2/Backends/userRoot2\"\n" +
+        "  },\n" +
+        "  \"urn:unboundid:configuration:2.0\" : {\n" +
+        "    \"type\" : \"LocalDbBackend\"\n" +
+        "  },\n" +
+        "  \"backendId\" : \"userRoot2\",\n" +
+        "  \"backgroundPrime\" : \"false\",\n" +
+        "  \"backupFilePermissions\" : \"700\",\n" +
+        "  \"baseDn\" : [ \"dc=example2,dc=com\" ],\n" +
+        "  \"checkpointOnCloseCount\" : \"2\",\n" +
+        "  \"cleanerThreadWaitTime\" : \"120000\",\n" +
+        "  \"compactCommonParentDn\" : [ ],\n" +
+        "  \"jeProperty\" : [ ]\n" +
+        "}";
+    ObjectNode source = JsonUtils.getObjectReader().
+        forType(ObjectNode.class).readValue(jsonString);
+    ObjectNode target = JsonUtils.getObjectReader().
+        forType(ObjectNode.class).readValue(jsonString);
+    List<PatchOperation> d = JsonUtils.diff(source, target, false);
+    Assert.assertEquals(d.size(), 0);
   }
 
   private void removeNullNodes(JsonNode object)
