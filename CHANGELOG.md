@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## v1.2.9 - 2016-07-08
 Initial Public Release
 
-## v2.0.3 - 2016-09-26
+## v2.0.4 - 2016-09-26
 Changed unboundid URNs to pingidentity.
 
 Add exception class for 405 Method Not Allowed exceptions, and corrected some exception mapping issues.
