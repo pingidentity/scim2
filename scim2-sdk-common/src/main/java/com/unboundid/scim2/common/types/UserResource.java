@@ -22,6 +22,7 @@ import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -155,7 +156,7 @@ public class UserResource extends BaseScimResource
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE,
       multiValueClass = Email.class)
-  private List<Email> emails;
+  private List<Email> emails = Collections.<Email>emptyList();
 
   @Attribute(description = "Phone numbers for the User.  The value " +
       "SHOULD be canonicalized by the Service Provider according to format " +
@@ -166,7 +167,7 @@ public class UserResource extends BaseScimResource
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE,
       multiValueClass = PhoneNumber.class)
-  private List<PhoneNumber> phoneNumbers;
+  private List<PhoneNumber> phoneNumbers = Collections.<PhoneNumber>emptyList();
 
   @Attribute(description = "Instant messaging addresses for the User.",
       isRequired = false,
@@ -174,7 +175,8 @@ public class UserResource extends BaseScimResource
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE,
       multiValueClass = InstantMessagingAddress.class)
-  private List<InstantMessagingAddress> ims;
+  private List<InstantMessagingAddress> ims =
+      Collections.<InstantMessagingAddress>emptyList();
 
   @Attribute(description = "URIs of photos of the User.",
       isRequired = false,
@@ -182,7 +184,7 @@ public class UserResource extends BaseScimResource
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE,
       multiValueClass = Photo.class)
-  private List<Photo> photos;
+  private List<Photo> photos = Collections.<Photo>emptyList();
 
   @Attribute(description = "Physical mailing addresses for this User.",
       isRequired = false,
@@ -190,7 +192,7 @@ public class UserResource extends BaseScimResource
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE,
       multiValueClass = Address.class)
-  private List<Address> addresses;
+  private List<Address> addresses = Collections.<Address>emptyList();
 
   @Attribute(description = "A list of groups that the user belongs to, " +
       "either thorough direct membership, nested groups, or dynamically " +
@@ -198,27 +200,28 @@ public class UserResource extends BaseScimResource
       isRequired = false,
       returned = AttributeDefinition.Returned.DEFAULT,
       multiValueClass = Group.class)
-  private List<Group> groups;
+  private List<Group> groups = Collections.<Group>emptyList();
 
   @Attribute(description = "A list of entitlements for the User that " +
       "represent a thing the User has.",
       isRequired = false,
       returned = AttributeDefinition.Returned.DEFAULT,
       multiValueClass = Entitlement.class)
-  private List<Entitlement> entitlements;
+  private List<Entitlement> entitlements = Collections.<Entitlement>emptyList();
 
   @Attribute(description = "A list of roles for the User that " +
       "collectively represent who the User is; e.g., 'Student', 'Faculty'.",
       isRequired = false,
       returned = AttributeDefinition.Returned.DEFAULT,
       multiValueClass = Role.class)
-  private List<Role> roles;
+  private List<Role> roles = Collections.<Role>emptyList();
 
   @Attribute(description = "A list of certificates issued to the User.",
       isRequired = false,
       returned = AttributeDefinition.Returned.DEFAULT,
       multiValueClass = X509Certificate.class)
-  private List<X509Certificate> x509Certificates;
+  private List<X509Certificate> x509Certificates =
+      Collections.<X509Certificate>emptyList();
 
   /**
    * Retrieves the unique identifier for the User typically used by the user
@@ -528,7 +531,7 @@ public class UserResource extends BaseScimResource
    */
   public UserResource setEmails(final List<Email> emails)
   {
-    this.emails = emails;
+    this.emails = emails == null ? Collections.<Email>emptyList() : emails;
     return this;
   }
 
@@ -550,7 +553,8 @@ public class UserResource extends BaseScimResource
    */
   public UserResource setPhoneNumbers(final List<PhoneNumber> phoneNumbers)
   {
-    this.phoneNumbers = phoneNumbers;
+    this.phoneNumbers = phoneNumbers == null ?
+        Collections.<PhoneNumber>emptyList() : phoneNumbers;
     return this;
   }
 
@@ -572,7 +576,8 @@ public class UserResource extends BaseScimResource
    */
   public UserResource setIms(final List<InstantMessagingAddress> ims)
   {
-    this.ims = ims;
+    this.ims = ims == null ?
+        Collections.<InstantMessagingAddress>emptyList() : ims;
     return this;
   }
 
@@ -594,7 +599,7 @@ public class UserResource extends BaseScimResource
    */
   public UserResource setPhotos(final List<Photo> photos)
   {
-    this.photos = photos;
+    this.photos = photos == null ? Collections.<Photo>emptyList() : photos;
     return this;
   }
 
@@ -616,7 +621,8 @@ public class UserResource extends BaseScimResource
    */
   public UserResource setAddresses(final List<Address> addresses)
   {
-    this.addresses = addresses;
+    this.addresses = addresses == null ?
+        Collections.<Address>emptyList() : addresses;
     return this;
   }
 
@@ -640,7 +646,7 @@ public class UserResource extends BaseScimResource
    */
   public UserResource setGroups(final List<Group> groups)
   {
-    this.groups = groups;
+    this.groups = groups == null ? Collections.<Group>emptyList() : groups;
     return this;
   }
 
@@ -664,7 +670,8 @@ public class UserResource extends BaseScimResource
    */
   public UserResource setEntitlements(final List<Entitlement> entitlements)
   {
-    this.entitlements = entitlements;
+    this.entitlements = entitlements == null ?
+        Collections.<Entitlement>emptyList() : entitlements;
     return this;
   }
 
@@ -688,7 +695,7 @@ public class UserResource extends BaseScimResource
    */
   public UserResource setRoles(final List<Role> roles)
   {
-    this.roles = roles;
+    this.roles = roles == null ? Collections.<Role>emptyList() : roles;
     return this;
   }
 
@@ -711,7 +718,8 @@ public class UserResource extends BaseScimResource
   public UserResource setX509Certificates(
       final List<X509Certificate> x509Certificates)
   {
-    this.x509Certificates = x509Certificates;
+    this.x509Certificates = x509Certificates == null ?
+        Collections.<X509Certificate>emptyList() : x509Certificates;
     return this;
   }
 

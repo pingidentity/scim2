@@ -126,7 +126,8 @@ public class ServiceProviderConfigResource extends BaseScimResource
     this.changePassword = changePassword;
     this.sort = sort;
     this.etag = etag;
-    this.authenticationSchemes = authenticationSchemes == null ? null :
+    this.authenticationSchemes = authenticationSchemes == null ?
+        Collections.<AuthenticationScheme>emptyList() :
         Collections.unmodifiableList(authenticationSchemes);
   }
 

@@ -818,20 +818,20 @@ public class AttributeDefinition
     this.name = name;
     this.type = type;
     this.subAttributes = subAttributes == null ?
-        null : Collections.unmodifiableList(
+        Collections.<AttributeDefinition>emptyList() : Collections.unmodifiableList(
         new ArrayList<AttributeDefinition>(subAttributes));
     this.multiValued = multiValued;
     this.description = description;
     this.required = required;
     this.canonicalValues = canonicalValues == null ?
-        null : Collections.unmodifiableList(
+        Collections.<String>emptyList() : Collections.unmodifiableList(
         new ArrayList<String>(canonicalValues));
     this.caseExact = caseExact;
     this.mutability = mutability;
     this.returned = returned;
     this.uniqueness = uniqueness;
     this.referenceTypes = referenceTypes == null ?
-        null : Collections.unmodifiableList(
+        Collections.<String>emptyList() : Collections.unmodifiableList(
         new ArrayList<String>(referenceTypes));
   }
 
