@@ -134,7 +134,7 @@ public class ResourceTypeResource extends BaseScimResource
     this.endpoint = endpoint;
     this.schema = schema;
     this.schemaExtensions = schemaExtensions == null ?
-        Collections.<SchemaExtension>emptyList() : Collections.unmodifiableList(
+        null : Collections.unmodifiableList(
         new ArrayList<SchemaExtension>(schemaExtensions));
   }
 

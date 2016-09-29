@@ -1074,7 +1074,7 @@ public class SchemaChecker
         break;
       case STRING:
         // Check for canonical values
-        if (!attribute.getCanonicalValues().isEmpty())
+        if (attribute.getCanonicalValues() != null)
         {
           boolean found = false;
           for (String canonicalValue : attribute.getCanonicalValues())

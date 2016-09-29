@@ -82,7 +82,7 @@ public abstract class Filter
    */
   public List<Filter> getCombinedFilters()
   {
-    return Collections.<Filter>emptyList();
+    return null;
   }
 
   /**

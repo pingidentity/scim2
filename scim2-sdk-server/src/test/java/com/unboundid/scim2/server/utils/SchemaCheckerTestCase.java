@@ -994,7 +994,7 @@ public class SchemaCheckerTestCase
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
     }
-    if((!attributeDefinition.getSubAttributes().isEmpty()) &&
+    if(attributeDefinition.getSubAttributes() != null &&
         attributeDefinition.getSubAttributes().iterator().next().isRequired())
     {
       results = checker.checkModify(Collections.singleton(

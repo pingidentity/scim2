@@ -71,9 +71,8 @@ public class SchemaResource extends BaseScimResource
     super(id);
     this.name = name;
     this.description = description;
-    this.attributes = attributes == null ?
-        Collections.<AttributeDefinition>emptyList() :
-        Collections.unmodifiableList(new ArrayList<AttributeDefinition>(attributes));
+    this.attributes = Collections.unmodifiableList(
+        new ArrayList<AttributeDefinition>(attributes));
   }
 
   /**

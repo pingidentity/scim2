@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -103,7 +102,7 @@ public class SchemaGenerationTest
         checkAttribute(attribute, "description:stringField",
             Required.REQUIRED, CaseExact.CASE_EXACT, Multivalued.DEFAULT,
             AttributeDefinition.Type.STRING, null,
-            null, null, Collections.emptySet(), Collections.emptySet());
+            null, null, null, null);
       }
       else if(attribute.getName().equals("booleanObjectField" ))
       {
@@ -114,7 +113,7 @@ public class SchemaGenerationTest
             Required.NOT_REQUIRED, CaseExact.CASE_EXACT,
             Multivalued.DEFAULT, AttributeDefinition.Type.BOOLEAN,
             AttributeDefinition.Returned.REQUEST,
-            null, null, Collections.emptySet(), Collections.emptySet());
+            null, null, null, null);
       }
       else if(attribute.getName().equals("booleanField" ))
       {
@@ -126,7 +125,7 @@ public class SchemaGenerationTest
             Required.NOT_REQUIRED, CaseExact.NOT_CASE_EXACT,
             Multivalued.DEFAULT, AttributeDefinition.Type.BOOLEAN,
             AttributeDefinition.Returned.NEVER,
-            null, null, Collections.emptySet(), Collections.emptySet());
+            null, null, null, null);
       }
       else if(attribute.getName().equals("integerObjectField" ))
       {
@@ -138,7 +137,7 @@ public class SchemaGenerationTest
             Required.REQUIRED, CaseExact.NOT_CASE_EXACT,
             Multivalued.DEFAULT, AttributeDefinition.Type.INTEGER,
             AttributeDefinition.Returned.DEFAULT,
-            null, null, Collections.emptySet(), Collections.emptySet());
+            null, null, null, null);
       }
       else if(attribute.getName().equals("integerField" ))
       {
@@ -149,7 +148,7 @@ public class SchemaGenerationTest
             Required.REQUIRED, CaseExact.CASE_EXACT,
             Multivalued.DEFAULT, AttributeDefinition.Type.INTEGER,
             AttributeDefinition.Returned.ALWAYS,
-            null, null, Collections.emptySet(), Collections.emptySet());
+            null, null, null, null);
       }
       else if(attribute.getName().equals("mutabilityReadWrite" ))
       {
@@ -158,8 +157,7 @@ public class SchemaGenerationTest
         checkAttribute(attribute, "description:mutabilityReadWrite",
             Required.DEFAULT, CaseExact.DEFAULT,
             Multivalued.DEFAULT, AttributeDefinition.Type.STRING,
-            null, AttributeDefinition.Mutability.READ_WRITE, null,
-            Collections.emptySet(), Collections.emptySet());
+            null, AttributeDefinition.Mutability.READ_WRITE, null, null, null);
       }
       else if(attribute.getName().equals("mutabilityReadOnly" ))
       {
@@ -168,8 +166,7 @@ public class SchemaGenerationTest
         checkAttribute(attribute, "description:mutabilityReadOnly",
             Required.DEFAULT, CaseExact.DEFAULT,
             Multivalued.DEFAULT, AttributeDefinition.Type.STRING,
-            null, AttributeDefinition.Mutability.READ_ONLY, null,
-            Collections.emptySet(), Collections.emptySet());
+            null, AttributeDefinition.Mutability.READ_ONLY, null, null, null);
       }
       else if(attribute.getName().equals("mutabilityWriteOnly" ))
       {
@@ -179,7 +176,7 @@ public class SchemaGenerationTest
             Required.DEFAULT, CaseExact.DEFAULT, Multivalued.DEFAULT,
             AttributeDefinition.Type.STRING, null,
             AttributeDefinition.Mutability.WRITE_ONLY,
-            null, Collections.emptySet(), Collections.emptySet());
+            null, null, null);
       }
       else if(attribute.getName().equals("mutabilityImmutable" ))
       {
@@ -189,7 +186,7 @@ public class SchemaGenerationTest
             Required.DEFAULT, CaseExact.DEFAULT, Multivalued.DEFAULT,
             AttributeDefinition.Type.STRING, null,
             AttributeDefinition.Mutability.IMMUTABLE,
-            null, Collections.emptySet(), Collections.emptySet());
+            null, null, null);
       }
 
       markAttributeFound(expectedAttributes, attribute);
@@ -245,7 +242,7 @@ public class SchemaGenerationTest
     checkAttribute(attribute, "description:complexObject",
         Required.DEFAULT, CaseExact.DEFAULT, Multivalued.DEFAULT,
         AttributeDefinition.Type.COMPLEX, null,
-        null, null, Collections.emptySet(), Collections.emptySet());
+        null, null, null, null);
 
     Collection<AttributeDefinition> subAttributes =
         attribute.getSubAttributes();
@@ -261,7 +258,7 @@ public class SchemaGenerationTest
         checkAttribute(subAttribute, "description:stringField_3a",
             Required.DEFAULT, CaseExact.DEFAULT, Multivalued.DEFAULT,
             AttributeDefinition.Type.STRING, null,
-            null, null, Collections.emptySet(), Collections.emptySet());
+            null, null, null, null);
       }
 
 
@@ -279,7 +276,7 @@ public class SchemaGenerationTest
     checkAttribute(attribute, "description:multiValuedString",
         Required.DEFAULT, CaseExact.DEFAULT, Multivalued.MULTIVALUED,
         AttributeDefinition.Type.COMPLEX, null, null, null,
-        new HashSet(makeModifiableList("one", "two", "three")), Collections.emptySet());
+        new HashSet(makeModifiableList("one", "two", "three")), null);
 
     Collection<AttributeDefinition> subAttributes =
         attribute.getSubAttributes();

@@ -41,7 +41,6 @@ import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -511,7 +510,7 @@ public abstract class PatchOperation
   public <T> List<T> getValues(final Class<T> cls)
       throws JsonProcessingException, ScimException
   {
-    return Collections.<T>emptyList();
+    return null;
   }
 
   /**
