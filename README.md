@@ -48,54 +48,60 @@ The primary point of entry for a client is the `ScimService` class, which repres
 Other classes provide facilities for selecting attributes by path, building query filters, and working with JSON documents. SCIM resources returned from a service provider can either be represented as POJOs or using an API based on the [Jackson](https://github.com/FasterXML/jackson-docs) tree model.
 
 ```java
+import com.unboundid.scim2.client.ScimService;
+import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.types.UserResource;
+import com.unboundid.scim2.common.types.Name;
+import com.unboundid.scim2.common.types.Email;
+import com.unboundid.scim2.common.GenericScimResource;
+import com.unboundid.scim2.common.messages.ListResponse;
+import com.unboundid.scim2.common.filters.Filter;
+
 // Create a ScimService
-Client client = ClientBuilder.newClient();
+Client client = ClientBuilder.newClient().register(OAuth2ClientSupport.feature("..bearerToken.."));;
 WebTarget target = client.target("https://example.com/scim/v2");
 ScimService scimService = new ScimService(target);
 
 // Create a user
-UserResource user1 = new UserResource();
-user1.setUserName("babs");
-user1.setPassword("secret");
+UserResource user = new UserResource();
+user.setUserName("babs");
+user.setPassword("secret");
 Name name = new Name()
   .setGivenName("Barbara")
   .setFamilyName("Jensen");
-user1.setName(name);
+user.setName(name);
 Email email = new Email()
   .setType("home")
   .setPrimary(true)
   .setValue("babs@example.com");
-user1.setEmails(Collections.singletonList(email));
-user1 = scimService.create("Users", user1);
+user.setEmails(Collections.singletonList(email));
+user = scimService.create("Users", user);
 
-// Retrieve a user as a UserResource and
-// replace with a modified instance using PUT
-UserResource user2 =
-  scimClient.retrieve(ScimService.ME_URI, UserResource.class);
-user2.setNickName("Babs");
-user2 = scimService.replace(user);
+// Retrieve the user as a UserResource and replace with a modified instance using PUT
+user = scimService.retrieve("Users", user.getId(), UserResource.class);
+user.setDisplayName("Babs");
+user = scimService.replace(user);
 
-// Retrieve a user as a GenericScimResource and
-// replace with a modified instance using PUT
-GenericScimResource user3 =
-  scimService.retrieve(ScimService.ME_URI, GenericScimResource.class);
-user3.replaceValue("nickName", TextNode.valueOf("Babs"));
-user3 = scimService.replaceRequest(user3);
+// Retrieve the user as a GenericScimResource and replace with a modified instance using PUT
+GenericScimResource genericUser =
+    scimService.retrieve("Users", user.getId(), GenericScimResource.class);
+genericUser.replaceValue("displayName", TextNode.valueOf("Babs Jensen"));
+genericUser = scimService.replaceRequest(genericUser).invoke();
 
-// Perform a partial modification of a user using PATCH
-scimService.modifyRequest(ScimService.ME_URI)
-           .replaceValue("nickName", "Babs")
+// Perform a partial modification of the user using PATCH
+scimService.modifyRequest("Users", user.getId())
+           .replaceValue("displayName", "Babs")
            .invoke(GenericScimResource.class);
 
 // Perform a password change using PATCH
-scimService.modifyRequest(ScimService.ME_URI)
+scimService.modifyRequest("Users", user.getId())
            .replaceValue("password", "new-password")
            .invoke(GenericScimResource.class);
 
-// Search for users
+// Search for users with the same last name as our user
 ListResponse<UserResource> searchResponse =
   scimService.searchRequest("Users")
-        .filter(Filter.eq("name.familyName", "Jensen").toString())
+        .filter(Filter.eq("name.familyName", user.getName().getFamilyName()).toString())
         .page(1, 5)
         .attributes("name")
         .invoke(UserResource.class);
