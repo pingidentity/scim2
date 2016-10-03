@@ -22,6 +22,8 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
+import java.math.BigDecimal;
+
 /**
  * Test class.
  */
@@ -68,6 +70,10 @@ public class TestObject2 extends BaseScimResource
   @Attribute(description = "description:mutabilityReadOnly",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String mutabilityReadOnly;
+
+  @Attribute(description = "description:bigDecimal",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private BigDecimal bigDecimal;
 
   /**
    * Getter for attribute in test class.
@@ -202,5 +208,23 @@ public class TestObject2 extends BaseScimResource
   public void setMutabilityReadWrite(String mutabilityReadWrite)
   {
     this.mutabilityReadWrite = mutabilityReadWrite;
+  }
+
+  /**
+   * Getter for attribute in test class.
+   * @return attribute value.
+   */
+  public BigDecimal getBigDecimal()
+  {
+    return bigDecimal;
+  }
+
+  /**
+   * Setter for attribute in test class.
+   * @param bigDecimal attribute value.
+   */
+  public void setBigDecimal(BigDecimal bigDecimal)
+  {
+    this.bigDecimal = bigDecimal;
   }
 }

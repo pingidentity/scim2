@@ -91,7 +91,7 @@ public class SchemaGenerationTest
     List<String> expectedAttributes = makeModifiableList("stringField",
         "booleanObjectField", "booleanField", "integerObjectField",
         "integerField", "mutabilityReadWrite", "mutabilityReadOnly",
-        "mutabilityWriteOnly", "mutabilityImmutable");
+        "mutabilityWriteOnly", "mutabilityImmutable", "bigDecimal");
 
     for(AttributeDefinition attribute : schemaDefinition.getAttributes())
     {
@@ -186,6 +186,16 @@ public class SchemaGenerationTest
             Required.DEFAULT, CaseExact.DEFAULT, Multivalued.DEFAULT,
             AttributeDefinition.Type.STRING, null,
             AttributeDefinition.Mutability.IMMUTABLE,
+            null, null, null);
+      }
+      else if(attribute.getName().equals("bigDecimal"))
+      {
+        //  @Attribute(description = "description:bigDecimal",
+        //      mutability = AttributeDefinition.Mutability.READ_ONLY)
+        checkAttribute(attribute, "description:bigDecimal",
+            Required.DEFAULT, CaseExact.DEFAULT, Multivalued.DEFAULT,
+            AttributeDefinition.Type.DECIMAL, null,
+            AttributeDefinition.Mutability.READ_ONLY,
             null, null, null);
       }
 
@@ -360,9 +370,6 @@ public class SchemaGenerationTest
     Assert.assertEquals(attribute.getCanonicalValues(), canonicalValues);
     Assert.assertEquals(attribute.getReferenceTypes(), referenceType);
     Assert.assertEquals(attribute.getType(), type);
-
-    attribute.getReferenceTypes();
-    attribute.getType();
   }
 
   private void checkAllAttributesFound(List<String> expectedAttributes)
