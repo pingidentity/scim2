@@ -15,7 +15,7 @@ The SCIM 2 SDK consists of the following components:
 | `scim2-sdk-common` | Shared model, exception, and utility classes. | Included as a transitive dependency of all of the above. |
 
 # How to get it
-The SCIM 2 SDK is available from Maven Central and can be included in your product like any other Maven dependency.
+The SCIM 2 SDK is available from Maven Central and can be included in your product like any other Maven dependency. Check Maven Central for the latest available version of SCIM 2 SDK dependencies.
 
 For general-purpose clients:
 
