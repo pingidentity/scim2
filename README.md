@@ -1,3 +1,4 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.unboundid.product.scim2/scim2-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.unboundid.product.scim2/scim2-parent)
 [![Javadocs](http://javadoc.io/badge/com.unboundid.product.scim2/scim2-parent.svg)](http://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent)
 # SCIM 2 SDK
  [SCIM](http://www.simplecloud.info), or _System for Cross-domain Identity Management_, is an IETF standard that defines an extensible schema mechanism and REST API for **managing users and other identity data**. SCIM is used by a variety of vendors — including Facebook, Salesforce, Microsoft, Cisco, Sailpoint, and UnboundID — for a variety of purposes, including user provisioning, directory services, attribute exchange, and more.
@@ -22,7 +23,7 @@ For general-purpose clients:
 <dependency>
   <groupId>com.unboundid.product.scim2</groupId>
   <artifactId>scim2-sdk-client</artifactId>
-  <version>2.0.4</version>
+  <version>VERSION</version>
 </dependency>
 ```
 
@@ -32,7 +33,7 @@ For clients using UnboundID-specific features:
 <dependency>
   <groupId>com.unboundid.product.scim2</groupId>
   <artifactId>scim2-ubid-extensions</artifactId>
-  <version>2.0.4</version>
+  <version>VERSION</version>
 </dependency>
 ```
 
