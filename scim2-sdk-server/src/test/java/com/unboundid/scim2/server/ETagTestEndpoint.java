@@ -18,6 +18,7 @@
 package com.unboundid.scim2.server;
 
 import com.unboundid.scim2.common.GenericScimResource;
+import com.unboundid.scim2.common.exceptions.NotModifiedException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 import javax.ws.rs.DELETE;
@@ -66,6 +67,19 @@ public class ETagTestEndpoint
       @PathParam("id") String id) throws ScimException
   {
     return getEtagDocument(headers);
+  }
+
+
+  /**
+   * Test endpoint method.
+   * @return nothing.  Always throws exception.
+   * @throws ScimException NotModifiedException is thrown.
+   */
+  @GET
+  @Path("exception/{noneMatch}")
+  public GenericScimResource etagGetNoneMatchExceptionTest() throws ScimException
+  {
+    throw new NotModifiedException("Test Case None Match Exception");
   }
 
 

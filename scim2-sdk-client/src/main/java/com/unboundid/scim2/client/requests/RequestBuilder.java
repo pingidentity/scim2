@@ -125,8 +125,11 @@ public class RequestBuilder<T extends RequestBuilder>
     try
     {
       ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
-      ScimException exception =
-          ScimException.createException(errorResponse, null);
+      // If are able to read an error response, use it to build the exception.
+      // If not, use the http status code to determine the exception.
+      ScimException exception = (errorResponse == null) ?
+        ScimException.createException(response.getStatus(), null) :
+        ScimException.createException(errorResponse, null);
       response.close();
       return exception;
     }

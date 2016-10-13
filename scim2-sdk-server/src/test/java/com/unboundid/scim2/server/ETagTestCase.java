@@ -20,6 +20,7 @@ package com.unboundid.scim2.server;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.common.GenericScimResource;
+import com.unboundid.scim2.common.exceptions.NotModifiedException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
@@ -167,6 +168,27 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
     verifyEtagHeaders(scimService.retrieve(gsr), false, false);
 
   }
+
+  /**
+   * Tests that etags work properly for retrievals when a not modified
+   * exception is thrown.
+   * @throws ScimException in case of error.
+   */
+  @Test(expectedExceptions = NotModifiedException.class)
+  public void testIfNoneMatch_retrieveException() throws ScimException
+  {
+    final ScimService scimService = new ScimService(target());
+    GenericScimResource gsr = new GenericScimResource();
+    Meta meta = new Meta();
+    meta.setLocation(UriBuilder.fromUri(ETAG_URI).path("/123").build());
+    meta.setVersion("123");
+    gsr.setMeta(meta);
+
+    scimService.retrieveRequest(
+      UriBuilder.fromUri(ETAG_URI).path("/exception/notModified").build()).
+        ifNoneMatch("123").invoke(GenericScimResource.class);
+  }
+
 
   /**
    * Tests that etags work properly for modify.
