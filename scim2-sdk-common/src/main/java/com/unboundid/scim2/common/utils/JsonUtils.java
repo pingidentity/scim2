@@ -286,6 +286,14 @@ public class JsonUtils
               }
             }
           }
+          // exception: this allows filters on singular values if
+          // and only if the filter uses the "value" attribute to
+          // reference the value of the value node.
+          else if (FilterEvaluator.evaluate(valueFilter, node))
+          {
+            matchesFound = true;
+            updateNode(parent, field, value);
+          }
           if(!matchesFound)
           {
             throw BadRequestException.noTarget("Attribute " +
