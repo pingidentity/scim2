@@ -24,8 +24,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import static com.unboundid.scim2.client.ScimService.MEDIA_TYPE_SCIM_TYPE;
-
 /**
  * A builder for SCIM create requests.
  */
@@ -70,7 +68,7 @@ public final class CreateRequestBuilder<T extends ScimResource>
   public <C> C invoke(final Class<C> cls) throws ScimException
   {
     Response response = buildRequest().post(
-        Entity.entity(resource, MEDIA_TYPE_SCIM_TYPE));
+        Entity.entity(resource, getContentType()));
     try
     {
       if(response.getStatusInfo().getFamily() ==

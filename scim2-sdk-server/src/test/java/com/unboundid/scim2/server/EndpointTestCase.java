@@ -128,6 +128,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // Standard endpoints
     config.register(ResourceTypesEndpoint.class);
+    config.register(CustomContentEndpoint.class);
     config.register(SchemasEndpoint.class);
     config.register(TestServiceProviderConfigEndpoint.class);
 
@@ -316,7 +317,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     final ListResponse<ResourceTypeResource> returnedResourceTypes =
         new ScimService(target()).getResourceTypes();
 
-    assertEquals(returnedResourceTypes.getTotalResults(), 2);
+    assertEquals(returnedResourceTypes.getTotalResults(), 3);
     assertTrue(contains(returnedResourceTypes, resourceType));
     assertTrue(contains(returnedResourceTypes, singletonResourceType));
 
@@ -1123,6 +1124,73 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     }
   }
 
+
+
+  /**
+   * Test custom content-type.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testCustomContentType() throws ScimException
+  {
+    ScimService scimService = new ScimService(target());
+
+    // Create a new user.
+    UserResource newUser = new UserResource().setUserName("putUser");
+    newUser.setDisplayName("removeMe");
+    UserResource createdUser = scimService.createRequest("CustomContent", newUser).
+        contentType(MediaType.APPLICATION_JSON).invoke();
+    Assert.assertNotNull(createdUser);
+
+    UserResource replacedUser = scimService.replaceRequest(createdUser).
+        contentType(MediaType.APPLICATION_JSON).invoke();
+    Assert.assertNotNull(replacedUser);
+
+    scimService.modifyRequest(replacedUser).removeValues("displayName").
+        contentType(MediaType.APPLICATION_JSON).invoke();
+
+    String returnString = new String(scimService.retrieveRequest(
+        "CustomContent", "123").accept(MediaType.APPLICATION_OCTET_STREAM).
+        invoke(byte[].class));
+    Assert.assertNotNull(returnString);
+  }
+
+
+  /**
+   * Test accept(null) throws proper exception.
+   *
+   * @throws ScimException if an error occurs.
+   */
+  @Test
+  public void testAcceptExceptions() throws ScimException
+  {
+    ScimService scimService = new ScimService(target());
+
+    // Create a new user.
+    try
+    {
+      String returnString = new String(scimService.retrieveRequest(
+          "CustomContent", "123").accept(null).
+          invoke(byte[].class));
+      Assert.fail("Expected illegal argument exception");
+    }
+    catch(IllegalArgumentException ex)
+    {
+      // Expected.  Ignore.
+    }
+    try
+    {
+      String returnString = new String(scimService.retrieveRequest(
+          "CustomContent", "123").accept().
+          invoke(byte[].class));
+      Assert.fail("Expected illegal argument exception");
+    }
+    catch(IllegalArgumentException ex)
+    {
+      // Expected.  Ignore.
+    }
+  }
 
 
   private void setMeta(Class<?> resourceClass, ScimResource scimResource)

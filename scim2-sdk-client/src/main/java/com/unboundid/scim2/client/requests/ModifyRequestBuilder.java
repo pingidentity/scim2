@@ -35,8 +35,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.unboundid.scim2.client.ScimService.MEDIA_TYPE_SCIM_TYPE;
-
 /**
  * A builder for SCIM modify requests.
  */
@@ -136,7 +134,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     {
       PatchRequest patchRequest = new PatchRequest(operations);
       Response response = buildRequest().method("PATCH",
-          Entity.entity(patchRequest, MEDIA_TYPE_SCIM_TYPE));
+          Entity.entity(patchRequest, getContentType()));
       try
       {
         if (response.getStatusInfo().getFamily() ==
@@ -197,7 +195,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     {
       PatchRequest patchRequest = new PatchRequest(operations);
       Response response = buildRequest().method("PATCH",
-          Entity.entity(patchRequest, MEDIA_TYPE_SCIM_TYPE));
+          Entity.entity(patchRequest, getContentType()));
       try
       {
         if(response.getStatusInfo().getFamily() ==

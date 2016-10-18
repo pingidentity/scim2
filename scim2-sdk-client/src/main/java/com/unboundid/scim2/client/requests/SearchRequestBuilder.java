@@ -44,8 +44,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.unboundid.scim2.client.ScimService.MEDIA_TYPE_SCIM_TYPE;
-import static com.unboundid.scim2.common.utils.ApiConstants.*;
+import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_FILTER;
+import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_PAGE_SIZE;
+import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_PAGE_START_INDEX;
+import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_SORT_BY;
+import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_SORT_ORDER;
 
 /**
  * A builder for SCIM search requests.
@@ -248,7 +251,7 @@ public final class SearchRequestBuilder
                                                           ", "));
       }
       response = builder.post(Entity.entity(searchRequest,
-                                            MEDIA_TYPE_SCIM_TYPE));
+                                            getContentType()));
     }
     else
     {

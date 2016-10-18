@@ -26,8 +26,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
-import static com.unboundid.scim2.client.ScimService.MEDIA_TYPE_SCIM_TYPE;
-
 /**
  * A builder for SCIM replace requests.
  */
@@ -98,7 +96,7 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
   public <C> C invoke(final Class<C> cls) throws ScimException
   {
     Response response = buildRequest().put(
-        Entity.entity(resource, MEDIA_TYPE_SCIM_TYPE));
+        Entity.entity(resource, getContentType()));
     try
     {
       if(response.getStatusInfo().getFamily() ==
