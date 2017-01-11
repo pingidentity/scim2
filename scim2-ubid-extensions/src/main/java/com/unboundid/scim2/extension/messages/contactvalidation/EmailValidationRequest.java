@@ -43,19 +43,6 @@ public class EmailValidationRequest extends BaseScimResource
       returned = AttributeDefinition.Returned.ALWAYS)
   private String attributeValue;
 
-  @Attribute(description = "The subject of the email message when sending " +
-      "the verification code.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE,
-      isRequired = true,
-      returned = AttributeDefinition.Returned.NEVER)
-  private String messageSubject;
-
-  @Attribute(description = "The body of the email message when sending " +
-      "the verification code.",
-      mutability = AttributeDefinition.Mutability.IMMUTABLE,
-      returned = AttributeDefinition.Returned.NEVER)
-  private String messageText;
-
   @Attribute(description = "The attribute path containing the email address.",
       mutability = AttributeDefinition.Mutability.WRITE_ONLY,
       returned = AttributeDefinition.Returned.NEVER)
@@ -204,49 +191,6 @@ public class EmailValidationRequest extends BaseScimResource
    {
      this.codeSent = codeSent;
    }
-
-
-  /**
-   * Retrieve the message subject.
-   * @return  The message subject.
-   */
-  public String getMessageSubject()
-  {
-    return messageSubject;
-  }
-
-
-
-  /**
-   * Specify the message subject.
-   * @param messageSubject  The message subject.
-   */
-  public void setMessageSubject(final String messageSubject)
-  {
-    this.messageSubject = messageSubject;
-  }
-
-
-
-  /**
-   * Retrieve the message text.
-   * @return  The message text.
-   */
-  public String getMessageText()
-  {
-    return messageText;
-  }
-
-
-
-  /**
-   * Specify the message text.
-   * @param messageText  The message text.
-   */
-  public void setMessageText(final String messageText)
-  {
-    this.messageText = messageText;
-  }
 
 
 

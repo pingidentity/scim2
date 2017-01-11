@@ -44,11 +44,10 @@ public class TelephonyValidationRequest extends BaseScimResource
       returned = AttributeDefinition.Returned.ALWAYS)
   private String attributeValue;
 
-  @Attribute(description = "The message used to send the verification code.",
+  @Attribute(description = "The language and locale of the message.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE,
-      isRequired = true,
       returned = AttributeDefinition.Returned.NEVER)
-  private TelephonyDeliveredCodeMessage message;
+  private String language;
 
   @Attribute(description = "The messaging provider to use when sending the " +
       "verification code.",
@@ -207,26 +206,25 @@ public class TelephonyValidationRequest extends BaseScimResource
   }
 
 
-
   /**
-   * Retrieve the message to send.
-   * @return  The message to send.
+   * Retrieve the language and locale of the message.
+   * @return  The language and locale of the message.
    */
-  public TelephonyDeliveredCodeMessage getMessage()
+  public String getLanguage()
   {
-    return message;
+    return language;
   }
 
 
-
   /**
-   * Specify the message to send.
-   * @param message  The message to send.
+   * Specify the language and locale of the message.
+   * @param language  The language and locale of the message.
    */
-  public void setMessage(final TelephonyDeliveredCodeMessage message)
+  public void setLanguage(final String language)
   {
-    this.message = message;
+    this.language = language;
   }
+
 
   /**
    * Retrieve the selected messaging provider.
