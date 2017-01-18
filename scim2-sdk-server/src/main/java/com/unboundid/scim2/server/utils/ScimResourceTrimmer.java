@@ -110,13 +110,16 @@ public class ScimResourceTrimmer extends ResourceTrimmer
       return true;
     }
 
-    // See if a sub-attribute of the given path is included in the list
-    // ie. include name if name.givenName is in the list.
-    for (Path p : paths)
+    if (!excluded)
     {
-      if(p.size() > path.size() && path.equals(p.subPath(path.size())))
+      // See if a sub-attribute of the given path is included in the list
+      // ie. include name if name.givenName is in the list.
+      for (Path p : paths)
       {
-        return true;
+        if (p.size() > path.size() && path.equals(p.subPath(path.size())))
+        {
+          return true;
+        }
       }
     }
 

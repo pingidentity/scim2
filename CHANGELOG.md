@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## vx.x.x - 20xx-xx-xx
 Added ability to change accept and content-type headers in the SCIM client.
+Fixed the handling of sub-attribute paths in the excludedAttributes parameter.
+
 
 ## v2.0.4 - 2016-09-26
 Changed unboundid URNs to pingidentity.
