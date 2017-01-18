@@ -208,6 +208,7 @@ public class ResourcePreparerTestCase
             new Object[] { null, "never" },
             new Object[] { null, "urn:test:default" },
             new Object[] { null, "reQuest" },
+            new Object[] { null, "default.DEFAULT"},
             new Object[] { "Always", null },
             new Object[] { "neveR", null },
             new Object[] { "urn:test:DEFAULT", null },
@@ -276,7 +277,18 @@ public class ResourcePreparerTestCase
     }
     else
     {
-      assertFalse(prepared.getObjectNode().has("default"));
+      if (excludedAttributes != null && excludedAttributes.equalsIgnoreCase("default.default"))
+      {
+        // default.default should be excluded but other subAttributes should be present
+        assertTrue(prepared.getObjectNode().has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+        assertTrue(prepared.getObjectNode().get("default").has("always"));
+      }
+      else
+      {
+        assertFalse(prepared.getObjectNode().has("default"));
+      }
     }
 
     if(attributes != null && attributes.equalsIgnoreCase("request"))
@@ -368,8 +380,20 @@ public class ResourcePreparerTestCase
     }
     else
     {
-      assertFalse(prepared.getObjectNode().has("default"));
+      if (excludedAttributes != null && excludedAttributes.equalsIgnoreCase("default.default"))
+      {
+        // default.default should be excluded but other subAttributes should be present
+        assertTrue(prepared.getObjectNode().has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+        assertTrue(prepared.getObjectNode().get("default").has("always"));
+      }
+      else
+      {
+        assertFalse(prepared.getObjectNode().has("default"));
+      }
     }
+
     if(attributes != null && attributes.equalsIgnoreCase("request"))
     {
       assertTrue(prepared.getObjectNode().has("request"));
@@ -411,7 +435,18 @@ public class ResourcePreparerTestCase
     }
     else
     {
-      assertFalse(prepared.getObjectNode().has("default"));
+      if (excludedAttributes != null && excludedAttributes.equalsIgnoreCase("default.default"))
+      {
+        // default.default should be excluded but other subAttributes should be present
+        assertTrue(prepared.getObjectNode().has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+        assertTrue(prepared.getObjectNode().get("default").has("always"));
+      }
+      else
+      {
+        assertFalse(prepared.getObjectNode().has("default"));
+      }
     }
     assertTrue(prepared.getObjectNode().has("request"));
   }
@@ -464,7 +499,18 @@ public class ResourcePreparerTestCase
     }
     else
     {
-      assertFalse(prepared.getObjectNode().has("default"));
+      if (excludedAttributes != null && excludedAttributes.equalsIgnoreCase("default.default"))
+      {
+        // default.default should be excluded but other subAttributes should be present
+        assertTrue(prepared.getObjectNode().has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+        assertTrue(prepared.getObjectNode().get("default").has("always"));
+      }
+      else
+      {
+        assertFalse(prepared.getObjectNode().has("default"));
+      }
     }
     if(attributes != null && attributes.equalsIgnoreCase("request"))
     {
@@ -507,7 +553,18 @@ public class ResourcePreparerTestCase
     }
     else
     {
-      assertFalse(prepared.getObjectNode().has("default"));
+      if (excludedAttributes != null && excludedAttributes.equalsIgnoreCase("default.default"))
+      {
+        // default.default should be excluded but other subAttributes should be present
+        assertTrue(prepared.getObjectNode().has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+        assertTrue(prepared.getObjectNode().get("default").has("always"));
+      }
+      else
+        {
+        assertFalse(prepared.getObjectNode().has("default"));
+      }
     }
     assertTrue(prepared.getObjectNode().has("request"));
   }
@@ -562,7 +619,18 @@ public class ResourcePreparerTestCase
     }
     else
     {
-      assertFalse(prepared.getObjectNode().has("default"));
+      if (excludedAttributes != null && excludedAttributes.equalsIgnoreCase("default.default"))
+      {
+        // default.default should be excluded but other subAttributes should be present
+        assertTrue(prepared.getObjectNode().has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+        assertTrue(prepared.getObjectNode().get("default").has("always"));
+      }
+      else
+      {
+        assertFalse(prepared.getObjectNode().has("default"));
+      }
     }
     if(attributes != null && attributes.equalsIgnoreCase("request"))
     {
@@ -605,7 +673,18 @@ public class ResourcePreparerTestCase
     }
     else
     {
-      assertFalse(prepared.getObjectNode().has("default"));
+      if (excludedAttributes != null && excludedAttributes.equalsIgnoreCase("default.default"))
+      {
+        // default.default should be excluded but other subAttributes should be present
+        assertTrue(prepared.getObjectNode().has("default"));
+        assertFalse(prepared.getObjectNode().get("default").has("default"));
+        assertTrue(prepared.getObjectNode().get("default").has("notDeclared"));
+        assertTrue(prepared.getObjectNode().get("default").has("always"));
+      }
+      else
+      {
+        assertFalse(prepared.getObjectNode().has("default"));
+      }
     }
     assertTrue(prepared.getObjectNode().has("request"));
   }
