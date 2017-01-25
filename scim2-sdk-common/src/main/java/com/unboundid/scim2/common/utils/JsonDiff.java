@@ -196,12 +196,29 @@ public class JsonDiff
     else
     {
       // They are value nodes.
-      if (JsonUtils.compareTo(sourceNode, targetValueToAdd, null) != 0)
+      if (compareTo(path.withoutFilters(), sourceNode, targetValueToAdd) != 0)
       {
         // Just replace with the target value.
         targetToReplace.set(sourceKey, targetValueToReplace);
       }
     }
+  }
+
+
+  /**
+   * Compare the JSON value nodes at the specified path.
+   * @param path path
+   * @param sourceNode source node
+   * @param targetNode target node
+   * @return a negative integer, zero, or a positive integer as the
+   *         first argument is less than, equal to, or greater than the second.
+   */
+  protected int compareTo(
+      final Path path,
+      final JsonNode sourceNode,
+      final JsonNode targetNode)
+  {
+    return JsonUtils.compareTo(sourceNode, targetNode, null);
   }
 
   private void computeArrayNodeDiffs(final Path parentPath, final Path path,
