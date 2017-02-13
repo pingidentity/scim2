@@ -11,6 +11,8 @@ Fixed the handling of sub-attribute paths in the excludedAttributes parameter.
 
 PUT requests will now replace the value of a caseExact attribute whose only change is to case.
 
+Updated the EmailValidationRequest and TelephonyValidationRequest for compatibility with Data Governance Broker 6.0.1.0.
+
 
 ## v2.0.4 - 2016-09-26
 Changed unboundid URNs to pingidentity.
