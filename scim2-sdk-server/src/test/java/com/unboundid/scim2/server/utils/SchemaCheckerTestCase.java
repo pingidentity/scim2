@@ -1061,6 +1061,12 @@ public class SchemaCheckerTestCase
     assertTrue(containsIssueWith(results.getPathIssues(),
         "is undefined"));
 
+    results = checker.checkSearch(Filter.fromString("undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 1,
+        results.getFilterIssues().toString());
+    assertTrue(containsIssueWith(results.getFilterIssues(),
+        "is undefined"));
+
     // Core sub-attribute is undefined
     ObjectNode coreSubUndefined = JsonUtils.getJsonNodeFactory().objectNode();
     coreSubUndefined.putArray("schemas").
@@ -1098,6 +1104,12 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = checker.checkSearch(Filter.fromString("name.undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 1,
+        results.getFilterIssues().toString());
+    assertTrue(containsIssueWith(results.getFilterIssues(),
         "is undefined"));
 
     // Extended attribute is undefined
@@ -1143,6 +1155,13 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = checker.checkSearch(Filter.fromString(
+        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 1,
+        results.getFilterIssues().toString());
+    assertTrue(containsIssueWith(results.getFilterIssues(),
         "is undefined"));
 
     // Extended sub-attribute is undefined
@@ -1192,6 +1211,13 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = checker.checkSearch(Filter.fromString(
+        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager.undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 1,
+        results.getFilterIssues().toString());
+    assertTrue(containsIssueWith(results.getFilterIssues(),
         "is undefined"));
   }
 
@@ -1282,6 +1308,18 @@ public class SchemaCheckerTestCase
     assertTrue(containsIssueWith(results.getPathIssues(),
         "is undefined"));
 
+    results = undefinedAttributesChecker.checkSearch(
+        Filter.fromString("undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 0,
+        results.getFilterIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkSearch(
+        Filter.fromString("undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 1,
+        results.getFilterIssues().toString());
+    assertTrue(containsIssueWith(results.getFilterIssues(),
+        "is undefined"));
+
     // Core sub-attribute is undefined
     ObjectNode coreSubUndefined = JsonUtils.getJsonNodeFactory().objectNode();
     coreSubUndefined.putArray("schemas").
@@ -1343,6 +1381,18 @@ public class SchemaCheckerTestCase
             Path.root().attribute("name").attribute("undefined"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
+
+    results = undefinedAttributesChecker.checkSearch(
+        Filter.fromString("name.undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 1,
+        results.getFilterIssues().toString());
+    assertTrue(containsIssueWith(results.getFilterIssues(),
+        "is undefined"));
+
+    results = undefinedSubAttributesChecker.checkSearch(
+        Filter.fromString("name.undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 0,
+        results.getFilterIssues().toString());
 
     // Extended attribute namespace is undefined
     ObjectNode extendedUndefined = JsonUtils.getJsonNodeFactory().objectNode();
@@ -1418,6 +1468,18 @@ public class SchemaCheckerTestCase
     assertTrue(containsIssueWith(results.getPathIssues(),
         "is undefined"));
 
+    results = undefinedAttributesChecker.checkSearch(
+        Filter.fromString("urn:undefined:undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 0,
+        results.getFilterIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkSearch(
+        Filter.fromString("urn:undefined:undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 1,
+        results.getFilterIssues().toString());
+    assertTrue(containsIssueWith(results.getFilterIssues(),
+        "is undefined"));
+
     // Extended attribute is undefined
     extendedUndefined = JsonUtils.getJsonNodeFactory().objectNode();
     extendedUndefined.putArray("schemas").
@@ -1488,6 +1550,18 @@ public class SchemaCheckerTestCase
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
+        "is undefined"));
+
+    results = undefinedAttributesChecker.checkSearch(Filter.fromString(
+        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 0,
+        results.getFilterIssues().toString());
+
+    results = undefinedSubAttributesChecker.checkSearch(Filter.fromString(
+        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 1,
+        results.getFilterIssues().toString());
+    assertTrue(containsIssueWith(results.getFilterIssues(),
         "is undefined"));
 
     // Extended sub-attribute is undefined
@@ -1565,6 +1639,20 @@ public class SchemaCheckerTestCase
             attribute("manager").attribute("undefined"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
+
+    results = undefinedAttributesChecker.checkSearch(
+        Filter.fromString(
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager.undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 1,
+        results.getFilterIssues().toString());
+    assertTrue(containsIssueWith(results.getFilterIssues(),
+        "is undefined"));
+
+    results = undefinedSubAttributesChecker.checkSearch(
+        Filter.fromString(
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager.undefined eq \"value\""));
+    assertEquals(results.getFilterIssues().size(), 0,
+        results.getFilterIssues().toString());
   }
 
   /**

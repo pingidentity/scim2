@@ -63,6 +63,12 @@ public class SchemaChecker
     private final List<String> syntaxIssues = new LinkedList<String>();
     private final List<String> mutabilityIssues = new LinkedList<String>();
     private final List<String> pathIssues = new LinkedList<String>();
+    private final List<String> filterIssues = new LinkedList<String>();
+
+    void addFilterIssue(final String issue)
+    {
+      filterIssues.add(issue);
+    }
 
     /**
      * Retrieve any syntax issues found during schema checking.
@@ -95,6 +101,16 @@ public class SchemaChecker
     }
 
     /**
+     * Retrieve any filter issues found during schema checking.
+     *
+     * @return filter issues found during schema checking.
+     */
+    public List<String> getFilterIssues()
+    {
+      return Collections.unmodifiableList(filterIssues);
+    }
+
+    /**
      * Throws an exception if there are schema validation errors.  The exception
      * will contain all of the syntax errors, mutability errors or path issues
      * (in that order of precedence).  The exception message will be the content
@@ -119,6 +135,11 @@ public class SchemaChecker
       if(pathIssues.size() > 0)
       {
         throw BadRequestException.invalidPath(getErrorString(pathIssues));
+      }
+
+      if(filterIssues.size() > 0)
+      {
+        throw BadRequestException.invalidFilter(getErrorString(filterIssues));
       }
     }
 
@@ -302,54 +323,29 @@ public class SchemaChecker
       prefix = "Patch op[" + i + "]: ";
       Path path = patchOp.getPath();
       JsonNode value = patchOp.getJsonNode();
-      AttributeDefinition attribute = path == null ? null :
-          resourceType.getAttributeDefinition(path);
       Filter valueFilter =
           path == null ? null :
               path.getElement(path.size() - 1).getValueFilter();
+      AttributeDefinition attribute = path == null ? null :
+          resourceType.getAttributeDefinition(path);
       if(path != null && attribute == null)
       {
         // Can't find the attribute definition for attribute in path.
-        if(path.size() > 1)
-        {
-          // This is a path to a sub-attribute. See if the parent attribute is
-          // defined.
-          if(resourceType.getAttributeDefinition(path.subPath(1)) == null)
-          {
-            // The parent attribute is also undefined.
-            if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
-            {
-              results.pathIssues.add(prefix +
-                  "Attribute " + path.getElement(0)+ " in path " +
-                  path.toString() + " is undefined");
-            }
-          }
-          else
-          {
-            // The parent attribute is defined but the sub-attribute is
-            // undefined.
-            if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_SUB_ATTRIBUTES))
-            {
-              results.pathIssues.add(prefix +
-                  "Sub-attribute " + path.getElement(1)+ " in path " +
-                  path.toString() + " is undefined");
-            }
-          }
-        }
-        else if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
-        {
-          results.pathIssues.add(prefix +
-              "Attribute " + path.getElement(0)+ " in path " +
-              path.toString() + " is undefined");
-        }
+        addMessageForUndefinedAttr(path, prefix, results.pathIssues);
         continue;
       }
-      if(valueFilter != null && !attribute.isMultiValued())
+      if(valueFilter != null && attribute != null && !attribute.isMultiValued())
       {
         results.pathIssues.add(prefix +
             "Attribute " + path.getElement(0)+ " in path " +
             path.toString() + " must not have a value selection filter " +
             "because it is not multi-valued");
+      }
+      if(valueFilter != null && attribute != null)
+      {
+        SchemaCheckFilterVisitor.checkValueFilter(
+            path.withoutFilters(), valueFilter, resourceType, this,
+            enabledOptions, results);
       }
       switch (patchOp.getOpType())
       {
@@ -526,6 +522,75 @@ public class SchemaChecker
     removeReadOnlyAttributes(commonAndCoreAttributes, copyNode);
     return copyNode;
   }
+
+
+
+  /**
+   * Check the provided filter against the schema.
+   *
+   * @param filter   The filter to check.
+   * @return Schema checking results.
+   * @throws ScimException If an error occurred while checking the schema.
+   */
+  public Results checkSearch(final Filter filter)
+      throws ScimException
+  {
+    Results results = new Results();
+    SchemaCheckFilterVisitor.checkFilter(
+        filter, resourceType, this, enabledOptions, results);
+    return results;
+  }
+
+
+
+  /**
+   * Generate an appropriate error message(s) for an undefined attribute, or
+   * no message if the enabled options allow for the undefined attribute.
+   *
+   * @param  path           The path referencing an undefined attribute.
+   * @param  messagePrefix  A prefix for the generated message, or empty string
+   *                        if no prefix is needed.
+   * @param  messages       The generated messages are to be added to this list.
+   */
+  void addMessageForUndefinedAttr(final Path path,
+                                  final String messagePrefix,
+                                  final List<String> messages)
+  {
+    if(path.size() > 1)
+    {
+      // This is a path to a sub-attribute. See if the parent attribute is
+      // defined.
+      if(resourceType.getAttributeDefinition(path.subPath(1)) == null)
+      {
+        // The parent attribute is also undefined.
+        if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+        {
+          messages.add(messagePrefix +
+              "Attribute " + path.getElement(0)+ " in path " +
+              path.toString() + " is undefined");
+        }
+      }
+      else
+      {
+        // The parent attribute is defined but the sub-attribute is
+        // undefined.
+        if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_SUB_ATTRIBUTES))
+        {
+          messages.add(messagePrefix +
+              "Sub-attribute " + path.getElement(1)+ " in path " +
+              path.toString() + " is undefined");
+        }
+      }
+    }
+    else if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+    {
+      messages.add(messagePrefix +
+          "Attribute " + path.getElement(0)+ " in path " +
+          path.toString() + " is undefined");
+    }
+  }
+
+
 
   /**
    * Internal method to remove read-only attributes.
