@@ -37,9 +37,9 @@ For clients using UnboundID-specific features:
 </dependency>
 ```
 
-You may also download SCIM 2 SDK builds from the [Releases](https://github.com/UnboundID/scim2/releases) page.
+You may also download SCIM 2 SDK builds from the [Releases](https://github.com/pingidentity/scim2/releases) page.
 
-If you're looking for a Java SDK for SCIM 1.1, you can find it [here](https://github.com/UnboundID/scim).
+If you're looking for a Java SDK for SCIM 1.1, you can find it [here](https://github.com/pingidentity/scim).
 
 # How to use it
 The SCIM 2 SDK requires Java 7 or greater.
@@ -108,11 +108,11 @@ ListResponse<UserResource> searchResponse =
         .invoke(UserResource.class);
 ```
 
-For detailed information about using the SCIM 2 SDK, including more examples, please see the [wiki](https://github.com/UnboundID/scim2/wiki).
+For detailed information about using the SCIM 2 SDK, including more examples, please see the [wiki](https://github.com/pingidentity/scim2/wiki).
 
 # Reporting issues
 
-Please report bug reports and enhancement requests through this project's [issue tracker](https://github.com/UnboundID/scim2/issues).
+Please report bug reports and enhancement requests through this project's [issue tracker](https://github.com/pingidentity/scim2/issues).
 
 # License
-The UnboundID SCIM2 SDK is available under three licenses: the GNU General Public License version 2 (GPLv2), the GNU Lesser General Public License version 2.1 (LGPLv2.1), and a free-right-to-use license created by UnboundID Corp. See the [LICENSE](https://github.com/UnboundID/scim2/blob/master/resource/LICENSE.txt) file for more info.
+The UnboundID SCIM2 SDK is available under three licenses: the GNU General Public License version 2 (GPLv2), the GNU Lesser General Public License version 2.1 (LGPLv2.1), and a free-right-to-use license created by UnboundID Corp. See the [LICENSE](https://github.com/pingidentity/scim2/blob/master/resource/LICENSE.txt) file for more info.
