@@ -158,7 +158,11 @@ public class Parser
   public static Filter parseFilter(final String filterString)
       throws BadRequestException
   {
-    return readFilter(new StringReader(filterString.trim()), false);
+    // always precede ')' with a space char since we may instantiate a JSON
+    // parser to help with parsing the filter, and a JSON root context
+    // requires it.
+    String safeFilterString = filterString.trim().replace(")", " )");
+    return readFilter(new StringReader(safeFilterString), false);
   }
 
   /**
