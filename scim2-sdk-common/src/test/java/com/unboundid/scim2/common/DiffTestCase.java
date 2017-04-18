@@ -1063,9 +1063,9 @@ public class DiffTestCase
    * @throws IOException if an error occurs
    */
   @Test
-  public void testMultiValuedAttributesWithEmptyValues() throws IOException
+  public void testMultiValuedAttributesWithEmptyValues() throws Exception
   {
-    String jsonString = "{\n" +
+    String jsonString1 = "{\n" +
         "  \"schemas\" : [ \"urn:unboundid:configuration:2.0\" ],\n" +
         "  \"id\" : \"userRoot2\",\n" +
         "  \"meta\" : {\n" +
@@ -1084,12 +1084,61 @@ public class DiffTestCase
         "  \"compactCommonParentDn\" : [ ],\n" +
         "  \"jeProperty\" : [ ]\n" +
         "}";
-    ObjectNode source = JsonUtils.getObjectReader().
-        forType(ObjectNode.class).readValue(jsonString);
-    ObjectNode target = JsonUtils.getObjectReader().
-        forType(ObjectNode.class).readValue(jsonString);
-    List<PatchOperation> d = JsonUtils.diff(source, target, false);
-    Assert.assertEquals(d.size(), 0);
+    ObjectNode source1 = JsonUtils.getObjectReader().
+        forType(ObjectNode.class).readValue(jsonString1);
+    ObjectNode target1 = JsonUtils.getObjectReader().
+        forType(ObjectNode.class).readValue(jsonString1);
+    
+    // diff() should not return any patch operations for identical resources,
+    // regardless of 'removeMissing' parameter.
+    Assert.assertEquals(JsonUtils.diff(source1, target1, false).size(), 0);
+    Assert.assertEquals(JsonUtils.diff(source1, target1, true).size(), 0);
+ 
+    String jsonString2 = "{\n" +
+        "  \"schemas\" : [ \"urn:unboundid:configuration:2.0\" ],\n" +
+        "  \"id\" : \"userRoot2\",\n" +
+        "  \"meta\" : {\n" +
+        "    \"resourceType\" : \"LocalDbBackend\",\n" +
+        "    \"location\" : \"http://localhost:5033/config/v2/Backends/userRoot2\"\n" +
+        "  },\n" +
+        "  \"urn:unboundid:configuration:2.0\" : {\n" +
+        "    \"type\" : \"LocalDbBackend\"\n" +
+        "  },\n" +
+        "  \"backendId\" : \"userRoot2\",\n" +
+        "  \"backgroundPrime\" : \"false\",\n" +
+        "  \"backupFilePermissions\" : \"700\",\n" +
+        "  \"baseDn\" : [ ],\n" +
+        "  \"checkpointOnCloseCount\" : \"2\",\n" +
+        "  \"cleanerThreadWaitTime\" : \"120000\",\n" +
+        "  \"compactCommonParentDn\" : [ ],\n" +
+        "  \"jeProperty\" : [ ],\n" +
+        "  \"jeProperty2\" : [ ],\n" +
+        "  \"favoriteColors\" : [ \"purple\", \"beige\" ]\n" +
+        "}";
+        
+    ObjectNode target2 = JsonUtils.getObjectReader().
+        forType(ObjectNode.class).readValue(jsonString2);
+   
+    // diff() should generate a remove operation for baseDN
+    // and a replace operation for favoriteColors, but no
+    // operations for empty new jeProperty2.
+
+    List<PatchOperation> ops = JsonUtils.diff(source1, target2, true);
+    Assert.assertEquals(ops.size(), 2);
+    for (PatchOperation op : ops)
+    {
+      if (op.getOpType().equals(PatchOpType.REMOVE)) {
+        Assert.assertEquals("baseDn", op.getPath().toString());
+      }
+      else if (op.getOpType().equals(PatchOpType.REPLACE))
+      {
+        GenericScimResource nameAndValues = op.getValue(GenericScimResource.class);
+        List<String> values = nameAndValues.getStringValueList("favoriteColors");
+        Assert.assertEquals(values.size(), 2);
+        Assert.assertTrue(values.contains("purple"));
+        Assert.assertTrue(values.contains("beige"));
+      }
+    }
   }
 
   private void removeNullNodes(JsonNode object)
