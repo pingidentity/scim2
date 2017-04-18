@@ -318,6 +318,21 @@ public final class SchemaCheckFilterVisitor
       final Path fullPath = parentPath.attribute(path);
       final AttributeDefinition attribute =
           resourceType.getAttributeDefinition(fullPath);
+
+      // Simple, multi-valued attributes implicitly use "value" as the
+      // name to access sub-attributes. Don't print the sub-attribute undefined
+      // error in this case.
+      if (path.getElement(0).getAttribute().equalsIgnoreCase("value"))
+      {
+        final AttributeDefinition parentAttr =
+                resourceType.getAttributeDefinition(parentPath);
+        if (parentAttr.isMultiValued() &&
+                (parentAttr.getSubAttributes() == null))
+        {
+          return;
+        }
+      }
+
       if (attribute == null)
       {
         // Can't find the definition for the sub-attribute in a value filter.
