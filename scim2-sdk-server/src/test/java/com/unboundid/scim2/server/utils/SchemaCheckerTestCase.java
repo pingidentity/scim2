@@ -18,9 +18,11 @@
 package com.unboundid.scim2.server.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.PatchOperation;
@@ -35,6 +37,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1003,6 +1006,64 @@ public class SchemaCheckerTestCase
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
     }
+  }
+
+  /**
+   * Test to ensure simple, multi-valued attributes has subvalues accessible by
+   * be removed or replaced.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testSimpleMultiValuedAttribute()
+          throws Exception
+  {
+    // Use the test schema, and add multiple sub-attribute values to the
+    // mvstring simple attribute.
+    ResourceTypeDefinition resourceTypeDefinition =
+            new ResourceTypeDefinition.Builder("test", "/test").
+                    setCoreSchema(typeTestSchema).build();
+    SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
+    // Create array node with the sub-attributes used for testing.
+    ArrayNode values = JsonUtils.getJsonNodeFactory().arrayNode();
+    values.add(JsonUtils.getJsonNodeFactory().textNode("value1"));
+    values.add(JsonUtils.getJsonNodeFactory().textNode("value2"));
+    values.add(JsonUtils.getJsonNodeFactory().textNode("value3"));
+
+    // Create the node for testing, and set the mvstring test values.
+    ObjectNode o = JsonUtils.getJsonNodeFactory().objectNode();
+    o.putArray("schemas").add("urn:id:test");
+    o.set("mvstring", values);
+
+    // Create results schema checker for this test.
+    SchemaChecker.Results results = checker.checkCreate(o);
+
+    // Attempt a patch modify with a replace operation.
+    results =
+            checker.checkModify(
+                    Collections.singleton(
+                            PatchOperation.replace(
+                                    Path.root().attribute(
+                                            "mvstring",
+                                            Filter.eq("value","value3")
+                                    ),
+                                    "replacedValue4"
+                            )
+                    ),
+                    null
+            );
+    assertEquals(results.getFilterIssues().size(), 0,
+                 Arrays.toString(results.getFilterIssues().toArray(new String[0])));
+
+    // Attempt a patch modify with a remove operation.
+    results = checker.checkModify(
+            Collections.singleton(PatchOperation.remove(
+                    Path.root().attribute("mvstring",
+                            Filter.eq("value","value1")))),
+            null);
+    assertEquals(results.getFilterIssues().size(), 0,
+                 Arrays.toString(results.getFilterIssues().toArray(
+                         new String[0])));
   }
 
   /**
