@@ -5,4 +5,4 @@ This component contains model classes representing UnboundID-proprietary extensi
   
 The UnboundID SCIM 2 SDK for Java provides a powerful and flexible set of APIs for interacting with SCIM service providers and resources. Use it to build applications and servers that interoperate with SCIM servers such as the [UnboundID Data Broker](https://www.unboundid.com/data-broker).
 
-Please refer to the [SCIM 2 SDK README](https://github.com/UnboundID/scim2) for license and support information.
+Please refer to the [SCIM 2 SDK README](https://github.com/pingidentity/scim2) for license and support information.

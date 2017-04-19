@@ -28,10 +28,10 @@
     See http://simplecloud.info for more information.
   </description>
   <inceptionYear>2015</inceptionYear>
-  <url>https://github.com/UnboundID/scim2</url>
+  <url>https://github.com/pingidentity/scim2</url>
   <scm>
-    <url>https://github.com/UnboundID/scim2</url>
-    <connection>scm:git:https://github.com/UnboundID/scim2</connection>
+    <url>https://github.com/pingidentity/scim2</url>
+    <connection>scm:git:https://github.com/pingidentity/scim2</connection>
   </scm>
   <organization>
     <name>UnboundID Corp.</name>
@@ -55,7 +55,7 @@
     </license>
     <license>
       <name>UnboundID SCIM2 SDK Free Use License</name>
-      <url>https://github.com/UnboundID/scim2</url>
+      <url>https://github.com/pingidentity/scim2</url>
       <comments>This license is available in the source code repository at the provided URL.</comments>
     </license>
   </licenses>
