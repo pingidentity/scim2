@@ -29,10 +29,8 @@ import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.Photo;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Iterator;
@@ -1088,12 +1086,12 @@ public class DiffTestCase
         forType(ObjectNode.class).readValue(jsonString1);
     ObjectNode target1 = JsonUtils.getObjectReader().
         forType(ObjectNode.class).readValue(jsonString1);
-    
+
     // diff() should not return any patch operations for identical resources,
     // regardless of 'removeMissing' parameter.
     assertEquals(JsonUtils.diff(source1, target1, false).size(), 0);
     assertEquals(JsonUtils.diff(source1, target1, true).size(), 0);
- 
+
     String jsonString2 = "{\n" +
         "  \"schemas\" : [ \"urn:unboundid:configuration:2.0\" ],\n" +
         "  \"id\" : \"userRoot2\",\n" +
@@ -1115,10 +1113,10 @@ public class DiffTestCase
         "  \"jeProperty2\" : [ ],\n" +
         "  \"favoriteColors\" : [ \"purple\", \"beige\" ]\n" +
         "}";
-        
+
     ObjectNode target2 = JsonUtils.getObjectReader().
         forType(ObjectNode.class).readValue(jsonString2);
-   
+
     // diff() should generate a remove operation for baseDN
     // and a replace operation for favoriteColors, but no
     // operations for empty new jeProperty2.
