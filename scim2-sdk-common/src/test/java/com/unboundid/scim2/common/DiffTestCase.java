@@ -1060,7 +1060,7 @@ public class DiffTestCase
    * diff with.  We should return no patch operations, however in previous
    * iterations of this code, we would try and remove the attribute.
    *
-   * @throws IOException if an error occurs
+   * @throws Exception if an error occurs
    */
   @Test
   public void testMultiValuedAttributesWithEmptyValues() throws Exception
@@ -1091,8 +1091,8 @@ public class DiffTestCase
     
     // diff() should not return any patch operations for identical resources,
     // regardless of 'removeMissing' parameter.
-    Assert.assertEquals(JsonUtils.diff(source1, target1, false).size(), 0);
-    Assert.assertEquals(JsonUtils.diff(source1, target1, true).size(), 0);
+    assertEquals(JsonUtils.diff(source1, target1, false).size(), 0);
+    assertEquals(JsonUtils.diff(source1, target1, true).size(), 0);
  
     String jsonString2 = "{\n" +
         "  \"schemas\" : [ \"urn:unboundid:configuration:2.0\" ],\n" +
@@ -1124,19 +1124,19 @@ public class DiffTestCase
     // operations for empty new jeProperty2.
 
     List<PatchOperation> ops = JsonUtils.diff(source1, target2, true);
-    Assert.assertEquals(ops.size(), 2);
+    assertEquals(ops.size(), 2);
     for (PatchOperation op : ops)
     {
       if (op.getOpType().equals(PatchOpType.REMOVE)) {
-        Assert.assertEquals("baseDn", op.getPath().toString());
+        assertEquals("baseDn", op.getPath().toString());
       }
       else if (op.getOpType().equals(PatchOpType.REPLACE))
       {
         GenericScimResource nameAndValues = op.getValue(GenericScimResource.class);
         List<String> values = nameAndValues.getStringValueList("favoriteColors");
-        Assert.assertEquals(values.size(), 2);
-        Assert.assertTrue(values.contains("purple"));
-        Assert.assertTrue(values.contains("beige"));
+        assertEquals(values.size(), 2);
+        assertTrue(values.contains("purple"));
+        assertTrue(values.contains("beige"));
       }
     }
   }
