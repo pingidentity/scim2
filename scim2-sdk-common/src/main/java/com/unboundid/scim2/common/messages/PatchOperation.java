@@ -36,6 +36,7 @@ import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
@@ -435,10 +436,17 @@ public abstract class PatchOperation
             "Path can not target sub-attributes more than one level deep");
       }
 
-      if(path.size() == 2 && path.getElement(1).getValueFilter() != null)
+      if(path.size() == 2)
       {
-        throw BadRequestException.invalidPath(
-            "Path can not include a value filter on sub-attributes");
+        Filter valueFilter = path.getElement(1).getValueFilter();
+        // Allow use of the special case "value" path to reference the value itself.
+        // Any other value filter is for a sub-attribute, which is not permitted.
+        if (valueFilter != null &&
+            !valueFilter.getAttributePath().getElement(0).getAttribute().equals("value"))
+        {
+          throw BadRequestException.invalidPath(
+              "Path can not include a value filter on sub-attributes");
+        }
       }
     }
     this.path = path;
