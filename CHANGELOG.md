@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v2.1.2 - 2017-08-09
+Fixed a SCIM issue to restore the use of the implicit "value" sub-attribute in filters to reference specific values of simple multi-valued attributes
+
+
 ## v2.1.1 - 2017-02-13
 Allow replacement of singular value using a value filter if the value filter uses the special-case "value" path.
 
