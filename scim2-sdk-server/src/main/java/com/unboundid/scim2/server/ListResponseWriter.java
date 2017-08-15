@@ -175,11 +175,21 @@ public class ListResponseWriter<T extends ScimResource>
    */
   public void resource(final T scimResource) throws IOException
   {
+    prepareResource();
+    jsonGenerator.writeObject(scimResource);
+    resultsSent.incrementAndGet();
+  }
+
+  /**
+   * Write the result starting symbols into stream to be possible write empty Resource.
+   *
+   * @throws IOException If an exception occurs while writing to the output
+   * stream.
+   */
+  public void prepareResource() throws IOException {
     if(startedResourcesArray.compareAndSet(false, true))
     {
       jsonGenerator.writeArrayFieldStart("Resources");
     }
-    jsonGenerator.writeObject(scimResource);
-    resultsSent.incrementAndGet();
   }
 }
