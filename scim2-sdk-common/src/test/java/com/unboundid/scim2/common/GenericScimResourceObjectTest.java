@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.common;
 
+import com.fasterxml.jackson.core.Base64Variants;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -465,11 +466,45 @@ public class GenericScimResourceObjectTest
     GenericScimResource gsr = new GenericScimResource();
     Assert.assertEquals(gsr.replaceValue(path1, value1).
         getBinaryValue(Path.fromString(path1)), value1);
+
+    // Set BinaryNode directly
+    Assert.assertEquals(gsr.replaceValue(path1,
+        JsonUtils.getJsonNodeFactory().binaryNode(value1)).
+        getBinaryValue(Path.fromString(path1)), value1);
+
+    // Set TextNode directly
+    Assert.assertEquals(gsr.replaceValue(path1,
+        JsonUtils.getJsonNodeFactory().textNode(
+            Base64Variants.getDefaultVariant().encode(value1))).
+        getBinaryValue(Path.fromString(path1)), value1);
+
     Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
         getBinaryValue(path2), value2);
 
     List<byte[]> list1 = gsr.addBinaryValues(path3,
         Lists.<byte[]>newArrayList(arrayValue1, arrayValue2)).
+        getBinaryValueList(Path.fromString(path3));
+    Assert.assertEquals(list1.size(), 2);
+    assertByteArrayListContainsBytes(list1, arrayValue1);
+    assertByteArrayListContainsBytes(list1, arrayValue2);
+
+    // Set BinaryNode directly
+    list1 = gsr.replaceValue(path3,
+        JsonUtils.getJsonNodeFactory().arrayNode().
+            add(JsonUtils.getJsonNodeFactory().binaryNode(arrayValue1)).
+            add(JsonUtils.getJsonNodeFactory().binaryNode(arrayValue2))).
+        getBinaryValueList(Path.fromString(path3));
+    Assert.assertEquals(list1.size(), 2);
+    assertByteArrayListContainsBytes(list1, arrayValue1);
+    assertByteArrayListContainsBytes(list1, arrayValue2);
+
+    // Set TextNode directly
+    list1 = gsr.replaceValue(path3,
+        JsonUtils.getJsonNodeFactory().arrayNode().
+            add(JsonUtils.getJsonNodeFactory().textNode(
+                Base64Variants.getDefaultVariant().encode(arrayValue1))).
+            add(JsonUtils.getJsonNodeFactory().textNode(
+                Base64Variants.getDefaultVariant().encode(arrayValue2)))).
         getBinaryValueList(Path.fromString(path3));
     Assert.assertEquals(list1.size(), 2);
     assertByteArrayListContainsBytes(list1, arrayValue1);

@@ -17,7 +17,6 @@
 
 package com.unboundid.scim2.server.utils;
 
-import com.fasterxml.jackson.core.Base64Variants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -1044,7 +1043,6 @@ public class SchemaChecker
     {
       case STRING:
       case DATETIME:
-      case BINARY:
       case REFERENCE:
         if (!node.isTextual())
         {
@@ -1078,6 +1076,14 @@ public class SchemaChecker
           return;
         }
         break;
+      case BINARY:
+        if (!node.isTextual() && !node.isBinary())
+        {
+          results.syntaxIssues.add(prefix + "Value for attribute " + path +
+              " must be a JSON string");
+          return;
+        }
+        break;
       default:
         throw new RuntimeException(
             "Unexpected attribute type " + attribute.getType());
@@ -1102,7 +1108,7 @@ public class SchemaChecker
       case BINARY:
         try
         {
-          Base64Variants.getDefaultVariant().decode(node.textValue());
+          node.binaryValue();
         }
         catch (Exception e)
         {

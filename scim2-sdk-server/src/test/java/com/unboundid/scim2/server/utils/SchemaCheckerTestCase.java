@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.server.utils;
 
+import com.fasterxml.jackson.core.Base64Variants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -2011,6 +2012,40 @@ public class SchemaCheckerTestCase
       }
     }
 
+  }
+
+  /**
+   * Test to ensure binary attribute values are checked for the correct type,
+   * regardless if they are represented as BinaryNode or TextNode.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testBinaryAttributeValueType()
+      throws Exception
+  {
+    ResourceTypeDefinition resourceTypeDefinition =
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(typeTestSchema).build();
+    SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
+
+    // Test as TextNode
+    ObjectNode o = JsonUtils.getJsonNodeFactory().objectNode();
+    o.putArray("schemas").add("urn:id:test");
+    o.set("binary", JsonUtils.getJsonNodeFactory().textNode(
+        Base64Variants.getDefaultVariant().encode(new byte[]{ 0x00 })));
+    SchemaChecker.Results results = checker.checkCreate(o);
+    assertEquals(results.getSyntaxIssues().size(), 0,
+        results.getSyntaxIssues().toString());
+
+    // Test as BinaryNode
+    o = JsonUtils.getJsonNodeFactory().objectNode();
+    o.putArray("schemas").add("urn:id:test");
+    o.set("binary", JsonUtils.getJsonNodeFactory().binaryNode(
+        new byte[]{ 0x00 }));
+    results = checker.checkCreate(o);
+    assertEquals(results.getSyntaxIssues().size(), 0,
+        results.getSyntaxIssues().toString());
   }
 
   /**

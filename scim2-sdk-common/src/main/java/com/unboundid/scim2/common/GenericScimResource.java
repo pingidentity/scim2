@@ -17,16 +17,11 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.core.Base64Variants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -550,7 +545,7 @@ public final class GenericScimResource implements ScimResource
   public GenericScimResource replaceValue(final Path path,
       final String value) throws ScimException
   {
-    return replaceValue(path, TextNode.valueOf(value));
+    return replaceValue(path, JsonUtils.getJsonNodeFactory().textNode(value));
   }
 
   /**
@@ -844,7 +839,7 @@ public final class GenericScimResource implements ScimResource
   public GenericScimResource replaceValue(
       final Path path, final Boolean value) throws ScimException
   {
-    return replaceValue(path, BooleanNode.valueOf(value));
+    return replaceValue(path, JsonUtils.getJsonNodeFactory().booleanNode(value));
   }
 
   /**
@@ -1140,7 +1135,7 @@ public final class GenericScimResource implements ScimResource
   public GenericScimResource replaceValue(final Path path,
       final Double value) throws ScimException
   {
-    return replaceValue(path, DoubleNode.valueOf(value));
+    return replaceValue(path, JsonUtils.getJsonNodeFactory().numberNode(value));
   }
 
   /**
@@ -1434,7 +1429,7 @@ public final class GenericScimResource implements ScimResource
   public GenericScimResource replaceValue(final Path path,
       final Integer value) throws ScimException
   {
-    return replaceValue(path, IntNode.valueOf(value));
+    return replaceValue(path, JsonUtils.getJsonNodeFactory().numberNode(value));
   }
 
   /**
@@ -1729,7 +1724,7 @@ public final class GenericScimResource implements ScimResource
   public GenericScimResource replaceValue(
       final Path path, final Long value) throws ScimException
   {
-    return replaceValue(path, LongNode.valueOf(value));
+    return replaceValue(path, JsonUtils.getJsonNodeFactory().numberNode(value));
   }
 
   /**
@@ -2382,7 +2377,7 @@ public final class GenericScimResource implements ScimResource
   public GenericScimResource replaceValue(
       final Path path, final byte[] value) throws ScimException
   {
-    return replaceValue(path, TextNode.valueOf(getStringForBinary(value)));
+    return replaceValue(path, JsonUtils.getJsonNodeFactory().binaryNode(value));
   }
 
   /**
@@ -2461,7 +2456,7 @@ public final class GenericScimResource implements ScimResource
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for (byte[] value : values)
     {
-      valuesArrayNode.add(TextNode.valueOf(getStringForBinary(value)));
+      valuesArrayNode.add(JsonUtils.getJsonNodeFactory().binaryNode(value));
     }
 
     return addValues(path, valuesArrayNode);
@@ -2533,8 +2528,14 @@ public final class GenericScimResource implements ScimResource
       return null;
     }
 
-    String binaryString = jsonNode.textValue();
-    return getBinaryForString(binaryString);
+    try
+    {
+      return jsonNode.binaryValue();
+    }
+    catch (IOException e)
+    {
+      throw new ServerErrorException(e.getMessage());
+    }
   }
 
   /**
@@ -2604,20 +2605,23 @@ public final class GenericScimResource implements ScimResource
     Iterator<JsonNode> iterator = valueNode.iterator();
     while (iterator.hasNext())
     {
-      values.add(getBinaryForString(iterator.next().textValue()));
+      try
+      {
+        byte[] value = iterator.next().binaryValue();
+        if(value == null)
+        {
+          // this is not a binary or text node.
+          throw new ServerErrorException("Value at path " + path +
+              " is not a valid base64 string");
+        }
+        values.add(value);
+      }
+      catch (IOException e)
+      {
+        throw new ServerErrorException(e.getMessage());
+      }
     }
     return values;
-  }
-
-  private String getStringForBinary(final byte[] binary) throws ScimException
-  {
-    return Base64Variants.getDefaultVariant().encode(binary);
-  }
-
-  private byte[] getBinaryForString(final String binaryString)
-      throws ScimException
-  {
-    return Base64Variants.getDefaultVariant().decode(binaryString);
   }
 
   /////////////////////////////////////
@@ -2694,7 +2698,8 @@ public final class GenericScimResource implements ScimResource
   public GenericScimResource replaceValue(final Path path, final URI value)
       throws ScimException
   {
-    return replaceValue(path, TextNode.valueOf(value.toString()));
+    return replaceValue(path,
+        JsonUtils.getJsonNodeFactory().textNode(value.toString()));
   }
 
   /**
