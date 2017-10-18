@@ -19,10 +19,14 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
+import com.unboundid.scim2.common.utils.StatusDeserializer;
+import com.unboundid.scim2.common.utils.StatusSerializer;
 
 /**
  * This object is returned whenever by SCIM when an error occurs.
@@ -42,6 +46,8 @@ public final class ErrorResponse extends BaseScimResource
   @Attribute(description = "The HTTP status code.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
+  @JsonSerialize(using = StatusSerializer.class)
+  @JsonDeserialize(using = StatusDeserializer.class)
   private final int status;
 
   /**
