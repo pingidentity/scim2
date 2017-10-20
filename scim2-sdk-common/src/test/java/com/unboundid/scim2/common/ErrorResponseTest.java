@@ -21,16 +21,22 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 
 /**
  * Test cases for {@link com.unboundid.scim2.common.messages.ErrorResponse}.
  */
 public class ErrorResponseTest
 {
+  private static final String SCHEMA =
+      SchemaUtils.getSchemaIdFromAnnotation(ErrorResponse.class);
+  private static final int STATUS = 400;
+  private static final String SCIM_TYPE = BadRequestException.MUTABILITY;
+  private static final String DETAIL = "Attribute 'id' is readOnly";
+
   /**
    * Confirms that an ErrorResponse can be deserialized when the status field
    * is a JSON string.
@@ -38,25 +44,32 @@ public class ErrorResponseTest
    * @throws Exception if an error occurs.
    */
   @Test
-  public void testDeserializeStringStatus() throws Exception
+  public void testDeserializationAndSerializationWithStringStatus()
+      throws Exception
   {
     final ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().readTree(
         "{\n" +
-        "  \"schemas\": [\"urn:ietf:params:scim:api:messages:2.0:Error\"],\n" +
-        "  \"scimType\":\"mutability\",\n" +
-        "  \"detail\":\"Attribute 'id' is readOnly\",\n" +
-        "  \"status\": \"400\"\n" +
+        "  \"schemas\": [\"" + SCHEMA + "\"],\n" +
+        "  \"scimType\":\"" + SCIM_TYPE + "\",\n" +
+        "  \"detail\":\"" + DETAIL + "\",\n" +
+        "  \"status\": \"" + STATUS + "\"\n" +
         "}"
     );
 
     final ErrorResponse errorResponse =
         JsonUtils.nodeToValue(node, ErrorResponse.class);
-    assertEquals(errorResponse.getStatus(), Integer.valueOf(400));
-    assertEquals(errorResponse.getScimType(), BadRequestException.MUTABILITY);
-    assertNotNull(errorResponse.getDetail());
+    assertEquals(errorResponse.getStatus(), Integer.valueOf(STATUS));
+    assertEquals(errorResponse.getScimType(), SCIM_TYPE);
+    assertEquals(errorResponse.getDetail(), DETAIL);
     assertEquals(errorResponse.getSchemaUrns().size(), 1);
-    assertEquals(errorResponse.getSchemaUrns().iterator().next(),
-        "urn:ietf:params:scim:api:messages:2.0:Error");
+    assertEquals(errorResponse.getSchemaUrns().iterator().next(), SCHEMA);
+
+    final String serializedString =
+        JsonUtils.getObjectWriter().writeValueAsString(errorResponse);
+    final ErrorResponse deserializedErrorResponse =
+        JsonUtils.getObjectReader().forType(ErrorResponse.class).
+            readValue(serializedString);
+    assertEquals(errorResponse, deserializedErrorResponse);
   }
 
   /**
@@ -66,24 +79,31 @@ public class ErrorResponseTest
    * @throws Exception if an error occurs.
    */
   @Test
-  public void testDeserializeNumberStatus() throws Exception
+  public void testDeserializationAndSerializationWithNumberStatus()
+      throws Exception
   {
     final ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().readTree(
         "{\n" +
-        "  \"schemas\": [\"urn:ietf:params:scim:api:messages:2.0:Error\"],\n" +
-        "  \"scimType\":\"mutability\",\n" +
-        "  \"detail\":\"Attribute 'id' is readOnly\",\n" +
-        "  \"status\": 400\n" +
+        "  \"schemas\": [\"" + SCHEMA + "\"],\n" +
+        "  \"scimType\":\"" + SCIM_TYPE + "\",\n" +
+        "  \"detail\":\"" + DETAIL + "\",\n" +
+        "  \"status\": " + STATUS + "\n" +
         "}"
     );
 
     final ErrorResponse errorResponse =
         JsonUtils.nodeToValue(node, ErrorResponse.class);
-    assertEquals(errorResponse.getStatus(), Integer.valueOf(400));
-    assertEquals(errorResponse.getScimType(), BadRequestException.MUTABILITY);
-    assertNotNull(errorResponse.getDetail());
+    assertEquals(errorResponse.getStatus(), Integer.valueOf(STATUS));
+    assertEquals(errorResponse.getScimType(), SCIM_TYPE);
+    assertEquals(errorResponse.getDetail(), DETAIL);
     assertEquals(errorResponse.getSchemaUrns().size(), 1);
-    assertEquals(errorResponse.getSchemaUrns().iterator().next(),
-        "urn:ietf:params:scim:api:messages:2.0:Error");
+    assertEquals(errorResponse.getSchemaUrns().iterator().next(), SCHEMA);
+
+    final String serializedString =
+        JsonUtils.getObjectWriter().writeValueAsString(errorResponse);
+    final ErrorResponse deserializedErrorResponse =
+        JsonUtils.getObjectReader().forType(ErrorResponse.class).
+            readValue(serializedString);
+    assertEquals(errorResponse, deserializedErrorResponse);
   }
 }
