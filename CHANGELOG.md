@@ -2,8 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## v2.1.3 - 2017-xx-xx
+## v2.1.3 - 2017-11-29
 Fixed several issues around binary attribute handling.
+
+
 
 
 ## v2.1.2 - 2017-08-09
