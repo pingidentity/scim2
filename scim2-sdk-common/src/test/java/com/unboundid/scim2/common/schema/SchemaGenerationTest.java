@@ -17,15 +17,8 @@
 
 package com.unboundid.scim2.common.schema;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unboundid.scim2.common.types.AttributeDefinition;
-import com.unboundid.scim2.common.types.SchemaResource;
-import com.unboundid.scim2.common.schema.testobjects.TestObject1;
-import com.unboundid.scim2.common.schema.testobjects.TestObject2;
-import com.unboundid.scim2.common.schema.testobjects.TestObject3;
-import com.unboundid.scim2.common.utils.SchemaUtils;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.transform;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +26,20 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Function;
+import com.unboundid.scim2.common.schema.testobjects.TestEnumObject;
+import com.unboundid.scim2.common.schema.testobjects.TestObject1;
+import com.unboundid.scim2.common.schema.testobjects.TestObject2;
+import com.unboundid.scim2.common.schema.testobjects.TestObject3;
+import com.unboundid.scim2.common.schema.testobjects.TestObject4;
+import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.SchemaResource;
+import com.unboundid.scim2.common.utils.SchemaUtils;
 
 /**
  * Tests cases for SCIM schema generation.
@@ -73,6 +80,28 @@ public class SchemaGenerationTest
     SchemaResource schemaDefinition =
         SchemaUtils.getSchema(TestObject1.class);
     String schemaJsonString = mapper.writeValueAsString(schemaDefinition);
+  }
+
+    /**
+     * Test enum as a field.
+     * @throws Exception in the event an error occurs.
+     */
+  @Test
+  public void testEnumAsField() throws Exception {
+      SchemaResource schemaDefinition = SchemaUtils.getSchema(TestObject4.class);
+
+      Collection<AttributeDefinition> attributes = schemaDefinition.getAttributes();
+      Assert.assertNotNull(attributes);
+      Assert.assertEquals(attributes.size(), 1);
+      AttributeDefinition onlyAttribute = attributes.iterator().next();
+      Assert.assertNotNull(onlyAttribute.getCanonicalValues());
+      List<TestEnumObject> collect = newArrayList(TestEnumObject.values());
+      Assert.assertTrue(onlyAttribute.getCanonicalValues().containsAll( transform(collect,
+              new Function<TestEnumObject, String>() {
+                  public String apply(TestEnumObject input) {
+                      return input.name();
+                  }
+      })));
   }
 
   /**
