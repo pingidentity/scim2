@@ -98,7 +98,7 @@ public class SchemaGenerationTest
       List<TestEnumObject> collect = newArrayList(TestEnumObject.values());
       Assert.assertTrue(onlyAttribute.getCanonicalValues().containsAll( transform(collect,
               new Function<TestEnumObject, String>() {
-                  public String apply(TestEnumObject input) {
+                  public String apply(final TestEnumObject input) {
                       return input.name();
                   }
       })));

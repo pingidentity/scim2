@@ -31,7 +31,7 @@ public class TestObject4 {
      * Getter for attribute in test class.
      * @param value attribute value.
      */
-    public void setValue(TestEnumObject value) {
+    public void setValue(final TestEnumObject value) {
         this.value = value;
     }
 
