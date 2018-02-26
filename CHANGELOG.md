@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## v2.1.3 - 2018-xx-xx
+## v2.2.0 - 2018-xx-xx
 Updated ErrorResponse to serialize its "status" field as a JSON string rather than as a number to comply with RFC 7644. Deserialization of this field is backwards compatible and will accept either a number or a string. Non-SCIM 2 SDK clients expecting a JSON string will need to be updated for compatibility.
 
 
