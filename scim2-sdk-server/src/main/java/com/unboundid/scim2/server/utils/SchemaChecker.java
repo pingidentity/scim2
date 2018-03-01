@@ -253,7 +253,7 @@ public class SchemaChecker
   {
     ObjectNode copyNode = objectNode.deepCopy();
     Results results = new Results();
-    checkResource("", copyNode, results, null, false);
+    checkResource("", copyNode, results, null, false, false);
     return results;
   }
 
@@ -354,7 +354,7 @@ public class SchemaChecker
             continue;
           }
           checkAttributeMutability(prefix, null, path, attribute, results,
-              currentObjectNode, false, false, false);
+              currentObjectNode, true, false, false, false);
           if(valueFilter == null)
           {
             checkAttributeRequired(prefix, path, attribute, results);
@@ -364,12 +364,12 @@ public class SchemaChecker
           if(attribute == null)
           {
             checkPartialResource(prefix, (ObjectNode) value, results,
-                copyCurrentNode, true, false);
+                copyCurrentNode, false, true, false);
           }
           else
           {
             checkAttributeMutability(prefix, value, path, attribute, results,
-                currentObjectNode, true, false, false);
+                currentObjectNode, false, true, false, false);
             if(valueFilter != null)
             {
               checkAttributeValue(prefix, value, path, attribute, results,
@@ -386,12 +386,12 @@ public class SchemaChecker
           if(attribute == null)
           {
             checkPartialResource(prefix, (ObjectNode) value, results,
-                copyCurrentNode, false, true);
+                copyCurrentNode, false, false, true);
           }
           else
           {
             checkAttributeMutability(prefix, value, path, attribute, results,
-                currentObjectNode, false, true, false);
+                currentObjectNode, false, false, true, false);
             if(valueFilter != null)
             {
               checkAttributeValue(prefix, value, path, attribute, results,
@@ -433,7 +433,7 @@ public class SchemaChecker
     if(appliedNode != null)
     {
       checkResource("Applying patch ops results in an invalid resource: ",
-          appliedNode, results, copyCurrentNode, false);
+          appliedNode, results, copyCurrentNode, false, false);
     }
 
     return results;
@@ -489,7 +489,7 @@ public class SchemaChecker
     ObjectNode copyCurrentNode =
         currentObjectNode == null ? null : currentObjectNode.deepCopy();
     Results results = new Results();
-    checkResource("", copyReplacementNode, results, copyCurrentNode, true);
+    checkResource("", copyReplacementNode, results, copyCurrentNode, false, true);
     return results;
   }
 
@@ -638,6 +638,7 @@ public class SchemaChecker
    * @param objectNode The partial resource.
    * @param results The schema check results.
    * @param currentObjectNode The current resource.
+   * @param isPartialRemove Whether this is a partial remove.
    * @param isPartialReplace Whether this is a partial replace.
    * @param isPartialAdd Whether this is a partial add.
    * @throws ScimException If an error occurs.
@@ -646,6 +647,7 @@ public class SchemaChecker
                                     final ObjectNode objectNode,
                                     final Results results,
                                     final ObjectNode currentObjectNode,
+                                    final boolean isPartialRemove,
                                     final boolean isPartialReplace,
                                     final boolean isPartialAdd)
       throws ScimException
@@ -674,7 +676,7 @@ public class SchemaChecker
               checkObjectNode(prefix, Path.root(field.getKey()),
                   schemaExtension.getAttributes(),
                   (ObjectNode) field.getValue(), results, currentObjectNode,
-                  isPartialReplace, isPartialAdd, false);
+                      isPartialRemove, isPartialReplace, isPartialAdd, false);
               found = true;
               break;
             }
@@ -693,7 +695,7 @@ public class SchemaChecker
     // Check common and core schema
     checkObjectNode(prefix, Path.root(), commonAndCoreAttributes,
         objectNode, results, currentObjectNode,
-        isPartialReplace, isPartialAdd, false);
+            isPartialRemove, isPartialReplace, isPartialAdd, false);
   }
 
   /**
@@ -704,12 +706,14 @@ public class SchemaChecker
    * @param results The schema check results.
    * @param currentObjectNode The current resource.
    * @param isReplace Whether this is a replace.
+   * @param isPartialReplace Whether this is a partial replace.
    * @throws ScimException If an error occurs.
    */
   private void checkResource(final String prefix,
                              final ObjectNode objectNode,
                              final Results results,
                              final ObjectNode currentObjectNode,
+                             final boolean isPartialReplace,
                              final boolean isReplace)
       throws ScimException
   {
@@ -775,7 +779,7 @@ public class SchemaChecker
         checkObjectNode(prefix, Path.root(schema.textValue()),
             extensionDefinition.getKey().getAttributes(),
             (ObjectNode) extensionNode, results, currentObjectNode,
-                        isReplace, false, isReplace);
+                false, isPartialReplace, false, isReplace);
       }
 
       if (!coreFound)
@@ -830,7 +834,7 @@ public class SchemaChecker
     // Check common and core schema
     checkObjectNode(prefix, Path.root(), commonAndCoreAttributes,
         objectNode, results, currentObjectNode,
-                    isReplace, false, isReplace);
+            false, isPartialReplace, false, isReplace);
   }
 
   /**
@@ -842,6 +846,7 @@ public class SchemaChecker
    * @param attribute The attribute definition.
    * @param results The schema check results.
    * @param currentObjectNode The current resource.
+   * @param isPartialRemove Whether this is a partial remove.
    * @param isPartialReplace Whether this is a partial replace.
    * @param isPartialAdd Whether this is a partial add.
    * @param isReplace Whether this is a replace.
@@ -853,13 +858,14 @@ public class SchemaChecker
                                         final AttributeDefinition attribute,
                                         final Results results,
                                         final ObjectNode currentObjectNode,
+                                        final boolean isPartialRemove,
                                         final boolean isPartialReplace,
                                         final boolean isPartialAdd,
                                         final boolean isReplace)
       throws ScimException
   {
     if(attribute.getMutability() ==
-        AttributeDefinition.Mutability.READ_ONLY)
+        AttributeDefinition.Mutability.READ_ONLY && (isPartialAdd || isPartialReplace || isPartialRemove))
     {
       results.mutabilityIssues.add(prefix + "Attribute " + path +
           " is read-only");
@@ -1141,7 +1147,7 @@ public class SchemaChecker
       case COMPLEX:
         checkObjectNode(prefix, path, attribute.getSubAttributes(),
             (ObjectNode) node, results, currentObjectNode,
-            isPartialReplace, isPartialAdd, false);
+                false, isPartialReplace, isPartialAdd, false);
         break;
       case STRING:
         // Check for canonical values
@@ -1207,21 +1213,23 @@ public class SchemaChecker
    * @param objectNode The ObjectNode to check.
    * @param results The schema check results.
    * @param currentObjectNode The current resource.
+   * @param isPartialRemove Whether this is a partial remove
    * @param isPartialReplace Whether this is a partial replace.
    * @param isPartialAdd Whether this is a partial add.
    * @param isReplace Whether this is a replace.
    * @throws ScimException If an error occurs.
    */
   private void checkObjectNode(
-      final String prefix,
-      final Path parentPath,
-      final Collection<AttributeDefinition> attributes,
-      final ObjectNode objectNode,
-      final Results results,
-      final ObjectNode currentObjectNode,
-      final boolean isPartialReplace,
-      final boolean isPartialAdd,
-      final boolean isReplace) throws ScimException
+          final String prefix,
+          final Path parentPath,
+          final Collection<AttributeDefinition> attributes,
+          final ObjectNode objectNode,
+          final Results results,
+          final ObjectNode currentObjectNode,
+          final boolean isPartialRemove,
+          final boolean isPartialReplace,
+          final boolean isPartialAdd,
+          final boolean isReplace) throws ScimException
   {
     if(attributes == null)
     {
@@ -1245,7 +1253,7 @@ public class SchemaChecker
       {
         // Additional checks for when the field is present
         checkAttributeMutability(prefix, node, path, attribute, results,
-            currentObjectNode, isPartialReplace, isPartialAdd, isReplace);
+            currentObjectNode, isPartialRemove, isPartialReplace, isPartialAdd, isReplace);
         checkAttributeValues(prefix, node, path, attribute, results,
             currentObjectNode, isPartialReplace, isPartialAdd);
       }

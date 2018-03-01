@@ -2083,20 +2083,18 @@ public class SchemaCheckerTestCase
             setCoreSchema(schema).build();
     SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
 
-    // Can not create read-only
+    // Can check create read-only
     ObjectNode o = JsonUtils.getJsonNodeFactory().objectNode();
     o.putArray("schemas").add("urn:id:test");
     o.put("readOnly", "value");
     SchemaChecker.Results results = checker.checkCreate(o);
-    assertEquals(results.getMutabilityIssues().size(), 1,
+    assertEquals(results.getMutabilityIssues().size(), 0,
         results.getMutabilityIssues().toString());
-    assertTrue(containsIssueWith(results.getMutabilityIssues(), "read-only"));
 
-    // Can not replace read-only
+    // Can check replace read-only
     results = checker.checkReplace(o, null);
-    assertEquals(results.getMutabilityIssues().size(), 1,
+    assertEquals(results.getMutabilityIssues().size(), 0,
         results.getMutabilityIssues().toString());
-    assertTrue(containsIssueWith(results.getMutabilityIssues(), "read-only"));
 
     // Can not add read-only in patch
     results = checker.checkModify(Collections.singleton(
