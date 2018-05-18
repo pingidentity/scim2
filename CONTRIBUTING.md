@@ -12,11 +12,11 @@ It can be helpful to review the documentation and examples, including the [Javad
 
 #### How do I submit a bug report?
 
-Bugs are tracked as [GitHub Issues](https://guides.github.com/features/issues/). You can report a bug by submitting an issue in the project's [issue tracker](https://github.com/pingidentity/scim2/issues). To help the maintainer's understand and reproduce the problem, please try to provide information such as the following:
+Bugs are tracked as [GitHub Issues](https://guides.github.com/features/issues/). You can report a bug by submitting an issue in the project's [issue tracker](https://github.com/pingidentity/scim2/issues). To help the maintainers understand and reproduce the problem, please try to provide information such as the following:
 
 * A clear and descriptive title.
 * A description of what happened and a description of what you expected to happen.
-* An example with the exact steps need to reproduce the problem. If relevant, example HTTP requests and responses are helpful.
+* An example with the exact steps needed to reproduce the problem. If relevant, example HTTP requests and responses are helpful.
 
 Please understand that bug reports are reviewed and prioritized internally, and we may not be able to address all bug reports or provide an estimated time for resolution. 
 
