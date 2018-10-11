@@ -54,7 +54,7 @@ public abstract class ResourceReturningRequestBuilder
    *
    * @return The WebTarget for the request.
    */
-  WebTarget buildTarget()
+  protected WebTarget buildTarget()
   {
     if(attributes != null && attributes.size() > 0)
     {

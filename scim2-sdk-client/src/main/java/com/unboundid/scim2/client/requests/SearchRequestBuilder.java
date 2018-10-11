@@ -53,7 +53,7 @@ import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_SORT
 /**
  * A builder for SCIM search requests.
  */
-public final class SearchRequestBuilder
+public class SearchRequestBuilder
     extends ResourceReturningRequestBuilder<SearchRequestBuilder>
 {
   private String filter;
@@ -119,7 +119,7 @@ public final class SearchRequestBuilder
    * {@inheritDoc}
    */
   @Override
-  WebTarget buildTarget()
+  protected WebTarget buildTarget()
   {
     WebTarget target = super.buildTarget();
     if(filter != null)
