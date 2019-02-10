@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Ping Identity Corporation
+ * Copyright 2015-2019 Ping Identity Corporation
  */
 
 package com.unboundid.scim2.common.utils;
