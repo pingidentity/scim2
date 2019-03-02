@@ -65,7 +65,6 @@
     <compileSource>1.6</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
     <ignore.test.failures>false</ignore.test.failures>
-    <com.fasterxml.jackson.version>2.7.4</com.fasterxml.jackson.version>
     <jackson.version>2.7.4</jackson.version>
     <jackson-databind.version>2.7.9.5</jackson-databind.version>
     <jax-rs.version>2.0.1</jax-rs.version>
