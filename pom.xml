@@ -69,7 +69,7 @@
     <jackson-databind.version>2.7.9.5</jackson-databind.version>
     <jax-rs.version>2.0.1</jax-rs.version>
     <jersey.version>2.17</jersey.version>
-    <guava.version>18.0</guava.version>
+    <guava.version>20.0</guava.version>
     <testng.version>6.4</testng.version>
   </properties>
 
