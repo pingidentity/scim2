@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.common.utils.ScimDateFormat;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -373,6 +374,16 @@ public class GenericScimResourceObjectTest
         getDateValue(Path.fromString(path1)), value1);
     Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
         getDateValue(path2), value2);
+
+    Assert.assertEquals(gsr.getDateValue(path1), value1);
+    Assert.assertEquals(GenericScimResource.getDateFromJsonNode(gsr.getValue(path1)),
+        value1);
+    Assert.assertEquals(gsr.getStringValue(path1), new ScimDateFormat().format(value1));
+
+    Assert.assertEquals(gsr.getDateValue(path2), value2);
+    Assert.assertEquals(GenericScimResource.getDateFromJsonNode(gsr.getValue(path2)),
+        value2);
+    Assert.assertEquals(gsr.getStringValue(path2), new ScimDateFormat().format(value2));
 
     List<Date> list1 = gsr.addDateValues(path3,
         Lists.<Date>newArrayList(arrayValue1, arrayValue2)).
