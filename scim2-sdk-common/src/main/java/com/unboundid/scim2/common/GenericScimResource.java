@@ -2167,8 +2167,7 @@ public final class GenericScimResource implements ScimResource
     {
       return null;
     }
-    String dateString = jsonNode.textValue();
-    return getDateForString(dateString);
+    return getDateFromJsonNode(jsonNode);
   }
 
   /**
@@ -2243,38 +2242,6 @@ public final class GenericScimResource implements ScimResource
     return values;
   }
 
-  private static String getStringForDate(final Date date) throws ScimException
-  {
-    try
-    {
-      return JsonUtils.getObjectWriter().writeValueAsString(date);
-    }
-    catch(JsonProcessingException ex)
-    {
-      // this really should not happen, but we will handle it and
-      // translate to a SCIM exception just in case.
-      throw new ServerErrorException(ex.getMessage());
-    }
-  }
-
-  private static Date getDateForString(final String dateString)
-      throws ScimException
-  {
-    try
-    {
-      return JsonUtils.getObjectReader().forType(Date.class).
-          readValue(dateString);
-    }
-    catch(JsonProcessingException ex)
-    {
-      throw new ServerErrorException(ex.getMessage());
-    }
-    catch(IOException ex)
-    {
-      throw new ServerErrorException(ex.getMessage());
-    }
-  }
-
   /**
    * Gets a JsonNode that represents the supplied date.
    *
@@ -2285,7 +2252,7 @@ public final class GenericScimResource implements ScimResource
   public static TextNode getDateJsonNode(final Date date)
       throws ScimException
   {
-    return new TextNode(getStringForDate(date));
+    return JsonUtils.valueToNode(date);
   }
 
   /**
@@ -2298,7 +2265,18 @@ public final class GenericScimResource implements ScimResource
   public static Date getDateFromJsonNode(final JsonNode node)
       throws ScimException
   {
-    return getDateForString(node.textValue());
+    try
+    {
+      return JsonUtils.getObjectReader().forType(Date.class).readValue(node);
+    }
+    catch(JsonProcessingException ex)
+    {
+      throw new ServerErrorException(ex.getMessage());
+    }
+    catch(IOException ex)
+    {
+      throw new ServerErrorException(ex.getMessage());
+    }
   }
 
   /////////////////////////////////////
