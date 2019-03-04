@@ -245,7 +245,9 @@ public class SchemaChecker
    *   </li>
    * </ul>
    *
-   * @param objectNode The SCIM resource that will be created.
+   * @param objectNode The SCIM resource that will be created. Any read-only
+   *                   attributes should be removed first using
+   *                   {@link #removeReadOnlyAttributes(ObjectNode)}.
    * @return Schema checking results.
    * @throws ScimException If an error occurred while checking the schema.
    */
@@ -300,7 +302,9 @@ public class SchemaChecker
    *
    * @param patchOperations The set of modify patch operations to check.
    * @param currentObjectNode The current state of the SCIM resource or
-   *                          {@code null} if not available.
+   *                          {@code null} if not available. Any read-only
+   *                          attributes should be removed first using
+   *                          {@link #removeReadOnlyAttributes(ObjectNode)}.
    * @return Schema checking results.
    * @throws ScimException If an error occurred while checking the schema.
    */
@@ -502,7 +506,7 @@ public class SchemaChecker
    *
    * @param objectNode The SCIM resource to remove read-only attributes from.
    *                   This method will not alter the provided resource.
-   * @return The new SCIM resource with the read-only attributes (if any)
+   * @return A copy of the SCIM resource with the read-only attributes (if any)
    *         removed.
    */
   public ObjectNode removeReadOnlyAttributes(final ObjectNode objectNode)
