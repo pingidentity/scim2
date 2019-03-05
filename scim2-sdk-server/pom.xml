@@ -103,36 +103,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>gen-sources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <echo message="create version class" />
-                <copy todir="target/java-gen">
-                  <fileset dir="src/main/stubs" />
-                  <globmapper from="*.java.stub" to="*.java" />
-                  <filterset>
-                    <filter token="PRODUCT_NAME" value="${build.product.name}" />
-                    <filter token="SHORT_NAME" value="${build.product.short.name}" />
-                    <filter token="VERSION" value="${build.version}" />
-                    <filter token="BUILD_TIMESTAMP" value="${build.timestamp}" />
-                    <filter token="GIT_PATH" value="${scmBranch}" />
-                    <filter token="GIT_REVISION" value="${buildNumber}" />
-                  </filterset>
-                </copy>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.5</version>
