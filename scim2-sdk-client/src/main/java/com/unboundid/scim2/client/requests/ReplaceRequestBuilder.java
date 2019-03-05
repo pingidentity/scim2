@@ -91,7 +91,9 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
    * @param <C> The type of object to return.
    * @param cls The Java class object used to determine the type to return.
    * @return The successfully modified SCIM resource.
-   * @throws ScimException If an error occurred.
+   * @throws javax.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
+   * @throws javax.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
+   * @throws ScimException If the SCIM service provider responded with an error.
    */
   public <C> C invoke(final Class<C> cls) throws ScimException
   {

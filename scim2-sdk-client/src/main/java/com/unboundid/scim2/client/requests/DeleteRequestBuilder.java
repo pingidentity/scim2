@@ -71,7 +71,8 @@ public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
   /**
    * Invoke the SCIM delete request.
    *
-   * @throws ScimException If an error occurred.
+   * @throws javax.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
+   * @throws ScimException If the SCIM service provider responded with an error.
    */
   public void invoke() throws ScimException
   {

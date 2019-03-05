@@ -213,7 +213,8 @@ public final class SearchRequestBuilder
    * @param resultHandler The search result handler that should be used to
    *                      process the resources.
    * @param cls The Java class object used to determine the type to return.
-   * @throws ScimException If an error occurred.
+   * @throws javax.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
+   * @throws ScimException If the SCIM service provider responded with an error.
    */
   private <T> void invoke(
       final boolean post, final SearchResultHandler<T> resultHandler,
