@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v2.2.2 - unreleased
+
+
 ## v2.2.1 - 2019-03-11
 Updated the jackson-databind dependency to 2.7.9.5, which addresses a number of security issues found in earlier versions of that library.
 
