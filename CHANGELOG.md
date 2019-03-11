@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## v2.2.1 - unreleased
+Updated the jackson-databind dependency to 2.7.9.5, which addresses a number of security issues found in earlier versions of that library.
+
 Maven POM changes: Removed unused dependencies, declared previously implicit dependencies, declared 'test' scope as appropriate, and added a dependencyManagement section to the scim2-parent POM.
 
 Fixed an issue with `GenericScimResource.replaceValue(String, Date)` wrapping date values in double quotes.
