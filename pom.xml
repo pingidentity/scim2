@@ -65,8 +65,8 @@
     <compileSource>1.6</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
     <ignore.test.failures>false</ignore.test.failures>
-    <jackson.version>2.7.4</jackson.version>
-    <jackson-databind.version>2.7.9.5</jackson-databind.version>
+    <jackson.version>2.9.9</jackson.version>
+    <jackson-databind.version>2.9.9</jackson-databind.version>
     <jax-rs.version>2.0.1</jax-rs.version>
     <jersey.version>2.17</jersey.version>
     <guava.version>20.0</guava.version>
