@@ -28,7 +28,11 @@ import java.util.Date;
 /**
  * Like ISO8601DateFormat except this format includes milliseconds when
  * serializing.
+ *
+ * @deprecated This class will no longer be needed in a future version of the
+ * SCIM 2 SDK.
  */
+@Deprecated
 public class ScimDateFormat extends ISO8601DateFormat
 {
   /**
