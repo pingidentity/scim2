@@ -37,39 +37,39 @@ public class AccountStateTest
     String accountStateString =
         "{\n" +
             "  \"accountDisabled\": false,\n" +
-            "  \"accountExpirationTime\": \"2015-07-06T04:03:02Z\",\n" +
+            "  \"accountExpirationTime\": \"2015-07-06T04:03:02.000Z\",\n" +
             "  \"secondsUntilAccountExpiration\": 10,\n" +
-            "  \"passwordChangedTime\": \"2015-07-06T04:04:02Z\",\n" +
-            "  \"passwordExpirationWarnedTime\": \"2015-07-06T04:05:02Z\",\n" +
+            "  \"passwordChangedTime\": \"2015-07-06T04:04:02.000Z\",\n" +
+            "  \"passwordExpirationWarnedTime\": \"2015-07-06T04:05:02.000Z\",\n" +
             "  \"secondsUntilPasswordExpiration\": 11,\n" +
             "  \"secondsUntilPasswordExpirationWarning\": 12,\n" +
             "  \"authenticationFailureTimes\": [\n" +
-            "    \"2015-07-06T04:10:02Z\",\n" +
-            "    \"2015-07-06T04:11:02Z\",\n" +
-            "    \"2015-07-06T04:12:02Z\"\n" +
+            "    \"2015-07-06T04:10:02.000Z\",\n" +
+            "    \"2015-07-06T04:11:02.000Z\",\n" +
+            "    \"2015-07-06T04:12:02.000Z\"\n" +
             "  ],\n" +
             "  \"secondsUntilAuthenticationFailureUnlock\": 13,\n" +
             "  \"remainingAuthenticationFailureCount\": 14,\n" +
-            "  \"lastLoginTime\": \"2015-07-06T04:06:02Z\",\n" +
+            "  \"lastLoginTime\": \"2015-07-06T04:06:02.000Z\",\n" +
             "  \"secondsUntilIdleLockout\": 15,\n" +
             "  \"mustChangePassword\": true,\n" +
             "  \"graceLoginTimes\": [\n" +
-            "    \"2015-07-06T04:20:02Z\",\n" +
-            "    \"2015-07-06T04:21:02Z\",\n" +
-            "    \"2015-07-06T04:22:02Z\"\n" +
+            "    \"2015-07-06T04:20:02.000Z\",\n" +
+            "    \"2015-07-06T04:21:02.000Z\",\n" +
+            "    \"2015-07-06T04:22:02.000Z\"\n" +
             "  ],\n" +
             "  \"remainingGraceLoginCount\": 17,\n" +
-            "  \"passwordChangedByRequiredTime\": \"2015-07-06T04:07:02Z\",\n" +
+            "  \"passwordChangedByRequiredTime\": \"2015-07-06T04:07:02.000Z\",\n" +
             "  \"passwordHistory\": [\n" +
             "    \"pw_one\",\n" +
             "    \"pw_two\",\n" +
             "    \"pw_three\"\n" +
             "  ],\n" +
             "  \"retiredPassword\": {\n" +
-            "    \"passwordRetiredTime\": \"2015-07-06T04:20:02Z\",\n" +
-            "    \"passwordExpirationTime\": \"2015-07-06T04:20:02Z\"\n" +
+            "    \"passwordRetiredTime\": \"2015-07-06T04:20:02.000Z\",\n" +
+            "    \"passwordExpirationTime\": \"2015-07-06T04:20:02.000Z\"\n" +
             "  },\n" +
-            "  \"accountActivationTime\": \"2015-07-06T04:07:02Z\",\n" +
+            "  \"accountActivationTime\": \"2015-07-06T04:07:02.000Z\",\n" +
             "  \"secondsUntilAccountActivation\": 18,\n" +
             "  \"accountUsabilityNotices\": [\n" +
             "    {\n" +

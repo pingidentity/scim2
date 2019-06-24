@@ -58,7 +58,7 @@ public class ConsentTest
             "      }\n" +
             "   ],\n" +
             "   \"meta\":{  \n" +
-            "      \"lastModified\":\"2015-07-06T04:03:02Z\"\n" +
+            "      \"lastModified\":\"2015-07-06T04:03:02.000Z\"\n" +
             "   },\n" +
             "   \"id\":\"ConsentId\"\n" +
             "}";

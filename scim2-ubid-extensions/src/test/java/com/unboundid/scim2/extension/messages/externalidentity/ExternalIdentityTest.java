@@ -52,8 +52,8 @@ public class ExternalIdentityTest
             "       \"testParamThree\":\"testValueThree\"\n" +
             "   },\n" +
             "   \"meta\":{  \n" +
-            "      \"created\":\"2015-07-04T00:00:00Z\",\n" +
-            "      \"lastModified\":\"2015-07-06T04:03:02Z\"\n" +
+            "      \"created\":\"2015-07-04T00:00:00.000Z\",\n" +
+            "      \"lastModified\":\"2015-07-06T04:03:02.000Z\"\n" +
             "   }\n" +
             "}";
 
