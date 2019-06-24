@@ -276,7 +276,7 @@ public final class Path implements Iterable<Path.Element>
    * @param index The exclusive index of the endpoint path element.
    * @return A new path to a beginning portion of this path.
    * @throws IndexOutOfBoundsException if the index is out of range
-   *         (<tt>index &lt; 0 || index &gt; size()</tt>)
+   *         ({@code index < 0 || index > size()})
    */
   public Path subPath(final int index) throws IndexOutOfBoundsException
   {
@@ -297,7 +297,7 @@ public final class Path implements Iterable<Path.Element>
    * @param index The index of the path element to retrieve.
    * @return The path element at the index.
    * @throws IndexOutOfBoundsException if the index is out of range
-   *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+   *         ({@code index < 0 || index >= size()})
    */
   public Element getElement(final int index) throws IndexOutOfBoundsException
   {
