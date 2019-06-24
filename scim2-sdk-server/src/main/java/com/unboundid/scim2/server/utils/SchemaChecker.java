@@ -20,7 +20,6 @@ package com.unboundid.scim2.server.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.types.SchemaResource;
@@ -36,7 +35,6 @@ import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
 import java.net.URI;
-import java.text.ParsePosition;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -1099,14 +1097,14 @@ public class SchemaChecker
       case DATETIME:
         try
         {
-          ISO8601Utils.parse(node.textValue(), new ParsePosition(0));
+          JsonUtils.nodeToDateValue(node);
         }
         catch (Exception e)
         {
           Debug.debug(Level.INFO, DebugType.EXCEPTION,
-              "Invalid ISO8601 string during schema checking", e);
+              "Invalid xsd:dateTime string during schema checking", e);
           results.syntaxIssues.add(prefix + "Value for attribute " + path +
-              " is not a valid ISO8601 formatted string");
+              " is not a valid xsd:dateTime formatted string");
         }
         break;
       case BINARY:

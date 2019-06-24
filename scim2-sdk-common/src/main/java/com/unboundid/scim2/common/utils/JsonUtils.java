@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -36,8 +35,6 @@ import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.ParsePosition;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -813,28 +810,18 @@ public class JsonUtils
    * @param node The JSON node to parse.
    *
    * @return A parsed date instance or {@code null} if the text is not an
-   * ISO8601 formatted date and time string.
+   * xsd:dateTime formatted date and time string.
    */
   private static Date dateValue(final JsonNode node)
   {
-    String text = node.textValue().trim();
-    if (text.length() >= 19 &&
-        Character.isDigit(text.charAt(0)) &&
-        Character.isDigit(text.charAt(1)) &&
-        Character.isDigit(text.charAt(2)) &&
-        Character.isDigit(text.charAt(3)) &&
-        text.charAt(4) == '-')
+    try
     {
-      try
-      {
-        return ISO8601Utils.parse(text, new ParsePosition(0));
-      }
-      catch (ParseException e)
-      {
-        // This is not a date after all.
-      }
+      return nodeToDateValue(node);
     }
-    return null;
+    catch (IllegalArgumentException e)
+    {
+      return null;
+    }
   }
 
   /**
@@ -1014,6 +1001,26 @@ public class JsonUtils
     {
       throw new IllegalArgumentException(e.getMessage(), e);
     }
+  }
+
+  /**
+   * Utility method to convert a Jackson node to a {@link Date} object.
+   *
+   * @param node Node to convert. The node must be textual.
+   * @return The converted Date value.
+   * @throws IllegalArgumentException if the node is not textual or its value
+   * cannot be parsed as a SCIM DateTime value.
+   */
+  public static Date nodeToDateValue(final JsonNode node)
+      throws IllegalArgumentException
+  {
+    if(!node.isTextual())
+    {
+      throw new IllegalArgumentException(
+          "non-textual node cannot be parsed as DateTime type");
+    }
+    String text = node.textValue().trim();
+    return DateTimeUtils.parse(text).getTime();
   }
 
   /**

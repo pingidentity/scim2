@@ -239,8 +239,8 @@ public class ExtensionsTest
         "    \"externalId\": \"user:externalId\",\n" +
         "    \"id\": \"user:id\",\n" +
         "    \"meta\": {\n" +
-        "        \"created\": \"2015-02-27T14:00:04Z\",\n" +
-        "        \"lastModified\": \"2015-02-27T14:00:04Z\",\n" +
+        "        \"created\": \"2015-02-27T14:00:04.000Z\",\n" +
+        "        \"lastModified\": \"2015-02-27T14:00:04.000Z\",\n" +
         "        \"location\": \"http://here/user\",\n" +
         "        \"resourceType\": \"some resource type\",\n" +
         "        \"version\": \"1.0\"\n" +
