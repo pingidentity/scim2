@@ -36,7 +36,7 @@ public class MethodNotAllowedException extends ScimException
    *
    * @param scimError     The SCIM error response.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A <tt>null</tt> value
+   *                      {@link #getCause()} method).  (A {@code null} value
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.)
    */
