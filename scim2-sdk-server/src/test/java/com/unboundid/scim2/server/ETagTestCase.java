@@ -43,6 +43,8 @@ import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.RequestEntityProcessing;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTestNg;
 import org.testng.Assert;
@@ -114,6 +116,8 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
   @Override
   protected void configureClient(final ClientConfig config)
   {
+    config.property(ClientProperties.REQUEST_ENTITY_PROCESSING,
+        RequestEntityProcessing.BUFFERED);
     config.connectorProvider(new ApacheConnectorProvider());
   }
 
