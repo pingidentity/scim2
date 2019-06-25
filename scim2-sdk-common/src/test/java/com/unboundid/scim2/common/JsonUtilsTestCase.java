@@ -1202,4 +1202,20 @@ public class JsonUtilsTestCase
     Assert.assertEquals(name.getGivenName(), "Bob");
     Assert.assertEquals(name.getMiddleName(), "X");
   }
+
+  /**
+   * Test that the SCIM 2 SDK ObjectMapper ignores null map values.
+   */
+  @Test
+  public void testNullMapValue()
+  {
+    Map<String, String> map = new HashMap<>();
+    map.put("hasValue", "value1");
+    map.put("isNull", null);
+    ObjectNode objectNode = JsonUtils.valueToNode(map);
+
+    Assert.assertFalse(objectNode.path("hasValue").isMissingNode());
+    Assert.assertEquals(objectNode.path("hasValue").textValue(), "value1");
+    Assert.assertTrue(objectNode.path("isNull").isMissingNode());
+  }
 }
