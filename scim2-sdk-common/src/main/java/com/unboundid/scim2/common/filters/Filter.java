@@ -18,10 +18,10 @@
 package com.unboundid.scim2.common.filters;
 
 import com.fasterxml.jackson.databind.node.ValueNode;
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.Parser;
 
@@ -313,7 +313,7 @@ public abstract class Filter
   {
     return new EqualFilter(Path.fromString(attributePath),
         JsonUtils.getJsonNodeFactory().textNode(
-            ISO8601Utils.format(filterValue)));
+            DateTimeUtils.format(filterValue)));
   }
 
   /**
@@ -449,7 +449,7 @@ public abstract class Filter
   {
     return new NotEqualFilter(Path.fromString(attributePath),
         JsonUtils.getJsonNodeFactory().textNode(
-            ISO8601Utils.format(filterValue)));
+            DateTimeUtils.format(filterValue)));
   }
 
   /**
@@ -662,7 +662,7 @@ public abstract class Filter
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
         JsonUtils.getJsonNodeFactory().textNode(
-            ISO8601Utils.format(filterValue)));
+            DateTimeUtils.format(filterValue)));
   }
 
   /**
@@ -767,7 +767,7 @@ public abstract class Filter
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
         JsonUtils.getJsonNodeFactory().textNode(
-            ISO8601Utils.format(filterValue)));
+            DateTimeUtils.format(filterValue)));
   }
 
   /**
@@ -872,7 +872,7 @@ public abstract class Filter
   {
     return new LessThanFilter(Path.fromString(attributePath),
         JsonUtils.getJsonNodeFactory().textNode(
-            ISO8601Utils.format(filterValue)));
+            DateTimeUtils.format(filterValue)));
   }
 
   /**
@@ -977,7 +977,7 @@ public abstract class Filter
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
         JsonUtils.getJsonNodeFactory().textNode(
-            ISO8601Utils.format(filterValue)));
+            DateTimeUtils.format(filterValue)));
   }
 
   /**
