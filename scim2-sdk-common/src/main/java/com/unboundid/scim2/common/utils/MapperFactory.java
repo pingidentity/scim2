@@ -142,6 +142,7 @@ public class MapperFactory
 
     // Don't serialize POJO nulls as JSON nulls.
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
 
     // Only use xsd:dateTime format for dates.
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
