@@ -24,11 +24,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -144,14 +141,9 @@ public class MapperFactory
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
 
-    // Only use xsd:dateTime format for dates.
+    // Only use ISO8601 format for dates.
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-    SimpleModule dateTimeModule = new SimpleModule();
-    dateTimeModule.addSerializer(Calendar.class, new CalendarSerializer());
-    dateTimeModule.addDeserializer(Calendar.class, new CalendarDeserializer());
-    dateTimeModule.addSerializer(Date.class, new DateSerializer());
-    dateTimeModule.addDeserializer(Date.class, new DateDeserializer());
-    mapper.registerModule(dateTimeModule);
+    mapper.setDateFormat(new ScimDateFormat());
 
     // Do not care about case when de-serializing POJOs.
     mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);

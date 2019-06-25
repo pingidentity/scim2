@@ -206,8 +206,8 @@ public class UserResourceTestCase
         "  },\n" +
         "  \"meta\":{  \n" +
         "    \"resourceType\":\"User\",\n" +
-        "    \"created\":\"2010-01-23T04:56:22.000Z\",\n" +
-        "    \"lastModified\":\"2011-05-13T04:42:34.000Z\",\n" +
+        "    \"created\":\"2010-01-23T04:56:22Z\",\n" +
+        "    \"lastModified\":\"2011-05-13T04:42:34Z\",\n" +
         "    \"version\":\"W\\/\\\"3694e05e9dff591\\\"\",\n" +
         "    \"location\":\"https://example.com/v2/Users/" +
         "2819c223-7f76-453a-919d-413861904646\"\n" +
