@@ -1,6 +1,6 @@
-dist: xenial
+dist: trusty
 language: java
 jdk:
-  - openjdk8
-  - openjdk11
+  - oraclejdk8
+  - oraclejdk11
 script: mvn package
