@@ -23,11 +23,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.google.common.collect.ImmutableMap;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.types.Name;
-import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.MapperFactory;
 import org.testng.Assert;
@@ -35,6 +35,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.text.ParsePosition;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -517,8 +518,8 @@ public class JsonUtilsTestCase
         Path.fromString("date"), gso.getObjectNode());
     assertEquals(dateResult.size(), 1);
     assertEquals(
-        DateTimeUtils.parse(dateResult.get(0).textValue()),
-        DateTimeUtils.parse("2015-02-27T11:28:39Z"));
+        ISO8601Utils.parse(dateResult.get(0).textValue(), new ParsePosition(0)),
+        ISO8601Utils.parse("2015-02-27T11:28:39Z", new ParsePosition(0)));
 
 
     List<JsonNode> binaryResult = JsonUtils.findMatchingPaths(
