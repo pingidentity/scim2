@@ -61,6 +61,7 @@ import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
 import com.unboundid.scim2.server.utils.ServerUtils;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTestNg;
 import org.testng.Assert;
@@ -68,6 +69,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
@@ -828,55 +830,85 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   }
 
   /**
-   * Test empty entity in PATCH, and POST requests are handled correctly.
-   * Jersey client can't issue PUT request with empty entity.
+   * Test that empty entity in POST, PUT, and PATCH requests are handled
+   * correctly.
    *
    * @throws ScimException if an error occurs.
    */
   @Test
   public void testEmptyEntity() throws ScimException
   {
-    WebTarget target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+    Client client = client();
+    // Allow null request entities
+    client.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
 
-    // No content-type header and no entity
-    Invocation.Builder b = target.path("SingletonUsers").
-        request("application/scim+json");
-    Response response = b.build("POST").invoke();
-    assertEquals(response.getStatus(), 400);
-    ErrorResponse error = response.readEntity(ErrorResponse.class);
-    assertTrue(error.getDetail().contains("No content provided"));
-    response.close();
+    try
+    {
+      WebTarget target = client.target(getBaseUri()).register(
+          new JacksonJsonProvider(JsonUtils.createObjectMapper()));
 
-    b = target.path("SingletonUsers").path("123").
-        request("application/scim+json");
-    response = b.build("PATCH").invoke();
-    assertEquals(response.getStatus(), 400);
-    assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
-    error = response.readEntity(ErrorResponse.class);
-    assertTrue(error.getDetail().contains("No content provided"));
-    response.close();
+      // No content-type header and no entity
+      Invocation.Builder b = target.path("SingletonUsers").
+          request("application/scim+json");
+      Response response = b.build("POST").invoke();
+      assertEquals(response.getStatus(), 400);
+      ErrorResponse error = response.readEntity(ErrorResponse.class);
+      assertTrue(error.getDetail().contains("No content provided"));
+      response.close();
 
-    // Content-type header set but no entity
-    b = target.path("SingletonUsers").
-        request("application/scim+json").
-        header(HttpHeaders.CONTENT_TYPE, "application/scim+json");
-    response = b.build("POST").invoke();
-    assertEquals(response.getStatus(), 400);
-    assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
-    error = response.readEntity(ErrorResponse.class);
-    assertTrue(error.getDetail().contains("No content provided"));
-    response.close();
+      b = target.path("SingletonUsers").path("123").
+          request("application/scim+json");
+      response = b.build("PUT").invoke();
+      assertEquals(response.getStatus(), 400);
+      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      error = response.readEntity(ErrorResponse.class);
+      assertTrue(error.getDetail().contains("No content provided"));
+      response.close();
 
-    b = target.path("SingletonUsers").path("123").
-        request("application/scim+json").
-        header(HttpHeaders.CONTENT_TYPE, "application/scim+json");
-    response = b.build("PATCH").invoke();
-    assertEquals(response.getStatus(), 400);
-    assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
-    error = response.readEntity(ErrorResponse.class);
-    assertTrue(error.getDetail().contains("No content provided"));
-    response.close();
+      b = target.path("SingletonUsers").path("123").
+          request("application/scim+json");
+      response = b.build("PATCH").invoke();
+      assertEquals(response.getStatus(), 400);
+      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      error = response.readEntity(ErrorResponse.class);
+      assertTrue(error.getDetail().contains("No content provided"));
+      response.close();
+
+      // Content-type header set but no entity
+      b = target.path("SingletonUsers").
+          request("application/scim+json").
+          header(HttpHeaders.CONTENT_TYPE, "application/scim+json");
+      response = b.build("POST").invoke();
+      assertEquals(response.getStatus(), 400);
+      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      error = response.readEntity(ErrorResponse.class);
+      assertTrue(error.getDetail().contains("No content provided"));
+      response.close();
+
+      b = target.path("SingletonUsers").path("123").
+          request("application/scim+json").
+                    header(HttpHeaders.CONTENT_TYPE, "application/scim+json");
+      response = b.build("PUT").invoke();
+      assertEquals(response.getStatus(), 400);
+      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      error = response.readEntity(ErrorResponse.class);
+      assertTrue(error.getDetail().contains("No content provided"));
+      response.close();
+
+      b = target.path("SingletonUsers").path("123").
+          request("application/scim+json").
+          header(HttpHeaders.CONTENT_TYPE, "application/scim+json");
+      response = b.build("PATCH").invoke();
+      assertEquals(response.getStatus(), 400);
+      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      error = response.readEntity(ErrorResponse.class);
+      assertTrue(error.getDetail().contains("No content provided"));
+      response.close();
+    }
+    finally
+    {
+      client.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, false);
+    }
   }
 
   /**
