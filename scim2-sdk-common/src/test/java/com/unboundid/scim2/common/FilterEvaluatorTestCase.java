@@ -18,10 +18,10 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.filters.FilterType;
+import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.BeforeClass;
@@ -60,7 +60,7 @@ public class FilterEvaluatorTestCase
             "    \"id\": \"user:id\",\n" +
             "    \"meta\": {\n" +
             "        \"created\": \"" +
-            ISO8601Utils.format(date, true) + "\",\n" +
+            DateTimeUtils.format(date) + "\",\n" +
             "        \"lastModified\": \"2015-02-27T11:29:39Z\",\n" +
             "        \"location\": \"http://here/user\",\n" +
             "        \"resourceType\": \"some resource type\",\n" +
@@ -188,36 +188,36 @@ public class FilterEvaluatorTestCase
             new Object[] { "addresses.priority ge 10", true },
             new Object[] { "addresses.priority le 0", true },
             new Object[] { "meta.created eq \"" +
-                ISO8601Utils.format(date, true) + "\"", true },
+                DateTimeUtils.format(date) + "\"", true },
             new Object[] { "meta.created eq \"" +
-                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) +
+                DateTimeUtils.format(date, TimeZone.getTimeZone("CST")) +
                 "\"", true },
             new Object[] { "meta.created eq \"" +
-                ISO8601Utils.format(date, true, TimeZone.getTimeZone("PST")) +
+                DateTimeUtils.format(date, TimeZone.getTimeZone("PST")) +
                 "\"", true },
             new Object[] { "meta.created ge \"" +
-                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) +
+                DateTimeUtils.format(date, TimeZone.getTimeZone("CST")) +
                 "\"", true },
             new Object[] { "meta.created le \"" +
-                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) +
+                DateTimeUtils.format(date, TimeZone.getTimeZone("CST")) +
                 "\"", true },
             new Object[] { "meta.created gt \"" +
-                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) +
+                DateTimeUtils.format(date, TimeZone.getTimeZone("CST")) +
                 "\"", false },
             new Object[] { "meta.created lt \"" +
-                ISO8601Utils.format(date, true, TimeZone.getTimeZone("CST")) +
+                DateTimeUtils.format(date, TimeZone.getTimeZone("CST")) +
                 "\"", false },
             new Object[] { "meta.created gt \"" +
-                ISO8601Utils.format(new Date(date.getTime() + 1000), false,
+                DateTimeUtils.format(new Date(date.getTime() + 1000),
                     TimeZone.getTimeZone("CST")) + "\"", false },
             new Object[] { "meta.created lt \"" +
-                ISO8601Utils.format(new Date(date.getTime() + 1000), false,
+                DateTimeUtils.format(new Date(date.getTime() + 1000),
                     TimeZone.getTimeZone("CST")) + "\"", true },
             new Object[] { "meta.created gt \"" +
-                ISO8601Utils.format(new Date(date.getTime() - 1000), false,
+                DateTimeUtils.format(new Date(date.getTime() - 1000),
                     TimeZone.getTimeZone("CST")) + "\"", true },
             new Object[] { "meta.created lt \"" +
-                ISO8601Utils.format(new Date(date.getTime() - 1000), false,
+                DateTimeUtils.format(new Date(date.getTime() - 1000),
                     TimeZone.getTimeZone("CST")) + "\"", false },
             new Object[] { "schemas[value eq " +
                 "\"urn:pingidentity:schemas:baseSchema\"]", true },

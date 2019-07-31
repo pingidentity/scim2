@@ -40,8 +40,8 @@ public class SessionTest
             "    [ \"Method One\", \"Method Two\", \"Method Three\" ], \n" +
             "   \"lastSecondFactorMethods\": \n" +
             "    [ \"SF Method One\", \"SF Method Two\" ], \n" +
-            "   \"lastLogin\":\"2015-07-06T04:03:02Z\", \n" +
-            "   \"lastSecondFactor\":\"2015-07-07T04:03:02Z\", \n" +
+            "   \"lastLogin\":\"2015-07-06T04:03:02.000Z\", \n" +
+            "   \"lastSecondFactor\":\"2015-07-07T04:03:02.000Z\", \n" +
             "   \"ipAddress\":\"192.168.10.34\", \n" +
             "   \"userAgentString\":\"User Agent String\", \n" +
             "   \"clients\": \n" +
@@ -52,7 +52,7 @@ public class SessionTest
             "       \"url\":\"http://localhost:8080/myUrl1\", \n" +
             "       \"iconUrl\":\"http://localhost:8080/myUrl1/icon.png\", \n" +
             "       \"emailAddress\":\"someone1@somewhere.com\", \n" +
-            "       \"lastAuthorization\":\"2015-07-08T04:03:02Z\" \n" +
+            "       \"lastAuthorization\":\"2015-07-08T04:03:02.000Z\" \n" +
             "    }, \n" +
             "    { \n" +
             "       \"name\":\"Client 2\", \n" +
@@ -60,7 +60,7 @@ public class SessionTest
             "       \"url\":\"http://localhost:8080/myUrl2\", \n" +
             "       \"iconUrl\":\"http://localhost:8080/myUrl2/icon.png\", \n" +
             "       \"emailAddress\":\"someone2@somewhere.com\", \n" +
-            "       \"lastAuthorization\":\"2015-07-09T04:03:02Z\" \n" +
+            "       \"lastAuthorization\":\"2015-07-09T04:03:02.000Z\" \n" +
             "    }, \n" +
             "    { \n" +
             "       \"name\":\"Client 3\", \n" +
@@ -68,7 +68,7 @@ public class SessionTest
             "       \"url\":\"http://localhost:8080/myUrl3\", \n" +
             "       \"iconUrl\":\"http://localhost:8080/myUrl3/icon.png\", \n" +
             "       \"emailAddress\":\"someone3@somewhere.com\", \n" +
-            "       \"lastAuthorization\":\"2015-07-10T04:03:02Z\" \n" +
+            "       \"lastAuthorization\":\"2015-07-10T04:03:02.000Z\" \n" +
             "    } \n" +
             "    ] \n" +
             "}";

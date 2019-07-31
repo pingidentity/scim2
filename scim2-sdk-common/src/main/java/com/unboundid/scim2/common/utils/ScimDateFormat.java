@@ -28,7 +28,21 @@ import java.util.Date;
 /**
  * Like ISO8601DateFormat except this format includes milliseconds when
  * serializing.
+ *
+ * @deprecated This class relies on deprecated APIs from the Jackson library
+ * and will be removed in a future version of the SCIM 2 SDK.
+ * For general parsing and formatting of SCIM 2 DateTime values, see
+ * {@link DateTimeUtils}. For usages with a Jackson
+ * {@link com.fasterxml.jackson.databind.ObjectMapper}, see the SCIM 2 SDK's
+ * serializers and deserializers for {@link Date} and {@link java.util.Calendar}.
+ *
+ * @see DateTimeUtils
+ * @see DateSerializer
+ * @see DateDeserializer
+ * @see CalendarSerializer
+ * @see CalendarDeserializer
  */
+@Deprecated // since 2.2.2
 public class ScimDateFormat extends ISO8601DateFormat
 {
   /**

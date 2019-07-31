@@ -1,5 +1,4 @@
 language: java
 jdk:
-  - oraclejdk8
-  - openjdk7
-script: mvn package
+  - openjdk8
+script: mvn -PTravisCI package

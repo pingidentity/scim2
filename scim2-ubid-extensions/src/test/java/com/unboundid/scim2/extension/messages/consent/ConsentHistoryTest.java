@@ -59,7 +59,7 @@ public class ConsentHistoryTest
             "      }\n" +
             "   ],\n" +
             "   \"meta\":{  \n" +
-            "      \"lastModified\":\"2015-07-04T00:00:00Z\"\n" +
+            "      \"lastModified\":\"2015-07-04T00:00:00.000Z\"\n" +
             "   },\n" +
             "   \"id\":\"ConsentHistoryId\"\n" +
             "}";
