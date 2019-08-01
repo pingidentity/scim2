@@ -7,6 +7,8 @@ The SCIM 2 DateTime handling code has been updated to rely on xsd:dateTime code 
 
 The Version class is no longer generated at build time for each module, and is now only generated for scim2-sdk-common. Because all other modules include scim2-sdk-common as a dependency, the Version class will continue to be available for all modules. This should eliminate duplicate class warnings when the SCIM 2 SDK is included in projects built using (for example) the Maven Shade Plugin.
 
+A GroupResource POJO class is now provided for working with SCIM Group resources.
+
 The `ListResponse#getTotalResults()` method has been updated to return a value of type int rather than long.
 
 Changed the mutability value of the UserResource groups attribute to 'readOnly' for conformance with RFC 7643.
