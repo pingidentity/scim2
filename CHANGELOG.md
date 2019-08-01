@@ -5,7 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## v2.3.0 - unreleased
 The SCIM 2 DateTime handling code has been updated to rely on xsd:dateTime code provided by JAXB rather than on Jackson APIs that are deprecated as of version 2.9.x. A DateTimeUtils class has been added to perform conversions between SCIM 2 DateTime strings and Java Date and Calendar objects. The ScimDateFormat class is now deprecated and should not be used.
 
-The Version class is no longer generated at build time for each module, and is now only generated for  scim2-sdk-common. Because all other modules include scim2-sdk-common as a dependency, the Version class will continue to be available for all modules. This should eliminate duplicate class warnings when the SCIM 2 SDK is included in projects built using (for example) the Maven Shade Plugin.
+The Version class is no longer generated at build time for each module, and is now only generated for scim2-sdk-common. Because all other modules include scim2-sdk-common as a dependency, the Version class will continue to be available for all modules. This should eliminate duplicate class warnings when the SCIM 2 SDK is included in projects built using (for example) the Maven Shade Plugin.
+
+The `ListResponse#getTotalResults()` method has been updated to return a value of type int rather than long.
 
 
 ## v2.2.2 - 2019-06-24
