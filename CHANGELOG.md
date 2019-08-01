@@ -9,6 +9,8 @@ The Version class is no longer generated at build time for each module, and is n
 
 The `ListResponse#getTotalResults()` method has been updated to return a value of type int rather than long.
 
+Changed the mutability value of the UserResource groups attribute to 'readOnly' for conformance with RFC 7643.
+
 
 ## v2.2.2 - 2019-06-24
 Updated the Jackson dependencies to 2.9.9, which addresses a potential security issue found in earlier versions of that library.
