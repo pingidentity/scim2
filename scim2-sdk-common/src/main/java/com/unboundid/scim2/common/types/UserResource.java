@@ -196,6 +196,7 @@ public class UserResource extends BaseScimResource
       "either thorough direct membership, nested groups, or dynamically " +
       "calculated.",
       isRequired = false,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.DEFAULT,
       multiValueClass = Group.class)
   private List<Group> groups;
