@@ -150,7 +150,7 @@ public final class ListResponse<T> extends BaseScimResource
    * @return The total number of results returned by the list or query
    * operation.
    */
-  public long getTotalResults()
+  public int getTotalResults()
   {
     return totalResults;
   }
