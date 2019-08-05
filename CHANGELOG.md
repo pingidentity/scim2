@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v2.3.1 - unreleased
+
+
 ## v2.3.0 - 2019-08-05
 The SCIM 2 DateTime handling code has been updated to rely on xsd:dateTime code provided by JAXB rather than on Jackson APIs that are deprecated as of version 2.9.x. A DateTimeUtils class has been added to perform conversions between SCIM 2 DateTime strings and Java Date and Calendar objects. The ScimDateFormat class is now deprecated and should not be used.
 
