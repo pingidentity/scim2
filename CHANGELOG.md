@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## v2.3.2 - unreleased
+Updated the jackson-databind dependency to 2.9.10, which addresses latest known potential security issues.
 
 
 ## v2.3.1 - 201-08-16
