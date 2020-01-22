@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Ping Identity Corporation
+ * Copyright 2015-2020 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -92,28 +92,29 @@ public class DotSearchFilter implements ContainerRequestFilter
       if(searchRequest.getAttributes() != null)
       {
         builder.queryParam(QUERY_PARAMETER_ATTRIBUTES,
-            StaticUtils.collectionToString(searchRequest.getAttributes(), ","));
+            encodeTemplateNames(StaticUtils.collectionToString(
+                searchRequest.getAttributes(), ",")));
       }
       if(searchRequest.getExcludedAttributes() != null)
       {
         builder.queryParam(QUERY_PARAMETER_EXCLUDED_ATTRIBUTES,
-            StaticUtils.collectionToString(
-                searchRequest.getExcludedAttributes(), ","));
+            encodeTemplateNames(StaticUtils.collectionToString(
+                searchRequest.getExcludedAttributes(), ",")));
       }
       if(searchRequest.getFilter() != null)
       {
         builder.queryParam(QUERY_PARAMETER_FILTER,
-            searchRequest.getFilter());
+            encodeTemplateNames(searchRequest.getFilter()));
       }
       if(searchRequest.getSortBy() != null)
       {
         builder.queryParam(QUERY_PARAMETER_SORT_BY,
-            searchRequest.getSortBy());
+            encodeTemplateNames(searchRequest.getSortBy()));
       }
       if(searchRequest.getSortOrder() != null)
       {
         builder.queryParam(QUERY_PARAMETER_SORT_ORDER,
-            searchRequest.getSortOrder().getName());
+            encodeTemplateNames(searchRequest.getSortOrder().getName()));
       }
       if(searchRequest.getStartIndex() != null)
       {
@@ -129,4 +130,29 @@ public class DotSearchFilter implements ContainerRequestFilter
       requestContext.setMethod(HttpMethod.GET);
     }
   }
+
+  /**
+   * Encodes a string with template parameters names present, specifically the
+   * characters '{' and '}' will be percent-encoded.
+   *
+   * @param s the string with zero or more template parameters names
+   * @return the string with encoded template parameters names.
+   */
+  private static String encodeTemplateNames(final String s)
+  {
+    String s1 = s;
+    int i = s1.indexOf('{');
+    if (i != -1)
+    {
+      s1 = s1.replace("{", "%7B");
+    }
+    i = s1.indexOf('}');
+    if (i != -1)
+    {
+      s1 = s1.replace("}", "%7D");
+    }
+
+    return s1;
+  }
+
 }
