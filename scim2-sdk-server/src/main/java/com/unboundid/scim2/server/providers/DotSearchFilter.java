@@ -138,7 +138,7 @@ public class DotSearchFilter implements ContainerRequestFilter
    * @param s the string with zero or more template parameters names
    * @return the string with encoded template parameters names.
    */
-  private static String encodeTemplateNames(final String s)
+  static String encodeTemplateNames(final String s)
   {
     String s1 = s;
     int i = s1.indexOf('{');
