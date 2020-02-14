@@ -104,6 +104,11 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
       if(response.getStatusInfo().getFamily() ==
           Response.Status.Family.SUCCESSFUL)
       {
+        response.bufferEntity();
+        /* fully read and close the input stream, allowing the buffered result
+           to be used while still keeping the TCP connection open for subsequent
+           requests
+         */
         return response.readEntity(cls);
       }
       else
