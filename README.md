@@ -4,7 +4,7 @@
 # SCIM 2 SDK
  [SCIM](http://www.simplecloud.info), or _System for Cross-domain Identity Management_, is an IETF standard that defines an extensible schema mechanism and REST API for **managing users and other identity data**. SCIM is used by a variety of vendors — including Facebook, Salesforce, Microsoft, Cisco, Sailpoint, and UnboundID — for a variety of purposes, including user provisioning, directory services, attribute exchange, and more.
 
-The UnboundID SCIM 2 SDK for Java provides a powerful and flexible set of APIs for interacting with SCIM service providers and resources. Use it to build applications and servers that interoperate with SCIM servers such as the [UnboundID Data Broker](https://www.unboundid.com/data-broker).
+The UnboundID SCIM 2 SDK for Java provides a powerful and flexible set of APIs for interacting with SCIM service providers and resources. Use it to build applications and servers that interoperate with SCIM servers such as the [PingDataGovernance Server](https://www.pingidentity.com/en/software/pingdatagovernance.html).
 
 The SCIM 2 SDK consists of the following components:
 
@@ -45,7 +45,7 @@ If you're looking for a Java SDK for SCIM 1.1, you can find it [here](https://gi
 # How to use it
 The SCIM 2 SDK requires Java 7 or greater.
 
-The primary point of entry for a client is the `ScimService` class, which represents a SCIM service provider, such as the UnboundID Data Broker. This class acts as a wrapper for a [JAX-RS](https://jax-rs-spec.java.net) client instance, providing methods for building and making requests.
+The primary point of entry for a client is the `ScimService` class, which represents a SCIM service provider, such as the PingDataGovernance Server. This class acts as a wrapper for a [JAX-RS](https://jax-rs-spec.java.net) client instance, providing methods for building and making requests.
 
 Other classes provide facilities for selecting attributes by path, building query filters, and working with JSON documents. SCIM resources returned from a service provider can either be represented as POJOs or using an API based on the [Jackson](https://github.com/FasterXML/jackson-docs) tree model.
 
