@@ -66,4 +66,28 @@ public class ServerUtils
 
     return response;
   }
+
+  /**
+   * Encodes a string with template parameters name present, specifically the
+   * characters '{' and '}' will be percent-encoded.
+   *
+   * @param s the string with zero or more template parameter names
+   * @return the string with encoded template parameter names.
+   */
+  public static String encodeTemplateNames(final String s)
+  {
+    String s1 = s;
+    int i = s1.indexOf('{');
+    if (i != -1)
+    {
+      s1 = s1.replace("{", "%7B");
+    }
+    i = s1.indexOf('}');
+    if (i != -1)
+    {
+      s1 = s1.replace("}", "%7D");
+    }
+
+    return s1;
+  }
 }
