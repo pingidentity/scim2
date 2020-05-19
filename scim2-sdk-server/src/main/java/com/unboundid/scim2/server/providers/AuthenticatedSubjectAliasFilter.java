@@ -33,9 +33,9 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * A ContainerRequestFilter implementation to resolve the /Me alias to the
@@ -63,8 +63,9 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
         String authSubjectPath;
         try
         {
-          authSubjectPath = getAuthenticatedSubjectPath(
-              requestContext.getSecurityContext());
+          authSubjectPath = ServerUtils.encodeTemplateNames(
+              getAuthenticatedSubjectPath(
+                  requestContext.getSecurityContext()));
           UriBuilder newRequestUri =
               requestContext.getUriInfo().getBaseUriBuilder();
           newRequestUri.path(authSubjectPath +
@@ -73,8 +74,13 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
               requestContext.getUriInfo().getQueryParameters();
           for (String key : queryParams.keySet())
           {
-            List<String> values = queryParams.get(key);
-            newRequestUri.queryParam(key, values.toArray());
+            String escapedKey = ServerUtils.encodeTemplateNames(key);
+            ArrayList<String> escapedValues = new ArrayList<>();
+            for (String value : queryParams.get(key))
+            {
+              escapedValues.add(ServerUtils.encodeTemplateNames(value));
+            }
+            newRequestUri.queryParam(escapedKey, escapedValues.toArray());
           }
 
           requestContext.setRequestUri(newRequestUri.build());
