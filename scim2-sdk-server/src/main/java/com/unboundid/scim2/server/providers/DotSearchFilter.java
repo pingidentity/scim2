@@ -92,29 +92,32 @@ public class DotSearchFilter implements ContainerRequestFilter
       if(searchRequest.getAttributes() != null)
       {
         builder.queryParam(QUERY_PARAMETER_ATTRIBUTES,
-            encodeTemplateNames(StaticUtils.collectionToString(
-                searchRequest.getAttributes(), ",")));
+            ServerUtils.encodeTemplateNames(
+                StaticUtils.collectionToString(
+                    searchRequest.getAttributes(), ",")));
       }
       if(searchRequest.getExcludedAttributes() != null)
       {
         builder.queryParam(QUERY_PARAMETER_EXCLUDED_ATTRIBUTES,
-            encodeTemplateNames(StaticUtils.collectionToString(
-                searchRequest.getExcludedAttributes(), ",")));
+            ServerUtils.encodeTemplateNames(
+		StaticUtils.collectionToString(
+                    searchRequest.getExcludedAttributes(), ",")));
       }
       if(searchRequest.getFilter() != null)
       {
         builder.queryParam(QUERY_PARAMETER_FILTER,
-            encodeTemplateNames(searchRequest.getFilter()));
+            ServerUtils.encodeTemplateNames(searchRequest.getFilter()));
       }
       if(searchRequest.getSortBy() != null)
       {
         builder.queryParam(QUERY_PARAMETER_SORT_BY,
-            encodeTemplateNames(searchRequest.getSortBy()));
+            ServerUtils.encodeTemplateNames(searchRequest.getSortBy()));
       }
       if(searchRequest.getSortOrder() != null)
       {
         builder.queryParam(QUERY_PARAMETER_SORT_ORDER,
-            encodeTemplateNames(searchRequest.getSortOrder().getName()));
+            ServerUtils.encodeTemplateNames(
+                searchRequest.getSortOrder().getName()));
       }
       if(searchRequest.getStartIndex() != null)
       {
@@ -130,29 +133,4 @@ public class DotSearchFilter implements ContainerRequestFilter
       requestContext.setMethod(HttpMethod.GET);
     }
   }
-
-  /**
-   * Encodes a string with template parameters names present, specifically the
-   * characters '{' and '}' will be percent-encoded.
-   *
-   * @param s the string with zero or more template parameters names
-   * @return the string with encoded template parameters names.
-   */
-  static String encodeTemplateNames(final String s)
-  {
-    String s1 = s;
-    int i = s1.indexOf('{');
-    if (i != -1)
-    {
-      s1 = s1.replace("{", "%7B");
-    }
-    i = s1.indexOf('}');
-    if (i != -1)
-    {
-      s1 = s1.replace("}", "%7D");
-    }
-
-    return s1;
-  }
-
 }

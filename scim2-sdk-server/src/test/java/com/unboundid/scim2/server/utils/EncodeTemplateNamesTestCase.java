@@ -15,7 +15,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.server.providers;
+package com.unboundid.scim2.server.utils;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -23,9 +23,9 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
 
 /**
- * Test coverage for DotSearchFilter.
+ * Test coverage for ServerUtils.EncodeTemplateNames.
  */
-public class DotSearchFilterTestCase
+public class EncodeTemplateNamesTestCase
 {
   /**
    * Retrieves a set of strings to test encodeTemplateNames.
@@ -57,7 +57,7 @@ public class DotSearchFilterTestCase
   @Test(dataProvider = "testEncodeTemplateNamesStrings")
   public void testFilter(String input, String output)
   {
-    final String actualOutput = DotSearchFilter.encodeTemplateNames(input);
+    final String actualOutput = ServerUtils.encodeTemplateNames(input);
     assertEquals(actualOutput, output);
   }
 }
