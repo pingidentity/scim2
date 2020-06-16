@@ -2,8 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v2.3.5 - unreleased
+[placeholder for next release]
+
+
 ## v2.3.4 - 2020-06-08
 Fix possible template variable injection within search parameters and returned resource location URLs.
+
+
+## v2.3.3 - 2020-03-17
+[Unused release version]
 
 
 ## v2.3.2 - 2019-10-04
