@@ -62,7 +62,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <compileSource>1.7</compileSource>
+    <compileSource>1.8</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
     <ignore.test.failures>false</ignore.test.failures>
     <jackson.version>2.10.2</jackson.version>
@@ -70,7 +70,7 @@
     <jaxb.version>2.3.1</jaxb.version>
     <jax-rs.version>2.0.1</jax-rs.version>
     <jersey.version>2.28</jersey.version>
-    <guava.version>20.0</guava.version>
+    <guava.version>29.0-jre</guava.version>
     <testng.version>6.4</testng.version>
   </properties>
 
