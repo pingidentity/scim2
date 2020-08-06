@@ -36,15 +36,15 @@ import java.util.Map;
  */
 public class MapperFactory
 {
-  private static Map<DeserializationFeature, Boolean> deserializationCustomFeatures =
+  private Map<DeserializationFeature, Boolean> deserializationCustomFeatures =
       Collections.<DeserializationFeature, Boolean>emptyMap();
-  private static Map<JsonParser.Feature, Boolean> jsonParserCustomFeatures =
+  private Map<JsonParser.Feature, Boolean> jsonParserCustomFeatures =
       Collections.<JsonParser.Feature, Boolean>emptyMap();
-  private static Map<JsonGenerator.Feature, Boolean> jsonGeneratorCustomFeatures =
+  private Map<JsonGenerator.Feature, Boolean> jsonGeneratorCustomFeatures =
       Collections.<JsonGenerator.Feature, Boolean>emptyMap();
-  private static Map<MapperFeature, Boolean> mapperCustomFeatures =
+  private Map<MapperFeature, Boolean> mapperCustomFeatures =
       Collections.<MapperFeature, Boolean>emptyMap();
-  private static Map<SerializationFeature, Boolean> serializationCustomFeatures =
+  private Map<SerializationFeature, Boolean> serializationCustomFeatures =
       Collections.<SerializationFeature, Boolean>emptyMap();
 
   /**
@@ -136,7 +136,7 @@ public class MapperFactory
    * @return an Object Mapper with the correct options set for serializing
    *     and deserializing SCIM JSON objects.
    */
-  public static ObjectMapper createObjectMapper()
+  public ObjectMapper createObjectMapper()
   {
     ObjectMapper mapper = new ObjectMapper(new ScimJsonFactory());
 
