@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## v2.3.5 - unreleased
+## v2.3.5 - 2020-08-23
 Update the Guava dependency to 29.0-jre, which addresses latest known potential security issues.
 
 
