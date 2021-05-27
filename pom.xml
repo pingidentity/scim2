@@ -66,7 +66,7 @@
     <main.basedir>${project.basedir}</main.basedir>
     <ignore.test.failures>false</ignore.test.failures>
     <jackson.version>2.10.2</jackson.version>
-    <jackson-databind.version>2.10.2</jackson-databind.version>
+    <jackson-databind.version>2.10.5.1</jackson-databind.version>
     <jaxb.version>2.3.1</jaxb.version>
     <jax-rs.version>2.0.1</jax-rs.version>
     <jersey.version>2.28</jersey.version>
