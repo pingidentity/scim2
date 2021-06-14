@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v2.3.7 - TBD
+TBD
+
+
 ## v2.3.6 - 2021-06-11
 Bump jackson-databind from 2.10.2 to 2.10.5.1.
 
