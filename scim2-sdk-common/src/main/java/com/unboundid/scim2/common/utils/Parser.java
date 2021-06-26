@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ping Identity Corporation
+ * Copyright 2015-2021 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -26,7 +26,10 @@ import com.unboundid.scim2.common.filters.FilterType;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.Stack;
 
 
@@ -36,6 +39,19 @@ import java.util.Stack;
  */
 public class Parser
 {
+  /**
+   * A {@code ThreadLocal} list of parser options, to do things like permit
+   * semicolons in attribute names.
+   */
+  private static final ThreadLocal<Set<ParserOption>> threadLocalOptions
+      = new ThreadLocal<Set<ParserOption>>()
+  {
+    @Override
+    protected Set<ParserOption> initialValue()
+    {
+      return new HashSet<>();
+    }
+  };
 
   private static final class StringReader extends Reader
   {
@@ -159,6 +175,76 @@ public class Parser
       throws BadRequestException
   {
     return readFilter(new StringReader(filterString.trim()), false);
+  }
+
+  /**
+   * Add parser options, in order to modify parser behavior within the current
+   * thread.
+   *
+   * <p>NOTE: SCIM server implementations are not guaranteed to support a given option.</p>
+   * <p>NOTE: these should be removed when no longer needed.</p>
+   *
+   * <pre>
+   *   try
+   *   {
+   *     Parser.addOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES();
+   *     performWhateverProcessing();
+   *   }
+   *   finally
+   *   {
+   *     Parser.removeOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES();
+   *   }
+   * </pre>
+   *
+   * @param options  The parser options to be added.
+   */
+  public static void addOptions(final ParserOption... options)
+  {
+    Set<ParserOption> updatedOptions = Parser.threadLocalOptions.get();
+    for (ParserOption option : options)
+    {
+      updatedOptions.add(option);
+    }
+    Parser.threadLocalOptions.set(updatedOptions);
+  }
+
+  /**
+   * Remove parser options, in order to resume default parser behavior within
+   * the current thread.
+   *
+   * @param options  The parser options to be removed.
+   */
+  public static void removeOptions(final ParserOption... options)
+  {
+    Set<ParserOption> updatedOptions = Parser.threadLocalOptions.get();
+    for (ParserOption option : options)
+    {
+      updatedOptions.remove(option);
+    }
+    Parser.threadLocalOptions.set(updatedOptions);
+  }
+
+  /**
+   * Get the current set of parser options.
+   *
+   * @return  The current set of parser options.
+   */
+  public static Set<ParserOption> getOptions()
+  {
+    return Collections.unmodifiableSet(Parser.threadLocalOptions.get());
+  }
+
+  /**
+   * Replace the current set of parser options.
+   *
+   * @param options  The updated set of parser options.
+   */
+  public static void setOptions(final Set<ParserOption> options)
+  {
+    Set<ParserOption> updatedOptions = Parser.threadLocalOptions.get();
+    updatedOptions.clear();
+    updatedOptions.addAll(options);
+    Parser.threadLocalOptions.set(updatedOptions);
   }
 
   /**
@@ -322,6 +408,10 @@ public class Parser
       {
         b.append((char)c);
       }
+      else if ((c == ';') && allowSemicolonsInAttributeNames())
+      {
+        b.append((char)c);
+      }
       else
       {
         final String msg = String.format(
@@ -427,6 +517,10 @@ public class Parser
       }
       if (c == '-' || c == '_' || c == '.' || c == ':' || c == '$' ||
           Character.isLetterOrDigit(c))
+      {
+        b.append((char)c);
+      }
+      else if ((c == ';') && allowSemicolonsInAttributeNames())
       {
         b.append((char)c);
       }
@@ -818,5 +912,16 @@ public class Parser
         previousToken.equalsIgnoreCase(FilterType.NOT.getStringValue()) ||
         previousToken.equalsIgnoreCase(FilterType.AND.getStringValue()) ||
         previousToken.equalsIgnoreCase(FilterType.OR.getStringValue());
+  }
+
+  /**
+   * Indicate whether semicolons are currently allowed in attribute names.
+   *
+   * @return {@code true} if semicolons are allowed.
+   */
+  private static boolean allowSemicolonsInAttributeNames()
+  {
+    return Parser.threadLocalOptions.get()
+        .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
   }
 }
