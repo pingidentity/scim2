@@ -51,10 +51,10 @@ public class ParserOptionTestCase
     String filterString = attributeWithSemicolon + " eq 123";
 
     // Verify filter is rejected by default
+    assertFalse(Parser.getOptions()
+        .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES));
     try
     {
-      assertFalse(Parser.getOptions()
-          .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES));
       Parser.parseFilter(filterString);
       fail("Parser should have rejected '" + filterString + "'");
     }
@@ -69,17 +69,18 @@ public class ParserOptionTestCase
         Parser.addOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
     assertTrue(Parser.getOptions()
         .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES));
+
     Filter filter = Parser.parseFilter(filterString);
     assertEquals(filter.getAttributePath().toString(), attributeWithSemicolon);
     assertEquals(filter.getFilterType().toString(), "eq");
     assertEquals(filter.getComparisonValue().toString(), "123");
 
     // Verify attribute is rejected after we remove the option.
+    Parser.setOptions(priorOptions);
+    assertFalse(Parser.getOptions()
+        .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES));
     try
     {
-      Parser.setOptions(priorOptions);
-      assertFalse(Parser.getOptions()
-          .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES));
       Parser.parseFilter(filterString);
       fail("Parser should have rejected '" + filterString + "'");
     }

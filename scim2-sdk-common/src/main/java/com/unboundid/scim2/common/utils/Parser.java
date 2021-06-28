@@ -182,21 +182,18 @@ public class Parser
    * thread.
    *
    * <p>NOTE: SCIM server implementations are not guaranteed to support a given option.</p>
-   * <p>NOTE: These should be reset when no longer needed.</p>
+   * <p>NOTE: These should be reset as soon as they are no longer needed.</p>
    *
    * <pre>
-   *   Set&lt;ParserOption&gt; priorOptions = null;
+   *   Set&lt;ParserOption&gt; priorOptions =
+   *       Parser.addOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
    *   try
    *   {
-   *     priorOptions = Parser.addOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
    *     performWhateverProcessing();
    *   }
    *   finally
    *   {
-   *     if (null != priorOptions)
-   *     {
-   *       Parser.setOptions(priorOptions);
-   *     }
+   *     Parser.setOptions(priorOptions);
    *   }
    * </pre>
    *
