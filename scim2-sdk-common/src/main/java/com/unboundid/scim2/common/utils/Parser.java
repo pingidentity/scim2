@@ -182,50 +182,40 @@ public class Parser
    * thread.
    *
    * <p>NOTE: SCIM server implementations are not guaranteed to support a given option.</p>
-   * <p>NOTE: these should be removed when no longer needed.</p>
+   * <p>NOTE: These should be reset when no longer needed.</p>
    *
    * <pre>
+   *   Set&lt;ParserOption&gt; priorOptions = null;
    *   try
    *   {
-   *     Parser.addOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES();
+   *     priorOptions = Parser.addOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
    *     performWhateverProcessing();
    *   }
    *   finally
    *   {
-   *     Parser.removeOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES();
+   *     if (null != priorOptions)
+   *     {
+   *       Parser.setOptions(priorOptions);
+   *     }
    *   }
    * </pre>
    *
    * @param options  The parser options to be added.
+   *
+   * @return The previous options, which should be reset when no longer needed.
    */
-  public static void addOptions(final ParserOption... options)
+  public static Set<ParserOption> addOptions(final ParserOption... options)
   {
     Set<ParserOption> updatedOptions = Parser.threadLocalOptions.get();
     for (ParserOption option : options)
     {
       updatedOptions.add(option);
     }
-    Parser.threadLocalOptions.set(updatedOptions);
+    return Collections.unmodifiableSet(updatedOptions);
   }
 
   /**
-   * Remove parser options, in order to resume default parser behavior within
-   * the current thread.
-   *
-   * @param options  The parser options to be removed.
-   */
-  public static void removeOptions(final ParserOption... options)
-  {
-    Set<ParserOption> updatedOptions = Parser.threadLocalOptions.get();
-    for (ParserOption option : options)
-    {
-      updatedOptions.remove(option);
-    }
-    Parser.threadLocalOptions.set(updatedOptions);
-  }
-
-  /**
-   * Get the current set of parser options.
+   * Get the current set of parser options within the current thread.
    *
    * @return  The current set of parser options.
    */
@@ -235,7 +225,7 @@ public class Parser
   }
 
   /**
-   * Replace the current set of parser options.
+   * Replace the current set of parser options within the current thread.
    *
    * @param options  The updated set of parser options.
    */
@@ -244,7 +234,6 @@ public class Parser
     Set<ParserOption> updatedOptions = Parser.threadLocalOptions.get();
     updatedOptions.clear();
     updatedOptions.addAll(options);
-    Parser.threadLocalOptions.set(updatedOptions);
   }
 
   /**

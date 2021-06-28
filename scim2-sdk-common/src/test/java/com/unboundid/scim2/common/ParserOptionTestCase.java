@@ -22,6 +22,8 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
+import java.util.Set;
+
 import org.testng.annotations.Test;
 
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -63,7 +65,8 @@ public class ParserOptionTestCase
     }
 
     // Verify filter is permitted after we specify the option.
-    Parser.addOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
+    Set<ParserOption> priorOptions =
+        Parser.addOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
     assertTrue(Parser.getOptions()
         .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES));
     Filter filter = Parser.parseFilter(filterString);
@@ -74,7 +77,7 @@ public class ParserOptionTestCase
     // Verify attribute is rejected after we remove the option.
     try
     {
-      Parser.removeOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
+      Parser.setOptions(priorOptions);
       assertFalse(Parser.getOptions()
           .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES));
       Parser.parseFilter(filterString);
