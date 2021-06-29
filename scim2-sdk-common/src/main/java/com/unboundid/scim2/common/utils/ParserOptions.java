@@ -30,9 +30,10 @@ public class ParserOptions
 {
   private Set<Character> extendedAttributeNameCharacters = new HashSet<>();
 
+
   /**
-   * Add extended characters (such as semicolons) to be allowed within attribute
-   * names.
+   * Add characters (such as semicolons) to the set of extended naming characters
+   * currently allowed within attribute names.
    *
    * @param extendedChars  The extended characters to be added.
    *
@@ -49,8 +50,9 @@ public class ParserOptions
   }
 
   /**
-   * Remove any extended characters and only allow the standard ones within
-   * attribute names.
+   * Clear the set of extended naming characters currently allowed within
+   * attribute names, so that only standard attribute naming characters are
+   * allowed.
    *
    * @return The updated {@code ParserOptions}.
    */
@@ -61,13 +63,26 @@ public class ParserOptions
   }
 
   /**
-   * Get the current set of extended characters allowed within attribute names.
+   * Get the set of extended naming characters currently allowed within
+   * attribute names.
    *
-   * @return The set of extended characters currently allowed. By default this
-   *         will be empty.
+   * @return The extended set. By default this will be empty, indicating that
+   *         only standard attribute naming characters are allowed.
    */
   public Set<Character> getExtendedAttributeNameCharacters()
   {
     return Collections.unmodifiableSet(extendedAttributeNameCharacters);
+  }
+
+  /**
+   * Indicate whether a given character is in the set of extended naming
+   * characters currently allowed within attribute names.
+   *
+   * @param c  The desired character.
+   * @return {@code true} if the character is in the extended set.
+   */
+  public boolean isExtendedAttributeNameCharacter(final char c)
+  {
+    return extendedAttributeNameCharacters.contains(c);
   }
 }

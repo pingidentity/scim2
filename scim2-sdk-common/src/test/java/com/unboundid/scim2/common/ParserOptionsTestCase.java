@@ -36,7 +36,7 @@ public class ParserOptionsTestCase
 {
 
   /**
-   * Tests {@code ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES}.
+   * Tests {@code ParserOptions} with an extended attribute name character.
    *
    * @throws Exception  If the test fails.
    */

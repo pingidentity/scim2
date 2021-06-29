@@ -341,6 +341,8 @@ public class Parser
   private static String readPathToken(final StringReader reader)
       throws BadRequestException
   {
+    ParserOptions options = Parser.getOptions();
+
     reader.mark(0);
     int c = reader.read();
 
@@ -364,13 +366,10 @@ public class Parser
         b.append((char)c);
         return b.toString();
       }
-      if (c == '-' || c == '_' || c == '$' || Character.isLetterOrDigit(c))
+      if (c == '-' || c == '_' || c == '$' || Character.isLetterOrDigit(c)
+          || options.isExtendedAttributeNameCharacter((char) c))
       {
-        b.append((char)c);
-      }
-      else if ((c == ';') && allowSemicolonsInAttributeNames())
-      {
-        b.append((char)c);
+        b.append((char) c);
       }
       else
       {
@@ -426,6 +425,8 @@ public class Parser
                                         final boolean isValueFilter)
       throws BadRequestException
   {
+    ParserOptions options = Parser.getOptions();
+
     int c;
     do
     {
@@ -475,12 +476,9 @@ public class Parser
         }
         return b.toString();
       }
-      if (c == '-' || c == '_' || c == '.' || c == ':' || c == '$' ||
-          Character.isLetterOrDigit(c))
-      {
-        b.append((char)c);
-      }
-      else if ((c == ';') && allowSemicolonsInAttributeNames())
+      if (c == '-' || c == '_' || c == '.' || c == ':' || c == '$'
+          || Character.isLetterOrDigit(c)
+          || options.isExtendedAttributeNameCharacter((char) c))
       {
         b.append((char)c);
       }
@@ -872,16 +870,5 @@ public class Parser
         previousToken.equalsIgnoreCase(FilterType.NOT.getStringValue()) ||
         previousToken.equalsIgnoreCase(FilterType.AND.getStringValue()) ||
         previousToken.equalsIgnoreCase(FilterType.OR.getStringValue());
-  }
-
-  /**
-   * Indicate whether semicolons are currently allowed in attribute names.
-   *
-   * @return {@code true} if semicolons are allowed.
-   */
-  private static boolean allowSemicolonsInAttributeNames()
-  {
-    return Parser.threadLocalOptions.get().getExtendedAttributeNameCharacters()
-        .contains(';');
   }
 }
