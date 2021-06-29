@@ -22,20 +22,17 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-import java.util.Set;
-
 import org.testng.annotations.Test;
 
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.Parser;
-import com.unboundid.scim2.common.utils.ParserOption;
 
 
 /**
- * Test coverage for using {@code ParserOption} with {@code Parser}.
+ * Test coverage for using {@code ParserOptions} with {@code Parser}.
  */
-public class ParserOptionTestCase
+public class ParserOptionsTestCase
 {
 
   /**
@@ -51,8 +48,8 @@ public class ParserOptionTestCase
     String filterString = attributeWithSemicolon + " eq 123";
 
     // Verify filter is rejected by default
-    assertFalse(Parser.getOptions()
-        .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES));
+    assertFalse(
+        Parser.getOptions().getExtendedAttributeNameCharacters().contains(';'));
     try
     {
       Parser.parseFilter(filterString);
@@ -65,10 +62,9 @@ public class ParserOptionTestCase
     }
 
     // Verify filter is permitted after we specify the option.
-    Set<ParserOption> priorOptions =
-        Parser.addOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
-    assertTrue(Parser.getOptions()
-        .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES));
+    Parser.getOptions().addExtendedAttributeNameCharacters(';');
+    assertTrue(
+        Parser.getOptions().getExtendedAttributeNameCharacters().contains(';'));
 
     Filter filter = Parser.parseFilter(filterString);
     assertEquals(filter.getAttributePath().toString(), attributeWithSemicolon);
@@ -76,9 +72,9 @@ public class ParserOptionTestCase
     assertEquals(filter.getComparisonValue().toString(), "123");
 
     // Verify attribute is rejected after we remove the option.
-    Parser.setOptions(priorOptions);
-    assertFalse(Parser.getOptions()
-        .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES));
+    Parser.getOptions().clearExtendedAttributeNameCharacters();
+    assertFalse(
+        Parser.getOptions().getExtendedAttributeNameCharacters().contains(';'));
     try
     {
       Parser.parseFilter(filterString);

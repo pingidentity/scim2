@@ -26,10 +26,7 @@ import com.unboundid.scim2.common.filters.FilterType;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.Stack;
 
 
@@ -40,18 +37,11 @@ import java.util.Stack;
 public class Parser
 {
   /**
-   * A {@code ThreadLocal} list of parser options, to do things like permit
-   * semicolons in attribute names.
+   * A {@code ThreadLocal} parser options object, to configure nonstandard
+   * settings such as permitting semicolons in attribute names.
    */
-  private static final ThreadLocal<Set<ParserOption>> threadLocalOptions
-      = new ThreadLocal<Set<ParserOption>>()
-  {
-    @Override
-    protected Set<ParserOption> initialValue()
-    {
-      return new HashSet<>();
-    }
-  };
+  private static final ThreadLocal<ParserOptions> threadLocalOptions
+      = ThreadLocal.withInitial(ParserOptions::new);
 
   private static final class StringReader extends Reader
   {
@@ -178,15 +168,24 @@ public class Parser
   }
 
   /**
-   * Add parser options, in order to modify parser behavior within the current
-   * thread.
+   * Get the current {@code ParserOptions} within the current thread.
+   *
+   * @return  The current parser options.
+   */
+  public static ParserOptions getOptions()
+  {
+    return Parser.threadLocalOptions.get();
+  }
+
+  /**
+   * Set new {@code ParserOptions} within the current thread.
    *
    * <p>NOTE: SCIM server implementations are not guaranteed to support a given option.</p>
    * <p>NOTE: These should be reset as soon as they are no longer needed.</p>
    *
    * <pre>
    *   Set&lt;ParserOption&gt; priorOptions =
-   *       Parser.addOptions(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
+   *       Parser.setOptions(newOptions);
    *   try
    *   {
    *     performWhateverProcessing();
@@ -197,40 +196,15 @@ public class Parser
    *   }
    * </pre>
    *
-   * @param options  The parser options to be added.
+   * @param newOptions  The new parser options.
    *
-   * @return The previous options, which should be reset when no longer needed.
+   * @return  The prior parser options.
    */
-  public static Set<ParserOption> addOptions(final ParserOption... options)
+  public static ParserOptions setOptions(final ParserOptions newOptions)
   {
-    Set<ParserOption> updatedOptions = Parser.threadLocalOptions.get();
-    for (ParserOption option : options)
-    {
-      updatedOptions.add(option);
-    }
-    return Collections.unmodifiableSet(updatedOptions);
-  }
-
-  /**
-   * Get the current set of parser options within the current thread.
-   *
-   * @return  The current set of parser options.
-   */
-  public static Set<ParserOption> getOptions()
-  {
-    return Collections.unmodifiableSet(Parser.threadLocalOptions.get());
-  }
-
-  /**
-   * Replace the current set of parser options within the current thread.
-   *
-   * @param options  The updated set of parser options.
-   */
-  public static void setOptions(final Set<ParserOption> options)
-  {
-    Set<ParserOption> updatedOptions = Parser.threadLocalOptions.get();
-    updatedOptions.clear();
-    updatedOptions.addAll(options);
+    ParserOptions priorOptions = Parser.threadLocalOptions.get();
+    Parser.threadLocalOptions.set(newOptions);
+    return priorOptions;
   }
 
   /**
@@ -907,7 +881,7 @@ public class Parser
    */
   private static boolean allowSemicolonsInAttributeNames()
   {
-    return Parser.threadLocalOptions.get()
-        .contains(ParserOption.ALLOW_SEMICOLONS_IN_ATTRIBUTE_NAMES);
+    return Parser.threadLocalOptions.get().getExtendedAttributeNameCharacters()
+        .contains(';');
   }
 }
