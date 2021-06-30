@@ -36,6 +36,12 @@ import java.util.Stack;
  */
 public class Parser
 {
+  /**
+   * A {@code ThreadLocal} parser options object, to configure nonstandard
+   * settings such as permitting semicolons in attribute names.
+   */
+  private static final ThreadLocal<ParserOptions> threadLocalOptions
+      = ThreadLocal.withInitial(ParserOptions::new);
 
   private static final class StringReader extends Reader
   {
@@ -159,6 +165,46 @@ public class Parser
       throws BadRequestException
   {
     return readFilter(new StringReader(filterString.trim()), false);
+  }
+
+  /**
+   * Get the current {@code ParserOptions} within the current thread.
+   *
+   * @return  The current parser options.
+   */
+  public static ParserOptions getOptions()
+  {
+    return Parser.threadLocalOptions.get();
+  }
+
+  /**
+   * Set new {@code ParserOptions} within the current thread.
+   *
+   * <p>NOTE: SCIM server implementations are not guaranteed to support a given option.</p>
+   * <p>NOTE: These should be reset as soon as they are no longer needed.</p>
+   *
+   * <pre>
+   *   Set&lt;ParserOption&gt; priorOptions =
+   *       Parser.setOptions(newOptions);
+   *   try
+   *   {
+   *     performWhateverProcessing();
+   *   }
+   *   finally
+   *   {
+   *     Parser.setOptions(priorOptions);
+   *   }
+   * </pre>
+   *
+   * @param newOptions  The new parser options.
+   *
+   * @return  The prior parser options.
+   */
+  public static ParserOptions setOptions(final ParserOptions newOptions)
+  {
+    ParserOptions priorOptions = Parser.threadLocalOptions.get();
+    Parser.threadLocalOptions.set(newOptions);
+    return priorOptions;
   }
 
   /**
@@ -295,6 +341,8 @@ public class Parser
   private static String readPathToken(final StringReader reader)
       throws BadRequestException
   {
+    ParserOptions options = Parser.getOptions();
+
     reader.mark(0);
     int c = reader.read();
 
@@ -318,9 +366,10 @@ public class Parser
         b.append((char)c);
         return b.toString();
       }
-      if (c == '-' || c == '_' || c == '$' || Character.isLetterOrDigit(c))
+      if (c == '-' || c == '_' || c == '$' || Character.isLetterOrDigit(c)
+          || options.isExtendedAttributeNameCharacter((char) c))
       {
-        b.append((char)c);
+        b.append((char) c);
       }
       else
       {
@@ -376,6 +425,8 @@ public class Parser
                                         final boolean isValueFilter)
       throws BadRequestException
   {
+    ParserOptions options = Parser.getOptions();
+
     int c;
     do
     {
@@ -425,8 +476,9 @@ public class Parser
         }
         return b.toString();
       }
-      if (c == '-' || c == '_' || c == '.' || c == ':' || c == '$' ||
-          Character.isLetterOrDigit(c))
+      if (c == '-' || c == '_' || c == '.' || c == ':' || c == '$'
+          || Character.isLetterOrDigit(c)
+          || options.isExtendedAttributeNameCharacter((char) c))
       {
         b.append((char)c);
       }
