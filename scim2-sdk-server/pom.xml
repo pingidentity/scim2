@@ -174,12 +174,10 @@
     <dependency>
       <groupId>com.unboundid.product.scim2</groupId>
       <artifactId>scim2-sdk-common</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.unboundid.product.scim2</groupId>
       <artifactId>scim2-sdk-client</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -200,42 +198,52 @@
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>javax.ws.rs-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.annotation</groupId>
       <artifactId>javax.annotation-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-server</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.inject</groupId>
       <artifactId>jersey-hk2</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
       <artifactId>jersey-test-framework-provider-jetty</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.connectors</groupId>
       <artifactId>jersey-apache-connector</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework</groupId>
       <artifactId>jersey-test-framework-core</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

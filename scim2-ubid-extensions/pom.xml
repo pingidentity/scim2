@@ -175,7 +175,6 @@
     <dependency>
       <groupId>com.unboundid.product.scim2</groupId>
       <artifactId>scim2-sdk-common</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -188,6 +187,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
