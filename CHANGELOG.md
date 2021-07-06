@@ -3,8 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## v2.3.7 - TBD
-added ParserOptions class, which may be used to extend the set of characters allowed in filtered
+Added ParserOptions class, which may be used to extend the set of characters allowed in filtered
 attribute names.
+
+Updated the TestNG dependency to 7.4.0 and corrected its scope from the default 'compile' to 'test'.
 
 
 ## v2.3.6 - 2021-06-11
