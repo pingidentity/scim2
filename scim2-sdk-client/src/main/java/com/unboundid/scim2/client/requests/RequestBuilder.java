@@ -178,12 +178,23 @@ public class RequestBuilder<T extends RequestBuilder>
         ScimException.createException(response.getStatus(), null) :
         ScimException.createException(errorResponse, null);
       response.close();
+
       return exception;
     }
     catch(ProcessingException ex)
     {
+      String errorMessage = ex.getMessage();
+
+      if (ex.getClass().getSimpleName().equals("MessageBodyProviderNotFoundException"))
+      {
+        // The exception error message contains unwanted details about an internal
+        // Jersey failure to parse the response, rather than the actual SCIM issue.
+        // Replace it with a standard reason phrase for the status code.
+        errorMessage = response.getStatusInfo().getReasonPhrase();
+      }
+
       return new ScimServiceException(
-          response.getStatus(), ex.getMessage(), ex);
+          response.getStatus(), errorMessage, ex);
     }
   }
 
