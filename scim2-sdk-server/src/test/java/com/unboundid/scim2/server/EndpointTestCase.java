@@ -1145,15 +1145,11 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     }
     catch(ScimServiceException ex)
     {
-      String deserializationIssue = "MessageBodyReader not found for media type";
-
       ErrorResponse response = ex.getScimError();
       Assert.assertNotNull(response);
       Assert.assertEquals(response.getStatus(), Integer.valueOf(401));
       Assert.assertEquals(ex.getMessage(), response.getDetail());
-
-      Assert.assertFalse(response.getDetail().startsWith(deserializationIssue));
-      Assert.assertTrue(response.getDetail().equals("Unauthorized"));
+      Assert.assertEquals(response.getDetail(), "Unauthorized");
     }
   }
 
