@@ -81,6 +81,24 @@ public class TestResourceEndpoint
   }
 
   /**
+   * This method will return a JAX-RS response with status 'Unauthorized' and
+   * media type 'application/octet-stream' and an entity body that cannot be
+   * deserialized as JSON.
+   *
+   * @return The JAX-RS response.
+   */
+  @GET
+  @Path("responseWithStatusUnauthorizedAndTypeOctetStreamAndBadEntity")
+  @Produces({MediaType.APPLICATION_OCTET_STREAM})
+  public Response getResponseWithStatusUnauthorizedAndTypeOctetStreamAndBadEntity()
+  {
+    return Response.status(Response.Status.UNAUTHORIZED)
+        .type(MediaType.APPLICATION_OCTET_STREAM)
+        .entity("WhateverDude")
+        .build();
+  }
+
+  /**
    * Test SCIM search.
    *
    * @param uriInfo The UriInfo.

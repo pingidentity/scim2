@@ -1107,9 +1107,13 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertNotNull(user.getMeta().getResourceType());
   }
 
-
   /**
-   * Test bad/unexpected response from SCIM server.
+   * Ensure that for a failed request, if the returned entity could not be
+   * deserialized as an {@code ErrorResponse}, a {@code ScimServiceException}
+   * is thrown which contains an appropriate error message and a fallback
+   * {@code ErrorResponse} describing the request failure. The detail message
+   * in the {@code ErrorResponse} should correspond to the actual SCIM issue,
+   * NOT the deserialization failure within the provider - see DS-44767.
    *
    * @throws Exception in case of error.
    */
@@ -1127,8 +1131,29 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     catch(ScimServiceException ex)
     {
       ErrorResponse response = ex.getScimError();
+      Assert.assertNotNull(response);
       Assert.assertEquals(response.getStatus(), Integer.valueOf(409));
       Assert.assertNotNull(ex.getCause());
+      Assert.assertEquals(ex.getMessage(), response.getDetail());
+      Assert.assertEquals(response.getDetail(), "Conflict");
+    }
+
+    try
+    {
+      service.searchRequest(
+          "Users/responseWithStatusUnauthorizedAndTypeOctetStreamAndBadEntity")
+          .accept(MediaType.APPLICATION_OCTET_STREAM)
+          .invoke(GenericScimResource.class);
+      Assert.fail("Expecting a ScimServiceException");
+    }
+    catch(ScimServiceException ex)
+    {
+      ErrorResponse response = ex.getScimError();
+      Assert.assertNotNull(response);
+      Assert.assertEquals(response.getStatus(), Integer.valueOf(401));
+      Assert.assertNotNull(ex.getCause());
+      Assert.assertEquals(ex.getMessage(), response.getDetail());
+      Assert.assertEquals(response.getDetail(), "Unauthorized");
     }
   }
 
