@@ -106,7 +106,7 @@ public class SchemaAwareFilterEvaluatorTestCase
    * @param result The expected result.
    * @throws ScimException If the filter string is invalid.
    */
-  @Test(dataProvider = "getTestValidFilterStrings")
+  @Test(dataProvider = "testValidFilterStrings")
   public void testFilter(String filter, boolean result)
       throws ScimException
   {
