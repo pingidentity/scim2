@@ -1109,7 +1109,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
 
   /**
-   * Test bad/unexpected response from SCIM server.
+   * Test bad/unexpected responses from SCIM server.
    *
    * @throws Exception in case of error.
    */
@@ -1129,6 +1129,31 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       ErrorResponse response = ex.getScimError();
       Assert.assertEquals(response.getStatus(), Integer.valueOf(409));
       Assert.assertNotNull(ex.getCause());
+    }
+
+    // ensure that for a failed request, if the returned entity could not
+    // be deserialized as an ErrorResponse, the SCIM exception contains a
+    // message and a fallback ErrorResponse describing the request failure
+    // NOT the deserialization failure - see DS-44767
+    try
+    {
+      service.searchRequest(
+          "Users/responseWithStatusUnauthorizedAndTypeOctetStreamAndBadEntity")
+          .accept(MediaType.APPLICATION_OCTET_STREAM)
+          .invoke(GenericScimResource.class);
+      Assert.fail("Expecting a ScimServiceException");
+    }
+    catch(ScimServiceException ex)
+    {
+      String deserializationIssue = "MessageBodyReader not found for media type";
+
+      ErrorResponse response = ex.getScimError();
+      Assert.assertNotNull(response);
+      Assert.assertEquals(response.getStatus(), Integer.valueOf(401));
+      Assert.assertEquals(ex.getMessage(), response.getDetail());
+
+      Assert.assertFalse(response.getDetail().startsWith(deserializationIssue));
+      Assert.assertTrue(response.getDetail().equals("Unauthorized"));
     }
   }
 
