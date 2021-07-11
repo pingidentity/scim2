@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
 /**
  * A builder for SCIM replace requests.
  */
-public final class ReplaceRequestBuilder<T extends ScimResource>
+public class ReplaceRequestBuilder<T extends ScimResource>
     extends ResourceReturningRequestBuilder<ReplaceRequestBuilder<T>>
 {
   private final T resource;
@@ -63,7 +63,7 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
    * {@inheritDoc}
    */
   @Override
-  Invocation.Builder buildRequest()
+  protected Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();
     if(version != null)

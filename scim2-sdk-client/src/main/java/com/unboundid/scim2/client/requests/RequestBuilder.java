@@ -167,7 +167,7 @@ public class RequestBuilder<T extends RequestBuilder>
    * @param response The JAX-RS response.
    * @return the converted ScimException.
    */
-  static ScimException toScimException(final Response response)
+  protected static ScimException toScimException(final Response response)
   {
     try
     {
@@ -209,7 +209,7 @@ public class RequestBuilder<T extends RequestBuilder>
    *
    * @return The WebTarget for the request.
    */
-  WebTarget buildTarget()
+  protected WebTarget buildTarget()
   {
     for(Map.Entry<String, List<Object>> queryParam : queryParams.entrySet())
     {
@@ -243,7 +243,7 @@ public class RequestBuilder<T extends RequestBuilder>
    *
    * @return The Invocation.Builder for the request.
    */
-  Invocation.Builder buildRequest()
+  protected Invocation.Builder buildRequest()
   {
     Invocation.Builder builder =
         buildTarget().request(accept.toArray(new String[accept.size()]));
