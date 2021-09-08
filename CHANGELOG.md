@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## v2.3.8 - TBD
+[placeholder for next release]
+
 ## v2.3.7 - 2021-09-07
 Added ParserOptions class, which may be used to extend the set of characters allowed in filtered
 attribute names.
