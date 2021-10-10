@@ -17,21 +17,19 @@
 
 package com.unboundid.scim2.common.schema;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Some basic tests for serializing and de-serializing of a schema resource.
@@ -78,7 +76,7 @@ public class SchemaResourceTestCase
    *
    * @throws Exception if an error occurs.
    */
-  @Test(dependsOnMethods = "testBasicSchemaProperties")
+  @Test
   public void testAttributeDefinitionTypes() throws Exception
   {
     Collection<AttributeDefinition> attributes =
@@ -106,7 +104,7 @@ public class SchemaResourceTestCase
    *
    * @throws Exception if an error occurs.
    */
-  @Test(dependsOnMethods = "testBasicSchemaProperties")
+  @Test
   public void testCaseInsensitivity() throws Exception
   {
     Collection<AttributeDefinition> attributes =
@@ -445,16 +443,11 @@ public class SchemaResourceTestCase
   private AttributeDefinition getAttributeDefinition(
       Collection<AttributeDefinition> attributes, final String attributeName)
   {
-    return Iterables.find(
-        attributes,
-        new Predicate<AttributeDefinition>()
-        {
-          public boolean apply(AttributeDefinition attributeDefinition)
-          {
-            return attributeDefinition.getName()
-                .equalsIgnoreCase(attributeName);
-          }
-        }
-    );
+    return attributes.stream()
+            .filter(attributeDefinition ->
+                    attributeDefinition.getName().equalsIgnoreCase(attributeName))
+            .findFirst()
+            .orElse(null);
+
   }
 }

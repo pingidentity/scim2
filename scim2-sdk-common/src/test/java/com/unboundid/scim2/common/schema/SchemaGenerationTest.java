@@ -24,8 +24,8 @@ import com.unboundid.scim2.common.schema.testobjects.TestObject1;
 import com.unboundid.scim2.common.schema.testobjects.TestObject2;
 import com.unboundid.scim2.common.schema.testobjects.TestObject3;
 import com.unboundid.scim2.common.utils.SchemaUtils;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,10 +34,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests cases for SCIM schema generation.
  */
-@Test
+
 public class SchemaGenerationTest
 {
   private enum Required
@@ -73,6 +78,7 @@ public class SchemaGenerationTest
     SchemaResource schemaDefinition =
         SchemaUtils.getSchema(TestObject1.class);
     String schemaJsonString = mapper.writeValueAsString(schemaDefinition);
+    assertNotNull(schemaJsonString);
   }
 
   /**
@@ -204,6 +210,7 @@ public class SchemaGenerationTest
 
     checkAllAttributesFound(expectedAttributes);
     String schemaJsonString = mapper.writeValueAsString(schemaDefinition);
+    assertNotNull(schemaJsonString);
   }
 
   /**
@@ -241,10 +248,10 @@ public class SchemaGenerationTest
   {
 //    @SchemaInfo(id="urn:id:TestObject1",
 //        description = "description:TestObject1", name = "name:TestObject1")
-    Assert.assertEquals(schemaDefinition.getId(), "urn:id:TestObject1");
-    Assert.assertEquals(schemaDefinition.getDescription(),
+    assertEquals(schemaDefinition.getId(), "urn:id:TestObject1");
+    assertEquals(schemaDefinition.getDescription(),
         "description:TestObject1");
-    Assert.assertEquals(schemaDefinition.getName(), "name:TestObject1");
+    assertEquals(schemaDefinition.getName(), "name:TestObject1");
   }
 
   private void tc3_checkComplexObject(AttributeDefinition attribute)
@@ -256,8 +263,8 @@ public class SchemaGenerationTest
 
     Collection<AttributeDefinition> subAttributes =
         attribute.getSubAttributes();
-    Assert.assertTrue(subAttributes != null);
-    Assert.assertTrue(subAttributes.size() > 0);
+    assertTrue(subAttributes != null);
+    assertTrue(subAttributes.size() > 0);
     List<String> expectedAttributes = makeModifiableList("stringField_3a");
 
     for(AttributeDefinition subAttribute : subAttributes)
@@ -290,8 +297,8 @@ public class SchemaGenerationTest
 
     Collection<AttributeDefinition> subAttributes =
         attribute.getSubAttributes();
-    Assert.assertTrue(subAttributes != null);
-    Assert.assertTrue(subAttributes.size() > 0);
+    assertTrue(subAttributes != null);
+    assertTrue(subAttributes.size() > 0);
     List<String> expectedAttributes = new LinkedList<String>();
     addSubAttributeFields(expectedAttributes);
 
@@ -326,57 +333,56 @@ public class SchemaGenerationTest
       uniqueness = AttributeDefinition.Uniqueness.NONE;
     }
 
-    Assert.assertEquals(attribute.getDescription(), description);
-    Assert.assertEquals(attribute.getMutability(), mutability);
-    Assert.assertEquals(attribute.getReturned(), returned);
-    Assert.assertEquals(attribute.getUniqueness(), uniqueness);
+    assertEquals(attribute.getDescription(), description);
+    assertEquals(attribute.getMutability(), mutability);
+    assertEquals(attribute.getReturned(), returned);
+    assertEquals(attribute.getUniqueness(), uniqueness);
 
     switch(multivalued)
     {
       case MULTIVALUED:
-        Assert.assertTrue(attribute.isMultiValued());
+        assertTrue(attribute.isMultiValued());
         break;
 
       case NOT_MULTIVALUED:
       default:
-        Assert.assertFalse(attribute.isMultiValued());
+        assertFalse(attribute.isMultiValued());
         break;
     }
 
     switch(required)
     {
       case REQUIRED:
-        Assert.assertTrue(attribute.isRequired());
+        assertTrue(attribute.isRequired());
         break;
 
       case NOT_REQUIRED:
       default:
-        Assert.assertFalse(attribute.isRequired());
+        assertFalse(attribute.isRequired());
         break;
     }
 
     switch(caseExact)
     {
       case NOT_CASE_EXACT:
-        Assert.assertFalse(attribute.isCaseExact());
+        assertFalse(attribute.isCaseExact());
         break;
 
       case CASE_EXACT:
       default:
-        Assert.assertTrue(attribute.isCaseExact());
+        assertTrue(attribute.isCaseExact());
         break;
     }
-
-    Assert.assertEquals(attribute.getCanonicalValues(), canonicalValues);
-    Assert.assertEquals(attribute.getReferenceTypes(), referenceType);
-    Assert.assertEquals(attribute.getType(), type);
+    assertIterableEquals(attribute.getCanonicalValues(), canonicalValues);
+    assertEquals(attribute.getReferenceTypes(), referenceType);
+    assertEquals(attribute.getType(), type);
   }
 
   private void checkAllAttributesFound(List<String> expectedAttributes)
   {
     if(expectedAttributes.size() > 0)
     {
-      Assert.fail("Did not find all attributes : " + expectedAttributes);
+      Assertions.fail("Did not find all attributes : " + expectedAttributes);
     }
   }
 
@@ -389,7 +395,7 @@ public class SchemaGenerationTest
     }
     else
     {
-      Assert.fail("Found an unexpected attribute : " +
+      Assertions.fail("Found an unexpected attribute : " +
           attribute.getName());
     }
   }

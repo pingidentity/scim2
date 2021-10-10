@@ -23,21 +23,22 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.annotations.Test;
+
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for list responses.
  */
-public class ListResponseTestCase
-{
+public class ListResponseTestCase {
   /**
    * Test list response.
    *
@@ -45,83 +46,90 @@ public class ListResponseTestCase
    */
   @Test
   public void testListResponse()
-      throws Exception
-  {
+          throws Exception {
     ListResponse<ObjectNode> listResponse =
-        JsonUtils.getObjectReader().forType(
-            new TypeReference<ListResponse<ObjectNode>>() {}).readValue(
-            "{  \n" +
-            "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n" +
-            "  ],\n" +
-                // Test required property case-insensitivity
-            "  \"totalresults\":2,\n" +
-            "  \"startIndex\":1,\n" +
-                // Test case-insensitivity
-            "  \"ItemsPerPage\":3,\n" +
-            "  \"Resources\":[  \n" +
-            "    {  \n" +
-            "      \"userName\":\"bjensen\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"userName\":\"jsmith\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}");
+            JsonUtils.getObjectReader()
+                    .forType(
+                            new TypeReference<ListResponse<ObjectNode>>() {
+                            })
+                    .readValue(
+                            "{  \n" +
+                                    "  \"schemas\":[  \n" +
+                                    "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n" +
+                                    "  ],\n" +
+                                    // Test required property case-insensitivity
+                                    "  \"totalresults\":2,\n" +
+                                    "  \"startIndex\":1,\n" +
+                                    // Test case-insensitivity
+                                    "  \"ItemsPerPage\":3,\n" +
+                                    "  \"Resources\":[  \n" +
+                                    "    {  \n" +
+                                    "      \"userName\":\"bjensen\"\n" +
+                                    "    },\n" +
+                                    "    {  \n" +
+                                    "      \"userName\":\"jsmith\"\n" +
+                                    "    }\n" +
+                                    "  ]\n" +
+                                    "}");
 
-    try
-    {
+    try {
       listResponse =
-        JsonUtils.getObjectReader().forType(
-          new TypeReference<ListResponse<ObjectNode>>() {}).readValue(
-          "{  \n" +
-            "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n" +
-            "  ],\n" +
-            // Test missing required property: totalResults
-            "  \"startIndex\":1,\n" +
-            // Test case-insensitivity
-            "  \"ItemsPerPage\":3,\n" +
-            "  \"Resources\":[  \n" +
-            "    {  \n" +
-            "      \"userName\":\"bjensen\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"userName\":\"jsmith\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}");
+              JsonUtils.getObjectReader()
+                      .forType(
+                              new TypeReference<ListResponse<ObjectNode>>() {
+                              })
+                      .readValue(
+                              "{  \n" +
+                                      "  \"schemas\":[  \n" +
+                                      "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n" +
+                                      "  ],\n" +
+                                      // Test missing required property: totalResults
+                                      "  \"startIndex\":1,\n" +
+                                      // Test case-insensitivity
+                                      "  \"ItemsPerPage\":3,\n" +
+                                      "  \"Resources\":[  \n" +
+                                      "    {  \n" +
+                                      "      \"userName\":\"bjensen\"\n" +
+                                      "    },\n" +
+                                      "    {  \n" +
+                                      "      \"userName\":\"jsmith\"\n" +
+                                      "    }\n" +
+                                      "  ]\n" +
+                                      "}");
       fail("Expected failure for missing required property 'totalResults'");
     }
-    catch (final JsonMappingException je)
-    {
-      assertTrue(je.getMessage().contains("Missing required creator property"),
-        je.getMessage());
+    catch (final JsonMappingException je) {
+      assertTrue(je.getMessage()
+                      .contains("Missing required creator property"),
+              je.getMessage());
     }
 
     assertEquals(listResponse.getTotalResults(), 2);
     assertEquals(listResponse.getStartIndex(), Integer.valueOf(1));
     assertEquals(listResponse.getItemsPerPage(), Integer.valueOf(3));
-    assertEquals(listResponse.getResources().size(), 2);
+    assertEquals(listResponse.getResources()
+            .size(), 2);
 
     ArrayList<ResourceTypeResource> resourceTypeList =
-        new ArrayList<ResourceTypeResource>();
+            new ArrayList<ResourceTypeResource>();
     resourceTypeList.add(
-        new ResourceTypeResource("urn:test", "test", "test", new URI("/test"),
-            new URI("urn:test"),
-            Collections.<ResourceTypeResource.SchemaExtension>emptyList()));
+            new ResourceTypeResource("urn:test", "test", "test", new URI("/test"),
+                    new URI("urn:test"),
+                    Collections.<ResourceTypeResource.SchemaExtension>emptyList()));
     resourceTypeList.add(
-        new ResourceTypeResource("urn:test2", "test2", "test2",
-            new URI("/test2"), new URI("urn:test2"),
-            Collections.<ResourceTypeResource.SchemaExtension>emptyList()));
+            new ResourceTypeResource("urn:test2", "test2", "test2",
+                    new URI("/test2"), new URI("urn:test2"),
+                    Collections.<ResourceTypeResource.SchemaExtension>emptyList()));
     ListResponse<ResourceTypeResource> response =
-        new ListResponse<ResourceTypeResource>(100, resourceTypeList, 1, 10);
+            new ListResponse<ResourceTypeResource>(100, resourceTypeList, 1, 10);
 
     String serialized = JsonUtils.getObjectWriter().
-        writeValueAsString(response);
-    assertEquals(JsonUtils.getObjectReader().forType(
-            new TypeReference<ListResponse<ResourceTypeResource>>() { }).
-            readValue(serialized),
-        response);
+            writeValueAsString(response);
+    assertEquals(JsonUtils.getObjectReader()
+                    .forType(
+                            new TypeReference<ListResponse<ResourceTypeResource>>() {
+                            }).
+                    readValue(serialized),
+            response);
   }
 }

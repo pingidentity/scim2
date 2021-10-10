@@ -22,12 +22,9 @@ import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
-import org.testng.annotations.Test;
-
+import org.junit.jupiter.api.Test;
 import java.io.IOException;
-
-import static org.testng.Assert.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Test for search requests.
  */

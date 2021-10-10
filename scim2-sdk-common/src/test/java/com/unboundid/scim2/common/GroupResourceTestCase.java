@@ -16,16 +16,17 @@
  */
 package com.unboundid.scim2.common;
 
+import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Member;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-import java.io.IOException;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Some basic tests for serialization and de-serialization of the core group
@@ -38,7 +39,7 @@ public class GroupResourceTestCase
   /**
    * Initializes the environment before each test method.
    */
-  @BeforeMethod
+  @BeforeEach
   public void init()
   {
     fullRepresentation = "{\n" +

@@ -17,14 +17,18 @@
 
 package com.unboundid.scim2.common.types;
 
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 /**
  * Tests serialization and deserialization of AuthenticationScheme objects.
  */
-@Test
+
 public class AuthenticationSchemeTest
 {
   private static final String AS_NAME = "name";
@@ -52,17 +56,17 @@ public class AuthenticationSchemeTest
 
     AuthenticationScheme as = JsonUtils.getObjectReader().forType(
         AuthenticationScheme.class).readValue(authSchemeString);
-    Assert.assertEquals(as.getName(), AS_NAME);
-    Assert.assertEquals(as.getDescription(), AS_DESC);
-    Assert.assertEquals(as.getSpecUri().toString(), AS_SPEC_URI);
-    Assert.assertEquals(as.getDocumentationUri().toString(), AS_DOC_URI);
-    Assert.assertEquals(as.getType(), AS_TYPE);
-    Assert.assertEquals(as.isPrimary(), true);
+    assertEquals(as.getName(), AS_NAME);
+    assertEquals(as.getDescription(), AS_DESC);
+    assertEquals(as.getSpecUri().toString(), AS_SPEC_URI);
+    assertEquals(as.getDocumentationUri().toString(), AS_DOC_URI);
+    assertEquals(as.getType(), AS_TYPE);
+    assertEquals(as.isPrimary(), true);
 
     String serializedString =
         JsonUtils.getObjectWriter().writeValueAsString(as);
     AuthenticationScheme deserializedScheme = JsonUtils.getObjectReader().
         forType(AuthenticationScheme.class).readValue(serializedString);
-    Assert.assertEquals(as, deserializedScheme);
+    assertEquals(as, deserializedScheme);
   }
 }

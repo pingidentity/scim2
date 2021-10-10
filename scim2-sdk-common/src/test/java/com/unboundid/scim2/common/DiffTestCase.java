@@ -29,18 +29,18 @@ import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.Photo;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test the SCIM resource diff utility.
@@ -1089,7 +1089,7 @@ public class DiffTestCase
     ObjectNode target = JsonUtils.getObjectReader().
         forType(ObjectNode.class).readValue(jsonString);
     List<PatchOperation> d = JsonUtils.diff(source, target, false);
-    Assert.assertEquals(d.size(), 0);
+    assertEquals(d.size(), 0);
   }
 
   private void removeNullNodes(JsonNode object)

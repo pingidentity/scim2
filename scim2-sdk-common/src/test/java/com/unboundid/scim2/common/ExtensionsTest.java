@@ -24,8 +24,8 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,10 +34,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Tests for schema extensions.
  */
-@Test
+
 public class ExtensionsTest
 {
   @Schema(description = "Class to represent users",
@@ -207,20 +208,20 @@ public class ExtensionsTest
     JsonNode userNode = JsonUtils.getObjectReader().readTree(userString);
 
     // check some of the basic fields
-    Assert.assertEquals(userNode.path("userName").asText(),
+    assertEquals(userNode.path("userName").asText(),
         user.getUserName());
-    Assert.assertEquals(userNode.path("id").asText(),
+    assertEquals(userNode.path("id").asText(),
         user.getId());
-    Assert.assertEquals(userNode.path("externalId").asText(),
+    assertEquals(userNode.path("externalId").asText(),
         user.getExternalId());
 
     // check the schemas
-    Assert.assertEquals(
+    assertEquals(
         JsonUtils.getObjectReader().treeToValue(userNode.path("schemas"),
             HashSet.class), user.getSchemaUrns());
 
     // check the extension values
-    Assert.assertEquals(
+    assertEquals(
         userNode.path("urn:pingidentity:schemas:FavoriteColor").
             path("favoriteColor").asText(),
         JsonUtils.nodeToValue(user.getExtensionValues(
@@ -265,20 +266,20 @@ public class ExtensionsTest
         CoreClass_User.class).readValue(jsonString);
 
     // check some of the basic fields
-    Assert.assertEquals(user.getUserName(), "user:username");
-    Assert.assertEquals(user.getId(), "user:id");
-    Assert.assertEquals(user.getExternalId(), "user:externalId");
+    assertEquals(user.getUserName(), "user:username");
+    assertEquals(user.getId(), "user:id");
+    assertEquals(user.getExternalId(), "user:externalId");
 
     // check the schemas
     Set<String> schemaSet = new HashSet<String>();
     schemaSet.add("urn:pingidentity:schemas:FavoriteColor");
     schemaSet.add("urn:junit:CoreClass_User:Users");
 
-    Assert.assertEquals(user.getSchemaUrns(),
+    assertEquals(user.getSchemaUrns(),
         schemaSet);
 
     // check the extension values
-    Assert.assertEquals(JsonUtils.nodeToValue(
+    assertEquals(JsonUtils.nodeToValue(
         user.getExtensionValues(Path.root(ExtensionClass.class)).get(0),
             ExtensionClass.class).getFavoriteColor(),
         "extension:favoritecolor");
@@ -301,10 +302,10 @@ public class ExtensionsTest
             "urn:pingidentity:schemas:FavoriteColor:"),
         Map.class);
 
-    Assert.assertEquals(extensionClass.getFavoriteColor(),
+    assertEquals(extensionClass.getFavoriteColor(),
         "extension:favoritecolor");
 
-    Assert.assertEquals(extensionAttrs.get("favoriteColor"),
+    assertEquals(extensionAttrs.get("favoriteColor"),
         extensionClass.getFavoriteColor());
   }
 
