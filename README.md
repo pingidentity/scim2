@@ -60,7 +60,7 @@ import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.filters.Filter;
 
 // Create a ScimService
-Client client = ClientBuilder.newClient().register(OAuth2ClientSupport.feature("..bearerToken.."));;
+Client client = ClientBuilder.newClient().register(OAuth2ClientSupport.feature("..bearerToken.."));
 WebTarget target = client.target("https://example.com/scim/v2");
 ScimService scimService = new ScimService(target);
 
