@@ -174,7 +174,7 @@ public class SchemaUtils
     if(!cls.isAssignableFrom(AttributeDefinition.class) &&
         classesProcessed.contains(className))
     {
-      throw new RuntimeException("Cycles detected in Schema");
+      return null;
     }
 
     Collection<PropertyDescriptor> propertyDescriptors =
@@ -247,9 +247,11 @@ public class SchemaUtils
         classesProcessed.push(cls.getCanonicalName());
         Collection<AttributeDefinition> subAttributes =
             getAttributes(classesProcessed, propertyCls);
-        attributeBuilder.addSubAttributes(subAttributes.toArray(
-            new AttributeDefinition[subAttributes.size()]));
-        classesProcessed.pop();
+        if (subAttributes != null) {
+          attributeBuilder.addSubAttributes(subAttributes.toArray(
+                  new AttributeDefinition[subAttributes.size()]));
+        }
+          classesProcessed.pop();
       }
 
       attributes.add(attributeBuilder.build());
