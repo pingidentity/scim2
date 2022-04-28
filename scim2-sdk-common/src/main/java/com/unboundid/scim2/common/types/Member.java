@@ -52,6 +52,16 @@ public class Member
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
+  
+    @Attribute(description = "A label indicating the type of resource, " +
+	      " e.g., 'User' or 'Group'.",
+	      isRequired = false,
+	      isCaseExact = false,
+	      canonicalValues = {"User"},
+	      mutability = AttributeDefinition.Mutability.IMMUTABLE,
+	      returned = AttributeDefinition.Returned.DEFAULT,
+	      uniqueness = AttributeDefinition.Uniqueness.NONE)
+	  private String type;
 
   /**
    * Retrieves the identifier of the group member.
@@ -118,7 +128,29 @@ public class Member
     this.display = display;
     return this;
   }
+  
+    /**
+   * Retrieves the type of the group member.
+   *
+   * @return The type of the group member.
+   */
+  public String getType()
+  {
+    return type;
+  }
 
+  /**
+   * Specifies the type of the group member.
+   *
+   * @param type of the group member
+   * @return This object.
+   */
+  public MemberSon setType(final String type)
+  {
+    this.type = type;
+    return this;
+  }
+  
   /**
    * {@inheritDoc}
    */
@@ -145,6 +177,6 @@ public class Member
   @Override
   public int hashCode()
   {
-    return Objects.hash(value, ref, display);
+    return Objects.hash(value, ref, display, type);
   }
 }
