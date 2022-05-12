@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2.server;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.exceptions.NotModifiedException;
@@ -37,10 +37,12 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.server.providers.JsonProcessingExceptionMapper;
 import com.unboundid.scim2.server.providers.RuntimeExceptionMapper;
 import com.unboundid.scim2.server.providers.ScimExceptionMapper;
-import com.unboundid.scim2.server.resources.
-    AbstractServiceProviderConfigEndpoint;
+import com.unboundid.scim2.server.resources.AbstractServiceProviderConfigEndpoint;
 import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
@@ -50,9 +52,6 @@ import org.glassfish.jersey.test.JerseyTestNg;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;

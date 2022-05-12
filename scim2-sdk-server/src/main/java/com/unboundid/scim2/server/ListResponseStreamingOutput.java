@@ -18,8 +18,8 @@
 package com.unboundid.scim2.server;
 
 import com.unboundid.scim2.common.ScimResource;
+import jakarta.ws.rs.core.StreamingOutput;
 
-import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.OutputStream;
 
