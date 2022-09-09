@@ -67,7 +67,7 @@
     <ignore.test.failures>false</ignore.test.failures>
     <jackson.version>2.10.2</jackson.version>
     <jackson-databind.version>2.10.5.1</jackson-databind.version>
-    <jaxb.version>2.3.1</jaxb.version>
+    <jaxb.version>4.0.0</jaxb.version>
     <jax-rs.version>2.0.1</jax-rs.version>
     <jersey.version>2.28</jersey.version>
     <guava.version>29.0-jre</guava.version>
@@ -385,8 +385,8 @@
         <version>${jax-rs.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
         <version>${jaxb.version}</version>
       </dependency>
       <dependency>

@@ -16,7 +16,7 @@
  */
 package com.unboundid.scim2.common.utils;
 
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
