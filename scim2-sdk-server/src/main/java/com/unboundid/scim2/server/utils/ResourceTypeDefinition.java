@@ -379,11 +379,11 @@ public final class ResourceTypeDefinition
    *
    * @param resource a root resource whose
    *                 {@link com.unboundid.scim2.server.annotations.ResourceType}
-   *                 and {@link javax.ws.rs.Path} values will be used to
+   *                 and {@link jakarta.ws.rs.Path} values will be used to
    *                 initialize the ResourceTypeDefinition.
    * @return a new ResourceTypeDefinition or {@code null} if resource is not
    * annotated with {@link com.unboundid.scim2.server.annotations.ResourceType}
-   * and {@link javax.ws.rs.Path}.
+   * and {@link jakarta.ws.rs.Path}.
    */
   public static ResourceTypeDefinition fromJaxRsResource(
       final Class<?> resource)
@@ -398,10 +398,10 @@ public final class ResourceTypeDefinition
     while(c != null && resourceType == null);
 
     c = resource;
-    javax.ws.rs.Path path;
+    jakarta.ws.rs.Path path;
     do
     {
-      path = c.getAnnotation(javax.ws.rs.Path.class);
+      path = c.getAnnotation(jakarta.ws.rs.Path.class);
       c = c.getSuperclass();
     }
     while(c != null && path == null);

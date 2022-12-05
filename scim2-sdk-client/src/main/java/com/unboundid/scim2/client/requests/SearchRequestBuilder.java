@@ -32,12 +32,12 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -213,7 +213,7 @@ public final class SearchRequestBuilder
    * @param resultHandler The search result handler that should be used to
    *                      process the resources.
    * @param cls The Java class object used to determine the type to return.
-   * @throws javax.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
+   * @throws jakarta.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
    * @throws ScimException If the SCIM service provider responded with an error.
    */
   private <T> void invoke(

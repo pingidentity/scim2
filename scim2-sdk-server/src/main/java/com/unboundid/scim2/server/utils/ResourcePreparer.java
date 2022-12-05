@@ -28,9 +28,9 @@ import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Iterator;

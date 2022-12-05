@@ -20,7 +20,7 @@ package com.unboundid.scim2.client.requests;
 import com.unboundid.scim2.common.utils.ApiConstants;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.WebTarget;
 import java.util.Set;
 
 /**
