@@ -40,7 +40,7 @@ public final class SearchRequest extends BaseScimResource
   @JsonProperty
   private final Set<String> attributes;
 
-  @Attribute(description = "A mulit-valued list of strings indicating " +
+  @Attribute(description = "A multi-valued list of strings indicating " +
       "the names of resource attributes to be removed from the default set " +
       "of attributes to return")
   @JsonProperty

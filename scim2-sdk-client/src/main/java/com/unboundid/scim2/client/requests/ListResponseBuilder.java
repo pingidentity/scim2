@@ -73,6 +73,8 @@ public class ListResponseBuilder<T>
 
   /**
    * {@inheritDoc}
+   * <p>
+   * This method currently does not perform any action and should not be used.
    */
   public void extension(final String urn,
                         final ObjectNode extensionObjectNode)
