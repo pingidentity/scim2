@@ -217,7 +217,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       assertEquals(e.getResponse().getStatus(), 501);
       ErrorResponse errorResponse =
           e.getResponse().readEntity(ErrorResponse.class);
-      assertEquals(errorResponse.getStatus(), new Integer(501));
+      assertEquals(errorResponse.getStatus(), Integer.valueOf(501));
     }
     catch (ScimException e)
     {
@@ -389,8 +389,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
             invoke(UserResource.class);
 
     assertEquals(returnedUsers.getTotalResults(), 1);
-    assertEquals(returnedUsers.getStartIndex(), new Integer(1));
-    assertEquals(returnedUsers.getItemsPerPage(), new Integer(1));
+    assertEquals(returnedUsers.getStartIndex(), Integer.valueOf(1));
+    assertEquals(returnedUsers.getItemsPerPage(), Integer.valueOf(1));
 
     final UserResource r = returnedUsers.getResources().get(0);
     service.retrieve(r);
@@ -413,8 +413,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
             invokePost(UserResource.class);
 
     assertEquals(returnedUsers.getTotalResults(), 1);
-    assertEquals(returnedUsers.getStartIndex(), new Integer(1));
-    assertEquals(returnedUsers.getItemsPerPage(), new Integer(1));
+    assertEquals(returnedUsers.getStartIndex(), Integer.valueOf(1));
+    assertEquals(returnedUsers.getItemsPerPage(), Integer.valueOf(1));
 
     // Now with application/json
     WebTarget target = target().register(
@@ -785,7 +785,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertEquals(response.getStatus(), 400);
     assertEquals(response.getMediaType(), MediaType.valueOf(MEDIA_TYPE_SCIM));
     ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
-    assertEquals(errorResponse.getStatus(), new Integer(400));
+    assertEquals(errorResponse.getStatus(), Integer.valueOf(400));
     assertEquals(errorResponse.getScimType(), "invalidSyntax");
     assertNotNull(errorResponse.getDetail());
 
@@ -816,7 +816,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertEquals(response.getStatus(), 400);
     assertEquals(response.getMediaType(), MediaType.valueOf(MEDIA_TYPE_SCIM));
     ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
-    assertEquals(errorResponse.getStatus(), new Integer(400));
+    assertEquals(errorResponse.getStatus(), Integer.valueOf(400));
     assertEquals(errorResponse.getScimType(), "invalidSyntax");
     assertNotNull(errorResponse.getDetail());
 
