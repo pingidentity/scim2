@@ -19,6 +19,7 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -43,6 +44,8 @@ import java.util.TreeMap;
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:ListResponse",
     name="List Response", description = "SCIM 2.0 List Response")
+@JsonPropertyOrder({ "schemas", "totalResults", "itemsPerPage", "startIndex",
+        "Resources" })
 public final class ListResponse<T> extends BaseScimResource
     implements Iterable<T>
 {
@@ -51,21 +54,20 @@ public final class ListResponse<T> extends BaseScimResource
   @JsonProperty(value = "totalResults", required = true)
   private final int totalResults;
 
-
-  @Attribute(description = "A multi-valued list of complex objects " +
-      "containing the requested resources")
-  @JsonProperty(value = "Resources", required = true)
-  private final List<T> resources;
+  @Attribute(description = "The number of resources returned in a list " +
+      "response page")
+  @JsonProperty("itemsPerPage")
+  private final Integer itemsPerPage;
 
   @Attribute(description = "The 1-based index of the first result in " +
       "the current set of list results")
   @JsonProperty("startIndex")
   private final Integer startIndex;
 
-  @Attribute(description = "The number of resources returned in a list " +
-      "response page")
-  @JsonProperty("itemsPerPage")
-  private final Integer itemsPerPage;
+  @Attribute(description = "A multi-valued list of complex objects " +
+      "containing the requested resources")
+  @JsonProperty(value = "Resources", required = true)
+  private final List<T> resources;
 
   /**
    * Create a new List Response.
@@ -80,8 +82,7 @@ public final class ListResponse<T> extends BaseScimResource
       new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
     properties.putAll(props);
 
-    checkRequiredProperties(properties, new String[] {"totalResults",
-      "resources"});
+    checkRequiredProperties(properties, "totalResults", "resources");
 
     this.totalResults = (Integer)properties.get("totalResults");
     this.resources =  (List<T>)properties.get("resources");
@@ -101,7 +102,7 @@ public final class ListResponse<T> extends BaseScimResource
    * @param totalResults The total number of results returned.
    * @param resources A multi-valued list of complex objects containing the
    *                  requested resources
-   * @param startIndex The 1-based index of hte first result in the current
+   * @param startIndex The 1-based index of the first result in the current
    *                   set of list results
    * @param itemsPerPage The number of resources returned in a list response
    *                     page.
@@ -166,10 +167,10 @@ public final class ListResponse<T> extends BaseScimResource
   }
 
   /**
-   * Retrieves the 1-based index of hte first result in the current set of list
+   * Retrieves the 1-based index of the first result in the current set of list
    * results.
    *
-   * @return The 1-based index of hte first result in the current set of list
+   * @return The 1-based index of the first result in the current set of list
    * results or {@code null} if pagination is not used and the full results are
    * returned.
    */
@@ -256,7 +257,7 @@ public final class ListResponse<T> extends BaseScimResource
   }
 
   private void checkRequiredProperties(final Map<String,Object> properties,
-                                       final String[] requiredProperties)
+                                       final String... requiredProperties)
   {
     for (final String property : requiredProperties)
     {
