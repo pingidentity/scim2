@@ -56,7 +56,7 @@ public interface SearchResultHandler<T>
   boolean resource(final T scimResource);
 
   /**
-   * Handle an schema extension in the search response.
+   * Handle a schema extension in the search response.
    *
    * @param urn The URN of the extension schema.
    * @param extensionObjectNode The ObjectNode representing the extension
