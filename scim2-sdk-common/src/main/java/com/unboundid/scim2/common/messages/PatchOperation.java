@@ -54,11 +54,11 @@ import java.util.List;
     property = "op")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = PatchOperation.AddOperation.class,
-        name="add"),
+        name="add", names= {"add", "Add", "ADD"}),
     @JsonSubTypes.Type(value = PatchOperation.RemoveOperation.class,
-        name="remove"),
+        name="remove", names= {"remove", "Remove", "REMOVE"}),
     @JsonSubTypes.Type(value = PatchOperation.ReplaceOperation.class,
-        name="replace")})
+        name="replace", names= {"replace", "Replace", "REPLACE"})})
 public abstract class PatchOperation
 {
   static final class AddOperation extends PatchOperation
