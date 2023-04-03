@@ -20,9 +20,9 @@ package com.unboundid.scim2.client.requests;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 /**
  * A builder for SCIM create requests.
@@ -63,7 +63,7 @@ public final class CreateRequestBuilder<T extends ScimResource>
    * @param <C> The type of object to return.
    * @param cls The Java class object used to determine the type to return.
    * @return The successfully modified SCIM resource.
-   * @throws javax.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
+   * @throws jakarta.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
    * @throws ScimException If the SCIM service provider responded with an error.
    */
   public <C> C invoke(final Class<C> cls) throws ScimException

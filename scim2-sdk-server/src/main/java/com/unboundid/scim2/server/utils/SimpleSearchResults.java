@@ -27,8 +27,8 @@ import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.server.ListResponseStreamingOutput;
 import com.unboundid.scim2.server.ListResponseWriter;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;

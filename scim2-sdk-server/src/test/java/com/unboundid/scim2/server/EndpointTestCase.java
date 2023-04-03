@@ -19,8 +19,8 @@ package com.unboundid.scim2.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.jaxrs.cfg.JaxRSFeature;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.cfg.JakartaRSFeature;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.google.common.collect.Lists;
 import com.unboundid.scim2.client.ScimInterface;
 import com.unboundid.scim2.client.ScimService;
@@ -68,16 +68,16 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -118,7 +118,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     JacksonJsonProvider provider =
         new JacksonJsonProvider(JsonUtils.createObjectMapper());
-    provider.configure(JaxRSFeature.ALLOW_EMPTY_INPUT, false);
+    provider.configure(JakartaRSFeature.ALLOW_EMPTY_INPUT, false);
     config.register(provider);
 
     // Filters

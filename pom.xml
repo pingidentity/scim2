@@ -65,11 +65,11 @@
     <compileSource>1.8</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
     <ignore.test.failures>false</ignore.test.failures>
-    <jackson.version>2.10.2</jackson.version>
+    <jackson.version>2.14.2</jackson.version>
     <jackson-databind.version>2.10.5.1</jackson-databind.version>
     <jaxb.version>4.0.0</jaxb.version>
-    <jax-rs.version>2.0.1</jax-rs.version>
-    <jersey.version>2.28</jersey.version>
+    <jakarta-rs.version>3.1.0</jakarta-rs.version>
+    <jersey.version>3.1.1</jersey.version>
     <guava.version>29.0-jre</guava.version>
     <testng.version>7.4.0</testng.version>
   </properties>
@@ -370,19 +370,19 @@
         <version>${jackson-databind.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-base</artifactId>
+        <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+        <artifactId>jackson-jakarta-rs-base</artifactId>
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-json-provider</artifactId>
+        <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+        <artifactId>jackson-jakarta-rs-json-provider</artifactId>
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>javax.ws.rs-api</artifactId>
-        <version>${jax-rs.version}</version>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>${jakarta-rs.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.xml.bind</groupId>

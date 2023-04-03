@@ -25,11 +25,11 @@ import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -114,7 +114,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      * Invoke the SCIM modify request.
      *
      * @return The successfully modified SCIM resource.
-     * @throws javax.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
+     * @throws jakarta.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
      * @throws ScimException If the SCIM service provider responded with an error.
      */
     @SuppressWarnings("unchecked")
@@ -129,7 +129,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      * @param <C> The type of object to return.
      * @param cls The Java class object used to determine the type to return.
      * @return The successfully modified SCIM resource.
-     * @throws javax.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
+     * @throws jakarta.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
      * @throws ScimException If the SCIM service provider responded with an error.
      */
     public <C> C invoke(final Class<C> cls) throws ScimException
@@ -191,7 +191,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      * @param <T> The type of object to return.
      * @param cls The Java class object used to determine the type to return.
      * @return The successfully modified SCIM resource.
-     * @throws javax.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
+     * @throws jakarta.ws.rs.ProcessingException If a JAX-RS runtime exception occurred.
      * @throws ScimException If the SCIM service provider responded with an error.
      */
     public <T> T invoke(final Class<T> cls) throws ScimException
