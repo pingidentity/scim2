@@ -24,7 +24,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
 import com.unboundid.scim2.server.utils.ServerUtils;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.NotSupportedException;

@@ -390,9 +390,9 @@
         <version>${jaxb.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>1.2</version>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>2.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jersey.core</groupId>
