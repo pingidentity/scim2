@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ping Identity Corporation
+ * Copyright 2015-2023 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -40,7 +40,7 @@ public final class SearchRequest extends BaseScimResource
   @JsonProperty
   private final Set<String> attributes;
 
-  @Attribute(description = "A mulit-valued list of strings indicating " +
+  @Attribute(description = "A multi-valued list of strings indicating " +
       "the names of resource attributes to be removed from the default set " +
       "of attributes to return")
   @JsonProperty

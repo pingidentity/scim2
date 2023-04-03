@@ -1,5 +1,5 @@
 <!--
-~ Copyright 2015-2021 Ping Identity Corporation
+~ Copyright 2015-2023 Ping Identity Corporation
 ~
 ~ This program is free software; you can redistribute it and/or modify
 ~ it under the terms of the GNU General Public License (GPLv2 only)
@@ -26,9 +26,9 @@
     <name>UnboundID SCIM2 SDK Common</name>
     <description>
       The UnboundID SCIM2 SDK is a library that may be used to interact with various
-      types of SCIM-enabled endpoints (such as the UnboundID server products) to
+      types of SCIM-enabled endpoints (such as the Ping Identity server products) to
       perform lightweight, cloud-based identity management via the SCIM Protocol.
-      See http://simplecloud.info for more information.
+      See https://simplecloud.info for more information.
     </description>
     <inceptionYear>2015</inceptionYear>
     <url>https://github.com/pingidentity/scim2</url>
@@ -44,7 +44,7 @@
       <developer>
         <id>unboundid</id>
         <name>UnboundID Corp.</name>
-        <email>support@unboundid.com</email>
+        <email>support@pingidentity.com</email>
       </developer>
     </developers>
     <licenses>

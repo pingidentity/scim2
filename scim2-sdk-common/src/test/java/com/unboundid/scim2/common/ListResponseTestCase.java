@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ping Identity Corporation
+ * Copyright 2015-2023 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -38,6 +39,20 @@ import static org.testng.Assert.fail;
  */
 public class ListResponseTestCase
 {
+  // An example ListResponse in JSON form.
+  private static final String SINGLE_ELEMENT_LIST_RESPONSE = "{ "
+          + "  \"schemas\": ["
+          + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
+          + "  ],"
+          + "  \"totalResults\": 2,"
+          + "  \"itemsPerPage\": 1,"
+          + "  \"startIndex\": 1,"
+          + "  \"Resources\": ["
+          + "    \"stringValue\""
+          + "  ]"
+          + "}";
+
+
   /**
    * Test list response.
    *
@@ -123,5 +138,29 @@ public class ListResponseTestCase
             new TypeReference<ListResponse<ResourceTypeResource>>() { }).
             readValue(serialized),
         response);
+  }
+
+
+  /**
+   * Tests the format of a {@link ListResponse} object when it is serialized
+   * into JSON form. In particular, this ensures that objects follow the form
+   * described in the examples of RFC 7644, where the {@code Resources} array is
+   * the final element in the JSON body.
+   *
+   * @throws Exception  If an unexpected error occurs.
+   */
+  @Test
+  public void testListResponseFormat() throws Exception {
+    // Reformat the expected JSON to a standardized form.
+    String expectedJSON =
+            JsonUtils.getObjectReader().readTree(SINGLE_ELEMENT_LIST_RESPONSE)
+                    .toString();
+
+    List<String> resources = Collections.singletonList("stringValue");
+    ListResponse<String> listResponse = new ListResponse<>(2, resources, 1, 1);
+    String listResponseJSON =
+            JsonUtils.getObjectWriter().writeValueAsString(listResponse);
+
+    assertEquals(listResponseJSON, expectedJSON);
   }
 }
