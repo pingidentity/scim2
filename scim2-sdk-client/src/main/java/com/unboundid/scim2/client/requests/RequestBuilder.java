@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ping Identity Corporation
+ * Copyright 2015-2023 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -178,12 +178,18 @@ public class RequestBuilder<T extends RequestBuilder>
         ScimException.createException(response.getStatus(), null) :
         ScimException.createException(errorResponse, null);
       response.close();
+
       return exception;
     }
     catch(ProcessingException ex)
     {
+      // The exception message likely contains unwanted details about why the
+      // server failed to process the response, instead of the actual SCIM
+      // issue. Replace it with a general reason phrase for the status code.
+      String genericDetails = response.getStatusInfo().getReasonPhrase();
+
       return new ScimServiceException(
-          response.getStatus(), ex.getMessage(), ex);
+          response.getStatus(), genericDetails, ex);
     }
   }
 

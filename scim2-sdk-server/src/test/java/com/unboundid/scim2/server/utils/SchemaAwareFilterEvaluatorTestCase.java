@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ping Identity Corporation
+ * Copyright 2015-2023 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -106,7 +106,7 @@ public class SchemaAwareFilterEvaluatorTestCase
    * @param result The expected result.
    * @throws ScimException If the filter string is invalid.
    */
-  @Test(dataProvider = "getTestValidFilterStrings")
+  @Test(dataProvider = "testValidFilterStrings")
   public void testFilter(String filter, boolean result)
       throws ScimException
   {

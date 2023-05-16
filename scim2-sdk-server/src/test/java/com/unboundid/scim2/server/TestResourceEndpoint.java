@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ping Identity Corporation
+ * Copyright 2015-2023 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -78,6 +78,24 @@ public class TestResourceEndpoint
             "        }\n" +
             "    ]\n" +
             "}").build();
+  }
+
+  /**
+   * This method will return a JAX-RS response with status 'Unauthorized' and
+   * media type 'application/octet-stream' and an entity body that cannot be
+   * deserialized as JSON.
+   *
+   * @return The JAX-RS response.
+   */
+  @GET
+  @Path("responseWithStatusUnauthorizedAndTypeOctetStreamAndBadEntity")
+  @Produces({MediaType.APPLICATION_OCTET_STREAM})
+  public Response getResponseWithStatusUnauthorizedAndTypeOctetStreamAndBadEntity()
+  {
+    return Response.status(Response.Status.UNAUTHORIZED)
+        .type(MediaType.APPLICATION_OCTET_STREAM)
+        .entity("WhateverDude")
+        .build();
   }
 
   /**

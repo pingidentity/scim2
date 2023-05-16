@@ -2,7 +2,25 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## v2.3.5 - unreleased
+
+## v2.3.8 - TBD
+[placeholder for next release]
+Updated the deserialized form of ListResponse objects so that the "itemsPerPage" and "startIndex"
+fields are listed at the top with "totalResults". This matches the form of ListResponses shown in
+RFC 7644.
+
+## v2.3.7 - 2021-09-07
+Added ParserOptions class, which may be used to extend the set of characters allowed in filtered
+attribute names.
+
+Updated the TestNG dependency to 7.4.0 and corrected its scope from the default 'compile' to 'test'.
+
+
+## v2.3.6 - 2021-06-11
+Bump jackson-databind from 2.10.2 to 2.10.5.1.
+
+
+## v2.3.5 - 2020-08-23
 Update the Guava dependency to 29.0-jre, which addresses latest known potential security issues.
 
 

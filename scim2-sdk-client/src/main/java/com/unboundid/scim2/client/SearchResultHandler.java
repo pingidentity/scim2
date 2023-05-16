@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ping Identity Corporation
+ * Copyright 2015-2023 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -56,7 +56,7 @@ public interface SearchResultHandler<T>
   boolean resource(final T scimResource);
 
   /**
-   * Handle an schema extension in the search response.
+   * Handle a schema extension in the search response.
    *
    * @param urn The URN of the extension schema.
    * @param extensionObjectNode The ObjectNode representing the extension

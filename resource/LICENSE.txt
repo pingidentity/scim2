@@ -1,5 +1,5 @@
 UnboundID SCIM2 SDK
-Copyright 2011-2020 Ping Identity Corporation
+Copyright 2011-2023 Ping Identity Corporation
 
 The UnboundID SCIM2 SDK is available under three licenses:
 the GNU General Public License version 2 (GPLv2), the GNU Lesser
