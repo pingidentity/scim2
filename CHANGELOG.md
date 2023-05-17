@@ -1,13 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
+This project adheres to [Semantic Versioning](https://semver.org/).
 
 
-## v2.3.8 - TBD
+## v2.3.9 - TBD
 [placeholder for next release]
-Updated the deserialized form of ListResponse objects so that the "itemsPerPage" and "startIndex"
-fields are listed at the top with "totalResults". This matches the form of ListResponses shown in
+
+
+## v2.3.8 - 2023-05-17
+Updated the deserialized form of ListResponse objects so that the `itemsPerPage` and `startIndex`
+fields are listed at the top with `totalResults`. This matches the form of ListResponses shown in
 RFC 7644.
+
+Updated the PatchOperation class to accept operation types where the first letter is capitalized,
+e.g., `"Add"`. This makes the SDK more permissive of operation types that violate RFC 7644, which
+is a known problem with Azure Active Directory as a SCIM client.
+
+Updated the Jackson and jackson-databind dependencies to 2.14.2.
+
+Updated the jersey dependency to 2.39.1 to address a `ClassCastException` error.
+
 
 ## v2.3.7 - 2021-09-07
 Added ParserOptions class, which may be used to extend the set of characters allowed in filtered
