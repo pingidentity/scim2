@@ -19,6 +19,7 @@ package com.unboundid.scim2.common.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.schema.testobjects.TestObject1;
 import com.unboundid.scim2.common.schema.testobjects.TestObject2;
@@ -27,12 +28,16 @@ import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.beans.IntrospectionException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Objects;
+
+import static com.unboundid.scim2.common.types.AttributeDefinition.Mutability.IMMUTABLE;
 
 /**
  * Tests cases for SCIM schema generation.
@@ -235,6 +240,34 @@ public class SchemaGenerationTest
     }
 
     checkAllAttributesFound(expectedAttributes);
+  }
+
+  /**
+   * Tests that the sub-attributes of the group resource's member attribute are immutable.
+   *
+   * @throws IntrospectionException if getting the schema of the {@link GroupResource} fails
+   */
+  @Test
+  public void testImmutabilityOfGroupMembersSubAttributes() throws IntrospectionException {
+    final Collection<AttributeDefinition> groupResourceAttributes =
+            Objects.requireNonNull(SchemaUtils.getSchema(GroupResource.class)).getAttributes();
+    final AttributeDefinition membersAttribute = getMembersAttribute(groupResourceAttributes);
+    assertSubAttributesAreImmutable(membersAttribute);
+  }
+
+  private static AttributeDefinition getMembersAttribute(Collection<AttributeDefinition> groupResourceAttributes) {
+    return groupResourceAttributes.stream()
+            .filter(attributeDefinition -> "members".equals(attributeDefinition.getName()))
+            .reduce((a, b) -> {
+              throw new IllegalStateException("Too many elements");
+            })
+            .orElseThrow(() -> new IllegalStateException("Too few elements"));
+  }
+
+  private static void assertSubAttributesAreImmutable(AttributeDefinition membersAttribute) {
+    membersAttribute.getSubAttributes().forEach(attributeDefinition -> {
+      Assert.assertEquals(attributeDefinition.getMutability(), IMMUTABLE);
+    });
   }
 
   private void tc2_checkSchema(SchemaResource schemaDefinition)
