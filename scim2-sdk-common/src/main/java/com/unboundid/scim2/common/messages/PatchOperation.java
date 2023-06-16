@@ -32,11 +32,16 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.Path.Element;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.filters.AndFilter;
+import com.unboundid.scim2.common.filters.EqualFilter;
 import com.unboundid.scim2.common.filters.Filter;
+import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
@@ -45,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * An individual patch operation.
@@ -91,18 +97,6 @@ public abstract class PatchOperation
         throw BadRequestException.invalidSyntax(
             "value field must be a JSON object containing the attributes to " +
                 "add");
-      }
-      if(path != null)
-      {
-        for (Path.Element element : path)
-        {
-          if(element.getValueFilter() != null)
-          {
-            throw BadRequestException.invalidPath(
-                "path field for add operations must not include any value " +
-                    "selection filters");
-          }
-        }
       }
       this.value = value;
     }
@@ -160,11 +154,184 @@ public abstract class PatchOperation
      * {@inheritDoc}
      */
     @Override
-    public void apply(final ObjectNode node) throws ScimException
-    {
-      JsonUtils.addValue(getPath() == null ? Path.root() :
-          getPath(), node, value);
+    public void apply(final ObjectNode node) throws ScimException {
+      Path path = getPath();
+
+      Path actualPath = path == null ? Path.root() : path;
+      if (actualPath.isRoot() || actualPath.getSchemaUrn() != null) {
+        // the target of the operation is the root object,
+        // use the generic "addValue" functionality.
+        JsonUtils.addValue(path == null ? Path.root() : path, node, value);
+      } else {
+        // the target is a nested object, potentially with a path filter
+        // and missing intermediate objects. Apply the logic which is
+        // specific to the "add" operation.
+        addValueWithPath(node, path, actualPath);
+      }
+
       addMissingSchemaUrns(node);
+    }
+
+    private void addValueWithPath(
+        final ObjectNode node,
+        final Path path,
+        final Path actualPath
+    ) throws ScimException {
+      List<Element> currentPath = new ArrayList<>();
+      JsonNode currentNode = node;
+
+      Iterator<Element> pathIterator = actualPath.iterator();
+      while (pathIterator.hasNext()) {
+        Element element = pathIterator.next();
+        currentPath.add(element);
+        if (!pathIterator.hasNext()) {
+          // this is the LAST path element! Do not navigate here; we have to set the value instead on this field!
+          break;
+        }
+
+        JsonNode childNode = currentNode.get(element.getAttribute());
+        Filter valueFilter = element.getValueFilter();
+        if (valueFilter != null) {
+          if (childNode == null || childNode.isNull() || childNode.isMissingNode()) {
+            // the child element is missing, add an empty array. We know that it has
+            // to be an array node, otherwise there could not be a filter.
+            childNode = currentNode.withArray(element.getAttribute());
+          }
+
+          if (childNode.isArray()) {
+            // find out which element(s) of the array match the filter.
+            List<JsonNode> matchingChildren = getMatchingChildren((ArrayNode) childNode, valueFilter);
+            switch (matchingChildren.size()) {
+              case 0:
+                // no child matched. We have to create one.
+                currentNode = createMatchingChildObjectNode((ArrayNode) childNode, valueFilter);
+                break;
+              case 1:
+                // exactly one child matched. This needs to be updated.
+                currentNode = matchingChildren.get(0);
+                break;
+              default:
+                // more than one child matched. That's an error.
+                throw new IllegalStateException(
+                    "Filter '" + valueFilter + "' is ambiguous and matched multiple elements!" +
+                        " Path: " + currentPath
+                );
+            }
+
+          } else {
+            // filters can only be applied to array nodes
+            throw new IllegalStateException("Cannot apply filter '"
+                + valueFilter + "' to non-array typed node! Path: " + currentPath
+            );
+          }
+        }
+      }
+
+      if (currentPath.isEmpty()) {
+        // target the root object
+        JsonUtils.addValue(path == null ? Path.root() : path, node, value);
+      } else {
+        // get the last path element
+        Element lastPathElement = currentPath.get(currentPath.size() - 1);
+        if (lastPathElement.getValueFilter() != null) {
+          throw new IllegalStateException(
+              "The last path element must not have a filter expression, it must specify the field name!"
+          );
+        }
+        String lastFieldName = lastPathElement.getAttribute();
+        if (!(currentNode instanceof ObjectNode)) {
+          throw new IllegalStateException(
+              "Expected the node at the end of the update path to be an object node, but found: "
+                  + currentNode.getNodeType() + "! Path: " + path
+          );
+        }
+        ObjectNode currentObjectNode = (ObjectNode)currentNode;
+        JsonNode currentFieldValue = currentObjectNode.get(lastFieldName);
+        if(currentFieldValue instanceof ArrayNode){
+          // append the value to the array
+          ((ArrayNode)currentFieldValue).add(this.value);
+        } else {
+          // override the value
+          currentObjectNode.set(lastFieldName, this.value);
+        }
+      }
+    }
+
+    private List<JsonNode> getMatchingChildren(
+        final ArrayNode parent,
+        final Filter filter
+    ) throws ScimException {
+      List<JsonNode> resultList = new ArrayList<>();
+      for(JsonNode child : parent){
+        if(FilterEvaluator.evaluate(filter, child)){
+          resultList.add(child);
+        }
+      }
+      return resultList;
+    }
+
+    private ObjectNode createMatchingChildObjectNode(
+        final ArrayNode parent,
+        final Filter filter
+    ) throws ScimException {
+      // The problem here is: we have to infer the properties from the filter.
+      // For example, for the filter:
+      //
+      //     type eq "work"
+      //
+      // ... we have to create a field "type" and set it equal to "work".
+      // That's nice and dandy. However, the filter:
+      //
+      //     type ne "work"
+      //
+      // ... does not provide any info on the field it's actually looking for.
+      //
+      // The upshot is: we can only permit "eq" and "and" filters here.
+      List<EqualFilter> equalFilters = flattenAndCombiningFiltersIntoListOfEqualityFilters(filter);
+      ObjectNode newChild = parent.addObject();
+      if(equalFilters.isEmpty()){
+        return newChild;
+      }
+      for(EqualFilter childFilter : equalFilters){
+        Path attributePath = childFilter.getAttributePath();
+        ValueNode attributeValue = childFilter.getComparisonValue();
+        if(attributePath.size() != 1){
+          throw BadRequestException.invalidFilter(
+              "Only 'eq' filters with exactly one attribute are supported " +
+                  "in Add operation paths, but got: " + attributePath
+          );
+        }
+        Element step = attributePath.iterator().next();
+        String fieldName = step.getAttribute();
+        newChild.set(fieldName, attributeValue);
+      }
+      return newChild;
+    }
+
+    private List<EqualFilter> flattenAndCombiningFiltersIntoListOfEqualityFilters(
+        final Filter filter
+    ) throws ScimException {
+      Stack<Filter> toVisit = new Stack<>();
+      toVisit.push(filter);
+      List<EqualFilter> resultList = new ArrayList<>();
+      while (!toVisit.isEmpty()) {
+        Filter current = toVisit.pop();
+        if (current instanceof AndFilter) {
+          AndFilter andFilter = (AndFilter)current;
+          for(Filter childFilter : andFilter.getCombinedFilters()){
+            toVisit.push(childFilter);
+          }
+        } else if (current instanceof EqualFilter) {
+          resultList.add((EqualFilter)current);
+        } else {
+          throw BadRequestException.invalidFilter(
+              "Cannot use non-equality filter in an ADD operation: '"
+                  + current +
+                  "'!"
+          );
+        }
+      }
+      return resultList;
     }
 
     /**
