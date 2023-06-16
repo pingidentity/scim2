@@ -767,4 +767,284 @@ public class PatchOpTestCase
     Assert.assertEquals(patchOp.getValue(String.class), uri6.toString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
   }
+
+  /**
+   * Ensures that PATCH operations with "add" can support path filters.
+   *
+   * These operations are generated e.g. by Azure Active Directory to
+   * update existing resources. For instance, to add an email, Azure
+   * Active Directory generates the following
+   *
+   * <pre>
+   * {
+   *     "op": "Add",
+   *     "path": "emails[type eq \"work\"].value,
+   *     "value": "test@example.com"
+   * }
+   * </pre>
+   *
+   * @throws Exception on error
+   */
+  @Test
+  public void canReadPatchAddOperationWithPathFilter() throws Exception {
+    PatchRequest patchRequest = JsonUtils.getObjectReader().
+        forType(PatchRequest.class).
+        readValue("{  \n" +
+            "  \"schemas\":[  \n" +
+            "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
+            "  ],\n" +
+            "  \"Operations\":[  \n" +
+            "    {  \n" +
+            "      \"op\":\"add\",\n" +
+            "      \"path\":\"emails[type eq \\\"work\\\"].value\",\n" +
+            "      \"value\":\"test@example.com\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}");
+
+    JsonNode prePatchResource = JsonUtils.getObjectReader().
+        readTree("{  \n" +
+            "  \"schemas\":[  \n" +
+            "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
+            "    \"urn:ubid:custom:schema1\",\n" +
+            "    \"urn:ubid:custom:schema2\"\n" +
+            "  ],\n" +
+            "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
+            "  \"userName\":\"bjensen@example.com\",\n" +
+            "  \"emails\":[  \n" +
+            "    {  \n" +
+            "      \"value\":\"babs@jensen.org\",\n" +
+            "      \"type\":\"home\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"addresses\":[  \n" +
+            "    {  \n" +
+            "      \"type\":\"work\",\n" +
+            "      \"streetAddress\":\"13809 Research Blvd\",\n" +
+            "      \"locality\":\"Austin\",\n" +
+            "      \"region\":\"TX\",\n" +
+            "      \"postalCode\":\"78750\",\n" +
+            "      \"country\":\"USA\",\n" +
+            "      \"formatted\":\"13809 Research Blvd\\nAustin, " +
+            "TX 78750 USA\",\n" +
+            "      \"primary\":true\n" +
+            "    },\n" +
+            "    {  \n" +
+            "      \"type\":\"home\",\n" +
+            "      \"streetAddress\":\"456 Hollywood Blvd\",\n" +
+            "      \"locality\":\"Hollywood\",\n" +
+            "      \"region\":\"CA\",\n" +
+            "      \"postalCode\":\"91608\",\n" +
+            "      \"country\":\"USA\",\n" +
+            "      \"formatted\":\"456 Hollywood Blvd\\nHollywood, " +
+            "CA 91608 USA\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"meta\":{  \n" +
+            "    \"resourceType\":\"User\",\n" +
+            "    \"created\":\"2010-01-23T04:56:22Z\",\n" +
+            "    \"lastModified\":\"2011-05-13T04:42:34Z\",\n" +
+            "    \"version\":\"W\\/\\\"3694e05e9dff590\\\"\",\n" +
+            "    \"location\":\"https://example.com/v2/Users/" +
+            "2819c223-7f76-453a-919d-413861904646\"\n" +
+            "  }\n" +
+            "}");
+
+    JsonNode postPatchResource = JsonUtils.getObjectReader().
+        readTree("{  \n" +
+            "   \"schemas\":[  \n" +
+            "      \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
+            "      \"urn:ubid:custom:schema1\",\n" +
+            "      \"urn:ubid:custom:schema2\"\n" +
+            "   ],\n" +
+            "   \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
+            "   \"userName\":\"bjensen@example.com\",\n" +
+            "   \"emails\":[  \n" +
+            "      {  \n" +
+            "         \"value\":\"babs@jensen.org\",\n" +
+            "         \"type\":\"home\"\n" +
+            "      },\n" +
+            "      {  \n" +
+            "         \"value\":\"test@example.com\",\n" +
+            "         \"type\":\"work\"\n" +
+            "      }\n" +
+            "   ],\n" +
+            "  \"addresses\":[  \n" +
+            "    {  \n" +
+            "      \"type\":\"work\",\n" +
+            "      \"streetAddress\":\"13809 Research Blvd\",\n" +
+            "      \"locality\":\"Austin\",\n" +
+            "      \"region\":\"TX\",\n" +
+            "      \"postalCode\":\"78750\",\n" +
+            "      \"country\":\"USA\",\n" +
+            "      \"formatted\":\"13809 Research Blvd\\nAustin, " +
+            "TX 78750 USA\",\n" +
+            "      \"primary\":true\n" +
+            "    },\n" +
+            "    {  \n" +
+            "      \"type\":\"home\",\n" +
+            "      \"streetAddress\":\"456 Hollywood Blvd\",\n" +
+            "      \"locality\":\"Hollywood\",\n" +
+            "      \"region\":\"CA\",\n" +
+            "      \"postalCode\":\"91608\",\n" +
+            "      \"country\":\"USA\",\n" +
+            "      \"formatted\":\"456 Hollywood Blvd\\nHollywood, " +
+            "CA 91608 USA\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"meta\":{  \n" +
+            "    \"resourceType\":\"User\",\n" +
+            "    \"created\":\"2010-01-23T04:56:22Z\",\n" +
+            "    \"lastModified\":\"2011-05-13T04:42:34Z\",\n" +
+            "    \"version\":\"W\\/\\\"3694e05e9dff590\\\"\",\n" +
+            "    \"location\":\"https://example.com/v2/Users/" +
+            "2819c223-7f76-453a-919d-413861904646\"\n" +
+            "  }\n" +
+            "}");
+
+    GenericScimResource scimResource = new GenericScimResource((ObjectNode)prePatchResource);
+    patchRequest.apply(scimResource);
+    assertEquals(scimResource.getObjectNode(), postPatchResource);
+  }
+
+
+  /**
+   * Ensures that PATCH operations with "add" can support path filters and works when intermediate objects are missing.
+   *
+   * These operations are generated e.g. by Azure Active Directory to
+   * update existing resources. For instance, to add an email, Azure
+   * Active Directory generates the following
+   *
+   * <pre>
+   * {
+   *     "op": "Add",
+   *     "path": "emails[type eq \"work\"].value,
+   *     "value": "test@example.com"
+   * }
+   * </pre>
+   *
+   * @throws Exception on error
+   */
+  @Test
+  public void canReadPatchAddOperationWithPathFilterAndMissingIntermediateObject() throws Exception {
+    PatchRequest patchRequest = JsonUtils.getObjectReader().
+        forType(PatchRequest.class).
+        readValue("{  \n" +
+            "  \"schemas\":[  \n" +
+            "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
+            "  ],\n" +
+            "  \"Operations\":[  \n" +
+            "    {  \n" +
+            "      \"op\":\"add\",\n" +
+            "      \"path\":\"emails[type eq \\\"work\\\"].value\",\n" +
+            "      \"value\":\"test@example.com\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}");
+
+    JsonNode prePatchResource = JsonUtils.getObjectReader().
+        readTree("{  \n" +
+            "  \"schemas\":[  \n" +
+            "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
+            "    \"urn:ubid:custom:schema1\",\n" +
+            "    \"urn:ubid:custom:schema2\"\n" +
+            "  ],\n" +
+            "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
+            "  \"userName\":\"bjensen@example.com\"\n" +
+            "}");
+
+    JsonNode postPatchResource = JsonUtils.getObjectReader().
+        readTree("{  \n" +
+            "   \"schemas\":[  \n" +
+            "      \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
+            "      \"urn:ubid:custom:schema1\",\n" +
+            "      \"urn:ubid:custom:schema2\"\n" +
+            "   ],\n" +
+            "   \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
+            "   \"userName\":\"bjensen@example.com\",\n" +
+            "   \"emails\":[  \n" +
+            "      {  \n" +
+            "         \"value\":\"test@example.com\",\n" +
+            "         \"type\":\"work\"\n" +
+            "      }\n" +
+            "   ]\n" +
+            "}");
+
+    GenericScimResource scimResource = new GenericScimResource((ObjectNode)prePatchResource);
+    patchRequest.apply(scimResource);
+    assertEquals(scimResource.getObjectNode(), postPatchResource);
+  }
+
+  /**
+   * Ensures that PATCH operations with "add" support nested objects without paths.
+   *
+   * @throws Exception on error
+   */
+  @Test
+  public void canReadPatchAddOperationWithoutPath() throws Exception {
+    PatchRequest patchRequest = JsonUtils.getObjectReader().
+        forType(PatchRequest.class).
+        readValue("{  \n" +
+            "  \"schemas\":[  \n" +
+            "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
+            "  ],\n" +
+            "  \"Operations\":[  \n" +
+            "    {  \n" +
+            "      \"op\":\"add\",\n" +
+            "      \"value\":{" +
+            "        \"emails\":[\n" +
+            "          {\n" +
+            "            \"value\": \"babs@jensen.org\",\n" +
+            "            \"type\": \"home\"\n" +
+            "          }\n" +
+            "        ],\n" +
+            "        \"nickname\": \"Babs\"\n" +
+            "      }\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}");
+
+    JsonNode prePatchResource = JsonUtils.getObjectReader().
+        readTree("{  \n" +
+            "  \"schemas\":[  \n" +
+            "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
+            "    \"urn:ubid:custom:schema1\",\n" +
+            "    \"urn:ubid:custom:schema2\"\n" +
+            "  ],\n" +
+            "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
+            "  \"userName\":\"bjensen@example.com\",\n" +
+            "  \"emails\":[  \n" +
+            "    {  \n" +
+            "      \"value\":\"babs@jensen.org\",\n" +
+            "      \"type\":\"work\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}");
+
+    JsonNode postPatchResource = JsonUtils.getObjectReader().
+        readTree("{  \n" +
+            "  \"schemas\":[  \n" +
+            "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
+            "    \"urn:ubid:custom:schema1\",\n" +
+            "    \"urn:ubid:custom:schema2\"\n" +
+            "  ],\n" +
+            "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
+            "  \"userName\":\"bjensen@example.com\",\n" +
+            "  \"emails\":[  \n" +
+            "    {  \n" +
+            "      \"value\":\"babs@jensen.org\",\n" +
+            "      \"type\":\"work\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"value\":\"babs@jensen.org\",\n" +
+            "      \"type\":\"home\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"nickname\": \"Babs\"\n" +
+            "}");
+
+    GenericScimResource scimResource = new GenericScimResource((ObjectNode)prePatchResource);
+    patchRequest.apply(scimResource);
+    assertEquals(scimResource.getObjectNode(), postPatchResource);
+  }
 }
