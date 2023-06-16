@@ -80,23 +80,12 @@ public abstract class PatchOperation
         throws ScimException
     {
       super(path);
-      if(value == null || value.isNull() ||
-           ((value.isArray() || value.isObject()) && value.size() == 0))
-       {
-         throw BadRequestException.invalidSyntax(
-             "value field must not be null or an empty container");
-       }
-      if(path == null && !value.isObject())
-      {
-        throw BadRequestException.invalidSyntax(
-            "value field must be a JSON object containing the attributes to " +
-                "add");
-      }
-      if(path != null)
+      validateOperationValue(path, value, getOpType());
+      if (path != null)
       {
         for (Path.Element element : path)
         {
-          if(element.getValueFilter() != null)
+          if (element.getValueFilter() != null)
           {
             throw BadRequestException.invalidPath(
                 "path field for add operations must not include any value " +
@@ -302,18 +291,7 @@ public abstract class PatchOperation
         throws ScimException
     {
       super(path);
-      if(value == null || value.isNull() ||
-           ((value.isArray() || value.isObject()) && value.size() == 0))
-       {
-         throw BadRequestException.invalidSyntax(
-             "value field must not be null or an empty container");
-       }
-      if(path == null && !value.isObject())
-      {
-        throw BadRequestException.invalidSyntax(
-            "value field must be a JSON object containing the attributes to " +
-                "replace");
-      }
+      validateOperationValue(path, value, getOpType());
       this.value = value;
     }
 
@@ -1369,6 +1347,37 @@ public abstract class PatchOperation
         return remove(path);
       default:
         throw new IllegalArgumentException("Unknown patch op type " + opType);
+    }
+  }
+
+
+  /**
+   * Validates the {@code value} of a patch operation when the operation is
+   * constructed.
+   *
+   * @param path    The attribute path.
+   * @param value   The node containing the attribute value that will be
+   *                analyzed.
+   * @param type    The type of patch operation.
+   *
+   * @throws ScimException  If the provided value is null or invalid.
+   */
+  private static void validateOperationValue(final Path path,
+      final JsonNode value, final PatchOpType type)
+          throws ScimException
+  {
+    if (value == null || value.isNull() ||
+            (value.isObject() && value.size() == 0))
+    {
+      throw BadRequestException.invalidSyntax(
+          "value field must not be null or an empty container");
+    }
+
+    if (path == null && !value.isObject())
+    {
+      throw BadRequestException.invalidSyntax(
+          "value field must be a JSON object containing the"
+                  + " attributes to " + type);
     }
   }
 }
