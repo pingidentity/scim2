@@ -302,11 +302,10 @@ public abstract class PatchOperation
         throws ScimException
     {
       super(path);
-      if(value == null || value.isNull() ||
-           ((value.isArray() || value.isObject()) && value.size() == 0))
+      if(value == null || value.isNull())
        {
          throw BadRequestException.invalidSyntax(
-             "value field must not be null or an empty container");
+             "value field must not be null");
        }
       if(path == null && !value.isObject())
       {

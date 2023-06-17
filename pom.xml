@@ -18,7 +18,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.unboundid.product.scim2</groupId>
   <artifactId>scim2-parent</artifactId>
-  <version>2.3.8-SNAPSHOT</version>
+  <version>2.3.7.identity.2</version>
   <packaging>pom</packaging>
   <name>UnboundID SCIM2 SDK Parent</name>
   <description>
@@ -76,52 +76,21 @@
 
   <profiles>
     <profile>
-      <id>TravisCI</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <useFile>false</useFile>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>UnboundID</id>
       <distributionManagement>
         <repository>
           <id>releases</id>
-          <name>Engineering Releases Repo</name>
-          <url>${releaseRepoUrl}</url>
+          <name>Engineering Snapshots Repo</name>
+          <url>https://artifactory.grammarly.io/artifactory/common-maven</url>
         </repository>
         <snapshotRepository>
           <id>snapshots</id>
           <name>Engineering Snapshots Repo</name>
-          <url>${snapshotRepoUrl}</url>
+          <url>https://artifactory.grammarly.io/artifactory/common-maven</url>
         </snapshotRepository>
       </distributionManagement>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
-            <executions>
-              <execution>
-                <id>sign-resources</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-                <configuration>
-                  <passphrase>${env.GPG_PASSPHRASE}</passphrase>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
@@ -329,6 +298,27 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-sonatype-bundle</id>
+            <phase>install</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>${main.basedir}/assemblies/sonatype-bundle.xml</descriptor>
+              </descriptors>
+              <attach>false</attach>
+              <appendAssemblyId>false</appendAssemblyId>
+              <finalName>sonatype-bundle</finalName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -436,4 +426,16 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <distributionManagement>
+    <repository>
+      <id>releases</id>
+      <name>Engineering Snapshots Repo</name>
+      <url>https://artifactory.grammarly.io/artifactory/common-maven</url>
+    </repository>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <name>Engineering Snapshots Repo</name>
+      <url>https://artifactory.grammarly.io/artifactory/common-maven</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
