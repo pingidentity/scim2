@@ -20,6 +20,7 @@ package com.unboundid.scim2.common;
 import com.fasterxml.jackson.core.Base64Variants;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -37,12 +38,19 @@ import java.util.Arrays;
 import java.util.Date;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertThrows;
 
 /**
  * Test cases for patch operation.
  */
 public class PatchOpTestCase
 {
+  private static final ArrayNode EMPTY_ARRAY =
+          JsonUtils.getJsonNodeFactory().arrayNode();
+
+  private static final ObjectNode EMPTY_OBJECT =
+          JsonUtils.getJsonNodeFactory().objectNode();
+
   /**
    * Test patch request.
    *
@@ -766,5 +774,45 @@ public class PatchOpTestCase
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.REPLACE);
     Assert.assertEquals(patchOp.getValue(String.class), uri6.toString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
+  }
+
+
+  /**
+   * Validates empty values passed into the PatchOperation constructors. Empty
+   * arrays are permitted (e.g., a 'replace' operation for an existing
+   * multi-valued attribute). This test does not apply to remove operations, as
+   * those do not contain a value.
+   *
+   * @throws Exception  If an unexpected error occurs.
+   */
+  @Test
+  public void testEmptyValues() throws Exception
+  {
+    // Null or empty values should not be permitted.
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.add("attr", null));
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.replace("attr", (String) null));
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.create(PatchOpType.ADD, "attr", null));
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.create(PatchOpType.REPLACE, "attr", null));
+
+
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.add("attr", EMPTY_OBJECT));
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.replace("attr", EMPTY_OBJECT));
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.create(PatchOpType.ADD, "attr", EMPTY_OBJECT));
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.create(PatchOpType.REPLACE, "attr", EMPTY_OBJECT));
+
+
+    // Empty array values should be accepted.
+    PatchOperation.add("myArray", EMPTY_ARRAY);
+    PatchOperation.replace("myArray", EMPTY_ARRAY);
+    PatchOperation.create(PatchOpType.ADD, "myArray", EMPTY_ARRAY);
+    PatchOperation.create(PatchOpType.REPLACE, "myArray", EMPTY_ARRAY);
   }
 }
