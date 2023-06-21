@@ -1360,7 +1360,7 @@ public abstract class PatchOperation
    *                analyzed.
    * @param type    The type of patch operation.
    *
-   * @throws ScimException  If the provided value is null or invalid.
+   * @throws ScimException  If the provided value is {@code null} or invalid.
    */
   private static void validateOperationValue(final Path path,
       final JsonNode value, final PatchOpType type)
@@ -1370,7 +1370,7 @@ public abstract class PatchOperation
             (value.isObject() && value.size() == 0))
     {
       throw BadRequestException.invalidSyntax(
-          "value field must not be null or an empty container");
+          "The patch operation value must not be null or an empty object");
     }
 
     if (path == null && !value.isObject())
