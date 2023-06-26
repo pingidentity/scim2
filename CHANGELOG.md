@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 
-## v2.3.9 - TBD
+## v2.4.0 - TBD
 Fixed an issue with PatchOperations that prevented setting the `value` field to an empty array. The
 constructor would previously reject this kind of operation with a BadRequestException.
 
