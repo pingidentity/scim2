@@ -76,10 +76,21 @@ public interface ScimResource
   /**
    * Sets the schema urns for this object.  This set should contain
    * all schema urns including the one for this object and all
-   * extensions.
-   * @param schemaUrns a set containing the schema urns for this object.
+   * extensions.  The value must not be {@code null}.
+   *
+   * @param schemaUrns A Collection containing the schema urns for this object.
    */
   void setSchemaUrns(Collection<String> schemaUrns);
+
+  /**
+   * An alternate version of {@link #setSchemaUrns(Collection)}.
+   *
+   * @param schemaUrn  A schema URN that will be listed first. This must not be
+   *                   {@code null}.
+   * @param schemaUrns An optional parameter for additional schema URNs. Any
+   *                   {@code null} values will be ignored.
+   */
+  void setSchemaUrns(String schemaUrn, String... schemaUrns);
 
   /**
    * Returns the GenericScimResource representation of this ScimResource. If

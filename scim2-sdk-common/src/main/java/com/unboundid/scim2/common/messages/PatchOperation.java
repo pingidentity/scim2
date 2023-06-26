@@ -46,6 +46,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.unboundid.scim2.common.utils.StaticUtils.toList;
+
 /**
  * An individual patch operation.
  */
@@ -642,6 +644,25 @@ public abstract class PatchOperation
   }
 
   /**
+   * Alternate version of {@link #addStringValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public static PatchOperation addStringValues(
+      final String path, final String value1, final String... values)
+          throws ScimException
+  {
+    return addStringValues(path, toList(value1, values));
+  }
+
+  /**
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
@@ -659,6 +680,22 @@ public abstract class PatchOperation
       arrayNode.add(value);
     }
     return add(path, arrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addStringValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   */
+  public static PatchOperation addStringValues(
+      final Path path, final String value1, final String... values)
+  {
+    return addStringValues(path, toList(value1, values));
   }
 
   /**
@@ -792,6 +829,25 @@ public abstract class PatchOperation
   }
 
   /**
+   * Alternate version of {@link #addDoubleValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public static PatchOperation addDoubleValues(
+      final String path, final Double value1, final Double... values)
+          throws ScimException
+  {
+    return addDoubleValues(path, toList(value1, values));
+  }
+
+  /**
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
@@ -809,6 +865,22 @@ public abstract class PatchOperation
       arrayNode.add(value);
     }
     return add(path, arrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addDoubleValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   */
+  public static PatchOperation addDoubleValues(
+      final Path path, final Double value1, final Double... values)
+  {
+    return addDoubleValues(path, toList(value1, values));
   }
 
   /**
@@ -866,6 +938,25 @@ public abstract class PatchOperation
   }
 
   /**
+   * Alternate version of {@link #addIntegerValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public static PatchOperation addIntegerValues(
+      final String path, final Integer value1, final Integer... values)
+          throws ScimException
+  {
+    return addIntegerValues(path, toList(value1, values));
+  }
+
+  /**
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
@@ -883,6 +974,22 @@ public abstract class PatchOperation
       arrayNode.add(value);
     }
     return add(path, arrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addIntegerValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   */
+  public static PatchOperation addIntegerValues(
+      final Path path, final Integer value1, final Integer... values)
+  {
+    return addIntegerValues(path, toList(value1, values));
   }
 
   /**
@@ -940,6 +1047,25 @@ public abstract class PatchOperation
   }
 
   /**
+   * Alternate version of {@link #addLongValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public static PatchOperation addLongValues(
+      final String path, final Long value1, final Long... values)
+          throws ScimException
+  {
+    return addLongValues(path, toList(value1, values));
+  }
+
+  /**
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
@@ -957,6 +1083,22 @@ public abstract class PatchOperation
       arrayNode.add(value);
     }
     return add(path, arrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addLongValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   */
+  public static PatchOperation addLongValues(
+      final Path path, final Long value1, final Long... values)
+  {
+    return addLongValues(path, toList(value1, values));
   }
 
   /**
@@ -1014,6 +1156,25 @@ public abstract class PatchOperation
   }
 
   /**
+   * Alternate version of {@link #addDateValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public static PatchOperation addDateValues(
+      final String path, final Date value1, final Date... values)
+          throws ScimException
+  {
+    return addDateValues(path, toList(value1, values));
+  }
+
+  /**
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
@@ -1032,6 +1193,25 @@ public abstract class PatchOperation
       arrayNode.add(GenericScimResource.getDateJsonNode(value).textValue());
     }
     return add(path, arrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addDateValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public static PatchOperation addDateValues(
+      final Path path, final Date value1, final Date... values)
+          throws ScimException
+  {
+    return addDateValues(path, toList(value1, values));
   }
 
   /**
@@ -1094,6 +1274,25 @@ public abstract class PatchOperation
   }
 
   /**
+   * Alternate version of {@link #addBinaryValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public static PatchOperation addBinaryValues(
+      final String path, final byte[] value1, final byte[]... values)
+          throws ScimException
+  {
+    return addBinaryValues(path, toList(value1, values));
+  }
+
+  /**
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
@@ -1111,6 +1310,22 @@ public abstract class PatchOperation
       arrayNode.add(Base64Variants.getDefaultVariant().encode(value));
     }
     return add(path, arrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addBinaryValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   */
+  public static PatchOperation addBinaryValues(
+      final Path path, final byte[] value1, final byte[]... values)
+  {
+    return addBinaryValues(path, toList(value1, values));
   }
 
   /**
@@ -1170,6 +1385,25 @@ public abstract class PatchOperation
   }
 
   /**
+   * Alternate version of {@link #addURIValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public static PatchOperation addURIValues(
+      final String path, final URI value1, final URI... values)
+          throws ScimException
+  {
+    return addURIValues(path, toList(value1, values));
+  }
+
+  /**
    * Create a new add patch operation.
    *
    * @param path The path targeted by this patch operation.  The path
@@ -1187,6 +1421,22 @@ public abstract class PatchOperation
       arrayNode.add(value.toString());
     }
     return add(path, arrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addURIValues(String, List)}.
+   *
+   * @param path    The attribute path targeted by this patch operation. The
+   *                path must not be {@code null}.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        A new PatchOperation with an opType of {@code "add"}.
+   */
+  public static PatchOperation addURIValues(
+      final Path path, final URI value1, final URI... values)
+  {
+    return addURIValues(path, toList(value1, values));
   }
 
   /**

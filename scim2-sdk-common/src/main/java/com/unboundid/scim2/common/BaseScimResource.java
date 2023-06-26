@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.unboundid.scim2.common.utils.StaticUtils.toList;
+
 /**
  * <p>The base SCIM object.  This object contains all of the
  * attributes required of SCIM objects.</p>
@@ -176,7 +178,15 @@ public abstract class BaseScimResource
    */
   public void setSchemaUrns(final Collection<String> schemaUrns)
   {
-    this.schemaUrns = new HashSet<String>(schemaUrns);
+    this.schemaUrns = new HashSet<>(schemaUrns);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public void setSchemaUrns(final String schemaUrn, final String... schemaUrns)
+  {
+    setSchemaUrns(toList(schemaUrn, schemaUrns));
   }
 
   /**

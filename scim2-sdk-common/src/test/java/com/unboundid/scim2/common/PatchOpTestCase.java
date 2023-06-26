@@ -815,4 +815,69 @@ public class PatchOpTestCase
     PatchOperation.create(PatchOpType.ADD, "myArray", EMPTY_ARRAY);
     PatchOperation.create(PatchOpType.REPLACE, "myArray", EMPTY_ARRAY);
   }
+
+
+  /**
+   * Tests methods that accept varargs on the PatchOperation class, such as
+   * {@link PatchOperation#addIntegerValues(String, Integer, Integer...)}.
+   * Methods with varargs parameters should behave identically to their
+   * counterparts that accept a List as an input parameter.
+   *
+   * @throws Exception  If an unexpected error occurs.
+   */
+  @Test
+  public void testVarArgs() throws Exception
+  {
+    PatchOperation operation;
+    PatchOperation operation2;
+
+    operation = PatchOperation.addStringValues("backupEmails",
+            Arrays.asList("shady@example.com", "rabbit@example.com"));
+    operation2 = PatchOperation.addStringValues("backupEmails",
+            "shady@example.com", "rabbit@example.com");
+    assertEquals(operation, operation2);
+
+    operation = PatchOperation.addDoubleValues("weightHistoryLbs",
+            Arrays.asList(162.1, 165.0, 164.2));
+    operation2 = PatchOperation.addDoubleValues("weightHistoryLbs",
+            162.1, 165.0, 164.2);
+    assertEquals(operation, operation2);
+
+    operation = PatchOperation.addIntegerValues("siblingAges",
+            Arrays.asList(13, 13, 24));
+    operation2 = PatchOperation.addIntegerValues("siblingAges",
+            13, 13, 24);
+    assertEquals(operation, operation2);
+
+    operation = PatchOperation.addLongValues("favoritePrimes",
+            Arrays.asList(11L, 19L, 83L));
+    operation2 = PatchOperation.addLongValues("favoritePrimes",
+            11L, 19L, 83L);
+    assertEquals(operation, operation2);
+
+    operation = PatchOperation.addDateValues("commitTimestamps",
+            Arrays.asList(new Date(1426901922000L), new Date(1440085206000L)));
+    operation2 = PatchOperation.addDateValues("commitTimestamps",
+            new Date(1426901922000L), new Date(1440085206000L));
+    assertEquals(operation, operation2);
+
+    operation = PatchOperation.addBinaryValues("easterEgg",
+            Arrays.asList(
+                    new byte[] { 69, 97, 115, 116, 101, 114 },
+                    new byte[] { 101, 103, 103, 33 }
+            ));
+    operation2 = PatchOperation.addBinaryValues("easterEgg",
+            new byte[] { 69, 97, 115, 116, 101, 114 },
+            new byte[] { 101, 103, 103, 33 }
+    );
+    assertEquals(operation, operation2);
+
+    operation = PatchOperation.addURIValues("personalSites",
+            Arrays.asList(URI.create("https://example.com/"),
+                          URI.create("https://example.com/cool")));
+    operation2 = PatchOperation.addURIValues("personalSites",
+            URI.create("https://example.com/"),
+            URI.create("https://example.com/cool"));
+    assertEquals(operation, operation2);
+  }
 }

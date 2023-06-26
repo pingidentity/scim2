@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
+import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
@@ -31,11 +32,15 @@ import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
 
 /**
  * Tests generic scim objects.
@@ -43,7 +48,7 @@ import java.util.TimeZone;
 @Test
 public class GenericScimResourceObjectTest
 {
-  private DateFormat dateFormat =
+  private final DateFormat dateFormat =
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
   /**
@@ -533,6 +538,105 @@ public class GenericScimResourceObjectTest
     Assert.assertTrue(gsr.getBinaryValueList("bogusPath").isEmpty());
     Assert.assertTrue(gsr.getBinaryValueList(
         Path.fromString("bogusPath")).isEmpty());
+  }
+
+  /**
+   * Performs basic equivalency checks to validate
+   * {@link GenericScimResource#equals(Object)}.
+   *
+   * @throws Exception  If an unexpected error occurs.
+   */
+  @SuppressWarnings("AssertBetweenInconvertibleTypes")
+  @Test
+  public void testEquals() throws Exception
+  {
+    GenericScimResource resource = new GenericScimResource();
+    GenericScimResource resource2 = new GenericScimResource();
+
+    // Basic test. Two objects with the same data should be equivalent. Check
+    // equivalency twice to invoke both 'resource.equals(resource2)` and
+    // 'resource2.equals(resource)'.
+    resource.addStringValues("userName", Collections.singletonList("bob"));
+    resource2.addStringValues("userName", Collections.singletonList("bob"));
+    assertEquals(resource, resource2);
+    assertEquals(resource2, resource);
+    resource2.removeValues("userName");
+    assertNotEquals(resource, resource2);
+    assertNotEquals(resource2, resource);
+
+    // An object should always be equal to itself.
+    assertEquals(resource, resource);
+    assertEquals(resource2, resource2);
+
+    // Scenarios involving a null ObjectNode field should not cause an exception.
+    GenericScimResource nullResource = new GenericScimResource(null);
+    assertNotEquals(resource, nullResource);
+    assertNotEquals(nullResource, resource);
+    assertEquals(nullResource, new GenericScimResource(null));
+    assertEquals(new GenericScimResource(null), nullResource);
+    assertNotEquals(resource, null);
+    assertNotEquals(null, resource);
+
+    // Other object types should never be equivalent.
+    assertNotEquals(new GenericScimResource(), new Object());
+    ObjectNode newNode = JsonUtils.getJsonNodeFactory().objectNode();
+    assertNotEquals(new GenericScimResource(), newNode);
+    assertNotEquals(new GenericScimResource(), new UserResource());
+  }
+
+  /**
+   * Tests methods that accept varargs on the GenericScimResource class, such as
+   * {@link GenericScimResource#addStringValues(Path, String, String...)}.
+   * Methods with varargs parameters should behave identically to their
+   * counterparts that accept a List as an input parameter.
+   *
+   * @throws Exception  If an unexpected error occurs.
+   */
+  @Test
+  public void testVarArgMethods() throws Exception
+  {
+    GenericScimResource resource = new GenericScimResource();
+    GenericScimResource resource2 = new GenericScimResource();
+
+    resource.addStringValues("favoriteArtists",
+            Arrays.asList("Beethoven", "Mozart"));
+    resource2.addStringValues("favoriteArtists", "Beethoven", "Mozart");
+    assertEquals(resource, resource2);
+
+    resource.addDoubleValues("testScores", Arrays.asList(100.0, 98.0, 11.2));
+    resource2.addDoubleValues("testScores", 100.0, 98.0, 11.2);
+    assertEquals(resource, resource2);
+
+    resource.addIntegerValues("pushUpCountHistory", Arrays.asList(11, 19, 83));
+    resource2.addIntegerValues("pushUpCountHistory", 11, 19, 83);
+    assertEquals(resource, resource2);
+
+    resource.addLongValues("pullUpCountHistory", Arrays.asList(11L, 19L, 83L));
+    resource2.addLongValues("pullUpCountHistory", 11L, 19L, 83L);
+    assertEquals(resource, resource2);
+
+    resource.addDateValues("flightDays", Arrays.asList(
+            new Date(0L), new Date(1685499903710L)));
+    resource2.addDateValues("flightDays",
+            new Date(0L), new Date(1685499903710L));
+    assertEquals(resource, resource2);
+
+    resource.addBinaryValues("publicKeys",
+            Arrays.asList(
+                new byte[] { 87, 104, 121, 32, 100, 105, 100, 32, 121, 111, 117 },
+                new byte[] { 100, 101, 99, 111, 100, 101, 32, 116, 104, 105, 115, 63 }
+    ));
+    resource2.addBinaryValues("publicKeys",
+            new byte[] { 87, 104, 121, 32, 100, 105, 100, 32, 121, 111, 117 },
+            new byte[] { 100, 101, 99, 111, 100, 101, 32, 116, 104, 105, 115, 63 }
+    );
+    assertEquals(resource, resource2);
+
+    resource.addURIValues("permittedEndpoints", Arrays.asList(
+            URI.create("/Users"), URI.create("/Hackers")));
+    resource2.addURIValues("permittedEndpoints",
+            URI.create("/Users"), URI.create("/Hackers"));
+    assertEquals(resource, resource2);
   }
 
   private void assertByteArrayListContainsBytes(

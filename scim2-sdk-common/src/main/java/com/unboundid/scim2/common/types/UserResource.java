@@ -24,11 +24,14 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import java.net.URI;
 import java.util.List;
 
+import static com.unboundid.scim2.common.utils.StaticUtils.toList;
+
 /**
  * SCIM provides a resource type for "{@code User}" resources.  The core schema
  * for "{@code User}" is identified using the URI:
  * "{@code urn:ietf:params:scim:schemas:core:2.0:User}".
  */
+@SuppressWarnings("UnusedReturnValue")
 @Schema(id="urn:ietf:params:scim:schemas:core:2.0:User",
     name="User", description = "User Account")
 public class UserResource extends BaseScimResource
@@ -534,6 +537,20 @@ public class UserResource extends BaseScimResource
   }
 
   /**
+   * Alternate version of {@link #setEmails(List)}.
+   *
+   * @param email   A non-null email.
+   * @param emails  An optional set of additional arguments. Any
+   *                {@code null} values will be ignored.
+   * @return This object.
+   */
+  public UserResource setEmails(final Email email, final Email... emails)
+  {
+    setEmails(toList(email, emails));
+    return this;
+  }
+
+  /**
    * Retrieves the phone numbers for the User.
    *
    * @return The Phone numbers for the User.
@@ -552,6 +569,21 @@ public class UserResource extends BaseScimResource
   public UserResource setPhoneNumbers(final List<PhoneNumber> phoneNumbers)
   {
     this.phoneNumbers = phoneNumbers;
+    return this;
+  }
+
+  /**
+   * Alternate version of {@link #setPhoneNumbers(List)}.
+   *
+   * @param phoneNumber   A non-null phone number.
+   * @param phoneNumbers  An optional set of additional arguments. Any
+   *                      {@code null} values will be ignored.
+   * @return This object.
+   */
+  public UserResource setPhoneNumbers(final PhoneNumber phoneNumber,
+                                      final PhoneNumber... phoneNumbers)
+  {
+    setPhoneNumbers(toList(phoneNumber, phoneNumbers));
     return this;
   }
 
@@ -578,6 +610,21 @@ public class UserResource extends BaseScimResource
   }
 
   /**
+   * Alternate version of {@link #setIms(List)}.
+   *
+   * @param ims1   A non-null instant messaging address.
+   * @param ims    An optional set of additional arguments. Any
+   *               {@code null} values will be ignored.
+   * @return This object.
+   */
+  public UserResource setIms(final InstantMessagingAddress ims1,
+                             final InstantMessagingAddress... ims)
+  {
+    setIms(toList(ims1, ims));
+    return this;
+  }
+
+  /**
    * Retrieves the URIs of photos of the User.
    *
    * @return The URIs of photos of the User.
@@ -600,6 +647,20 @@ public class UserResource extends BaseScimResource
   }
 
   /**
+   * Alternate version of {@link #setPhotos(List)}.
+   *
+   * @param photo   A non-null photo.
+   * @param photos  An optional set of additional arguments. Any
+   *                {@code null}  values will be ignored.
+   * @return This object.
+   */
+  public UserResource setPhotos(final Photo photo, final Photo... photos)
+  {
+    setPhotos(toList(photo, photos));
+    return this;
+  }
+
+  /**
    * Retrieves the physical mailing addresses for this User.
    *
    * @return The physical mailing addresses for this User.
@@ -618,6 +679,21 @@ public class UserResource extends BaseScimResource
   public UserResource setAddresses(final List<Address> addresses)
   {
     this.addresses = addresses;
+    return this;
+  }
+
+  /**
+   * Alternate version of {@link #setAddresses(List)}.
+   *
+   * @param address    A non-null address.
+   * @param addresses  An optional set of additional arguments. Any
+   *                   {@code null} values will be ignored.
+   * @return This object.
+   */
+  public UserResource setAddresses(final Address address,
+                                   final Address... addresses)
+  {
+    setAddresses(toList(address, addresses));
     return this;
   }
 
@@ -646,6 +722,20 @@ public class UserResource extends BaseScimResource
   }
 
   /**
+   * Alternate version of {@link #setGroups(List)}.
+   *
+   * @param group1   A non-null group.
+   * @param groups   An optional set of additional arguments. Any
+   *                 {@code null} values will be ignored.
+   * @return This object.
+   */
+  public UserResource setGroups(final Group group1, final Group... groups)
+  {
+    setGroups(toList(group1, groups));
+    return this;
+  }
+
+  /**
    * Retrieves the list of entitlements for the User that represent a thing the
    * User has.
 
@@ -666,6 +756,21 @@ public class UserResource extends BaseScimResource
   public UserResource setEntitlements(final List<Entitlement> entitlements)
   {
     this.entitlements = entitlements;
+    return this;
+  }
+
+  /**
+   * Alternate version of {@link #setEntitlements(List)}.
+   *
+   * @param entitlement1   A non-null entitlement.
+   * @param entitlements   An optional set of additional arguments. Any
+   *                       {@code null} values will be ignored.
+   * @return This object.
+   */
+  public UserResource setEntitlements(final Entitlement entitlement1,
+                                      final Entitlement... entitlements)
+  {
+    setEntitlements(toList(entitlement1, entitlements));
     return this;
   }
 
@@ -694,6 +799,20 @@ public class UserResource extends BaseScimResource
   }
 
   /**
+   * Alternate version of {@link #setRoles(List)}.
+   *
+   * @param role1  A non-null role.
+   * @param roles  An optional set of additional arguments. Any
+   *               {@code null} values will be ignored.
+   * @return This object.
+   */
+  public UserResource setRoles(final Role role1, final Role... roles)
+  {
+    setRoles(toList(role1, roles));
+    return this;
+  }
+
+  /**
    * Retrieves the list of certificates issued to the User.
    *
    * @return The list of certificates issued to the User.
@@ -713,6 +832,22 @@ public class UserResource extends BaseScimResource
       final List<X509Certificate> x509Certificates)
   {
     this.x509Certificates = x509Certificates;
+    return this;
+  }
+
+  /**
+   * Alternate version of {@link #setX509Certificates(List)}.
+   *
+   * @param x509Certificate1  A non-null certificate.
+   * @param x509Certificates  An optional set of additional arguments. Any
+   *                          {@code null} values will be ignored.
+   * @return This object.
+   */
+  public UserResource setX509Certificates(
+      final X509Certificate x509Certificate1,
+      final X509Certificate... x509Certificates)
+  {
+    setX509Certificates(toList(x509Certificate1, x509Certificates));
     return this;
   }
 

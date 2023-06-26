@@ -7,6 +7,14 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 Fixed an issue with PatchOperations that prevented setting the `value` field to an empty array. The
 constructor would previously reject this kind of operation with a BadRequestException.
 
+Added a variety of methods for providing multi-valued parameters directly into a method without
+needing to wrap the arguments into a List. For example, setting a single email on a UserResource used
+to be done with `user.setEmails(Collections.singletonList(email))`, but this can now be shortened to
+`user.setEmails(email)`. Note that the existing methods are still available and have not been
+deprecated. Other examples include `BaseScimResource.setSchemaUrns()`,
+`GenericScimResource.addStringValues()`, `PatchOperation.addDoubleValues()`, and the `PatchRequest`
+constructor.
+
 
 ## v2.3.8 - 2023-05-17
 Updated the deserialized form of ListResponse objects so that the `itemsPerPage` and `startIndex`
