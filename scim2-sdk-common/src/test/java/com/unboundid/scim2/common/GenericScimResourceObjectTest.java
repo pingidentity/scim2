@@ -191,12 +191,6 @@ public class GenericScimResourceObjectTest
     Boolean value1 = Boolean.TRUE;
     String path2 = "path2";
     Boolean value2 = Boolean.FALSE;
-    String path3 = "path3";
-    Boolean arrayValue1 = Boolean.TRUE;
-    Boolean arrayValue2 = Boolean.FALSE;
-    String path4 = "path4";
-    Boolean arrayValue3 = Boolean.FALSE;
-    Boolean arrayValue4 = Boolean.TRUE;
 
     GenericScimResource gsr = new GenericScimResource();
     Assert.assertEquals(gsr.replaceValue(path1, value1).
@@ -204,25 +198,8 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
         getBooleanValue(path2), value2);
 
-    List<Boolean> list1 = gsr.addBooleanValues(path3,
-        Lists.<Boolean>newArrayList(arrayValue1, arrayValue2)).
-        getBooleanValueList(Path.fromString(path3));
-    Assert.assertEquals(list1.size(), 2);
-    Assert.assertTrue(list1.contains(arrayValue1));
-    Assert.assertTrue(list1.contains(arrayValue2));
-
-     List<Boolean> list2 = gsr.addBooleanValues(Path.fromString(path4),
-         Lists.<Boolean>newArrayList(arrayValue3, arrayValue4)).
-        getBooleanValueList(path4);
-    Assert.assertEquals(list2.size(), 2);
-    Assert.assertTrue(list2.contains(arrayValue3));
-    Assert.assertTrue(list2.contains(arrayValue4));
-
     Assert.assertNull(gsr.getBooleanValue("bogusPath"));
     Assert.assertNull(gsr.getBooleanValue(Path.fromString("bogusPath")));
-    Assert.assertTrue(gsr.getBooleanValueList("bogusPath").isEmpty());
-    Assert.assertTrue(gsr.getBooleanValueList(
-        Path.fromString("bogusPath")).isEmpty());
   }
 
   /**

@@ -955,7 +955,13 @@ public final class GenericScimResource implements ScimResource
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
+   * @deprecated  Since 2.4.0. Boolean attributes represent data that has one of
+   *              two possible values, so they are single-valued in nature.
+   *              Thus, a multi-valued boolean array is not well-defined, since
+   *              arrays such as {@code [true, false]} do not contain meaningful
+   *              data. Use {@link #replaceValue(String, Boolean)} instead.
    */
+  @Deprecated
   public GenericScimResource addBooleanValues(final String path,
       final List<Boolean> values) throws ScimException
   {
@@ -993,7 +999,13 @@ public final class GenericScimResource implements ScimResource
    * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
+   * @deprecated  Since 2.4.0. Boolean attributes represent data that has one of
+   *              two possible values, so they are single-valued in nature.
+   *              Thus, a multi-valued boolean array is not well-defined, since
+   *              arrays such as {@code [true, false]} do not contain meaningful
+   *              data. Use {@link #replaceValue(Path, Boolean)} instead.
    */
+  @Deprecated
   public GenericScimResource addBooleanValues(final Path path,
       final List<Boolean> values) throws ScimException
   {
@@ -1096,7 +1108,13 @@ public final class GenericScimResource implements ScimResource
    * @param path the path to get the value from.
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
+   * @deprecated  Since 2.4.0. Boolean attributes represent data that has one of
+   *              two possible values, so they are single-valued in nature.
+   *              Thus, a multi-valued boolean array is not well-defined, since
+   *              arrays such as {@code [true, false]} do not contain meaningful
+   *              data. Use {@link #getBooleanValue(String)} instead.
    */
+  @Deprecated
   public List<Boolean> getBooleanValueList(final String path)
       throws ScimException
   {
@@ -1128,7 +1146,13 @@ public final class GenericScimResource implements ScimResource
    * @param path the path to get the value from.
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
+   * @deprecated  Since 2.4.0. Boolean attributes represent data that has one of
+   *              two possible values, so they are single-valued in nature.
+   *              Thus, a multi-valued boolean array is not well-defined, since
+   *              arrays such as {@code [true, false]} do not contain meaningful
+   *              data. Use {@link #getBooleanValue(Path)} instead.
    */
+  @Deprecated
   public List<Boolean> getBooleanValueList(final Path path) throws ScimException
   {
     JsonNode valueNode = getValue(path);

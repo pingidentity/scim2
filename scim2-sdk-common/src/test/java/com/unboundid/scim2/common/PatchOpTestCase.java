@@ -482,31 +482,7 @@ public class PatchOpTestCase
   @Test
   public void testBooleanPatchOps() throws Exception
   {
-    PatchOperation patchOp = PatchOperation.addBooleanValues("path1",
-        Lists.newArrayList(Boolean.TRUE, Boolean.FALSE));
-    Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
-    JsonNode jsonNode = patchOp.getJsonNode();
-    Assert.assertTrue(jsonNode.isArray());
-    Assert.assertEquals(jsonNode.size(), 2);
-    Assert.assertEquals(
-        jsonNode.get(0).booleanValue(), Boolean.TRUE.booleanValue());
-    Assert.assertEquals(
-        jsonNode.get(1).booleanValue(), Boolean.FALSE.booleanValue());
-    Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
-
-    patchOp = PatchOperation.addBooleanValues(Path.fromString("path1"),
-        Lists.newArrayList(Boolean.FALSE, Boolean.TRUE));
-    Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
-    jsonNode = patchOp.getJsonNode();
-    Assert.assertTrue(jsonNode.isArray());
-    Assert.assertEquals(jsonNode.size(), 2);
-    Assert.assertEquals(
-        jsonNode.get(0).booleanValue(), Boolean.FALSE.booleanValue());
-    Assert.assertEquals(
-        jsonNode.get(1).booleanValue(), Boolean.TRUE.booleanValue());
-    Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
-
-    patchOp = PatchOperation.replace(
+    PatchOperation patchOp = PatchOperation.replace(
         Path.fromString("path1"), Boolean.TRUE);
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.REPLACE);
     Assert.assertEquals(patchOp.getValue(Boolean.class), Boolean.TRUE);
