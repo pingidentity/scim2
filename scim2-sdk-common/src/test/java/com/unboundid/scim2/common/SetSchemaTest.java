@@ -118,4 +118,33 @@ public class SetSchemaTest
             "urn:pingidentity:proprietaryObject", null, null);
     assertEquals(genericObject.getSchemaUrns().size(), 1);
   }
+
+
+  /**
+   * Ensure that the requested order is preserved when an ordered Collection is
+   * used to initialize the schema URN set of a BaseScimResource.
+   */
+  @Test
+  public void testSchemaUrnOrder()
+  {
+    final String urn0 = "urn:ietf:params:scim:schemas:core:2.0:User";
+    final String urn1 = "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User";
+    final String urn2 = "urn:pingidentity:proprietaryObject";
+    final String urn3 = "urn:pingidentity:specialObject";
+    final String urn4 = "urn:pingidentity:veryParticularObject";
+    final String urn5 = "urn:pingidentity:aVeryVeryParticularObject";
+    final List<String> urns = Arrays.asList(urn0, urn1, urn2, urn3, urn4, urn5);
+    BaseScimResource resource = new UserResource();
+    resource.setSchemaUrns(urns);
+
+    String[] resourceSchemaUrns = resource.getSchemaUrns().toArray(new String[0]);
+    assertEquals(resourceSchemaUrns.length, 6);
+
+    assertEquals(resourceSchemaUrns[0], urn0);
+    assertEquals(resourceSchemaUrns[1], urn1);
+    assertEquals(resourceSchemaUrns[2], urn2);
+    assertEquals(resourceSchemaUrns[3], urn3);
+    assertEquals(resourceSchemaUrns[4], urn4);
+    assertEquals(resourceSchemaUrns[5], urn5);
+  }
 }
