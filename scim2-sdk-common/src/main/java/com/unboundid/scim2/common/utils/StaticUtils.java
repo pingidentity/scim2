@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -430,4 +431,38 @@ public final class StaticUtils
     }
   }
 
+
+  /**
+   * Converts an array of objects into a List form. This method is primarily
+   * used by the SDK for converting arrays into lists used by multi-valued
+   * parameters.
+   *
+   * @param <T>           The Java type of the elements.
+   * @param firstElement  The initial element in the array. This field is
+   *                      guaranteed to be first in the list returned by this
+   *                      method. This must not be {@code null}.
+   * @param elements      An optional array of additional objects to be included
+   *                      in the list. Any {@code null} values will be ignored.
+   *
+   * @return  A list of the elements. All entries in this list will be non-null.
+   */
+  public static <T> List<T> toList(final T firstElement, final T[] elements)
+  {
+    Objects.requireNonNull(firstElement);
+
+    List<T> list = new ArrayList<>();
+    list.add(firstElement);
+    if (elements != null)
+    {
+      for (T element : elements)
+      {
+        if (element != null)
+        {
+          list.add(element);
+        }
+      }
+    }
+
+    return list;
+  }
 }

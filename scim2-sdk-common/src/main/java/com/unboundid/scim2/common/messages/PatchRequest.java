@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.unboundid.scim2.common.utils.StaticUtils.toList;
+
 /**
  * Class representing a SCIM 2 patch request.
  */
@@ -43,7 +45,7 @@ public final class PatchRequest
   private final List<PatchOperation> operations;
 
   /**
-   * Create a new Patch Operation Request.
+   * Create a new Patch Request.
    *
    * @param operations The list of operations to include.
    */
@@ -53,6 +55,20 @@ public final class PatchRequest
       final List<PatchOperation> operations)
   {
     this.operations = Collections.unmodifiableList(operations);
+  }
+
+  /**
+   * Create a new Patch Request.
+   *
+   * @param operation   The first operation in the patch request. This must not
+   *                    be {@code null}.
+   * @param operations  An optional field for additional patch operations. Any
+   *                    {@code null} values will be ignored.
+   */
+  public PatchRequest(final PatchOperation operation,
+                      final PatchOperation... operations)
+  {
+    this(toList(operation, operations));
   }
 
   /**

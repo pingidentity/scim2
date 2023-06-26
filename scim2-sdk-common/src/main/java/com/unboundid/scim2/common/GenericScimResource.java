@@ -30,6 +30,7 @@ import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.GenericScimObjectDeserializer;
 import com.unboundid.scim2.common.utils.GenericScimObjectSerializer;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
 import java.io.IOException;
 import java.net.URI;
@@ -40,6 +41,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>A generic SCIM object.  This object can be used if you have no
@@ -213,6 +215,14 @@ public final class GenericScimResource implements ScimResource
       // This should never happen.
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public void setSchemaUrns(final String schemaUrn, final String... schemaUrns)
+  {
+    setSchemaUrns(toList(schemaUrn, schemaUrns));
   }
 
   /**
@@ -469,6 +479,42 @@ public final class GenericScimResource implements ScimResource
     }
   }
 
+  /**
+   * Indicates whether the provided object is equal to this generic SCIM
+   * resource.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this generic
+   *            SCIM resource, or {@code false} if not.
+   */
+  @Override
+  public boolean equals(final Object o)
+  {
+    if (!(o instanceof GenericScimResource))
+    {
+      return false;
+    }
+
+    ObjectNode otherNode = ((GenericScimResource) o).getObjectNode();
+    if (objectNode == null)
+    {
+      return (otherNode == null);
+    }
+
+    return objectNode.equals(otherNode);
+  }
+
+  /**
+   * Retrieves a hash code for this generic SCIM resource.
+   *
+   * @return  A hash code for this generic SCIM resource.
+   */
+  @Override
+  public int hashCode()
+  {
+    return Objects.hashCode(objectNode);
+  }
+
 
   /////////////////////////////////////
   // SCIM String methods
@@ -586,6 +632,24 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
+   * Alternate version of {@link #addStringValues(String, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addStringValues(final String path,
+      final String value1, final String... values)
+          throws ScimException
+  {
+    return addStringValues(path, toList(value1, values));
+  }
+
+  /**
    * Adds String values to an array node.  If no array node exists at the
    * specified path, a new array node will be created.
    *   <p>
@@ -627,6 +691,24 @@ public final class GenericScimResource implements ScimResource
     }
 
     return addValues(path, valuesArrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addStringValues(Path, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addStringValues(final Path path,
+      final String value1, final String... values)
+          throws ScimException
+  {
+    return addStringValues(path, toList(value1, values));
   }
 
   /**
@@ -752,7 +834,7 @@ public final class GenericScimResource implements ScimResource
   public List<String> getStringValueList(final Path path) throws ScimException
   {
     JsonNode valueNode = getValue(path);
-    List<String> values = new ArrayList<String>();
+    List<String> values = new ArrayList<>();
 
     Iterator<JsonNode> iterator = valueNode.iterator();
     while (iterator.hasNext())
@@ -1177,6 +1259,24 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
+   * Alternate version of {@link #addDoubleValues(String, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addDoubleValues(final String path,
+      final Double value1, final Double... values)
+          throws ScimException
+  {
+    return addDoubleValues(path, toList(value1, values));
+  }
+
+  /**
    * Adds Double values to an array node.  If no array node exists at the
    * specified path, a new array node will be created.
    *   <p>
@@ -1218,6 +1318,24 @@ public final class GenericScimResource implements ScimResource
     }
 
     return addValues(path, valuesArrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addDoubleValues(Path, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addDoubleValues(final Path path,
+      final Double value1, final Double... values)
+          throws ScimException
+  {
+    return addDoubleValues(path, toList(value1, values));
   }
 
   /**
@@ -1471,6 +1589,24 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
+   * Alternate version of {@link #addIntegerValues(String, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addIntegerValues(final String path,
+      final Integer value1, final Integer... values)
+          throws ScimException
+  {
+    return addIntegerValues(path, toList(value1, values));
+  }
+
+  /**
    * Adds Integer values to an array node.  If no array node exists at the
    * specified path, a new array node will be created.
    *   <p>
@@ -1512,6 +1648,24 @@ public final class GenericScimResource implements ScimResource
     }
 
     return addValues(path, valuesArrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addIntegerValues(Path, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addIntegerValues(final Path path,
+      final Integer value1, final Integer... values)
+          throws ScimException
+  {
+    return addIntegerValues(path, toList(value1, values));
   }
 
   /**
@@ -1766,6 +1920,24 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
+   * Alternate version of {@link #addLongValues(String, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addLongValues(
+      final String path, final Long value1, final Long... values)
+          throws ScimException
+  {
+    return addLongValues(path, toList(value1, values));
+  }
+
+  /**
    * Adds Long values to an array node.  If no array node exists at the
    * specified path, a new array node will be created.
    *   <p>
@@ -1807,6 +1979,24 @@ public final class GenericScimResource implements ScimResource
     }
 
     return addValues(path, valuesArrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addLongValues(Path, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addLongValues(
+      final Path path, final Long value1, final Long... values)
+          throws ScimException
+  {
+    return addLongValues(path, toList(value1, values));
   }
 
   /**
@@ -2060,6 +2250,24 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
+   * Alternate version of {@link #addDateValues(String, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addDateValues(
+      final String path, final Date value1, final Date... values)
+          throws ScimException
+  {
+    return addDateValues(path, toList(value1, values));
+  }
+
+  /**
    * Adds Date values to an array node.  If no array node exists at the
    * specified path, a new array node will be created.
    *   <p>
@@ -2101,6 +2309,24 @@ public final class GenericScimResource implements ScimResource
     }
 
     return addValues(path, valuesArrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addDateValues(Path, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addDateValues(
+      final Path path, final Date value1, final Date... values)
+          throws ScimException
+  {
+    return addDateValues(path, toList(value1, values));
   }
 
   /**
@@ -2397,6 +2623,24 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
+   * Alternate version of {@link #addBinaryValues(String, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addBinaryValues(
+      final String path, final byte[] value1, final byte[]... values)
+          throws ScimException
+  {
+    return addBinaryValues(path, toList(value1, values));
+  }
+
+  /**
    * Adds binary values to an array node.  If no array node exists at the
    * specified path, a new array node will be created.
    *   <p>
@@ -2438,6 +2682,24 @@ public final class GenericScimResource implements ScimResource
     }
 
     return addValues(path, valuesArrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addBinaryValues(Path, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addBinaryValues(
+      final Path path, final byte[] value1, final byte[]... values)
+          throws ScimException
+  {
+    return addBinaryValues(path, toList(value1, values));
   }
 
   /**
@@ -2723,6 +2985,24 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
+   * Alternate version of {@link #addURIValues(String, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addURIValues(
+      final String path, final URI value1, final URI... values)
+          throws ScimException
+  {
+    return addURIValues(path, toList(value1, values));
+  }
+
+  /**
    * Adds URI values to an array node.  If no array node exists at the
    * specified path, a new array node will be created.
    *   <p>
@@ -2767,6 +3047,24 @@ public final class GenericScimResource implements ScimResource
     }
 
     return addValues(path, valuesArrayNode);
+  }
+
+  /**
+   * Alternate version of {@link #addURIValues(Path, List)}.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param value1  The first value. This must not be {@code null}.
+   * @param values  An optional field for additional values. Any {@code null}
+   *                values will be ignored.
+   * @return        This object.
+   *
+   * @throws ScimException  If the path is invalid.
+   */
+  public GenericScimResource addURIValues(
+      final Path path, final URI value1, final URI... values)
+          throws ScimException
+  {
+    return addURIValues(path, toList(value1, values));
   }
 
   /**
@@ -2925,5 +3223,4 @@ public final class GenericScimResource implements ScimResource
       throw new ServerErrorException(ex.getMessage());
     }
   }
-
 }

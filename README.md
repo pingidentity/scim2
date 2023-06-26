@@ -76,7 +76,7 @@ Email email = new Email()
   .setType("home")
   .setPrimary(true)
   .setValue("babs@example.com");
-user.setEmails(Collections.singletonList(email));
+user.setEmails(email);
 user = scimService.create("Users", user);
 
 // Retrieve the user as a UserResource and replace with a modified instance using PUT
@@ -87,7 +87,7 @@ user = scimService.replace(user);
 // Retrieve the user as a GenericScimResource and replace with a modified instance using PUT
 GenericScimResource genericUser =
     scimService.retrieve("Users", user.getId(), GenericScimResource.class);
-genericUser.replaceValue("displayName", TextNode.valueOf("Babs Jensen"));
+genericUser.replace("displayName", "Babs Jensen");
 genericUser = scimService.replaceRequest(genericUser).invoke();
 
 // Perform a partial modification of the user using PATCH
