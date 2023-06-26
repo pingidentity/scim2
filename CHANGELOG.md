@@ -19,6 +19,11 @@ Updated the schema URNs field of `BaseScimResource` to use a `LinkedHashSet` ins
 `HashSet`. This allows for a SCIM resource with multiple schema URNs to have a predictable order
 when the resource is deserialized into JSON.
 
+Deprecated methods of the form `addBooleanValues()` and `getBooleanValueList()` on the
+`GenericScimResource` and `PatchOperation` classes. These methods provided an interface for
+so-called "multi-valued boolean arrays", but boolean data is always single-valued in nature.
+Updating a boolean value should always be done with a `replace` operation type rather than an `add`.
+
 
 ## v2.3.8 - 2023-05-17
 Updated the deserialized form of ListResponse objects so that the `itemsPerPage` and `startIndex`
