@@ -35,10 +35,11 @@ import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
@@ -76,7 +77,7 @@ public abstract class BaseScimResource
   private Meta meta;
 
   @JsonProperty("schemas")
-  private Set<String> schemaUrns = new HashSet<String>();
+  private Set<String> schemaUrns = new LinkedHashSet<>();
 
   private final ObjectNode extensionObjectNode =
       JsonUtils.getJsonNodeFactory().objectNode();
@@ -165,11 +166,6 @@ public abstract class BaseScimResource
    */
   public Set<String> getSchemaUrns()
   {
-    if(schemaUrns == null)
-    {
-      schemaUrns = new HashSet<String>();
-    }
-
     return schemaUrns;
   }
 
@@ -178,7 +174,8 @@ public abstract class BaseScimResource
    */
   public void setSchemaUrns(final Collection<String> schemaUrns)
   {
-    this.schemaUrns = new HashSet<>(schemaUrns);
+    Objects.requireNonNull(schemaUrns);
+    this.schemaUrns = new LinkedHashSet<>(schemaUrns);
   }
 
   /**
@@ -535,8 +532,7 @@ public abstract class BaseScimResource
     {
       return false;
     }
-    if (schemaUrns != null ? !schemaUrns.equals(that.schemaUrns) :
-        that.schemaUrns != null)
+    if (!schemaUrns.equals(that.schemaUrns))
     {
       return false;
     }

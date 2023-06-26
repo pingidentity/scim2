@@ -15,6 +15,10 @@ deprecated. Other examples include `BaseScimResource.setSchemaUrns()`,
 `GenericScimResource.addStringValues()`, `PatchOperation.addDoubleValues()`, and the `PatchRequest`
 constructor.
 
+Updated the schema URNs field of `BaseScimResource` to use a `LinkedHashSet` instead of a generic
+`HashSet`. This allows for a SCIM resource with multiple schema URNs to have a predictable order
+when the resource is deserialized into JSON.
+
 
 ## v2.3.8 - 2023-05-17
 Updated the deserialized form of ListResponse objects so that the `itemsPerPage` and `startIndex`
