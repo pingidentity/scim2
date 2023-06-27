@@ -46,6 +46,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.unboundid.scim2.common.utils.ScimOptionConstants.PATCH_OP_ALLOW_EMPTY_CONTAINER_VALUE;
+
 /**
  * An individual patch operation.
  */
@@ -81,7 +83,7 @@ public abstract class PatchOperation
     {
       super(path);
       if(value == null || value.isNull() ||
-           ((value.isArray() || value.isObject()) && value.size() == 0))
+           ((value.isArray() || value.isObject()) && value.size() == 0 && isEmptyContainerNotAllowed()))
        {
          throw BadRequestException.invalidSyntax(
              "value field must not be null or an empty container");
@@ -303,7 +305,7 @@ public abstract class PatchOperation
     {
       super(path);
       if(value == null || value.isNull() ||
-           ((value.isArray() || value.isObject()) && value.size() == 0))
+           ((value.isArray() || value.isObject()) && value.size() == 0 && isEmptyContainerNotAllowed()))
        {
          throw BadRequestException.invalidSyntax(
              "value field must not be null or an empty container");
@@ -1370,5 +1372,9 @@ public abstract class PatchOperation
       default:
         throw new IllegalArgumentException("Unknown patch op type " + opType);
     }
+  }
+
+  private static boolean isEmptyContainerNotAllowed() {
+    return !Boolean.parseBoolean(System.getProperty(PATCH_OP_ALLOW_EMPTY_CONTAINER_VALUE, "false"));
   }
 }

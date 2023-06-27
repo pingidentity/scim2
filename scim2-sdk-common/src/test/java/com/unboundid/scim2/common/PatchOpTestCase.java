@@ -20,6 +20,7 @@ package com.unboundid.scim2.common;
 import com.fasterxml.jackson.core.Base64Variants;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -34,8 +35,10 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
+import static com.unboundid.scim2.common.utils.ScimOptionConstants.PATCH_OP_ALLOW_EMPTY_CONTAINER_VALUE;
 import static org.testng.Assert.assertEquals;
 
 /**
@@ -766,5 +769,53 @@ public class PatchOpTestCase
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.REPLACE);
     Assert.assertEquals(patchOp.getValue(String.class), uri6.toString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
+  }
+
+  /**
+   * test empty container with add and replace operations.
+   * @throws Exception error
+   */
+  @Test
+  public void testEmptyContainerPatchOps() throws Exception
+  {
+    ArrayNode emptyArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
+
+    try
+    {
+      PatchOperation.addStringValues("path1", Collections.emptyList());
+    }
+    catch(IllegalArgumentException e)
+    {
+      assertEquals(
+              ((BadRequestException) e.getCause()).getScimError().getScimType(),
+              BadRequestException.INVALID_SYNTAX);
+    }
+
+    try
+    {
+      PatchOperation.replace("path1", emptyArrayNode);
+    }
+    catch(IllegalArgumentException e)
+    {
+      assertEquals(
+              ((BadRequestException) e.getCause()).getScimError().getScimType(),
+              BadRequestException.INVALID_SYNTAX);
+    }
+
+    try
+    {
+      System.setProperty(PATCH_OP_ALLOW_EMPTY_CONTAINER_VALUE, "true");
+      PatchOperation addPatchOp = PatchOperation.addStringValues("path1", Collections.emptyList());
+      Assert.assertNotNull(addPatchOp);
+      Assert.assertEquals(addPatchOp.getValues(String.class).size(), 0);
+
+      PatchOperation replacePatchOp = PatchOperation.replace("path1", emptyArrayNode);
+      Assert.assertNotNull(replacePatchOp);
+      Assert.assertEquals(replacePatchOp.getValues(String.class).size(), 0);
+    }
+    finally
+    {
+      System.setProperty(PATCH_OP_ALLOW_EMPTY_CONTAINER_VALUE, "");
+    }
   }
 }
