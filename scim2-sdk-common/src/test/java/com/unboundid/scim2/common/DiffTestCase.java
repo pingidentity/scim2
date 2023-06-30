@@ -38,6 +38,7 @@ import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -90,7 +91,7 @@ public class DiffTestCase
       op.apply(source);
     }
     removeNullNodes(target);
-    assertEquals(source, target);
+    assertThat(source).isEqualTo(target);
   }
 
   /**
@@ -324,7 +325,7 @@ public class DiffTestCase
             " not in target photo array " + targetPhotos);
       }
     }
-    assertEquals(source, target);
+    assertThat(source).isEqualTo(target);
   }
 
   /**
@@ -496,7 +497,7 @@ public class DiffTestCase
       op.apply(source);
     }
     removeNullNodes(target);
-    assertEquals(source, target);
+    assertThat(source).isEqualTo(target);
   }
 
   /**
