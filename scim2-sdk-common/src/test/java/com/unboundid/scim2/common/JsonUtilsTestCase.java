@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 
@@ -52,7 +53,7 @@ public class JsonUtilsTestCase
    */
   public static final class ArrayValue
   {
-    private Map<String, Object> fields = new HashMap<String, Object>();
+    private final Map<String, Object> fields = new HashMap<>();
 
     /**
      * Set a field.
@@ -801,7 +802,7 @@ public class JsonUtilsTestCase
 
     JsonUtils.addValue(Path.root(), resource, value);
 
-    assertEquals(resource, expectedAddResult);
+    assertThat(resource).isEqualTo(expectedAddResult);
 
     JsonNode expectedReplaceResult = JsonUtils.getObjectReader().
         readTree("{\n" +
@@ -831,7 +832,7 @@ public class JsonUtilsTestCase
 
     JsonUtils.replaceValue(Path.root(), resource, value);
 
-    assertEquals(resource, expectedReplaceResult);
+    assertThat(resource).isEqualTo(expectedReplaceResult);
   }
 
 
