@@ -231,7 +231,7 @@
             <phase>package</phase>
             <configuration>
               <configLocation>config/scim2-parent-checkstyle.xml</configLocation>
-              <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+              <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
             </configuration>
           </execution>
           <execution>
@@ -242,7 +242,7 @@
             <phase>package</phase>
             <configuration>
               <configLocation>config/scim2-parent-unit-checkstyle.xml</configLocation>
-              <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+              <sourceDirectories>${project.build.testSourceDirectory}</sourceDirectories>
             </configuration>
           </execution>
         </executions>
