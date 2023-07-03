@@ -984,13 +984,14 @@ public class AttributeDefinition
     builder.append(getName());
     builder.append(" Description: ");
     builder.append(getDescription());
-    builder.append(" isReadOnly: ");
+    builder.append(" Mutability: ");
+    builder.append(getMutability());
     builder.append(" isRequired: ");
     builder.append(isRequired());
     builder.append(" isCaseExact: ");
     builder.append(isCaseExact());
     builder.append(System.lineSeparator());
-    if(getSubAttributes() != null)
+    if (getSubAttributes() != null)
     {
       for (AttributeDefinition a : getSubAttributes())
       {
