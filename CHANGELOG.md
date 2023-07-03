@@ -24,6 +24,8 @@ Deprecated methods of the form `addBooleanValues()` and `getBooleanValueList()` 
 so-called "multi-valued boolean arrays", but boolean data is always single-valued in nature.
 Updating a boolean value should always be done with a `replace` operation type rather than an `add`.
 
+Fixed an issue where `AttributeDefinition.toString()` would not print the mutability of an
+attribute.
 
 ## v2.3.8 - 2023-05-17
 Updated the deserialized form of ListResponse objects so that the `itemsPerPage` and `startIndex`
