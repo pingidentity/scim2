@@ -24,8 +24,10 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 
 /**
  * Some basic tests for serialization and de-serialization of the core group
@@ -33,7 +35,12 @@ import static org.testng.Assert.assertNotNull;
  */
 public class GroupResourceTestCase
 {
+  // An example representation of a group defined in RFC 7643 section 8.4.
   private String fullRepresentation;
+
+  // A representation of a group in which members have the 'type' field defined
+  // for each group member.
+  private String membersWithType;
 
   /**
    * Initializes the environment before each test method.
@@ -68,6 +75,28 @@ public class GroupResourceTestCase
         "\"https://example.com/v2/Groups/e9e30dba-f08f-4109-8486-d5c6a331660a\"\n" +
         "  }\n" +
         "}";
+
+    membersWithType = "{" +
+        "  \"schemas\": [\"urn:ietf:params:scim:schemas:core:2.0:Group\"]," +
+        "  \"id\": \"c215de78-5c6a-407b-bea3-9a2a8f0f1202\"," +
+        "  \"displayName\": \"Not Basketball Players\"," +
+        "  \"members\": [" +
+        "    {" +
+        "      \"value\": \"03b5ae49-fa74-4f5c-8af4-12b363100a2b\"," +
+        "      \"type\": \"User\"," +
+        "      \"$ref\":\"https://example.com/v2/Users/" +
+                      "03b5ae49-fa74-4f5c-8af4-12b363100a2b\"," +
+        "      \"display\": \"Michael B. Jordan\"" +
+        "    }," +
+        "    {" +
+        "      \"value\": \"f9b62a62-abe8-430e-b802-9e84f0e06baa\"," +
+        "      \"type\": \"Group\"," +
+        "      \"$ref\": \"https://example.com/v2/Groups/" +
+                      "f9b62a62-abe8-430e-b802-9e84f0e06baa\"," +
+        "      \"display\": \"Wizards (of the Coast)\"" +
+        "    }" +
+        "  ]" +
+        "}";
   }
 
   /**
@@ -95,10 +124,31 @@ public class GroupResourceTestCase
       assertNotNull(member.getValue());
       assertNotNull(member.getRef());
       assertNotNull(member.getDisplay());
+      assertNull(member.getType());
     }
 
     assertEquals(groupResource.getMembers().get(0).getDisplay(), "Babs Jensen");
     assertEquals(groupResource.getMembers().get(1).getDisplay(), "Mandy Pepperidge");
+  }
+
+  /**
+   * Ensures that a JSON representation of a group will correctly serialize
+   * members when a member includes the {@code type} attribute.
+   *
+   * @throws Exception  If an unexpected error occurs.
+   */
+  @Test
+  public void testMembersWithTypeFieldDefined() throws Exception
+  {
+    GroupResource groupResource = JsonUtils.getObjectReader()
+            .forType(GroupResource.class).readValue(membersWithType);
+
+    for (Member member : groupResource.getMembers())
+    {
+      assertThat(member.getType()).isNotNull();
+      assertThat(member.getType()).as("Member should be a canonical type")
+              .isIn("User", "Group");
+    }
   }
 
   /**

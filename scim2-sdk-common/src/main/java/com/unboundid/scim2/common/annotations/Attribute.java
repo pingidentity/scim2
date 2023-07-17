@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 public @interface Attribute
 {
   /**
-   * Determines if the attribute value is case sensitive.
+   * Determines if the attribute value is case-sensitive.
    *
    * @return A flag indicating the attribute value's case sensitivity.
    */

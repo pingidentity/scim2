@@ -27,6 +27,8 @@ Updating a boolean value should always be done with a `replace` operation type r
 Fixed an issue where `AttributeDefinition.toString()` would not print the mutability of an
 attribute.
 
+Added a `type` field to the `Member` class as defined by RFC 7643 section 8.7.1.
+
 ## v2.3.8 - 2023-05-17
 Updated the deserialized form of ListResponse objects so that the `itemsPerPage` and `startIndex`
 fields are listed at the top with `totalResults`. This matches the form of ListResponses shown in

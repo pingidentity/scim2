@@ -35,6 +35,16 @@ public class Member
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
+  @Attribute(description = "A label indicating the type of resource, e.g.,"
+          + " 'User' or 'Group'",
+      canonicalValues = { "User", "Group" },
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.IMMUTABLE,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  @JsonProperty("type")
+  private String type;
+
   @Attribute(description = "The URI of the member resource.",
       isRequired = true,
       referenceTypes = { "User", "Group" },
@@ -72,6 +82,28 @@ public class Member
   public Member setValue(final String value)
   {
     this.value = value;
+    return this;
+  }
+
+  /**
+   * Retrieves the type of the group member.
+   *
+   * @return The type of the group member.
+   */
+  public String getType()
+  {
+    return type;
+  }
+
+  /**
+   * Specifies the type of the group member.
+   *
+   * @param type The type of the group member.
+   * @return This object.
+   */
+  public Member setType(final String type)
+  {
+    this.type = type;
     return this;
   }
 
@@ -136,6 +168,7 @@ public class Member
     final Member member = (Member) o;
     return value.equals(member.value) &&
         ref.equals(member.ref) &&
+        Objects.equals(type, member.type) &&
         Objects.equals(display, member.display);
   }
 
@@ -145,6 +178,6 @@ public class Member
   @Override
   public int hashCode()
   {
-    return Objects.hash(value, ref, display);
+    return Objects.hash(value, ref, type, display);
   }
 }
