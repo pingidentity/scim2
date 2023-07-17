@@ -16,13 +16,19 @@
  */
 package com.unboundid.scim2.common;
 
+import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.AttributeDefinition.Mutability;
 import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Member;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
@@ -168,5 +174,29 @@ public class GroupResourceTestCase
     GroupResource groupResource2 = JsonUtils.nodeToValue(gsr.getObjectNode(),
         GroupResource.class);
     assertEquals(groupResource1, groupResource2);
+  }
+
+
+  /**
+   * Ensures that the {@code members} field of a {@link GroupResource} contains
+   * immutable sub-attributes.
+   *
+   * @throws Exception  If an unexpected error occurs.
+   */
+  @Test
+  public void testMembersImmutable() throws Exception
+  {
+    Collection<AttributeDefinition> groupSchema =
+            SchemaUtils.getAttributes(GroupResource.class);
+    List<AttributeDefinition> memberDefinition =
+            groupSchema.stream().filter(
+                    attribute -> attribute.getName().equalsIgnoreCase("members")
+            ).collect(Collectors.toList());
+    assertThat(memberDefinition).hasSize(1);
+
+    for (AttributeDefinition a : memberDefinition.get(0).getSubAttributes())
+    {
+      assertThat(a.getMutability()).isEqualTo(Mutability.IMMUTABLE);
+    }
   }
 }

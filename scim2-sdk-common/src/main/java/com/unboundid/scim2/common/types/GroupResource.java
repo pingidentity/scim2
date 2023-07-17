@@ -44,7 +44,7 @@ public class GroupResource extends BaseScimResource
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT,
-      multiValueClass = Group.class)
+      multiValueClass = Member.class)
   private List<Member> members;
 
   /**
