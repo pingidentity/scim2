@@ -29,6 +29,9 @@ attribute.
 
 Added a `type` field to the `Member` class as defined by RFC 7643 section 8.7.1.
 
+Fixed an issue with the attribute definitions of the `members` field of a GroupResource. The
+attribute definitions now indicate that the sub-attributes of `members` are all immutable.
+
 ## v2.3.8 - 2023-05-17
 Updated the deserialized form of ListResponse objects so that the `itemsPerPage` and `startIndex`
 fields are listed at the top with `totalResults`. This matches the form of ListResponses shown in
