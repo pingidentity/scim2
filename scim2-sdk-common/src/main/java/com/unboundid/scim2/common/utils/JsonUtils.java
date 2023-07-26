@@ -1024,13 +1024,14 @@ public class JsonUtils
   }
 
   /**
-   * Creates an configured SCIM compatible Jackson ObjectMapper. Creating new
-   * ObjectMapper instances are expensive so instances should be shared if
-   * possible. Alternatively, consider using one of the getObjectReader,
-   * getObjectWriter, getJsonNodeFactory, or valueToTree methods which uses the
-   * SDK's ObjectMapper singleton.
+   * Creates a configured SCIM-compatible Jackson ObjectMapper. Creating new
+   * ObjectMapper instances are expensive, so instances should be shared if
+   * possible. Alternatively, consider using one of the
+   * {@link #getObjectReader}, {@link #getObjectWriter},
+   * {@link #getJsonNodeFactory}, or {@link #valueToNode} methods, which use the
+   * SCIM 2 SDK's ObjectMapper singleton.
    *
-   * @return an Object Mapper with the correct options set for seirializing
+   * @return an Object Mapper with the correct options set for serializing
    *     and deserializing SCIM JSON objects.
    */
   public static ObjectMapper createObjectMapper()
