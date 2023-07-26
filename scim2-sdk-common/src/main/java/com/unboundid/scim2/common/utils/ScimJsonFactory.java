@@ -20,6 +20,7 @@ package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.io.IOContext;
 
 import java.io.IOException;
@@ -29,8 +30,29 @@ import java.io.Reader;
 /**
  * Custom JsonFactory implementation for SCIM.
  */
-public class ScimJsonFactory extends JsonFactory {
+public class ScimJsonFactory extends JsonFactory
+{
+  /**
+   * Creates a new SCIM-compatible JsonFactory instance.
+   */
+  public ScimJsonFactory()
+  {
+    super();
+  }
 
+  /**
+   * A constructor used when copying an existing SCIM JsonFactory instance.
+   *
+   * @param sourceFactory   The original ScimJsonFactory.
+   * @param codec           The codec that defines the way that objects should
+   *                        be serialized and deserialized. This may be
+   *                        {@code null}.
+   */
+  protected ScimJsonFactory(final ScimJsonFactory sourceFactory,
+                            final ObjectCodec codec)
+  {
+    super(sourceFactory, codec);
+  }
 
   /**
    * Create a parser that can be used for parsing JSON objects contained
@@ -40,11 +62,21 @@ public class ScimJsonFactory extends JsonFactory {
    * @throws IOException on parse error
    */
   JsonParser createScimFilterParser(final Reader r)
-      throws IOException {
-
+      throws IOException
+  {
     IOContext ctxt = _createContext(r, false);
     return new ScimFilterJsonParser(ctxt, _parserFeatures, r, _objectCodec,
         _rootCharSymbols.makeChild(_factoryFeatures));
   }
 
+  /**
+   * Provides another instance of this factory object.
+   *
+   * @return A new ScimJsonFactory instance.
+   */
+  @Override
+  public ScimJsonFactory copy()
+  {
+    return new ScimJsonFactory(this, _objectCodec);
+  }
 }

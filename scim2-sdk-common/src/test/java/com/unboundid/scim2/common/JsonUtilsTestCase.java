@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
@@ -1217,5 +1218,24 @@ public class JsonUtilsTestCase
     Assert.assertFalse(objectNode.path("hasValue").isMissingNode());
     Assert.assertEquals(objectNode.path("hasValue").textValue(), "value1");
     Assert.assertTrue(objectNode.path("isNull").isMissingNode());
+  }
+
+  /**
+   * Test that a SCIM 2 SDK ObjectMapper can be copied without an exception
+   * thrown.
+   * <p>
+   * This test does not check if the copy is equivalent to the original because
+   * the ObjectMapper class does not have an {@code equals} method.
+   */
+  @Test
+  public void testScimObjectMapperCopy()
+  {
+    ObjectMapper mapper = JsonUtils.createObjectMapper();
+
+    // Copying the object mapper should not cause an exception.
+    ObjectMapper copy = mapper.copy();
+
+    // The copy should be a different object.
+    assertThat(mapper == copy).isFalse();
   }
 }
