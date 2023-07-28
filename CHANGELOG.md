@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## v2.4.1 - TBD
+Placeholder for the next release.
 
 ## v2.4.0 - 2023-Jul-28
 Fixed an issue with PatchOperations that prevented setting the `value` field to an empty array. The
