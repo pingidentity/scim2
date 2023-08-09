@@ -89,9 +89,9 @@ public final class NotEqualFilter extends ComparisonFilter
   }
 
   /**
-   * Retrieves a hash code for this "not equal" filter".
+   * Retrieves a hash code for this "not equal" filter.
    *
-   * @return  A hash code for this "not equal" filter".
+   * @return  A hash code for this "not equal" filter.
    */
   @Override
   public int hashCode()

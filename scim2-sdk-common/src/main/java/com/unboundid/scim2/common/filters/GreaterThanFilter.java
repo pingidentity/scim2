@@ -90,9 +90,9 @@ public final class GreaterThanFilter extends ComparisonFilter
   }
 
   /**
-   * Retrieves a hash code for this "greater than" filter".
+   * Retrieves a hash code for this "greater than" filter.
    *
-   * @return  A hash code for this "greater than" filter".
+   * @return  A hash code for this "greater than" filter.
    */
   @Override
   public int hashCode()

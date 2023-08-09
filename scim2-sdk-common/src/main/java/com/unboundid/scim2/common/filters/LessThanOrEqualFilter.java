@@ -90,9 +90,9 @@ public final class LessThanOrEqualFilter extends ComparisonFilter
   }
 
   /**
-   * Retrieves a hash code for this "less than or equal" filter".
+   * Retrieves a hash code for this "less than or equal" filter.
    *
-   * @return  A hash code for this "less than or equal" filter".
+   * @return  A hash code for this "less than or equal" filter.
    */
   @Override
   public int hashCode()

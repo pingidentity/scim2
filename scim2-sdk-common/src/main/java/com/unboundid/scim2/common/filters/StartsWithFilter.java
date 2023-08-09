@@ -90,9 +90,9 @@ public final class StartsWithFilter extends ComparisonFilter
   }
 
   /**
-   * Retrieves a hash code for this "starts with" filter".
+   * Retrieves a hash code for this "starts with" filter.
    *
-   * @return  A hash code for this "starts with" filter".
+   * @return  A hash code for this "starts with" filter.
    */
   @Override
   public int hashCode()

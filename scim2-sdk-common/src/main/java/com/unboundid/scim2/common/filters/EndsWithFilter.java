@@ -89,9 +89,9 @@ public final class EndsWithFilter extends ComparisonFilter
   }
 
   /**
-   * Retrieves a hash code for this "ends with" filter".
+   * Retrieves a hash code for this "ends with" filter.
    *
-   * @return  A hash code for this "ends with" filter".
+   * @return  A hash code for this "ends with" filter.
    */
   @Override
   public int hashCode()
