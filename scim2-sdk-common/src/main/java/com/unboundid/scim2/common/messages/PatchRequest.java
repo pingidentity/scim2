@@ -106,7 +106,11 @@ public final class PatchRequest
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this patch request.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this patch
+   *            request, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -135,7 +139,9 @@ public final class PatchRequest
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this patch request.
+   *
+   * @return  A hash code for this patch request.
    */
   @Override
   public int hashCode()

@@ -257,7 +257,11 @@ public class ResourceTypeResource extends BaseScimResource
     }
 
     /**
-     * {@inheritDoc}
+     * Indicates whether the provided object is equal to this schema extension.
+     *
+     * @param o   The object to compare.
+     * @return    {@code true} if the provided object is equal to this schema
+     *            extension, or {@code false} if not.
      */
     @Override
     public boolean equals(final Object o)
@@ -286,7 +290,9 @@ public class ResourceTypeResource extends BaseScimResource
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves a hash code for this schema extension.
+     *
+     * @return  A hash code for this schema extension.
      */
     @Override
     public int hashCode()
@@ -297,6 +303,14 @@ public class ResourceTypeResource extends BaseScimResource
     }
   }
 
+  /**
+   * Indicates whether the provided object is equal to this resource type
+   * definition.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this resource
+   *            type definition, or {@code false} if not.
+   */
   @Override
   public boolean equals(final Object o)
   {
@@ -343,6 +357,11 @@ public class ResourceTypeResource extends BaseScimResource
     return true;
   }
 
+  /**
+   * Retrieves a hash code for this resource type definition.
+   *
+   * @return  A hash code for this resource type definition.
+   */
   @Override
   public int hashCode()
   {

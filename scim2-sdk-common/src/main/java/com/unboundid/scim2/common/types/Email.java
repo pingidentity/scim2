@@ -156,7 +156,11 @@ public class Email
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this email.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this email, or
+   *            {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -191,7 +195,9 @@ public class Email
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this email.
+   *
+   * @return  A hash code for this email.
    */
   @Override
   public int hashCode()

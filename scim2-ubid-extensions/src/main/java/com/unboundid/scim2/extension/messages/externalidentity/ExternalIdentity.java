@@ -230,6 +230,14 @@ public final class ExternalIdentity extends BaseScimResource
     this.callbackParameters = callbackParameters;
   }
 
+  /**
+   * Indicates whether the provided object is equal to this external identity
+   * provider.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this external
+   *            identity provider, or {@code false} if not.
+   */
   @Override
   public boolean equals(final Object o)
   {
@@ -285,6 +293,11 @@ public final class ExternalIdentity extends BaseScimResource
 
   }
 
+  /**
+   * Retrieves a hash code for this external identity provider.
+   *
+   * @return  A hash code for this external identity provider.
+   */
   @Override
   public int hashCode()
   {

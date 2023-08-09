@@ -240,7 +240,11 @@ public class Name
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this user's name.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this name, or
+   *            {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -287,7 +291,9 @@ public class Name
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this name object.
+   *
+   * @return  A hash code for this name object.
    */
   @Override
   public int hashCode()

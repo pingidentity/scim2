@@ -205,6 +205,13 @@ public class Session extends BaseScimResource
     return clients;
   }
 
+  /**
+   * Indicates whether the provided object is equal to this session.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this session, or
+   *            {@code false} if not.
+   */
   @Override
   public boolean equals(final Object o)
   {
@@ -261,6 +268,11 @@ public class Session extends BaseScimResource
         : session.clients == null;
   }
 
+  /**
+   * Retrieves a hash code for this session.
+   *
+   * @return  A hash code for this session.
+   */
   @Override
   public int hashCode()
   {

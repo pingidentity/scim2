@@ -151,7 +151,11 @@ public final class Meta
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this SCIM metadata.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this metadata,
+   *            or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -195,7 +199,9 @@ public final class Meta
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this SCIM metadata.
+   *
+   * @return  A hash code for this SCIM metadata.
    */
   @Override
   public int hashCode()

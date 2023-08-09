@@ -57,7 +57,11 @@ public class PatchConfig
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this PATCH configuration.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this PATCH
+   *            configuration, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -82,7 +86,9 @@ public class PatchConfig
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this PATCH configuration.
+   *
+   * @return  A hash code for this PATCH configuration.
    */
   @Override
   public int hashCode()

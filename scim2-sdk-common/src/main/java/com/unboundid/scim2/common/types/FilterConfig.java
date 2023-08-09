@@ -79,7 +79,12 @@ public class FilterConfig
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this filter
+   * configuration.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this filter
+   *            configuration, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -108,7 +113,9 @@ public class FilterConfig
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this filter configuration.
+   *
+   * @return  A hash code for this filter configuration.
    */
   @Override
   public int hashCode()

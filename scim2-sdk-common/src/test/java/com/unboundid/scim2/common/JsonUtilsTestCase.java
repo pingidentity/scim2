@@ -79,7 +79,11 @@ public class JsonUtilsTestCase
     }
 
     /**
-     * {@inheritDoc}
+     * Indicates whether the provided object is equal to this array value.
+     *
+     * @param o   The object to compare.
+     * @return    {@code true} if the provided object is equal to this array
+     *            value, or {@code false} if not.
      */
     @Override
     public boolean equals(final Object o)
@@ -104,7 +108,9 @@ public class JsonUtilsTestCase
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves a hash code for this array value.
+     *
+     * @return  A hash code for this array value.
      */
     @Override
     public int hashCode()
@@ -113,7 +119,9 @@ public class JsonUtilsTestCase
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves a string representation of this array value.
+     *
+     * @return  A string representation of this array value.
      */
     @Override
     public String toString()
