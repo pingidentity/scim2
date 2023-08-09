@@ -75,6 +75,13 @@ public class RetiredPassword
     this.passwordRetiredTime = passwordRetiredTime;
   }
 
+  /**
+   * Indicates whether the provided object is equal to this retired password.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this retired
+   *            password, or {@code false} if not.
+   */
   @Override
   public boolean equals(final Object o)
   {
@@ -103,6 +110,11 @@ public class RetiredPassword
 
   }
 
+  /**
+   * Retrieves a hash code for this retired password.
+   *
+   * @return  A hash code for this retired password.
+   */
   @Override
   public int hashCode()
   {

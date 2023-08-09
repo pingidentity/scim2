@@ -170,7 +170,9 @@ public abstract class Filter
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a string representation of this filter.
+   *
+   * @return  A string representation of this filter.
    */
   @Override
   public String toString()

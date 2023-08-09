@@ -497,7 +497,11 @@ public abstract class BaseScimResource
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this BaseScimResource.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this
+   *            BaseScimResource, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -541,7 +545,9 @@ public abstract class BaseScimResource
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this BaseScimResource.
+   *
+   * @return  A hash code for this BaseScimResource.
    */
   @Override
   public int hashCode()
@@ -556,7 +562,9 @@ public abstract class BaseScimResource
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a string representation of this BaseScimResource.
+   *
+   * @return  A string representation of this BaseScimResource.
    */
   @Override
   public String toString()
@@ -571,5 +579,4 @@ public abstract class BaseScimResource
       throw new RuntimeException(e);
     }
   }
-
 }

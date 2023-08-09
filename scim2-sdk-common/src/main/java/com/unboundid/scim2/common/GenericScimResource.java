@@ -463,7 +463,9 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a string representation of this generic SCIM resource.
+   *
+   * @return  A string representation of this generic SCIM resource.
    */
   @Override
   public String toString()

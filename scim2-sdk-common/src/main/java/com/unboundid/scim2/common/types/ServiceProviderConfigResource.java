@@ -217,7 +217,12 @@ public class ServiceProviderConfigResource extends BaseScimResource
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this service provider
+   * configuration definition.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this
+   *            ServiceProviderConfig, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -277,7 +282,9 @@ public class ServiceProviderConfigResource extends BaseScimResource
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this service provider configuration definition.
+   *
+   * @return  A hash code for this service provider configuration definition.
    */
   @Override
   public int hashCode()

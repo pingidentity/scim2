@@ -219,6 +219,13 @@ public final class OAuth2Client
     this.lastAuthorization = lastAuthorization;
   }
 
+  /**
+   * Indicates whether the provided object is equal to this OAuth 2 client.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this OAuth 2
+   *            client, or {@code false} if not.
+   */
   @Override
   public boolean equals(final Object o)
   {
@@ -260,6 +267,11 @@ public final class OAuth2Client
         that.lastAuthorization == null;
   }
 
+  /**
+   * Retrieves a hash code for this OAuth 2 client.
+   *
+   * @return  A hash code for this OAuth 2 client.
+   */
   @Override
   public int hashCode()
   {

@@ -22,7 +22,8 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import java.util.Arrays;
 
 /**
- * Role for the user.
+ * A public key certificate in {@code X.509} form that can be assigned to a
+ * {@link UserResource}.
  */
 public class X509Certificate
 {
@@ -153,7 +154,12 @@ public class X509Certificate
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this X.509 public
+   * certificate.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this
+   *            certificate, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -187,7 +193,9 @@ public class X509Certificate
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this X.509 certificate.
+   *
+   * @return  A hash code for this X.509 certificate.
    */
   @Override
   public int hashCode()

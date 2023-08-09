@@ -68,7 +68,12 @@ public class AccountUsabilityIssue
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this account usability
+   * issue.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this account
+   *            usability issue, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -94,7 +99,9 @@ public class AccountUsabilityIssue
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this account usability issue.
+   *
+   * @return  A hash code for this account usability issue.
    */
   @Override
   public int hashCode()

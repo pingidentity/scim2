@@ -110,7 +110,11 @@ public final class ErrorResponse extends BaseScimResource
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this error response.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this error
+   *            response, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -148,7 +152,9 @@ public final class ErrorResponse extends BaseScimResource
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this error response.
+   *
+   * @return  A hash code for this error response.
    */
   @Override
   public int hashCode()

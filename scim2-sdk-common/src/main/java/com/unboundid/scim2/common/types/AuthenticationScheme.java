@@ -162,7 +162,12 @@ public class AuthenticationScheme
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this authentication
+   * scheme.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this
+   *            authentication scheme, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -210,7 +215,9 @@ public class AuthenticationScheme
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this authentication scheme.
+   *
+   * @return  A hash code for this authentication scheme.
    */
   @Override
   public int hashCode()

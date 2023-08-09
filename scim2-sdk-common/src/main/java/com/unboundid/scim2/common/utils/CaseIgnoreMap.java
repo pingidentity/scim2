@@ -308,7 +308,11 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this map.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this map, or
+   *            {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -329,7 +333,9 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this map.
+   *
+   * @return  A hash code for this map.
    */
   @Override
   public int hashCode()
@@ -338,7 +344,9 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a string representation of this map.
+   *
+   * @return  A string representation of this map.
    */
   @Override
   public String toString()

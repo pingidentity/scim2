@@ -86,6 +86,14 @@ public final class ConsentHistory extends BaseScimResource
     return scopes;
   }
 
+  /**
+   * Indicates whether the provided object is equal to this consent history
+   * object.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this consent
+   *            history object, or {@code false} if not.
+   */
   @Override
   public boolean equals(final Object o)
   {
@@ -113,6 +121,11 @@ public final class ConsentHistory extends BaseScimResource
         !scopes.equals(that.scopes) : that.scopes != null);
   }
 
+  /**
+   * Retrieves a hash code for this consent history.
+   *
+   * @return  A hash code for this consent history.
+   */
   @Override
   public int hashCode()
   {

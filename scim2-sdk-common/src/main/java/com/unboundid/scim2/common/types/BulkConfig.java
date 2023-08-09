@@ -100,7 +100,11 @@ public class BulkConfig
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this bulk configuration.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this bulk
+   *            configuration, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -133,7 +137,9 @@ public class BulkConfig
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this bulk configuration.
+   *
+   * @return  A hash code for this bulk configuration.
    */
   @Override
   public int hashCode()

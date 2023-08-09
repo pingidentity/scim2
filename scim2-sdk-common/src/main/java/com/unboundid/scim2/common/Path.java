@@ -82,7 +82,11 @@ public final class Path implements Iterable<Path.Element>
     }
 
     /**
-     * {@inheritDoc}
+     * Indicates whether the provided object is equal to this path element.
+     *
+     * @param o   The object to compare.
+     * @return    {@code true} if the provided object is equal to this path
+     *            element, or {@code false} if not.
      */
     @Override
     public boolean equals(final Object o)
@@ -113,7 +117,9 @@ public final class Path implements Iterable<Path.Element>
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves a hash code for this path element.
+     *
+     * @return  A hash code for this path element.
      */
     @Override
     public int hashCode()
@@ -124,7 +130,9 @@ public final class Path implements Iterable<Path.Element>
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves a string representation of this path element.
+     *
+     * @return  A string representation of this path element.
      */
     @Override
     public String toString()
@@ -416,6 +424,13 @@ public final class Path implements Iterable<Path.Element>
     return schemaUrn;
   }
 
+  /**
+   * Indicates whether the provided object is equal to this attribute path.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this attribute
+   *            path, or {@code false} if not.
+   */
   @Override
   public boolean equals(final Object o)
   {
@@ -439,6 +454,11 @@ public final class Path implements Iterable<Path.Element>
 
   }
 
+  /**
+   * Retrieves a hash code for this Path.
+   *
+   * @return  A hash code for this Path.
+   */
   @Override
   public int hashCode()
   {
@@ -449,7 +469,9 @@ public final class Path implements Iterable<Path.Element>
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a string representation of this Path.
+   *
+   * @return  A string representation of this Path.
    */
   @Override
   @JsonValue

@@ -152,7 +152,11 @@ public class Member
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this group member.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this member, or
+   *            {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -173,7 +177,9 @@ public class Member
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this group member.
+   *
+   * @return  A hash code for this group member.
    */
   @Override
   public int hashCode()

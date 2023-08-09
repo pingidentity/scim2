@@ -58,7 +58,11 @@ public class ETagConfig
   }
 
   /**
-   * {@inheritDoc}
+   * Indicates whether the provided object is equal to this ETag configuration.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this ETag
+   *            configuration, or {@code false} if not.
    */
   @Override
   public boolean equals(final Object o)
@@ -83,7 +87,9 @@ public class ETagConfig
   }
 
   /**
-   * {@inheritDoc}
+   * Retrieves a hash code for this ETag configuration.
+   *
+   * @return  A hash code for this ETag configuration.
    */
   @Override
   public int hashCode()
