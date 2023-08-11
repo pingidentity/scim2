@@ -1,3 +1,9 @@
-.idea
+# IntelliJ IDEA files
+.idea/
 *.iml
-target
+
+# Build artifacts are placed in this folder.
+target/
+
+# Ignore MacOS metadata.
+.DS_Store
