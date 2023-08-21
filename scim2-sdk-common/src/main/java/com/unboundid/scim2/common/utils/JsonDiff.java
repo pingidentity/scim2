@@ -207,6 +207,7 @@ public class JsonDiff
 
   /**
    * Compare the JSON value nodes at the specified path.
+   *
    * @param path path
    * @param sourceNode source node
    * @param targetNode target node
@@ -512,6 +513,7 @@ public class JsonDiff
 
   /**
    * Determines whether the provided JSON nodes have the same JSON data type.
+   *
    * @param n1  The first node.
    * @param n2  The second node.
    * @return  {@code true} iff the nodes have the same JSON data type.

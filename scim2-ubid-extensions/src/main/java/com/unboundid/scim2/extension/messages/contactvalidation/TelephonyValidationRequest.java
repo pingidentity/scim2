@@ -97,6 +97,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Retrieve the attribute path.
+   *
    * @return  The attribute path.
    */
   public String getAttributePath()
@@ -108,6 +109,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Set the attribute path.
+   *
    * @param attributePath  The attribute path.
    */
   public void setAttributePath(final String attributePath)
@@ -119,6 +121,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Retrieve the attribute value.
+   *
    * @return  The attribute value.
    */
   public String getAttributeValue()
@@ -130,6 +133,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Set the attribute value.
+   *
    * @param attributeValue  The attribute value.
    */
   public void setAttributeValue(final String attributeValue)
@@ -141,6 +145,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Indicates whether the attribute value is validated.
+   *
    * @return  {@code true} iff the attribute value is validated.
    */
   public Boolean getValidated()
@@ -152,6 +157,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Specify whether the attribute value is validated.
+   *
    * @param validated  {@code true} iff the attribute value is validated.
    */
   public void setValidated(final Boolean validated)
@@ -163,6 +169,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Retrieve the time at which the attribute value was validated.
+   *
    * @return  The time at which the attribute value was validated.
    */
   public Calendar getValidatedAt()
@@ -174,6 +181,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Set the time at which the attribute value was validated.
+   *
    * @param validatedAt  The time at which the attribute value was validated.
    */
   public void setValidatedAt(final Calendar validatedAt)
@@ -186,6 +194,7 @@ public class TelephonyValidationRequest extends BaseScimResource
   /**
    * Indicates whether a verification code has been sent.
    * Only applicable in an intermediate response to update preferences.
+   *
    * @return  {@code true} iff a verification code has been sent.
    */
   public Boolean getCodeSent()
@@ -198,6 +207,7 @@ public class TelephonyValidationRequest extends BaseScimResource
   /**
    * Specify whether a verification code has been sent.
    * Only applicable in an intermediate response to update preferences.
+   *
    * @param codeSent  {@code true} iff a verification code has been sent.
    */
   public void setCodeSent(final Boolean codeSent)
@@ -208,6 +218,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Retrieve the language and locale of the message.
+   *
    * @return  The language and locale of the message.
    */
   public String getLanguage()
@@ -218,6 +229,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Specify the language and locale of the message.
+   *
    * @param language  The language and locale of the message.
    */
   public void setLanguage(final String language)
@@ -228,6 +240,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Retrieve the selected messaging provider.
+   *
    * @return  The selected messaging provider.
    */
   public String getMessagingProvider()
@@ -237,6 +250,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Specify the selected messaging provider.
+   *
    * @param  messagingProvider  The selected messaging provider.
    */
   public void setMessagingProvider(
@@ -247,6 +261,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Retrieve the code to be verified against the delivered code.
+   *
    * @return  The code to be verified against the delivered code.
    */
   public String getVerifyCode()
@@ -258,6 +273,7 @@ public class TelephonyValidationRequest extends BaseScimResource
 
   /**
    * Specify the code to be verified against the delivered code.
+   *
    * @param verifyCode  The code to be verified against the delivered code.
    */
   public void setVerifyCode(final String verifyCode)

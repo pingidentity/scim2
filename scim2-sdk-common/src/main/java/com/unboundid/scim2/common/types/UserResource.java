@@ -346,7 +346,7 @@ public class UserResource extends BaseScimResource
 
   /**
    * Retrieves the user's title, such as "{@code Vice President}".
-
+   *
    * @return The user's title.
    */
   public String getTitle()
@@ -738,7 +738,7 @@ public class UserResource extends BaseScimResource
   /**
    * Retrieves the list of entitlements for the User that represent a thing the
    * User has.
-
+   *
    * @return The list of entitlements for the User.
    */
   public List<Entitlement> getEntitlements()

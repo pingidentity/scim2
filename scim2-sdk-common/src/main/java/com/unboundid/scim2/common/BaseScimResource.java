@@ -104,8 +104,9 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Gets the <code>ObjectNode</code> that contains all extension attributes.
-   * @return a <code>ObjectNode</code>.
+   * Gets the {@code ObjectNode} that contains all extension attributes.
+   *
+   * @return an {@code ObjectNode}.
    */
   @JsonIgnore
   public ObjectNode getExtensionObjectNode()
@@ -221,6 +222,7 @@ public abstract class BaseScimResource
   /**
    * Used to get values that were deserialized from json where there was
    * no matching field in the class.
+   *
    * @return the value of the field.
    */
   @JsonAnyGetter

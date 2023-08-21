@@ -47,7 +47,7 @@ public class PasswordRequirementResult
         mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String additionalInfo;
   private Map<String, JsonNode> properties =
-      new LinkedHashMap<String, JsonNode>();
+      new LinkedHashMap<>();
 
   /**
    * Gets the type of password requirement.
@@ -71,6 +71,7 @@ public class PasswordRequirementResult
 
   /**
    * Used to determine if the requirement is satisfied.
+   *
    * @return true if the requirement is satisfied, or false if not.
    */
   public Boolean isRequirementSatisfied()
@@ -80,6 +81,7 @@ public class PasswordRequirementResult
 
   /**
    * Sets whether or not the password requirement is satisfied.
+   *
    * @param requirementSatisfied boolean indicating if the password requirement
    *                             is satisfied or not.
    */
@@ -90,6 +92,7 @@ public class PasswordRequirementResult
 
   /**
    * Gets the additonal information for this password update error.
+   *
    * @return the additional information, such as the failure message
    * for this password update error.
    */
@@ -100,6 +103,7 @@ public class PasswordRequirementResult
 
   /**
    * Sets the additional information for this password update error.
+   *
    * @param additionalInfo additional information, such as the failure message
    *   for this password update error.
    */

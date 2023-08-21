@@ -84,6 +84,7 @@ public final class ErrorResponse extends BaseScimResource
 
   /**
    * Gets the summary of the SCIM error.
+   *
    * @return the summary of the SCIM error.
    */
   public String getDetail()
@@ -93,6 +94,7 @@ public final class ErrorResponse extends BaseScimResource
 
   /**
    * Sets the summary of the SCIM error.
+   *
    * @param detail the summary of the SCIM error.
    */
   public void setDetail(final String detail)
@@ -102,6 +104,7 @@ public final class ErrorResponse extends BaseScimResource
 
   /**
    * Gets the HTTP status of the SCIM error.
+   *
    * @return the HTTP status of the SCIM error.
    */
   public Integer getStatus()

@@ -29,18 +29,21 @@ public interface ScimResource
 
   /**
    * Gets metadata about the object.
-   * @return <code>Meta</code> containing metadata about the object.
+   *
+   * @return {@code Meta} containing metadata about the object.
    */
   Meta getMeta();
 
   /**
    * Sets metadata for the object.
-   * @param meta <code>Meta</code> containing metadata for the object.
+   *
+   * @param meta {@code Meta} containing metadata for the object.
    */
   void setMeta(Meta meta);
 
   /**
    * Gets the id of the object.
+   *
    * @return the id of the object.
    */
   String getId();
@@ -48,18 +51,21 @@ public interface ScimResource
 
   /**
    * Sets the id of the object.
+   *
    * @param id The object's id.
    */
   void setId(String id);
 
   /**
    * Gets the objects external id.
+   *
    * @return The external id of the object.
    */
   String getExternalId();
 
   /**
    * Sets the object's external id.
+   *
    * @param externalId The external id of the object.
    */
   void setExternalId(String externalId);

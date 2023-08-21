@@ -90,6 +90,7 @@ public class RequestBuilder<T extends RequestBuilder>
   /**
    * Sets the media type for any content sent to the server.  The default
    * value is ApiConstants.MEDIA_TYPE_SCIM ("application/scim+json").
+   *
    * @param contentType a string describing the media type of content
    *                    sent to the server.
    * @return This builder.
@@ -105,6 +106,7 @@ public class RequestBuilder<T extends RequestBuilder>
    * The default accepted media types are
    * ApiConstants.MEDIA_TYPE_SCIM ("application/scim+json") and
    * MediaType.APPLICATION_JSON ("application/json")
+   *
    * @param acceptStrings a string (or strings) describing the media type that
    *                      will be accepted from the server.  This parameter may
    *                      not be null.

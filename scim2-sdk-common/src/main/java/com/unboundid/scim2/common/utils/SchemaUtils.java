@@ -132,7 +132,7 @@ public class SchemaUtils
    * introspection errors.
    */
   public static Collection<PropertyDescriptor>
-  getPropertyDescriptors(final Class cls)
+  getPropertyDescriptors(final Class<?> cls)
       throws IntrospectionException
   {
     BeanInfo beanInfo = Introspector.getBeanInfo(cls, Object.class);
@@ -143,16 +143,17 @@ public class SchemaUtils
 
   /**
    * Gets schema attributes for the given class.
+   *
    * @param cls Class to get the schema attributes for.
    * @return a collection of attributes.
    * @throws IntrospectionException thrown if an introspection error occurs.
    */
   @Transient
   public static Collection<AttributeDefinition> getAttributes(
-      final Class cls)
+      final Class<?> cls)
       throws IntrospectionException
   {
-    Stack<String> classesProcessed = new Stack<String>();
+    Stack<String> classesProcessed = new Stack<>();
     return getAttributes(classesProcessed, cls);
   }
 
@@ -684,15 +685,15 @@ public class SchemaUtils
   }
 
   /**
-   * Gets the schema urn from a java <code>Class</code>.
-   * @param cls <code>Class</code> of the object.
+   * Fetches the schema urn from a {@code Class}.
+   *
+   * @param cls The class of the object.
    * @return The schema urn for the object.
    */
-  public static String getSchemaUrn(final Class cls)
+  public static String getSchemaUrn(final Class<?> cls)
   {
-    // the schemaid is the urn.  Just make sure it
-    // begins with urn: ... the field called name
-    // is just a human friendly name for the object.
+    // The 'schemaId' is the URN. Make sure it begins with the "urn:" prefix.
+    // The 'name' field is a human-friendly name for the object.
     String schemaId =
         SchemaUtils.getSchemaIdFromAnnotation(cls);
 
@@ -701,8 +702,8 @@ public class SchemaUtils
       schemaId = cls.getCanonicalName();
     }
 
-    // if this doesn't appear to be a urn, stick the "urn:" prefix
-    // on it, and use it as a urn anyway.
+    // If the schema ID doesn't appear to be a valid URN, append the data to an
+    // "urn:" prefix.
     return forceToBeUrn(schemaId);
   }
 

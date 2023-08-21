@@ -136,8 +136,9 @@ public interface ScimInterface
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
-   * of operations to "{@code add}", "{@code remove}", or "{@code replace}" values. The service provider
-   * configuration maybe used to discover service provider support for PATCH.
+   * of operations to "{@code add}", "{@code remove}", or "{@code replace}"
+   * values. The service provider configuration may be used to discover service
+   * provider support for PATCH.
    *
    * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
    *                 defined by the associated resource type.
@@ -155,8 +156,9 @@ public interface ScimInterface
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
-   * of operations to "{@code add}", "{@code remove}", or "{@code replace}" values. The service provider
-   * configuration maybe used to discover service provider support for PATCH.
+   * of operations to "{@code add}", "{@code remove}", or "{@code replace}"
+   * values. The service provider configuration may be used to discover service
+   * provider support for PATCH.
    *
    * @param resource The resource to modify.
    * @param patchRequest the patch request to use for the update.
@@ -170,14 +172,14 @@ public interface ScimInterface
   /**
    * Delete a SCIM resource at the service provider.
    *
-   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
-   *                 defined by the associated resource type.
+   * @param endpoint The resource endpoint such as: "{@code Users}" or
+   *                 "{@code Groups}" as defined by the associated resource
+   *                 type.
    * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @throws ScimException if an error occurs.
    */
-  void delete(String endpoint, String id)
-                                          throws ScimException;
+  void delete(String endpoint, String id) throws ScimException;
 
   /**
    * Delete a SCIM resource at the service provider.
@@ -186,8 +188,7 @@ public interface ScimInterface
    * @param <T> The Java type of the resource.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> void delete(T resource)
-                                              throws ScimException;
+  <T extends ScimResource> void delete(T resource) throws ScimException;
 
   /**
    * Search for SCIM resources matching the SCIM filter provided.

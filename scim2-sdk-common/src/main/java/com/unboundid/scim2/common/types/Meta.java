@@ -54,6 +54,7 @@ public final class Meta
 
   /**
    * Gets the timestamp of when the SCIM object was created.
+   *
    * @return the date and time the SCIM object was created.
    */
   public Calendar getCreated()
@@ -73,6 +74,7 @@ public final class Meta
 
   /**
    * Gets the timestamp for the last modification.
+   *
    * @return the timestamp of the last modification.
    */
   public Calendar getLastModified()

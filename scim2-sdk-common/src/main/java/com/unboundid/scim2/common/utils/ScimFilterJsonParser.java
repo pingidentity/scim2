@@ -35,6 +35,7 @@ public class ScimFilterJsonParser extends ReaderBasedJsonParser {
 
   /**
    * Constructor.
+   *
    * @param ctxt  see superclass
    * @param features  see superclass
    * @param r see superclass

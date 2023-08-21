@@ -34,6 +34,7 @@ public class PatchConfig
 
   /**
    * Create a new complex type that specifies PATCH configuration options.
+   *
    * @param supported Boolean value specifying whether the operation is
    *                  supported.
    */
