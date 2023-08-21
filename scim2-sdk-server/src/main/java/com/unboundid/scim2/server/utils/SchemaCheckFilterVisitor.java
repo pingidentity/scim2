@@ -77,6 +77,7 @@ public final class SchemaCheckFilterVisitor
    *
    * @param filter   The filter to check.
    * @param resourceTypeDefinition The schema to check the filter against.
+   * @param schemaChecker The object that will enforce schema constraints.
    * @param enabledOptions  The schema checker enabled options.
    * @param results  The results of checking the filter.
    * @throws ScimException If an exception occurs during the operation.
@@ -110,6 +111,7 @@ public final class SchemaCheckFilterVisitor
    * @param parentPath  The parent attribute associated with the value filter.
    * @param filter   The value filter to check.
    * @param resourceTypeDefinition The schema to check the filter against.
+   * @param schemaChecker The object that will enforce schema constraints.
    * @param enabledOptions  The schema checker enabled options.
    * @param results  The results of checking the filter.
    * @throws ScimException If an exception occurs during the operation.
