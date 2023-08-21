@@ -57,6 +57,7 @@ public class ScimJsonFactory extends JsonFactory
   /**
    * Create a parser that can be used for parsing JSON objects contained
    * within a SCIM filter specification.
+   *
    * @param r Reader to use for reading JSON content to parse
    * @return ScimFilterJsonParser object
    * @throws IOException on parse error

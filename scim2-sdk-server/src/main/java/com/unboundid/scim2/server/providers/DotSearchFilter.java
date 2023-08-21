@@ -100,7 +100,7 @@ public class DotSearchFilter implements ContainerRequestFilter
       {
         builder.queryParam(QUERY_PARAMETER_EXCLUDED_ATTRIBUTES,
             ServerUtils.encodeTemplateNames(
-		StaticUtils.collectionToString(
+                    StaticUtils.collectionToString(
                     searchRequest.getExcludedAttributes(), ",")));
       }
       if(searchRequest.getFilter() != null)

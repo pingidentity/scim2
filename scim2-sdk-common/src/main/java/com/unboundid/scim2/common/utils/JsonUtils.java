@@ -78,6 +78,8 @@ public class JsonUtils
         throws ScimException;
 
     /**
+     * Identifies the elements within an ArrayNode that match a filter. This
+     * method can optionally remove the elements/values that were matched.
      *
      * @param array The ArrayNode to filter.
      * @param valueFilter The value filter.
@@ -683,6 +685,7 @@ public class JsonUtils
    *     will be thrown.
    *   </li>
    * </ul>
+   *
    * @param path The path to the attribute.
    * @param node The JSON object node containing the attribute.
    * @param value The replacement value.

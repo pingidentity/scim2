@@ -404,11 +404,13 @@ public class ScimService implements ScimInterface
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
-   * of operations to "{@code add}", "{@code remove}", or "{@code replace}" values. The service provider
-   * configuration maybe used to discover service provider support for PATCH.
+   * of operations to "{@code add}", "{@code remove}", or "{@code replace}"
+   * values. The service provider configuration may be used to discover service
+   * provider support for PATCH.
    *
-   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
-   *                 defined by the associated resource type.
+   * @param endpoint The resource endpoint such as: "{@code Users}" or
+   *                 "{@code Groups}" as defined by the associated resource
+   *                 type.
    * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @return The request builder that may be used to specify additional request
@@ -424,8 +426,9 @@ public class ScimService implements ScimInterface
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
-   * of operations to "{@code add}", "{@code remove}", or "{@code replace}" values. The service provider
-   * configuration maybe used to discover service provider support for PATCH.
+   * of operations to "{@code add}", "{@code remove}", or "{@code replace}"
+   * values. The service provider configuration may be used to discover service
+   * provider support for PATCH.
    *
    * @param url The URL of the resource to modify.
    * @return The request builder that may be used to specify additional request
@@ -457,8 +460,9 @@ public class ScimService implements ScimInterface
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
-   * of operations to "{@code add}", "{@code remove}", or "{@code replace}" values. The service provider
-   * configuration maybe used to discover service provider support for PATCH.
+   * of operations to "{@code add}", "{@code remove}", or "{@code replace}"
+   * values. The service provider configuration may be used to discover service
+   * provider support for PATCH.
    *
    * @param resource The resource to modify.
    * @param <T> The Java type of the resource.
@@ -475,8 +479,9 @@ public class ScimService implements ScimInterface
   /**
    * Build a request to delete a SCIM resource at the service provider.
    *
-   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
-   *                 defined by the associated resource type.
+   * @param endpoint The resource endpoint such as: "{@code Users}" or
+   *                 "{@code Groups}" as defined by the associated resource
+   *                 type.
    * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @return The request builder that may be used to specify additional request

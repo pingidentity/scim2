@@ -77,6 +77,7 @@ public class SchemaResource extends BaseScimResource
 
   /**
    * Gets the object's name.
+   *
    * @return objects name.
    */
   public String getName()
@@ -86,6 +87,7 @@ public class SchemaResource extends BaseScimResource
 
   /**
    * Gets the name of the SCIM object from the schema.
+   *
    * @return the name of the SCIM object.
    */
   public String getDescription()

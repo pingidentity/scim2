@@ -29,12 +29,14 @@ import com.unboundid.scim2.common.utils.JsonUtils;
  * The comparison takes into account the SCIM schema of the resources
  * to be compared.
  */
-public class ResourceDiff extends JsonDiff {
+public class ResourceDiff extends JsonDiff
+{
 
   private ResourceTypeDefinition resourceTypeDefinition;
 
   /**
    * Construct a ResourceDiff instance.
+   *
    * @param resourceTypeDefinition the ResourceTypeDefinition of the
    *                               resources to be compared.
    */

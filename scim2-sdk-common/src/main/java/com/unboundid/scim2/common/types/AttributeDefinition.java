@@ -85,6 +85,7 @@ public class AttributeDefinition
 
     /**
      * Constructs an attribute type object.
+     *
      * @param name the name (used in SCIM schemas) of the object.
      */
     Type(final String name)

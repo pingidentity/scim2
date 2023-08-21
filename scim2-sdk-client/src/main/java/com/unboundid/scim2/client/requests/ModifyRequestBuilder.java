@@ -376,7 +376,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * Remove all values of the attribute specified by the path.
    *
    * @param path The path to the attribute whose value to remove.
-
+   *
    * @return This patch operation request.
    * @throws ScimException If the path is invalid.
    */
@@ -391,7 +391,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * Remove all values of the attribute specified by the path.
    *
    * @param path The path to the attribute whose value to remove.
-
+   *
    * @return This patch operation request.
    * @throws ScimException If the path is invalid.
    */

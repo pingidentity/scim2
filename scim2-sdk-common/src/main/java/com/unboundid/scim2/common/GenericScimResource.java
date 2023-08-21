@@ -93,8 +93,9 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets the <code>ObjectNode</code> that backs this object.
-   * @return a <code>ObjectNode</code>.
+   * Gets the {@code ObjectNode} that backs this object.
+   *
+   * @return an {@code ObjectNode} representing this generic SCIM resource.
    */
   public ObjectNode getObjectNode()
   {
