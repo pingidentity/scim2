@@ -35,19 +35,34 @@
 
 
   <module name="TreeWalker">
-    <property name="cacheFile" value="${cacheFile}"/>
     <!-- Ensure that all methods have Javadoc documentation. -->
     <module name="JavadocMethod">
-      <property name="scope"                       value="package" />
-      <property name="allowUndeclaredRTE"          value="false"   />
+      <property name="accessModifiers"  value="package, protected, public" />
       <property name="allowMissingParamTags"       value="false"   />
-      <property name="allowMissingThrowsTags"      value="false"   />
       <property name="allowMissingReturnTag"       value="false"   />
-      <property name="allowMissingJavadoc"         value="false"   />
-      <property name="allowMissingPropertyJavadoc" value="false"   />
-      <property name="suppressLoadErrors"          value="true"    />
+    </module>
+    <module name="MissingJavadocMethod"/>
+
+    <!-- Enforce ordering of Javadoc clauses. Ignore @deprecated clauses. -->
+    <module name="AtclauseOrder">
+      <property name="tagOrder" value="@author, @exception, @param, @return,
+          @see, @serial, @serialData, @serialField, @since, @throws, @version" />
     </module>
 
+    <!-- Ensure that Javadocs are placed before any method annotations. -->
+    <module name="InvalidJavadocPosition"/>
+
+    <!-- Ensure that a newline exists after the /** characters. -->
+    <module name="JavadocContentLocationCheck"/>
+
+    <!-- Every new line between the /** and */ must begin with an asterisk. -->
+    <module name="JavadocMissingLeadingAsterisk"/>
+
+    <!-- Every Javadoc line must contain a space after the asterisk. -->
+    <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+
+    <!-- Forbid empty Javadoc clauses (e.g., @param with no description). -->
+    <module name="NonEmptyAtclauseDescription" />
 
     <!-- Ensure that all non-private variables have Javadoc documentation. -->
     <module name="JavadocVariable">
@@ -84,18 +99,8 @@
     <module name="UnusedImports" />
 
 
-    <!-- Ensure that there are no lines longer than 120 characters. -->
-    <module name="LineLength">
-      <property name="max" value="120" />
-    </module>
-
-
     <!-- Ensure that modifiers are provided in the correct order. -->
     <module name="ModifierOrder" />
-
-
-    <!-- Check to ensure there are no redundant modifiers. -->
-    <module name="RedundantModifier" />
 
 
     <!-- Check to ensure that all code blocks include curly braces. -->
@@ -162,5 +167,18 @@
     <!-- Ensure that all long constants are followed by a capital L. -->
     <module name="UpperEll" />
   </module>
-</module>
 
+  <!-- Ensure that there are no lines longer than 120 characters in the test
+       code. -->
+  <module name="LineLength">
+    <property name="fileExtensions" value="java"/>
+    <property name="max" value="120"/>
+    <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+  </module>
+
+  <!-- Ensure no tab characters are used. -->
+  <module name="FileTabCharacter">
+    <property name="eachLine" value="true"/>
+  </module>
+
+</module>
