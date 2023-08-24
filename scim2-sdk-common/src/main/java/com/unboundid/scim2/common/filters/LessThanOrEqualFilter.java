@@ -22,7 +22,25 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * Less than or equal attribute comparison filter.
+ * This class represents a SCIM {@code le} filter. For a given attribute name,
+ * "Less Than Or Equal To" filters match SCIM resources that contain a smaller
+ * or equivalent value when compared to the provided filter value. For instance,
+ * consider the following filter:
+ * <pre>
+ *   meta.created le "2023-07-25T08:00:00.000Z"
+ * </pre>
+ *
+ * A SCIM resource will match this filter if the resource contains a
+ * {@code meta.created} attribute with a value that is either smaller than or
+ * equivalent to this filter value. In other words, this filter matches any
+ * resource that was created at or before the provided timestamp.
+ * <br><br>
+ * This example filter can be represented with the following Java code:
+ * <pre>
+ *   Calendar calendar = Calendar.getInstance();
+ *   calendar.set(2023, Calendar.JULY, 25, 8, 0);
+ *   Filter leFilter = Filter.le("meta.created", calendar.getTime());
+ * </pre>
  */
 public final class LessThanOrEqualFilter extends ComparisonFilter
 {

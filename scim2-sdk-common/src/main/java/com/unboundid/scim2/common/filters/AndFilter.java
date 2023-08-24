@@ -18,11 +18,37 @@
 package com.unboundid.scim2.common.filters;
 
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.types.UserResource;
 
 import java.util.List;
 
 /**
- * Logical AND combining filter.
+ * This class represents a SCIM {@code and} filter. An AND filter allows a
+ * SCIM client to specify two different filter criteria, where both criteria
+ * must match a resource. For instance, consider the following filter.
+ * Parentheses have been added for clarity.
+ * <pre>
+ *   (userName sw "win") and (meta.resourceType eq "User")
+ * </pre>
+ *
+ * This is a filter with two components: a {@code sw} filter that matches SCIM
+ * resources with a userName starting with "win", and an {@code eq} filter
+ * that matches {@code User} SCIM resources. As an example, this filter would
+ * match a {@link UserResource} whose {@code userName} is {@code "wind"}.
+ * <br><br>
+ * This example filter can be represented with the following Java code:
+ * <pre>
+ *   Filter andFilter = Filter.and(
+ *           Filter.sw("userName", "win"),
+ *           Filter.eq("meta.resourceType", "User")
+ *   );
+ * </pre>
+ *
+ * A SCIM resource will match an AND filter if both of its subordinate filters
+ * (also referred to as "filter components") match the resource.
+ * <br><br>
+ * This class allows for the use of multiple filter components, but {@code and}
+ * filters generally only have two components.
  */
 public final class AndFilter extends CombiningFilter
 {

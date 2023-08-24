@@ -22,7 +22,32 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import java.util.List;
 
 /**
- * Logical OR combining filter.
+ * This class represents a SCIM {@code or} filter. An OR filter allows
+ * a client to specify two different filter criteria where at least one
+ * of the criterion must match. For instance, consider the following filter.
+ * Parentheses have been added for clarity.
+ * <pre>
+ *   (name.familyName sw "Sa") or (nickName sw "Sa")
+ * </pre>
+ * This is a filter with two components: a {@code sw} filter that matches SCIM
+ * resources with a {@code familyName} starting with {@code "Sa"}, and another
+ * {@code sw} filter that matches resources with a {@code nickName} starting
+ * with "Sa". As an example, this filter would match a resource whose
+ * {@code name.familyName} is {@code "Neighbors"} and has a {@code nickName} of
+ * {@code "Sails"}.
+ * <br><br>
+ * This example filter can be represented with the following Java code:
+ * <pre>
+ *   Filter orFilter = Filter.or(
+ *           Filter.sw("name.familyName", "Sa"),
+ *           Filter.sw("nickName", "Sa")
+ *   );
+ * </pre>
+ * A SCIM resource will match an OR filter if either of its subordinate filters
+ * (also referred to as "filter components") match the resource.
+ * <br><br>
+ * This class allows for the use of multiple filter components, but {@code or}
+ * filters generally only have two components.
  */
 public final class OrFilter extends CombiningFilter
 {

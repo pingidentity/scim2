@@ -22,7 +22,18 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * Equal attribute comparison filter.
+ * This class represents a SCIM {@code eq} filter. Equality filters check that a
+ * SCIM resource's attribute value is identical to the provided filter value.
+ * For instance, consider the following filter:
+ * <pre>
+ *   displayName eq "Static"
+ * </pre>
+ * A SCIM resource will match this filter if the resource contains a
+ * {@code displayName} attribute with a value of {@code "Static"}. This example
+ * filter can be represented with the following Java code:
+ * <pre>
+ *   Filter displayNameFilter = Filter.eq("displayName", "Static");
+ * </pre>
  */
 public final class EqualFilter extends ComparisonFilter
 {

@@ -22,7 +22,21 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * Contains attribute comparison filter.
+ * This class represents a SCIM {@code co} filter. Containing filters check that
+ * the provided filter value is a substring of a SCIM resource's attribute
+ * value. For instance, consider the following filter:
+ * <pre>
+ *   displayName co "meeting"
+ * </pre>
+ * A SCIM resource will match this filter if the resource contains a
+ * {@code displayName} attribute that has a value containing the
+ * {@code "meeting"} string within it. As an example, this filter would match a
+ * resource that has a displayName value of {@code "meetinghouse"}.
+ * <br><br>
+ * This example filter can be represented with the following Java code:
+ * <pre>
+ *   Filter containsFilter = Filter.co("displayName", "meeting");
+ * </pre>
  */
 public final class ContainsFilter extends ComparisonFilter
 {

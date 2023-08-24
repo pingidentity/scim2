@@ -22,7 +22,14 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
 /**
- * Attribute comparison filter.
+ * This superclass represents filter types that are used to compare attribute
+ * values of SCIM resources. For example, an {@link EqualFilter} is a comparison
+ * filter. A filter such as {@code preferredLanguage eq "en-US"} is used to
+ * perform a comparison between the filter value, {@code "en-US"}, and the value
+ * of a SCIM resource's {@code preferredLanguage} attribute.
+ * <br><br>
+ * To determine whether a filter is a comparison filter, use the
+ * {@link Filter#isComparisonFilter()} method.
  */
 public abstract class ComparisonFilter extends Filter
 {

@@ -22,7 +22,25 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * Greater than or equal attribute comparison filter.
+ * This class represents a SCIM {@code ge} filter. For a given attribute name,
+ * "Greater Than Or Equal To" filters match SCIM resources that contain a larger
+ * or equivalent value when compared to the provided filter value. For instance,
+ * consider the following filter:
+ * <pre>
+ *   meta.created ge "2023-07-25T08:00:00.000Z"
+ * </pre>
+ *
+ * A SCIM resource will match this filter if the resource contains a
+ * {@code meta.created} attribute with a value that is either larger than or
+ * equivalent to this filter value. In other words, this filter matches any
+ * resource that was created at or after the provided timestamp.
+ * <br><br>
+ * This example filter can be represented with the following Java code:
+ * <pre>
+ *   Calendar calendar = Calendar.getInstance();
+ *   calendar.set(2023, Calendar.JULY, 25, 8, 0);
+ *   Filter geFilter = Filter.ge("meta.created", calendar.getTime());
+ * </pre>
  */
 public final class GreaterThanOrEqualFilter extends ComparisonFilter
 {

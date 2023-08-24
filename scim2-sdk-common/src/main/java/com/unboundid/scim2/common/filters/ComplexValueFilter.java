@@ -21,7 +21,33 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * Complex multi-valued attribute value filter.
+ * This class represents a complex attribute value filter. This filter type is
+ * used to match specific values on multi-valued attributes. This is generally
+ * used to filter based on a sub-attribute (e.g., {@code addresses.type}).
+ * <br><br>
+ * For example, consider the case where a SCIM client wants to find all users
+ * whose work email uses the {@code example.com} domain. Since the
+ * {@code emails} attribute can contain multiple emails, the {@code type} field
+ * must be explicitly specified. This can be represented by the following SCIM
+ * filter:
+ * <pre>
+ *   emails[type eq "work" and value ew "@example.com"]
+ * </pre>
+ *
+ * Since other email types (e.g., "home") should be ignored, this filter
+ * requests {@code work} emails that end with {@code "@example.com"}. This
+ * example filter can be represented with the following Java code:
+ * <pre>
+ *   Filter complexFilter = Filter.hasComplexValue("emails",
+ *           Filter.and(
+ *               Filter.eq("type", "work"),
+ *               Filter.ew("value", "@example.com")
+ *           )
+ *   );
+ * </pre>
+ *
+ * To determine whether a filter is a ComplexValueFilter, use the
+ * {@link Filter#isComplexValueFilter()} method.
  */
 public final class ComplexValueFilter extends Filter
 {

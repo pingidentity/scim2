@@ -31,7 +31,101 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Base class for parsing and creating new SCIM 2 filter instances.
+ * This class represents a SCIM 2 filter expression. A filter can be used by a
+ * SCIM client to request a subset of SCIM resources that match a criteria. For
+ * example, the SCIM filter {@code nickName eq "Alice"} would match all
+ * resources whose {@code nickName} field equals "Alice".
+ * <br><br>
+ * In general, filters are comprised of up to three parts. For the
+ * {@code nickName eq "Alice"} filter expression, these are:
+ * <ul>
+ *   <li> An attribute name/path (nickName)
+ *   <li> A filter operator (eq)
+ *   <li> A filter value (Alice)
+ * </ul>
+ * Attribute paths and filter operators are not case-sensitive.
+ * <br><br>
+ * The following filter operator types are defined:
+ * <ul>
+ *   <li>{@code eq}:
+ *        An {@link EqualFilter} will match a SCIM resource if the resource's
+ *        attribute value is identical to the filter value.
+ *   <li>{@code ne}:
+ *        A {@link NotEqualFilter} will match a SCIM resource if the resource's
+ *        attribute value is different from the filter value.
+ *   <li>{@code co}:
+ *        A {@link ContainsFilter} will match a SCIM resource if the entire
+ *        filter value is a substring of the resource's attribute value.
+ *   <li>{@code sw}:
+ *        A {@link StartsWithFilter} will match a SCIM resource if the
+ *        resource's attribute value begins with the filter value.
+ *   <li>{@code ew}:
+ *        An {@link EndsWithFilter} will match a SCIM resource if the resource's
+ *        attribute value ends with the filter value.
+ *   <li>{@code pr}:
+ *        A {@link PresentFilter} will match a SCIM resource if the resource
+ *        contains a non-null and non-empty value for the attribute specified in
+ *        the filter.
+ *   <li>{@code gt}:
+ *        A {@link GreaterThanFilter} will match a SCIM resource if the
+ *        resource's attribute value is greater than the filter value.
+ *   <li>{@code ge}:
+ *        A {@link GreaterThanOrEqualFilter} will match a SCIM resource if the
+ *        resource's attribute value is greater than or equal to the filter
+ *        value.
+ *   <li>{@code lt}:
+ *        A {@link LessThanFilter} will match a SCIM resource if the resource's
+ *        attribute value is less than the filter value.
+ *   <li>{@code le}:
+ *        A {@link LessThanOrEqualFilter} will match a SCIM resource if the
+ *        resource's attribute value is less than or equal to the filter value.
+ *   <li>{@code and}:
+ *        An {@link AndFilter} is a "combining" filter that joins two filters.
+ *        This filter type will match a SCIM resource if both subordinate
+ *        filters match that resource.
+ *   <li>{@code or}:
+ *        An {@link OrFilter} is a "combining" filter that joins two filters.
+ *        This filter type will match a SCIM resource if either subordinate
+ *        filter matches that resource.
+ *   <li>{@code not}:
+ *        A {@link NotFilter} inverts another filter. It will match a SCIM
+ *        resource if the other filter is not a match.
+ * </ul>
+ * <br><br>
+ * To create a new SCIM filter, use the static methods defined on this parent
+ * Filter class. For example, to create an equality filter, use:
+ * <pre>
+ *   Filter equalFilter = Filter.eq("nickName", "Alice");
+ * </pre>
+ *
+ * A Filter Java object can also be created from a string. This method is most
+ * useful when a SCIM filter is received as a string, such as if a filter was
+ * provided by a client. Note that creating a filter from a hard-coded string
+ * in code is generally discouraged, since it can be easy to cause errors with
+ * typos.
+ * <pre>
+ *   Filter filterObject = Filter.fromString(stringFilter);
+ * </pre>
+ * Similarly, to retrieve the string representation of a Filter object, use
+ * {@link Filter#toString()}.
+ * <pre>
+ *   String stringRepresentation = filterObject.toString();
+ * </pre>
+ *
+ * A Filter object must be one of the following types (except for
+ * {@link PresentFilter}).
+ * <ul>
+ *   <li> {@link CombiningFilter} ({@code and}, {@code or})
+ *   <li> {@link ComparisonFilter} ({@code eq}, {@code gt}, {@code le}, etc.)
+ *   <li> {@link ComplexValueFilter} (used to signify a specific value within a
+ *                                    multi-valued attribute)
+ *   <li> {@link NotFilter} ({@code not})
+ * </ul>
+ * To determine whether a filter is one of these types, use methods like
+ * {@link Filter#isCombiningFilter()} and {@link Filter#isNotFilter()}.
+ * <br><br>
+ * For more information on a particular filter type, see the class-level Javadoc
+ * representing the filter type (e.g., {@link EqualFilter}).
  */
 public abstract class Filter
 {
@@ -65,7 +159,7 @@ public abstract class Filter
   public abstract void toString(final StringBuilder builder);
 
   /**
-   * Whether this filter is an {@code and} or {@code or} logical combining filter.
+   * Indicates whether this filter instance is a {@link CombiningFilter}.
    *
    * @return {@code true} if this filter is an {@code and} or {@code or} logical
    * combining filter or {@code false} otherwise.
@@ -78,7 +172,8 @@ public abstract class Filter
   /**
    * Retrieve the combined filters for a logical combining filter.
    *
-   * @return The filter components for a logical combining filter.
+   * @return The subordinate filter components for a logical combining filter,
+   *         or {@code null} if the filter is not a {@link CombiningFilter}.
    */
   public List<Filter> getCombinedFilters()
   {
@@ -86,7 +181,7 @@ public abstract class Filter
   }
 
   /**
-   * Whether this filter is {@code not} filter.
+   * Indicates whether this filter instance is a {@link NotFilter}.
    *
    * @return {@code true} if this filter is a {@code not} filter or
    * {@code false} otherwise.
@@ -97,11 +192,11 @@ public abstract class Filter
   }
 
   /**
-   * Retrieve the inverted filter for a {@code not} filter or {@code null} if this
-   * filter is not a {@code not} filter.
+   * Retrieve the inverted filter for a {@link NotFilter}. If this Filter
+   * instance is not a NOT filter, this method will return {@code null}.
    *
-   * @return The inverted filter for a {@code not} filter or {@code null} if this
-   * filter is not a {@code not}' filter.
+   * @return The inverted version of this filter, or {@code null} if this filter
+   *         instance is not a {@link NotFilter}.
    */
   public Filter getInvertedFilter()
   {
@@ -109,7 +204,8 @@ public abstract class Filter
   }
 
   /**
-   * Whether this filter is a complex multi-valued attribute value filter.
+   * Indicates whether this filter instance is a complex multi-valued attribute
+   * value filter (i.e., a {@link ComplexValueFilter}).
    *
    * @return {@code true} if this filter is a complex multi-valued attribute
    * value filter or {@code false} otherwise.
@@ -133,10 +229,10 @@ public abstract class Filter
 
   /**
    * Retrieve the path to the attribute to filter by, or {@code null} if
-   * this filter is not a comparison filter or a value filter for complex
-   * multi-valued attributes.
+   * this filter is not a {@link ComparisonFilter} or a
+   * {@link ComplexValueFilter}.
    *
-   * @return The attribute or sub-attribute to filter by
+   * @return The attribute or sub-attribute to filter by.
    */
   public Path getAttributePath()
   {
@@ -144,10 +240,7 @@ public abstract class Filter
   }
 
   /**
-   * Whether this filter is a filter that compares attribute values against
-   * a comparison value. The following are comparison filters:
-   * {@code eq}, {@code ne}, {@code co}, {@code sw}, {@code ew}, {@code gt},
-   * {@code ge}, {@code lt}, {@code le}.
+   * Indicates whether this filter instance is a {@link ComparisonFilter}.
    *
    * @return {@code true} if this is a comparison filter or {@code false}
    * otherwise.
@@ -878,11 +971,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a {@code new less than or equal} filter.
+   * Create a new {@code less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A {@code new less than or equal} filter.
+   * @return A new {@code less than or equal} filter.
    */
   public static Filter le(final Path attributePath,
                           final ValueNode filterValue)
@@ -891,11 +984,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a {@code new less than or equal} filter.
+   * Create a new {@code less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A {@code new less than or equal} filter.
+   * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath,
@@ -907,11 +1000,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a {@code new less than or equal} filter.
+   * Create a new {@code less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A {@code new less than or equal} filter.
+   * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Long filterValue)
@@ -922,11 +1015,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a {@code new less than or equal} filter.
+   * Create a new {@code less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A {@code new less than or equal} filter.
+   * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Double filterValue)
@@ -937,11 +1030,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a {@code new less than or equal} filter.
+   * Create a new {@code less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A {@code new less than or equal} filter.
+   * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Float filterValue)
@@ -952,11 +1045,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a {@code new less than or equal} filter.
+   * Create a new {@code less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A {@code new less than or equal} filter.
+   * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final String filterValue)
@@ -967,11 +1060,11 @@ public abstract class Filter
   }
 
   /**
-   * Create a {@code new less than or equal} filter.
+   * Create a new {@code less than or equal} filter.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
-   * @return A {@code new less than or equal} filter.
+   * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
   public static Filter le(final String attributePath, final Date filterValue)
@@ -1169,7 +1262,7 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @param valueFilter   The value filter.
    * @return A new complex multi-valued attribute value filter.
-   * @throws BadRequestException If the path {@code or} filter could not be parsed.
+   * @throws BadRequestException If the path or filter could not be parsed.
    */
   public static Filter hasComplexValue(final String attributePath,
                                        final String valueFilter)
