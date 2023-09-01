@@ -24,16 +24,17 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 /**
  * This class represents a SCIM {@code le} filter. For a given attribute name,
  * "Less Than Or Equal To" filters match SCIM resources that contain a smaller
- * or equivalent value when compared to the provided filter value. For instance,
- * consider the following filter:
+ * or equivalent value when compared to the provided filter value.
+ * <br><br>
+ * For instance, consider the following filter:
  * <pre>
  *   meta.created le "2023-07-25T08:00:00.000Z"
  * </pre>
  *
- * A SCIM resource will match this filter if the resource contains a
- * {@code meta.created} attribute with a value that is either smaller than or
- * equivalent to this filter value. In other words, this filter matches any
- * resource that was created at or before the provided timestamp.
+ * This filter can be used in the case where a SCIM client wants to find all
+ * resources whose {@code meta.created} attribute with is either smaller than or
+ * equivalent to the filter value. In other words, it matches any resource that
+ * was created at or before the provided timestamp.
  * <br><br>
  * This example filter can be represented with the following Java code:
  * <pre>

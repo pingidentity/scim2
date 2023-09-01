@@ -24,8 +24,10 @@ import java.util.List;
 /**
  * This class represents a SCIM {@code or} filter. An OR filter allows
  * a client to specify two different filter criteria where at least one
- * of the criterion must match. For instance, consider the following filter.
- * Parentheses have been added for clarity.
+ * of the criteria must match.
+ * <br><br>
+ * For instance, consider the following filter. Parentheses have been added for
+ * clarity.
  * <pre>
  *   (name.familyName sw "Sa") or (nickName sw "Sa")
  * </pre>

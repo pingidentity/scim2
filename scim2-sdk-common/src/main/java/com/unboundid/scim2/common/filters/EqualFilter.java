@@ -22,15 +22,20 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * This class represents a SCIM {@code eq} filter. Equality filters check that a
- * SCIM resource's attribute value is identical to the provided filter value.
+ * This class represents a SCIM {@code eq} filter. Equality filters are used to
+ * determine if a SCIM resource's attribute value is identical to the provided
+ * filter value.
+ * <br><br>
  * For instance, consider the following filter:
  * <pre>
  *   displayName eq "Static"
  * </pre>
- * A SCIM resource will match this filter if the resource contains a
- * {@code displayName} attribute with a value of {@code "Static"}. This example
- * filter can be represented with the following Java code:
+ *
+ * This filter can be used in the case where a SCIM client wants to find all
+ * resources that have a {@code displayName} attribute value that equals
+ * {@code "Static"}.
+ * <br><br>
+ * This example filter can be represented with the following Java code:
  * <pre>
  *   Filter displayNameFilter = Filter.eq("displayName", "Static");
  * </pre>

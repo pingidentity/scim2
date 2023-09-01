@@ -23,15 +23,18 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
  * This class represents a SCIM {@code gt} filter. For a given attribute name,
- * "Greater Than" filters match SCIM resources that contain a larger value
- * than the provided filter value. For instance, consider the following filter:
+ * "Greater Than" filters are used to match SCIM resources that contain a larger
+ * value than the provided filter value.
+ * <br><br>
+ * For instance, consider the following filter:
  * <pre>
  *   meta.created gt "2023-07-25T08:00:00.000Z"
  * </pre>
  *
- * A SCIM resource will match this filter if the resource contains a
- * {@code meta.created} attribute with a larger value. In other words, this
- * filter matches any resource that was created after the provided timestamp.
+ * This filter can be used in the case where a SCIM client wants to find all
+ * resources whose {@code meta.created} attribute is larger than the filter
+ * value. In other words, it matches any resource that was created after the
+ * provided timestamp.
  * <br><br>
  * This example filter can be represented with the following Java code:
  * <pre>

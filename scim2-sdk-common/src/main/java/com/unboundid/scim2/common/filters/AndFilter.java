@@ -25,15 +25,17 @@ import java.util.List;
 /**
  * This class represents a SCIM {@code and} filter. An AND filter allows a
  * SCIM client to specify two different filter criteria, where both criteria
- * must match a resource. For instance, consider the following filter.
- * Parentheses have been added for clarity.
+ * must match a resource.
+ * <br><br>
+ * For instance, consider the following filter. Parentheses have been added for
+ * clarity.
  * <pre>
  *   (userName sw "win") and (meta.resourceType eq "User")
  * </pre>
  *
- * This is a filter with two components: a {@code sw} filter that matches SCIM
- * resources with a userName starting with "win", and an {@code eq} filter
- * that matches {@code User} SCIM resources. As an example, this filter would
+ * This is a filter with two components: a {@code sw} filter that matches
+ * resources with a {@code userName} starting with "win", and an {@code eq}
+ * filter that matches {@code User} resources. As an example, this filter would
  * match a {@link UserResource} whose {@code userName} is {@code "wind"}.
  * <br><br>
  * This example filter can be represented with the following Java code:
