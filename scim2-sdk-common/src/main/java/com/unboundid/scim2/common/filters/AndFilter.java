@@ -24,8 +24,8 @@ import java.util.List;
 
 /**
  * This class represents a SCIM {@code and} filter. An AND filter allows a
- * SCIM client to specify two different filter criteria, where both criteria
- * must match a resource.
+ * SCIM client to specify multiple filter criteria, where all criteria must
+ * match a resource.
  * <br><br>
  * For instance, consider the following filter. Parentheses have been added for
  * clarity.
@@ -46,7 +46,7 @@ import java.util.List;
  *   );
  * </pre>
  *
- * A SCIM resource will match an AND filter if both of its subordinate filters
+ * A SCIM resource will match an AND filter if all of its subordinate filters
  * (also referred to as "filter components") match the resource.
  * <br><br>
  * This class allows for the use of multiple filter components, but {@code and}

@@ -23,8 +23,8 @@ import java.util.List;
 
 /**
  * This class represents a SCIM {@code or} filter. An OR filter allows
- * a client to specify two different filter criteria where at least one
- * of the criteria must match.
+ * a client to specify multiple filter criteria, where at least one of the
+ * criteria must match.
  * <br><br>
  * For instance, consider the following filter. Parentheses have been added for
  * clarity.
@@ -45,7 +45,7 @@ import java.util.List;
  *           Filter.sw("nickName", "Sa")
  *   );
  * </pre>
- * A SCIM resource will match an OR filter if either of its subordinate filters
+ * A SCIM resource will match an OR filter if one of its subordinate filters
  * (also referred to as "filter components") match the resource.
  * <br><br>
  * This class allows for the use of multiple filter components, but {@code or}
