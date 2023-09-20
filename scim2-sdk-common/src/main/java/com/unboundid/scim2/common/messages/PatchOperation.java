@@ -83,18 +83,20 @@ public abstract class PatchOperation
     {
       super(path);
       validateOperationValue(path, value, getOpType());
-      if (path != null)
-      {
-        for (Path.Element element : path)
-        {
-          if (element.getValueFilter() != null)
-          {
-            throw BadRequestException.invalidPath(
-                "path field for add operations must not include any value " +
-                    "selection filters");
-          }
-        }
-      }
+//      TODO: Validação comentada até solução sair no repositório oficial
+//        Não estava sendo possível fazer o parse de AddOperation pois o e-mail utiliza filters
+//      if (path != null)
+//      {
+//        for (Path.Element element : path)
+//        {
+//          if (element.getValueFilter() != null)
+//          {
+//            throw BadRequestException.invalidPath(
+//                "path field for add operations must not include any value " +
+//                    "selection filters");
+//          }
+//        }
+//      }
       this.value = value;
     }
 
