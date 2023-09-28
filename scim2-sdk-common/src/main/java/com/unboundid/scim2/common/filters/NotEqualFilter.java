@@ -22,7 +22,25 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * Not equal attribute comparison filter.
+ * This class represents a SCIM {@code ne} filter. "Not Equal" filters are used
+ * to determine if a SCIM resource's attribute value is not equivalent to the
+ * provided filter value.
+ * <br><br>
+ * For instance, consider the following filter:
+ * <pre>
+ *   name.familyName ne "Traffic"
+ * </pre>
+ *
+ * This filter can be used in the case where a SCIM client wants to find all
+ * users that do not have a {@code name.familyName} value of {@code "Traffic"}.
+ * As an example, it would match a resource with a {@code name.familyName} value
+ * of {@code "Neighbors"}. This would also match a resource that does not have a
+ * value for {@code name.familyName}.
+ * <br><br>
+ * This example filter can be represented with the following Java code:
+ * <pre>
+ *   Filter notEqualFilter = Filter.ne("name.familyName", "Traffic");
+ * </pre>
  */
 public final class NotEqualFilter extends ComparisonFilter
 {

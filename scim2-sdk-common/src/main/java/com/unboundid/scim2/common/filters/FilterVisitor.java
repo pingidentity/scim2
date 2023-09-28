@@ -165,7 +165,7 @@ public interface FilterVisitor<R, P>
   R visit(final NotFilter filter, final P param) throws ScimException;
 
   /**
-   * Operate on a complex mulit-valued attribute value filter.
+   * Operate on a complex multi-valued attribute value filter.
    *
    * @param filter The filter to operate on.
    * @param param  The optional operational parameter.

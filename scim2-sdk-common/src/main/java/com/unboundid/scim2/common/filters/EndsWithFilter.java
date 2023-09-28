@@ -22,7 +22,24 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * Ends with attribute comparison filter.
+ * This class represents a SCIM {@code ew} filter. "Ends With" filters are used
+ * to determine if a SCIM resource's attribute value ends with the provided
+ * filter value.
+ * <br><br>
+ * For instance, consider the following filter:
+ * <pre>
+ *   displayName ew "alice"
+ * </pre>
+ *
+ * This filter can be used in the case where a SCIM client wants to find all
+ * resources that have a {@code displayName} ending with {@code "alice"}. As an
+ * example, it would match a SCIM resource with a {@code displayName} attribute
+ * value of {@code "malice"}.
+ * <br><br>
+ * This example filter can be represented with the following Java code:
+ * <pre>
+ *   Filter ewFilter = Filter.ew("displayName", "alice");
+ * </pre>
  */
 public final class EndsWithFilter extends ComparisonFilter
 {

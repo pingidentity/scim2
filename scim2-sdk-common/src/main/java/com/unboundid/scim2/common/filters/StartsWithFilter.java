@@ -22,7 +22,24 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * Starts with attribute comparison filter.
+ * This class represents a SCIM {@code sw} filter. "Starts With" filters are
+ * used to determine if a SCIM resource's attribute value begins with the
+ * provided filter value.
+ * <br><br>
+ * For instance, consider the following filter:
+ * <pre>
+ *   title sw "New"
+ * </pre>
+ *
+ * This filter can be used in the case where a SCIM client wants to find all
+ * resources that have a {@code title} attribute value that begins with
+ * {@code "New"}. As an example, it would match a resource with a {@code title}
+ * value of {@code "Newspaperman"}.
+ * <br><br>
+ * This example filter can be represented with the following Java code:
+ * <pre>
+ *   Filter swFilter = Filter.sw("title", "New");
+ * </pre>
  */
 public final class StartsWithFilter extends ComparisonFilter
 {

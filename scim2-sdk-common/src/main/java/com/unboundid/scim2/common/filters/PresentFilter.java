@@ -19,9 +19,28 @@ package com.unboundid.scim2.common.filters;
 
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.types.UserResource;
 
 /**
- * Attribute present filter.
+ * This class represents a SCIM {@code pr} filter. Present filters (also
+ * referred to as presence filters) check that the specified filter attribute
+ * exists on a SCIM resource, and that the attribute value is both non-null and
+ * non-empty. Unlike most filters, presence filters do not contain a value.
+ * <br><br>
+ * Consider the following filter:
+ * <pre>
+ *   profileUrl pr
+ * </pre>
+ *
+ * This filter can be used in the case where a SCIM client wants to find all
+ * resources that have a value for the {@code profileUrl} attribute. In other
+ * words, it requests any resource (likely a {@link UserResource}) that has a
+ * profile picture.
+ * <br><br>
+ * This example filter can be represented with the following Java code:
+ * <pre>
+ *   Filter presentFilter = Filter.pr("profileUrl");
+ * </pre>
  */
 public final class PresentFilter extends Filter
 {

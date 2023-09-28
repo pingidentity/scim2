@@ -20,7 +20,27 @@ package com.unboundid.scim2.common.filters;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * Not function filter.
+ * This class represents a SCIM {@code not} filter. NOT filters check that a
+ * provided SCIM filter does not match a SCIM resource. In other words, it
+ * inverts a SCIM filter. For instance, consider the following filter:
+ * <pre>
+ *   not (type eq "Rabbit")
+ * </pre>
+ * A SCIM resource will match this filter if the resource does not have a
+ * {@code type} attribute with a value of {@code "Rabbit"}. This example filter
+ * can be represented with the following Java code:
+ * <pre>
+ *   Filter notFilter = Filter.not(
+ *           Filter.eq("type", "Rabbit")
+ *   );
+ * </pre>
+ *
+ * Similar to a {@link CombiningFilter}, NOT filters store the original filter
+ * that is inverted. This original filter can be obtained by invoking the
+ * {@link #getInvertedFilter()} method.
+ * <br><br>
+ * To determine whether any Filter is a NOT filter, use the
+ * {@link Filter#isNotFilter()} method.
  */
 public final class NotFilter extends Filter
 {
@@ -29,7 +49,7 @@ public final class NotFilter extends Filter
   /**
    * Creates a new not function filter.
    *
-   * @param filterComponent The filter to inverse.
+   * @param filterComponent The filter to invert.
    */
   NotFilter(final Filter filterComponent)
   {
