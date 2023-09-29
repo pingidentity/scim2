@@ -49,7 +49,48 @@ import java.util.List;
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
 /**
- * An individual patch operation.
+ * This class represents a SCIM 2 PATCH operation. A patch operation is a
+ * component of a {@link PatchRequest}, and it represents an individual update
+ * to a SCIM resource. A patch operation must be one of the following types:
+ * <ul>
+ *   <li> add
+ *   <li> remove
+ *   <li> replace
+ * </ul>
+ *
+ * An {@code add} operation will add new attribute data. A {@code remove}
+ * operation will delete the existing value(s) on an attribute. A
+ * {@code replace} operation will overwrite any existing values of an attribute.
+ * <br><br>
+ *
+ * To create an {@code add} operation, use methods of the following form:
+ * <pre>
+ *   PatchOperation.addIntegerValues(path, 512);
+ *   PatchOperation.addStringValues(path, "Kingdom Tears");
+ *   PatchOperation.add(path, jsonNodeValue);
+ * </pre>
+ *
+ * To create a {@code remove} operation, use the following method:
+ * <pre>
+ *   PatchOperation.remove(path);
+ * </pre>
+ *
+ * To create a {@code replace} operation, use methods of the following form:
+ * <pre>
+ *   PatchOperation.replace(path, 512);
+ *   PatchOperation.replace(path, "Kingdom Tears");
+ *   PatchOperation.replace(path, true);
+ *   PatchOperation.replace(path, jsonNodeValue);
+ * </pre>
+ *
+ * To create a patch operation in an alternative way, use the {@link #create}
+ * static method. This method is useful if the operation type is not known at
+ * compile time.
+ * <pre>
+ *   PatchOperation.create(operationType, path, jsonNodeValue);
+ * </pre>
+ *
+ * @see PatchRequest
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
@@ -1595,8 +1636,9 @@ public abstract class PatchOperation
    * Create a new patch operation based on the parameters provided.
    *
    * @param opType The operation type.
-   * @param path The path targeted by this patch operation.
-   * @param value The value(s).
+   * @param path   The path targeted by this patch operation.
+   * @param value  The value(s). This field will be ignored for {@code remove}
+   *               operations.
    *
    * @return The new patch operation.
    * @throws ScimException If the path is invalid.
@@ -1612,8 +1654,9 @@ public abstract class PatchOperation
    * Create a new patch operation based on the parameters provided.
    *
    * @param opType The operation type.
-   * @param path The path targeted by this patch operation.
-   * @param value The value(s).
+   * @param path   The path targeted by this patch operation.
+   * @param value  The value(s). This field will be ignored for {@code remove}
+   *               operations.
    *
    * @return The new patch operation.
    */
