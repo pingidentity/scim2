@@ -20,51 +20,74 @@ package com.unboundid.scim2.common.exceptions;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
- * Signals an authorization failure from the service provider.
+ * This class represents a SCIM exception pertaining to the
+ * {@code HTTP 401 UNAUTHORIZED} error response code. This exception type should
+ * be thrown when a client attempts to access a resource or endpoint when they
+ * do not have the appropriate authorization or access rights to do so. This
+ * error most commonly occurs when a client does not have a valid bearer token
+ * for their SCIM request.
+ * <br><br>
+ * The following is an example of an UnauthorizedException presented to a SCIM
+ * client. This example error response indicates that the client request was
+ * denied due to insufficient access rights.
+ * <pre>
+ *   {
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+ *     "status": "401",
+ *     "detail": "The client is not authorized to perform the operation."
+ *   }
+ * </pre>
  *
- * This exception corresponds to HTTP response code 401 UNAUTHORIZED.
+ * The UnauthorizedException in the above example can be created with the
+ * following Java code:
+ * <pre>
+ *   throw new UnauthorizedException(
+ *           "The client is not authorized to perform the operation.");
+ * </pre>
+ *
+ * This exception type generally does not have a {@code scimType} value.
  */
 public class UnauthorizedException extends ScimException
 {
   /**
-   * Create a new <code>UnauthorizedException</code> from the provided
-   * information.
+   * Create a new {@code UnauthorizedException} from the provided information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public UnauthorizedException(final String errorMessage) {
+  public UnauthorizedException(final String errorMessage)
+  {
     super(401, null, errorMessage);
   }
 
   /**
-   * Create a new <code>UnauthorizedException</code> from the provided
-   * information.
+   * Create a new {@code UnauthorizedException} from the provided information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    * @param scimType      The SCIM detailed error keyword.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public UnauthorizedException(final String errorMessage,
                                final String scimType,
-                               final Throwable cause) {
+                               final Throwable cause)
+  {
     super(401, scimType, errorMessage, cause);
   }
 
   /**
-   * Create a new <code>UnauthorizedException</code> from the provided
-   * information.
+   * Create a new {@code UnauthorizedException} from the provided information.
    *
    * @param scimError     The SCIM error response.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public UnauthorizedException(final ErrorResponse scimError,
-                               final Throwable cause) {
+                               final Throwable cause)
+  {
     super(scimError, cause);
   }
 }

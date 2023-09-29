@@ -17,55 +17,76 @@
 
 package com.unboundid.scim2.common.exceptions;
 
-
+import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
- * Signals the server does not support the requested operation.
+ * This class represents a SCIM exception pertaining to the
+ * {@code HTTP 403 FORBIDDEN} error response code. This exception type should be
+ * thrown when a client attempts an operation that is not permitted or supported
+ * by the SCIM service provider.
+ * <br><br>
+ * The following is an example of a ForbiddenException presented to a SCIM
+ * client. This example error response indicates that the client tried to
+ * provide a SCIM {@link Filter} with a disallowed filter type.
+ * <pre>
+ *   {
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+ *     "status": "403",
+ *     "detail": "The provided filter type is not supported."
+ *   }
+ * </pre>
  *
- * This exception corresponds to HTTP response code 403 FORBIDDEN.
+ * The ForbiddenException in the above example can be created with the following
+ * Java code:
+ * <pre>
+ *   throw new ForbiddenException("The provided filter type is not supported.");
+ * </pre>
+ *
+ * This exception type generally does not have a {@code scimType} value.
  */
 public class ForbiddenException extends ScimException
 {
   /**
-   * Create a new <code>ForbiddenException</code> from the provided
-   * information.
+   * Create a new {@code ForbiddenException} from the provided information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public ForbiddenException(final String errorMessage) {
+  public ForbiddenException(final String errorMessage)
+  {
     super(403, null, errorMessage);
   }
 
   /**
-   * Create a new <code>ForbiddenException</code> from the provided
-   * information.
+   * Create a new {@code ForbiddenException} from the provided information.
    *
    * @param errorMessage  The error message for this SCIM exception.
-   * @param scimType      The SCIM detailed error keyword.
+   * @param scimType      The SCIM detailed error keyword. This should generally
+   *                      be {@code null} for ForbiddenExceptions.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public ForbiddenException(final String errorMessage,
                             final String scimType,
-                            final Throwable cause) {
+                            final Throwable cause)
+  {
     super(403, scimType, errorMessage, cause);
   }
 
   /**
-   * Create a new <code>ForbiddenException</code> from the provided
-   * information.
+   * Create a new {@code ForbiddenException} from the provided information.
    *
    * @param scimError     The SCIM error response.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public ForbiddenException(final ErrorResponse scimError,
-                            final Throwable cause) {
+                            final Throwable cause)
+  {
     super(scimError, cause);
   }
 }

@@ -20,7 +20,7 @@ package com.unboundid.scim2.client;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
- * This exception is thrown when problems occur in the ScimService.  This
+ * This exception is thrown when problems occur in the {@link ScimService}. This
  * class allows a client application to differentiate between errors that
  * arise on the client side from errors that come from the server.
  */
@@ -32,9 +32,9 @@ public class ScimServiceException extends ScimException
    * @param statusCode    The HTTP status code for this exception.
    * @param errorMessage  The error message for this SCIM exception.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
 
   public ScimServiceException(final int statusCode,

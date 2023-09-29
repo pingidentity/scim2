@@ -18,55 +18,125 @@
 package com.unboundid.scim2.common.exceptions;
 
 import com.unboundid.scim2.common.messages.ErrorResponse;
+import com.unboundid.scim2.common.types.ETagConfig;
 
 /**
- * Signals the specified version number does not match the resource's latest
- * version number or a Service Provider refused to create a new,
- * duplicate resource.
+ * This class represents a SCIM exception pertaining to the
+ * {@code HTTP 409 CONFLICT} error response code. This exception type should be
+ * thrown in the following scenarios:
+ * <ul>
+ *   <li> If the client provides an invalid ETag for a resource.
+ *   <li> When a client attempts to create a new duplicate resource.
+ * </ul>
+ * For an explanation on SCIM ETags, see {@link ETagConfig}. If a client
+ * provides an ETag that does not match the current ETag of the SCIM resource,
+ * then it likely indicates that the client is referencing an outdated version
+ * of the resource. In this situation, the client should fetch the latest
+ * version of the resource and attempt the operation again.
+ * <br><br>
+ * The following is an example of a ResourceConflictException as seen by a SCIM
+ * client. This example error response indicates that the client tried to create
+ * a user whose unique username is already in use by another user.
+ * <pre>
+ *   {
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+ *     "status": "409",
+ *     "scimType": "uniqueness",
+ *     "detail": "The userName is already in use."
+ *   }
+ * </pre>
  *
- * This exception corresponds to HTTP response code 409 CONFLICT.
+ * Note that a userName uniqueness violation should include a {@code scimType}
+ * value of {@code "uniqueness"}. The ResourceConflictException in the above
+ * example can be created with the following Java code:
+ * <pre>
+ *   throw ResourceConflictException.uniqueness(
+ *           "The userName is already in use.");
+ * </pre>
+ *
+ * To create a generic ResourceConflictException that does not contain
+ * {@code scimType}, the constructors on this class may be used instead:
+ * <pre>
+ *   throw new ResourceConflictException("Detailed error message.");
+ * </pre>
  */
 public class ResourceConflictException extends ScimException
 {
   /**
-   * Create a new <code>ResourceConflictException</code> from the provided
-   * information.
+   * The SCIM detailed error keyword that indicates a uniqueness conflict.
+   */
+  public static final String UNIQUENESS = "uniqueness";
+
+  /**
+   * Create a new {@code ResourceConflictException} from the provided
+   * information. This constructor sets the {@code scimType} field to
+   * {@code null}.
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public ResourceConflictException(final String errorMessage) {
+  public ResourceConflictException(final String errorMessage)
+  {
     super(409, null, errorMessage);
   }
 
   /**
-   * Create a new <code>ResourceConflictException</code> from the provided
+   * Create a new {@code ResourceConflictException} from the provided
+   * information. This constructor sets the {@code scimType} field to
+   * {@code "uniqueness"}.
+   *
+   * @param errorMessage  The error message for this SCIM exception.
+   * @param scimType      The SCIM detail error keyword.
+   */
+  public ResourceConflictException(final String errorMessage,
+                                   final String scimType)
+  {
+    super(409, UNIQUENESS, errorMessage);
+  }
+
+  /**
+   * Create a new {@code ResourceConflictException} from the provided
+   * information. This constructor sets the {@code scimType} field to
+   * {@code "uniqueness"}.
+   *
+   * @param errorMessage  The error message for this SCIM exception.
+   * @return  The new {@code ResourceConflictException}.
+   */
+  public static ResourceConflictException uniqueness(final String errorMessage)
+  {
+    return new ResourceConflictException(errorMessage, UNIQUENESS);
+  }
+
+  /**
+   * Create a new {@code ResourceConflictException} from the provided
    * information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    * @param scimType      The SCIM detailed error keyword.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public ResourceConflictException(final String errorMessage,
                                    final String scimType,
-                                   final Throwable cause) {
+                                   final Throwable cause)
+  {
     super(409, scimType, errorMessage, cause);
   }
 
   /**
-   * Create a new <code>ResourceConflictException</code> from the provided
+   * Create a new {@code ResourceConflictException} from the provided
    * information.
    *
    * @param scimError     The SCIM error response.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public ResourceConflictException(final ErrorResponse scimError,
-                                   final Throwable cause) {
+                                   final Throwable cause)
+  {
     super(scimError, cause);
   }
 }

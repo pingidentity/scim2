@@ -3,7 +3,14 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v2.4.1 - TBD
-Placeholder for the next release.
+Overhauled many of the class-level Javadocs in the scim2-sdk-common package. This provides better
+descriptions for SCIM entities, SDK-specific constructs (e.g., `ScimResource`), and more background
+on SCIM conventions such as filtering. The new documentation also provides better descriptions for
+how certain classes in the SDK should be used, such as the `Filter` class.
+
+Added new constructors for some exception types involving the `scimType` field. This field is empty
+in many cases, so these new constructors set the `scimType` value to be `null` with the goal of
+simplifying the process of creating exceptions.
 
 ## v2.4.0 - 2023-Jul-28
 Fixed an issue with PatchOperations that prevented setting the `value` field to an empty array. The

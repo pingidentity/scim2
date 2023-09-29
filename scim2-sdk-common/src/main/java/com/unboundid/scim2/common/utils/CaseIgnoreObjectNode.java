@@ -60,7 +60,6 @@ public class CaseIgnoreObjectNode extends ObjectNode
   /**
    * {@inheritDoc}
    */
-  @SuppressWarnings("unchecked")
   @Override
   public ObjectNode deepCopy()
   {
