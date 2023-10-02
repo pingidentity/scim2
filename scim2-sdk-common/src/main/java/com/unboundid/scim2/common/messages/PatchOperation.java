@@ -32,11 +32,16 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.filters.EqualFilter;
 import com.unboundid.scim2.common.filters.Filter;
+import com.unboundid.scim2.common.filters.FilterType;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
@@ -124,18 +129,6 @@ public abstract class PatchOperation
     {
       super(path);
       validateOperationValue(path, value, getOpType());
-      if (path != null)
-      {
-        for (Path.Element element : path)
-        {
-          if (element.getValueFilter() != null)
-          {
-            throw BadRequestException.invalidPath(
-                "path field for add operations must not include any value " +
-                    "selection filters");
-          }
-        }
-      }
       this.value = value;
     }
 
@@ -194,9 +187,206 @@ public abstract class PatchOperation
     @Override
     public void apply(final ObjectNode node) throws ScimException
     {
-      JsonUtils.addValue(getPath() == null ? Path.root() :
-          getPath(), node, value);
+      Path path = (getPath() == null) ? Path.root() : getPath();
+      if (hasValueFilter(path))
+      {
+        validateAddOpWithFilter(path, value);
+        applyAddWithValueFilter(path, node, value);
+      }
+      else
+      {
+        JsonUtils.addValue(path, node, value);
+      }
+
       addMissingSchemaUrns(node);
+    }
+
+    /**
+     * Indicates whether the provided attribute path has a value filter in the
+     * first element.
+     */
+    private boolean hasValueFilter(@Nullable final Path path)
+    {
+      return path != null
+          && path.size() > 0
+          && path.getElement(0) != null
+          && path.getElement(0).getValueFilter() != null;
+    }
+
+    /**
+     * Validates an add operation with a value selection filter. For more
+     * information, see {@link #applyAddWithValueFilter}.
+     * <p>
+     * This method imposes the following constraints:
+     * <ul>
+     *   <li> The value filter must be in the first element in the path.
+     *   <li> The value filter must be an {@link EqualFilter}. Paths such as
+     *        {@code addresses[type ne "home"]} are ambiguous and do not specify
+     *        the value that should be assigned to the {@code type} field.
+     *   <li> The attribute path must contain more than one element. In other
+     *        words, it must be of the form
+     *        {@code addresses[type eq "work"].streetAddress} and cannot be
+     *        {@code addresses[type eq "work"]}.
+     * </ul>
+     *
+     * @param path  The attribute path.
+     * @param value The value that will be assigned to the sub-attribute in the
+     *              path (e.g., {@code streetAddress}).
+     *
+     * @throws BadRequestException  If the value selection filter was in an
+     *                              invalid form for the add operation.
+     */
+    private void validateAddOpWithFilter(@Nullable final Path path,
+                                         @NotNull final JsonNode value)
+        throws BadRequestException
+    {
+      Filter filter;
+      if (path == null || !path.iterator().hasNext())
+      {
+        throw BadRequestException.invalidSyntax(
+            "The patch add operation was expected to contain a non-empty path");
+      }
+      if (value.isArray())
+      {
+        throw BadRequestException.invalidSyntax(
+            "Patch add operations with a filter cannot set the 'value' field to"
+                + " an array");
+      }
+
+      Iterator<Path.Element> it = path.iterator();
+      Path.Element firstElement = it.next();
+      filter = firstElement.getValueFilter();
+
+      FilterType filterType = (filter == null) ? null : filter.getFilterType();
+      if (filterType == null)
+      {
+        throw BadRequestException.invalidPath(
+            "The add operation contained an empty filter"
+        );
+      }
+      if (filterType != FilterType.EQUAL)
+      {
+        throw BadRequestException.invalidPath(String.format(
+            "The add operation contained a value selection filter of type '%s',"
+                + " which is not an equality filter",
+            filterType));
+      }
+      if (!it.hasNext())
+      {
+        // A path with a filter must have a second element to specify the
+        // other value. It may not be 'emails[type eq "work"]', as that would
+        // add only the 'type' field:
+        // "emails": {
+        //     "type": "work"
+        // }
+        //
+        // Since the filter value would be unused, this request is invalid.
+        throw BadRequestException.invalidPath(
+            "A patch operation's attribute path was of the form 'attribute[filter]', but"
+                + " needs to be 'attribute[filter].subAttribute'"
+        );
+      }
+
+      // Ensure there are no other filters in the request.
+      while (it.hasNext())
+      {
+        Path.Element element = it.next();
+        if (element.getValueFilter() != null)
+        {
+          throw BadRequestException.invalidPath(String.format(
+              "Patch add operations are only allowed to contain a single value"
+                  + " selection filter in the top-level attribute name. '%s' is"
+                  + " invalid.",
+              element.getValueFilter()
+          ));
+        }
+      }
+    }
+
+    /**
+     * This method processes an add operation whose attribute path contains a
+     * value selection filter. This operation takes the form of:
+     * <pre>
+     *   {
+     *     "op": "add",
+     *     "path": "addresses[type eq \"work\"].streetAddress",
+     *     "value": "100 Tricky Ghost Avenue"
+     *   }
+     * </pre>
+     *
+     * When this patch operation is applied by a SCIM service provider, it
+     * should result in both the {@code streetAddress} and the {@code type}
+     * fields being appended to the {@code addresses} attribute.
+     * <pre>
+     *   "addresses": [
+     *       {
+     *         "streetAddress": "100 Tricky Ghost Avenue",
+     *         "type": "work"
+     *       }
+     *   ]
+     * </pre>
+     *
+     * While RFC 7644 does not dictate or describe this use case, this
+     * convention is nevertheless used by some SCIM service providers to specify
+     * additional data for a multi-valued parameter, such as a work address or a
+     * home email.
+     * <br><br>
+     * Note that filters in attribute paths are treated differently for other
+     * types of patch operations. For example, a {@code remove} operation with a
+     * path of {@code addresses[type eq "work"]} would only delete address
+     * values that contain a {@code "type": "work"} field. In other words, these
+     * filters are normally used to modify a subset of multi-valued attributes,
+     * but the use case for add operations is unique.
+     *
+     * @param path              The attribute path that contains a value filter.
+     *                          This value filter will be added as part of the
+     *                          new attribute value.
+     * @param existingResource  The most recent copy of the resource.
+     * @param value             The new sub-attribute value that should be added
+     *                          to the existing resource.
+     *
+     * @throws BadRequestException  If the operation targets an invalid
+     *                              attribute.
+     */
+    private void applyAddWithValueFilter(
+        @NotNull final Path path,
+        @NotNull final ObjectNode existingResource,
+        @NotNull final JsonNode value)
+            throws BadRequestException
+    {
+      Filter valueFilter = path.getElement(0).getValueFilter();
+      String filterAttributeName = valueFilter.getAttributePath().toString();
+      ValueNode filterValue = valueFilter.getComparisonValue();
+
+      // For an attribute path of the form 'emails[...].value', fetch the
+      // attribute (emails) and the sub-attribute (value).
+      String attributeName = path.getElement(0).getAttribute();
+      String subAttributeName = path.getElement(1).getAttribute();
+
+      JsonNode jsonAttribute = existingResource.get(attributeName);
+      if (jsonAttribute == null)
+      {
+        // There are no existing values for the attribute, so we should add this
+        // value ourselves.
+        jsonAttribute = JsonUtils.getJsonNodeFactory().arrayNode(1);
+      }
+      if (!jsonAttribute.isArray())
+      {
+        throw BadRequestException.invalidSyntax(
+            "The patch operation could not be processed because a complex"
+                + " value selection filter was provided, but '" + attributeName
+                + "' is single-valued"
+        );
+      }
+      ArrayNode attribute = (ArrayNode) jsonAttribute;
+
+      // Construct the new attribute value that should be added to the resource.
+      ObjectNode newValue = JsonUtils.getJsonNodeFactory().objectNode();
+      newValue.set(subAttributeName, value);
+      newValue.set(filterAttributeName, filterValue);
+
+      attribute.add(newValue);
+      existingResource.replace(attributeName, attribute);
     }
 
     /**
@@ -463,7 +653,7 @@ public abstract class PatchOperation
    * Create a new patch operation.
    *
    * @param path The path targeted by this patch operation.
-   * @throws ScimException If an value is not valid.
+   * @throws ScimException If a value is not valid.
    */
   PatchOperation(final Path path) throws ScimException
   {
@@ -472,7 +662,7 @@ public abstract class PatchOperation
       if(path.size() > 2)
       {
         throw BadRequestException.invalidPath(
-            "Path can not target sub-attributes more than one level deep");
+            "Path cannot target sub-attributes more than one level deep");
       }
 
       if(path.size() == 2)
@@ -484,7 +674,7 @@ public abstract class PatchOperation
             !valueFilter.getAttributePath().getElement(0).getAttribute().equals("value"))
         {
           throw BadRequestException.invalidPath(
-              "Path can not include a value filter on sub-attributes");
+              "Path cannot include a value filter on sub-attributes");
         }
       }
     }

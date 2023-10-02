@@ -51,11 +51,11 @@ public class JsonUtils
   public abstract static class NodeVisitor
   {
     /**
-     * Visit a node referenced by an path element before that last element.
+     * Visit a node referenced by a path element before that last element.
      *
      * @param parent The parent container ObjectNode.
      * @param field The field to visit.
-     * @param valueFilter the filter for the value(s) to visit.
+     * @param valueFilter The filter for the value(s) to visit.
      * @return The JsonNode referenced by the element in the parent.
      * @throws ScimException If an error occurs.
      */
@@ -195,6 +195,7 @@ public class JsonUtils
      */
     protected final boolean appendValues;
 
+
     /**
      * Create a new UpdatingNodeVisitor.
      *
@@ -237,8 +238,7 @@ public class JsonUtils
         ArrayNode arrayNode = (ArrayNode) node;
         if(valueFilter != null)
         {
-          arrayNode =
-              filterArray((ArrayNode)node, valueFilter, false);
+          arrayNode = filterArray(arrayNode, valueFilter, false);
           if(arrayNode.size() == 0)
           {
             throw BadRequestException.noTarget("Attribute " +
@@ -297,7 +297,7 @@ public class JsonUtils
           {
             throw BadRequestException.noTarget("Attribute " +
                 field + " does not have a value matching " +
-                "the filter " + valueFilter.toString());
+                "the filter " + valueFilter);
           }
           return;
         }
@@ -321,10 +321,10 @@ public class JsonUtils
         // draft-ietf-scim-core-schema section 2.4 states "Unassigned
         // attributes, the null value, or empty array (in the case of
         // a multi-valued attribute) SHALL be considered to be
-        // equivalent in "state".
-        return ;
+        // equivalent in 'state'".
+        return;
       }
-      // When key is null, the node to update is the parent it self.
+      // When key is null, the node to update is the parent itself.
       JsonNode node = key == null ? parent : parent.path(key);
       if(node.isObject())
       {
@@ -475,7 +475,7 @@ public class JsonUtils
       final ObjectNode node) throws ScimException
   {
     GatheringNodeVisitor visitor = new GatheringNodeVisitor(false);
-    traverseValues(visitor, node, 0, path);
+    traverseValues(visitor, node, path);
     if(visitor.values.isEmpty())
     {
       return NullNode.getInstance();
@@ -549,7 +549,7 @@ public class JsonUtils
       throws ScimException
   {
     GatheringNodeVisitor visitor = new GatheringNodeVisitor(false);
-    traverseValues(visitor, node, 0, path);
+    traverseValues(visitor, node, path);
     return visitor.values;
   }
 
@@ -603,7 +603,7 @@ public class JsonUtils
                               final JsonNode value) throws ScimException
   {
     UpdatingNodeVisitor visitor = new UpdatingNodeVisitor(value, true);
-    traverseValues(visitor, node, 0, path);
+    traverseValues(visitor, node, path);
   }
 
   /**
@@ -637,7 +637,7 @@ public class JsonUtils
       throws ScimException
   {
     GatheringNodeVisitor visitor = new GatheringNodeVisitor(true);
-    traverseValues(visitor, node, 0, path);
+    traverseValues(visitor, node, path);
     return visitor.values;
   }
 
@@ -696,7 +696,7 @@ public class JsonUtils
                                   final JsonNode value) throws ScimException
   {
     UpdatingNodeVisitor visitor = new UpdatingNodeVisitor(value, false);
-    traverseValues(visitor, node, 0, path);
+    traverseValues(visitor, node, path);
   }
 
   /**
@@ -716,7 +716,7 @@ public class JsonUtils
                                    final ObjectNode node) throws ScimException
   {
     PathExistsVisitor pathExistsVisitor = new PathExistsVisitor();
-    traverseValues(pathExistsVisitor, node, 0, path);
+    traverseValues(pathExistsVisitor, node, path);
     return pathExistsVisitor.isPathPresent();
   }
 
