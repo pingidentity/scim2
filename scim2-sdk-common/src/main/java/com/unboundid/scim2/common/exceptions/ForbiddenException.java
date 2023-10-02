@@ -22,9 +22,10 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
 /**
  * This class represents a SCIM exception pertaining to the
  * {@code HTTP 403 FORBIDDEN} error response code. This exception type should be
- * thrown when a client attempts an operation that they are not authorized to
- * use. This error indicates that the client has insufficient access rights, or
- * that the operation is not permitted by the service provider.
+ * thrown when a client provides valid credentials, but attempts an operation
+ * that they are not authorized to use. This error indicates that the client has
+ * insufficient access rights, or that the operation is not permitted by the
+ * service provider.
  * <br><br>
  * The following is an example of a ForbiddenException presented to a SCIM
  * client.
