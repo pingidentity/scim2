@@ -22,10 +22,9 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
 /**
  * This class represents a SCIM exception pertaining to the
  * {@code HTTP 401 UNAUTHORIZED} error response code. This exception type should
- * be thrown when a client attempts to access a resource or endpoint when they
- * do not have the appropriate authorization or access rights to do so. This
- * error most commonly occurs when a client does not have a valid bearer token
- * for their SCIM request.
+ * be thrown when a client provides an invalid or missing authorization header
+ * in the request. This error most commonly occurs when a client does not have a
+ * valid bearer token for their SCIM request.
  * <br><br>
  * The following is an example of an UnauthorizedException presented to a SCIM
  * client. This example error response indicates that the client request was

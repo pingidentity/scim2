@@ -17,30 +17,29 @@
 
 package com.unboundid.scim2.common.exceptions;
 
-import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
  * This class represents a SCIM exception pertaining to the
  * {@code HTTP 403 FORBIDDEN} error response code. This exception type should be
- * thrown when a client attempts an operation that is not permitted or supported
- * by the SCIM service provider.
+ * thrown when a client attempts an operation that they are not authorized to
+ * use. This error indicates that the client has insufficient access rights, or
+ * that the operation is not permitted by the service provider.
  * <br><br>
  * The following is an example of a ForbiddenException presented to a SCIM
- * client. This example error response indicates that the client tried to
- * provide a SCIM {@link Filter} with a disallowed filter type.
+ * client.
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
  *     "status": "403",
- *     "detail": "The provided filter type is not supported."
+ *     "detail": "You do not have access to this resource."
  *   }
  * </pre>
  *
  * The ForbiddenException in the above example can be created with the following
  * Java code:
  * <pre>
- *   throw new ForbiddenException("The provided filter type is not supported.");
+ *   throw new ForbiddenException("You do not have access to this resource.");
  * </pre>
  *
  * This exception type generally does not have a {@code scimType} value.
