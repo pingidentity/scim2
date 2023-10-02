@@ -20,9 +20,48 @@ package com.unboundid.scim2.common.exceptions;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
- * Signals an error while looking up resources and attributes.
+ * This class represents a SCIM exception pertaining to the {@code HTTP 400}
+ * error response code. This exception type should be thrown when a client sends
+ * a JSON payload that cannot be parsed, is syntactically incorrect, or violates
+ * the schema.
+ * <br><br>
+ * BadRequestExceptions, as well as {@link ResourceConflictException} objects,
+ * are unique types of SCIM exceptions since they sometimes include an optional
+ * {@code scimType} field. A {@code scimType} represents a "SCIM detail error
+ * keyword", which succinctly describes the reason for the failure in camelcase
+ * (e.g., {@code "noTarget"}). See the constants defined on this class, such as
+ * {@link #NO_TARGET}, for more detail on what situations a given
+ * {@code scimType} is typically used for.
+ * <br><br>
+ * The following is an example of a BadRequestException presented to a SCIM
+ * client. This example error response indicates that the client tried to modify
+ * an attribute that is defined as read-only in the schema.
+ * <pre>
+ *   {
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+ *     "status": "400",
+ *     "scimType": "mutability",
+ *     "detail": "Read-only attributes cannot be modified."
+ *   }
+ * </pre>
  *
- * This exception corresponds to HTTP response code 400 BAD REQUEST.
+ * The BadRequestException in the above example can be created with the
+ * following Java code. Note that this uses a static method to populate the
+ * {@code scimType} field.
+ * <pre>
+ *   throw BadRequestException.mutability(
+ *           "Read-only attributes cannot be modified.");
+ * </pre>
+ *
+ * The following shows more examples for creating a BadRequestException:
+ * <pre>
+ *   throw BadRequestException.invalidPath("Null paths are not permitted.");
+ *   throw BadRequestException.tooMany(
+ *          "Too many results returned. Narrow the scope of the search.");
+ *
+ *   // Create a generic BadRequestException without a 'scimType'.
+ *   throw new BadRequestException("Detailed message explaining the error.");
+ * </pre>
  */
 public class BadRequestException extends ScimException
 {
@@ -57,7 +96,7 @@ public class BadRequestException extends ScimException
   public static final String INVALID_SYNTAX = "invalidSyntax";
 
   /**
-   * The SCIM detailed error keyword that indicates the the path attribute was
+   * The SCIM detailed error keyword that indicates the path attribute was
    * invalid or malformed.
    */
   public static final String INVALID_PATH = "invalidPath";
@@ -81,56 +120,82 @@ public class BadRequestException extends ScimException
    */
   public static final String INVALID_VERSION = "invalidVersion";
 
+
   /**
-   * Create a new <code>BadRequestException</code> from the provided
-   * information.
+   * Create a generic BadRequestException without a {@code} scimType field.
+   *
+   * @param errorMessage  The error message for this SCIM exception.
+   */
+  public BadRequestException(final String errorMessage)
+  {
+    this(errorMessage, (String) null);
+  }
+
+  /**
+   * Create a new {@code BadRequestException} from the provided information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    * @param scimType      The SCIM detailed error keyword.
    */
   public BadRequestException(final String errorMessage,
-                             final String scimType) {
+                             final String scimType)
+  {
     super(400, scimType, errorMessage);
   }
 
   /**
-   * Create a new <code>BadRequestException</code> from the provided
-   * information.
+   * Create a new {@code BadRequestException} from the provided information.
+   *
+   * @param errorMessage  The error message for this SCIM exception.
+   * @param cause         The cause (which is saved for later retrieval by the
+   *                      {@link #getCause()} method). A {@code null} value
+   *                      is permitted, and indicates that the cause is
+   *                      nonexistent or unknown.
+   */
+  public BadRequestException(final String errorMessage,
+                             final Throwable cause)
+  {
+    this(errorMessage, null, cause);
+  }
+
+  /**
+   * Create a new {@code BadRequestException} from the provided information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    * @param scimType      The SCIM detailed error keyword.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public BadRequestException(final String errorMessage,
                              final String scimType,
-                             final Throwable cause) {
+                             final Throwable cause)
+  {
     super(400, scimType, errorMessage, cause);
   }
 
   /**
-   * Create a new <code>BadRequestException</code> from the provided
-   * information.
+   * Create a new {@code BadRequestException} from the provided information.
    *
    * @param scimError     The SCIM error response.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public BadRequestException(final ErrorResponse scimError,
-                             final Throwable cause) {
+                             final Throwable cause)
+  {
     super(scimError, cause);
   }
 
   /**
-   * Factory method to create a new <code>BadRequestException</code> with the
+   * Factory method to create a new {@code BadRequestException} with the
    * invalidFilter SCIM detailed error keyword.
    *
    * @param errorMessage  The error message for this SCIM exception.
-   * @return The new <code>BadRequestException</code>.
+   * @return The new {@code BadRequestException}.
    */
   public static BadRequestException invalidFilter(final String errorMessage)
   {
@@ -138,11 +203,11 @@ public class BadRequestException extends ScimException
   }
 
   /**
-   * Factory method to create a new <code>BadRequestException</code> with the
+   * Factory method to create a new {@code BadRequestException} with the
    * tooMany SCIM detailed error keyword.
    *
    * @param errorMessage  The error message for this SCIM exception.
-   * @return The new <code>BadRequestException</code>.
+   * @return The new {@code BadRequestException}.
    */
   public static BadRequestException tooMany(final String errorMessage)
   {
@@ -150,11 +215,11 @@ public class BadRequestException extends ScimException
   }
 
   /**
-   * Factory method to create a new <code>BadRequestException</code> with the
+   * Factory method to create a new {@code BadRequestException} with the
    * uniqueness SCIM detailed error keyword.
    *
    * @param errorMessage  The error message for this SCIM exception.
-   * @return The new <code>BadRequestException</code>.
+   * @return The new {@code BadRequestException}.
    */
   public static BadRequestException uniqueness(final String errorMessage)
   {
@@ -162,11 +227,11 @@ public class BadRequestException extends ScimException
   }
 
   /**
-   * Factory method to create a new <code>BadRequestException</code> with the
+   * Factory method to create a new {@code BadRequestException} with the
    * mutability SCIM detailed error keyword.
    *
    * @param errorMessage  The error message for this SCIM exception.
-   * @return The new <code>BadRequestException</code>.
+   * @return The new {@code BadRequestException}.
    */
   public static BadRequestException mutability(final String errorMessage)
   {
@@ -174,11 +239,11 @@ public class BadRequestException extends ScimException
   }
 
   /**
-   * Factory method to create a new <code>BadRequestException</code> with the
+   * Factory method to create a new {@code BadRequestException} with the
    * invalidSyntax SCIM detailed error keyword.
    *
    * @param errorMessage  The error message for this SCIM exception.
-   * @return The new <code>BadRequestException</code>.
+   * @return The new {@code BadRequestException}.
    */
   public static BadRequestException invalidSyntax(final String errorMessage)
   {
@@ -186,11 +251,11 @@ public class BadRequestException extends ScimException
   }
 
   /**
-   * Factory method to create a new <code>BadRequestException</code> with the
+   * Factory method to create a new {@code BadRequestException} with the
    * invalidPath SCIM detailed error keyword.
    *
    * @param errorMessage  The error message for this SCIM exception.
-   * @return The new <code>BadRequestException</code>.
+   * @return The new {@code BadRequestException}.
    */
   public static BadRequestException invalidPath(final String errorMessage)
   {
@@ -198,11 +263,11 @@ public class BadRequestException extends ScimException
   }
 
   /**
-   * Factory method to create a new <code>BadRequestException</code> with the
+   * Factory method to create a new {@code BadRequestException} with the
    * noTarget SCIM detailed error keyword.
    *
    * @param errorMessage  The error message for this SCIM exception.
-   * @return The new <code>BadRequestException</code>.
+   * @return The new {@code BadRequestException}.
    */
   public static BadRequestException noTarget(final String errorMessage)
   {
@@ -210,11 +275,11 @@ public class BadRequestException extends ScimException
   }
 
   /**
-   * Factory method to create a new <code>BadRequestException</code> with the
+   * Factory method to create a new {@code BadRequestException} with the
    * invalidValue SCIM detailed error keyword.
    *
    * @param errorMessage  The error message for this SCIM exception.
-   * @return The new <code>BadRequestException</code>.
+   * @return The new {@code BadRequestException}.
    */
   public static BadRequestException invalidValue(final String errorMessage)
   {
@@ -222,11 +287,11 @@ public class BadRequestException extends ScimException
   }
 
   /**
-   * Factory method to create a new <code>BadRequestException</code> with the
+   * Factory method to create a new {@code BadRequestException} with the
    * invalidVersion SCIM detailed error keyword.
    *
    * @param errorMessage  The error message for this SCIM exception.
-   * @return The new <code>BadRequestException</code>.
+   * @return The new {@code BadRequestException}.
    */
   public static BadRequestException invalidVersion(final String errorMessage)
   {

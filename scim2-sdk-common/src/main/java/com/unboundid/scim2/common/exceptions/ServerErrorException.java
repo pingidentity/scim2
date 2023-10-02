@@ -20,51 +20,69 @@ package com.unboundid.scim2.common.exceptions;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
- * Signals an internal error from the service provider.
+ * This class represents a SCIM exception pertaining to the
+ * {@code HTTP 500 INTERNAL SERVER ERROR} error response code. This exception
+ * type should be thrown when a SCIM service provider encounters an unexpected
+ * error.
+ * <br><br>
+ * The following is an example of a ServerErrorException as seen by a SCIM client.
+ * <pre>
+ *   {
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+ *     "status": "500",
+ *     "detail": "An unexpected error occurred."
+ *   }
+ * </pre>
  *
- * This exception corresponds to HTTP response code 500 INTERNAL SERVER ERROR.
+ * The ServerErrorException in the above example can be created with the
+ * following Java code:
+ * <pre>
+ *   throw new ServerErrorException("An unexpected error occurred.");
+ * </pre>
+ *
+ * This exception type generally does not have a {@code scimType} value.
  */
 public class ServerErrorException extends ScimException
 {
   /**
-   * Create a new <code>ServerErrorException</code> from the provided
-   * information.
+   * Create a new {@code ServerErrorException} from the provided information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public ServerErrorException(final String errorMessage) {
+  public ServerErrorException(final String errorMessage)
+  {
     super(500, null, errorMessage);
   }
 
   /**
-   * Create a new <code>ServerErrorException</code> from the provided
-   * information.
+   * Create a new {@code ServerErrorException} from the provided information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    * @param scimType      The SCIM detailed error keyword.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public ServerErrorException(final String errorMessage,
                               final String scimType,
-                              final Throwable cause) {
+                              final Throwable cause)
+  {
     super(500, scimType, errorMessage, cause);
   }
 
   /**
-   * Create a new <code>ServerErrorException</code> from the provided
-   * information.
+   * Create a new {@code ServerErrorException} from the provided information.
    *
    * @param scimError     The SCIM error response.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public ServerErrorException(final ErrorResponse scimError,
-                              final Throwable cause) {
+                              final Throwable cause)
+  {
     super(scimError, cause);
   }
 }

@@ -400,7 +400,7 @@ public final class Path implements Iterable<Path.Element>
    * Creates a path to the root of the JSON object that contains all the
    * extension attributes of an extension schema defined by the provided class.
    *
-   * @param extensionClass The the extension class that defines the extension
+   * @param extensionClass The extension class that defines the extension
    *                       schema.
    * @param <T> The generic type parameter of the Java class used to represent
    *            the extension.

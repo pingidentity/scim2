@@ -637,7 +637,7 @@ public class SchemaUtils
   }
 
   /**
-   * Gets the id property from schema annotation.  If the the id
+   * Gets the id property from schema annotation.  If the id
    * attribute was {@code null}, a schema id is generated.
    *
    * @param schemaAnnotation the SCIM SchemaInfo annotation.

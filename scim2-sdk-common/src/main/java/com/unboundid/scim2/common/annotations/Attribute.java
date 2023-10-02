@@ -19,6 +19,7 @@ package com.unboundid.scim2.common.annotations;
 
 
 import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.UserResource;
 
 import javax.lang.model.type.NullType;
 import java.lang.annotation.ElementType;
@@ -27,7 +28,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for getter methods of a SCIM object.
+ * This annotation is used to record useful properties about attributes on SCIM
+ * resources. This helps display attribute definitions directly on member
+ * variables of a class, where the class represents a SCIM resource type. For
+ * example, if an attribute must be provided when a resource type is created,
+ * the {@link #isRequired} field should be {@code true}.
+ * <br><br>
+ * The {@link UserResource} class uses this annotation to highlight attribute
+ * definitions that are defined in RFC 7643.
  */
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.FIELD)
@@ -89,8 +97,8 @@ public @interface Attribute
    *
    * @return The mutability constraint for the attribute.
    */
-  AttributeDefinition.Mutability mutability() default
-      AttributeDefinition.Mutability.READ_WRITE;
+  AttributeDefinition.Mutability mutability()
+      default AttributeDefinition.Mutability.READ_WRITE;
 
   /**
    * If the attribute is multi-value, this holds the type of the
@@ -98,5 +106,5 @@ public @interface Attribute
    *
    * @return For a multi-valued attribute, the type of the child object.
    */
-  Class multiValueClass() default NullType.class;
+  Class<?> multiValueClass() default NullType.class;
 }

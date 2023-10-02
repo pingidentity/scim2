@@ -21,15 +21,48 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
+import com.unboundid.scim2.common.exceptions.ResourceConflictException;
+import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.utils.StatusDeserializer;
 import com.unboundid.scim2.common.utils.StatusSerializer;
 
 /**
- * This object is returned whenever by SCIM when an error occurs.
+ * This class represents a SCIM API error response. An error response represents
+ * a JSON body with an error message from a SCIM service provider. It has a
+ * schema URI of {@code urn:ietf:params:scim:api:messages:2.0:Error}.
+ * <br><br>
+ * An error response has the following fields:
+ * <ul>
+ *   <li> {@code schemas}: A required parameter that contains the schema of the
+ *        SCIM error response object.
+ *   <li> {@code scimType}: An optional SCIM "detail error keyword"
+ *        that succinctly describes the reason for the error (e.g.,
+ *        {@code uniqueness}, {@code tooMany}). This is typically used for
+ *        {@link BadRequestException} and {@link ResourceConflictException}
+ *        errors.
+ *   <li> {@code detail}: An optional parameter containing a descriptive message
+ *        that describes the reason for the error.
+ *   <li> {@code status}: A required parameter that contains the HTTP status code
+ *        for the error (e.g., 401, 500).
+ * </ul>
+ * <br><br>
+ * An example error response is shown below:
+ * <pre>
+ *   {
+ *      "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+ *      "scimType": "mutability",
+ *      "detail": "The 'id' attribute is read-only and cannot be modified.",
+ *      "status": "400"
+ *   }
+ * </pre>
+ *
+ * To create a SCIM error response as an exception, use the
+ * {@link ScimException} class, which contains an ErrorResponse.
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:Error",
     name="Error Response", description = "SCIM 2.0 Error Response")

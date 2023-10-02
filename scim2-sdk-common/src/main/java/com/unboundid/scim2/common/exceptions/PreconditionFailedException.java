@@ -18,79 +18,104 @@
 package com.unboundid.scim2.common.exceptions;
 
 import com.unboundid.scim2.common.messages.ErrorResponse;
+import com.unboundid.scim2.common.types.ETagConfig;
 
 /**
- * Signals server failed to update as Resource changed on the server since last
- * retrieved
+ * This class represents a SCIM exception pertaining to the
+ * {@code HTTP 412 PRECONDITION FAILED} error response code. This exception type
+ * should be thrown when a client tries to update a resource and provides an
+ * outdated SCIM ETag, indicating that the resource has changed since the last
+ * time they viewed it. For more information on SCIM ETags, see the class-level
+ * documentation of {@link ETagConfig}.
+ * <br><br>
+ * The following is an example of a PreconditionFailedException as seen by a
+ * SCIM client.
+ * <pre>
+ *   {
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+ *     "status": "412",
+ *     "detail": "Failed to update. The resource changed on the server."
+ *   }
+ * </pre>
  *
- * This exception corresponds to HTTP response code
- * 412 PRECONDITION FAILED.
+ * The PreconditionFailedException in the above example can be created with the
+ * following Java code:
+ * <pre>
+ *   throw new PreconditionFailedException(
+ *          "Failed to update. The resource changed on the server.");
+ * </pre>
+ *
+ * This exception type generally does not have a {@code scimType} value.
  */
 public class PreconditionFailedException extends ScimException
 {
   private final String version;
 
   /**
-   * Create a new <code>PreconditionFailedException</code> from the provided
+   * Create a new {@code PreconditionFailedException} from the provided
    * information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public PreconditionFailedException(final String errorMessage) {
+  public PreconditionFailedException(final String errorMessage)
+  {
     super(412, null, errorMessage);
     this.version = null;
   }
 
   /**
-   * Create a new <code>PreconditionFailedException</code> from the provided
+   * Create a new {@code PreconditionFailedException} from the provided
    * information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public PreconditionFailedException(final String errorMessage,
-                                     final Throwable cause) {
+                                     final Throwable cause)
+  {
     super(412, null, errorMessage, cause);
     this.version = null;
   }
 
   /**
-   * Create a new <code>PreconditionFailedException</code> from the provided
+   * Create a new {@code PreconditionFailedException} from the provided
    * information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    * @param scimType      The SCIM detailed error keyword.
    * @param version       The current version of the Resource.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public PreconditionFailedException(final String errorMessage,
                                      final String scimType,
                                      final String version,
-                                     final Throwable cause) {
+                                     final Throwable cause)
+  {
     super(412, scimType, errorMessage, cause);
     this.version = version;
   }
 
   /**
-   * Create a new <code>PreconditionFailedException</code> from the provided
+   * Create a new {@code PreconditionFailedException} from the provided
    * information.
    *
    * @param scimError     The SCIM error response.
    * @param version       The current version of the Resource.
    * @param cause         The cause (which is saved for later retrieval by the
-   *                      {@link #getCause()} method).  (A {@code null} value
+   *                      {@link #getCause()} method). A {@code null} value
    *                      is permitted, and indicates that the cause is
-   *                      nonexistent or unknown.)
+   *                      nonexistent or unknown.
    */
   public PreconditionFailedException(final ErrorResponse scimError,
                                      final String version,
-                                     final Throwable cause) {
+                                     final Throwable cause)
+  {
     super(scimError, cause);
     this.version = version;
   }
@@ -100,7 +125,8 @@ public class PreconditionFailedException extends ScimException
    *
    * @return The current version of the Resource.
    */
-  public String getVersion() {
+  public String getVersion()
+  {
     return version;
   }
 }

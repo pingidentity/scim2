@@ -44,8 +44,7 @@ public @interface Schema
   String description();
 
   /**
-   * The name for the object.  This is a human readable
-   * name.
+   * The human-readable name for the object.
    *
    * @return The object's human-readable name.
    */

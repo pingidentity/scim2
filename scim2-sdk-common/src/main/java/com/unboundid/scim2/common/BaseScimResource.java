@@ -189,7 +189,7 @@ public abstract class BaseScimResource
 
   /**
    * This method is used during json deserialization.  It will be called
-   * in the event that a value is given for an field that is not defined
+   * in the event that a value is given for a field that is not defined
    * in the class.
    *
    * @param key name of the field.

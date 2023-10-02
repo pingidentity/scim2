@@ -22,11 +22,34 @@ import com.unboundid.scim2.common.types.Meta;
 import java.util.Collection;
 
 /**
- * Interface that can be used to access data from all SCIM objects.
+ * This class represents the core interface for all SCIM objects. This interface
+ * helps ensure that all SCIM resources contain the following properties:
+ * <ul>
+ *   <li> A {@code schemas} field containing a list of URIs that represent the
+ *        type of the SCIM resource.
+ *   <li> An {@code id} field representing a unique identifier for the resource.
+ *        This is typically in {@link java.util.UUID} form.
+ *   <li> A {@link Meta} attribute that stores metadata relating to the SCIM
+ *        resource, such as the time the resource was created and last updated.
+ *   <li> An {@code externalID} field. This is an optional field whose meaning
+ *        is determined by a SCIM client. This is particularly useful for
+ *        provisioning use cases, where a client is importing users from another
+ *        system but still wants to store a resource's old unique ID in the new
+ *        system. The {@code externalID} field can later be used by the client
+ *        to search for resources on the new SCIM endpoints by referencing their
+ *        old IDs.
+ * </ul>
+ *
+ * The SCIM SDK provides two core implementations of ScimResource. These are the
+ * {@link BaseScimResource} and {@link GenericScimResource} classes. In general,
+ * a SCIM resource should be represented as a BaseScimResource if a well-defined
+ * schema is known ahead of time, and a dedicated Java object is desired.
+ * Alternatively, a SCIM resource should be represented as a GenericScimResource
+ * if it is easier to work with a class that is a wrapper for a JSON object.
+ * See the class-level documentation of these subclasses for more information.
  */
 public interface ScimResource
 {
-
   /**
    * Gets metadata about the object.
    *

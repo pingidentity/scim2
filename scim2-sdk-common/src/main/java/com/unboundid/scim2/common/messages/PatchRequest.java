@@ -32,7 +32,39 @@ import java.util.List;
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
 /**
- * Class representing a SCIM 2 patch request.
+ * This class represents a SCIM 2 PATCH request. A patch request contains a list
+ * of {@link PatchOperation} elements, where each patch operation represents a
+ * change that should be applied to a SCIM resource. The following is an example
+ * of a patch request in JSON form:
+ * <pre>
+ * {
+ *   "schemas": [
+ *     "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+ *   ],
+ *   "Operations": [
+ *     {
+ *       "op": "replace",
+ *       "path": "active",
+ *       "value": true
+ *     }
+ *   ]
+ * }
+ * </pre>
+ *
+ * This example request contains a single operation that sets the {@code active}
+ * value to {@code true}. This request can be created with the following Java
+ * code:
+ * <pre>
+ *   PatchRequest request = new PatchRequest(
+ *       PatchOperation.replace("active", true)
+ *   );
+ * </pre>
+ *
+ * All patch requests are performed atomically. RFC 7644 Section 3.5.2 states
+ * that if any operation within the operation list fails, then the resource
+ * SHALL not be updated at all.
+ *
+ * @see PatchOperation
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:PatchOp",
     name="Patch Operation", description = "SCIM 2.0 Patch Operation Request")

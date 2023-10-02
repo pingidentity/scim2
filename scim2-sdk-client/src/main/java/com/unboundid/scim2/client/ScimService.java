@@ -41,11 +41,9 @@ import java.net.URI;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 import static com.unboundid.scim2.common.utils.ApiConstants.ME_ENDPOINT;
-import static com.unboundid.scim2.common.utils.ApiConstants.
-    RESOURCE_TYPES_ENDPOINT;
+import static com.unboundid.scim2.common.utils.ApiConstants.RESOURCE_TYPES_ENDPOINT;
 import static com.unboundid.scim2.common.utils.ApiConstants.SCHEMAS_ENDPOINT;
-import static com.unboundid.scim2.common.utils.ApiConstants.
-    SERVICE_PROVIDER_CONFIG_ENDPOINT;
+import static com.unboundid.scim2.common.utils.ApiConstants.SERVICE_PROVIDER_CONFIG_ENDPOINT;
 
 /**
  * The main entry point to the client API used to access a SCIM 2 service

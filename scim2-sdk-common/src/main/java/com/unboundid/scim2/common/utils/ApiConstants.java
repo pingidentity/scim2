@@ -18,7 +18,8 @@
 package com.unboundid.scim2.common.utils;
 
 /**
- * Various constants used by the SCIM API.
+ * This class contains a selection of constants used by SCIM API clients and
+ * service providers.
  */
 public class ApiConstants
 {
@@ -98,4 +99,3 @@ public class ApiConstants
    */
   public static final String QUERY_PARAMETER_PAGE_SIZE = "count";
 }
-
