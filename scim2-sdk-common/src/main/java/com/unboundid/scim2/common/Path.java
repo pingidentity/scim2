@@ -373,7 +373,7 @@ public final class Path implements Iterable<Path.Element>
    */
   public static Path root()
   {
-    return new Path(null, Collections.<Element>emptyList());
+    return new Path(null, Collections.emptyList());
   }
 
   /**
