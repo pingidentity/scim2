@@ -1,8 +1,13 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.unboundid.product.scim2/scim2-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.unboundid.product.scim2/scim2-parent)
 [![Javadocs](http://javadoc.io/badge/com.unboundid.product.scim2/scim2-parent.svg)](http://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent) 
 [![Build Status](https://travis-ci.org/pingidentity/scim2.svg?branch=master)](https://travis-ci.org/pingidentity/scim2)
-# SCIM 2 SDK
- [SCIM](https://www.simplecloud.info), or _System for Cross-domain Identity Management_, is an IETF standard that defines an extensible schema mechanism and REST API for **managing users and other identity data**. SCIM is used by a variety of vendors — including Facebook, Salesforce, Microsoft, Cisco, Sailpoint, and Ping Identity — for a variety of purposes, including user provisioning, directory services, attribute exchange, and more.
+
+# UnboundID SCIM 2 SDK for Java
+[SCIM](https://www.simplecloud.info), or _System for Cross-domain Identity Management_, is an IETF
+standard that defines an extensible schema mechanism and REST API for **managing users and other
+identity data**. SCIM is used by a variety of vendors — including GitHub, Salesforce, Microsoft,
+Cisco, Sailpoint, and Ping Identity — for a variety of purposes, including user provisioning,
+directory services, attribute exchange, and more.
 
 The UnboundID SCIM 2 SDK for Java provides a powerful and flexible set of APIs for interacting with SCIM service providers and resources. Use it to build applications and servers that interoperate with SCIM servers such as the [PingDirectory Server](https://www.pingidentity.com/en/platform/capabilities/directory.html).
 
@@ -40,10 +45,8 @@ For clients using UnboundID-specific features:
 
 You may also download SCIM 2 SDK builds from the [Releases](https://github.com/pingidentity/scim2/releases) page.
 
-If you're looking for a Java SDK for SCIM 1.1, you can find it [here](https://github.com/pingidentity/scim).
-
 # How to use it
-The SCIM 2 SDK requires Java 8 or greater.
+The UnboundID SCIM 2 SDK requires Java 11 or greater.
 
 The primary point of entry for a client is the `ScimService` class, which represents a SCIM service provider, such as the PingDirectory Server. This class acts as a wrapper for a [JAX-RS](https://github.com/jax-rs) client instance, providing methods for building and making requests.
 

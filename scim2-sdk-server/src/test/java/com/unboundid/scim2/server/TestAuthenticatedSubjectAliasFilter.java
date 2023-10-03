@@ -19,9 +19,9 @@ package com.unboundid.scim2.server;
 
 import com.unboundid.scim2.server.providers.AuthenticatedSubjectAliasFilter;
 
-import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.container.PreMatching;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * A test filter that just returns a static authenticated subject.
