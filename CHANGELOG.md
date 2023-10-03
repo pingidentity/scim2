@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## v3.0.1 - TBD
+Placeholder for the next release.
+
 ## v3.0.0 - 2023-Oct-03
 Removed support for Java 8. The UnboundID SCIM 2 SDK now requires Java 11 or a later release.
 
