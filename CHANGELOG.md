@@ -31,6 +31,9 @@ Added support for patch operations of type ADD that contain a value selection fi
 e.g., `emails[type eq "work"].value`. This type of request is used by some SCIM service providers to
 append extra data for multi-valued attributes such as `emails` or `addresses`.
 
+Removed deprecated methods in PatchOperation.java and GenericScimResource.java that utilized
+multi-valued boolean arrays.
+
 ## v2.4.0 - 2023-Jul-28
 Fixed an issue with PatchOperations that prevented setting the `value` field to an empty array. The
 constructor would previously reject this kind of operation with a BadRequestException.

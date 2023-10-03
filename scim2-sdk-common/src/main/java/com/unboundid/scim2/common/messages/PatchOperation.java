@@ -983,60 +983,6 @@ public abstract class PatchOperation
     return replace(path, TextNode.valueOf(value));
   }
 
-  // Boolean
-  /**
-   * Create a new add patch operation.
-   *
-   * @deprecated  Since 2.4.0. Boolean attributes represent data that has one of
-   *              two possible values, so they are single-valued in nature.
-   *              Thus, a multi-valued boolean array is not well-defined, since
-   *              arrays such as {@code [true, false]} do not contain meaningful
-   *              data. Use {@link #replace(String, Boolean)} instead.
-   *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
-   * @param values The values to add.
-   *
-   * @return The new add patch operation.
-   * @throws ScimException If the path is invalid.
-   */
-  @Deprecated
-  public static PatchOperation addBooleanValues(
-      final String path, final List<Boolean> values) throws ScimException
-  {
-    return addBooleanValues(Path.fromString(path), values);
-  }
-
-  /**
-   * Create a new add patch operation.
-   *
-   * @deprecated  Since 2.4.0. Boolean attributes represent data that has one of
-   *              two possible values, so they are single-valued in nature.
-   *              Thus, a multi-valued boolean array is not well-defined, since
-   *              arrays such as {@code [true, false]} do not contain meaningful
-   *              data. Use {@link #replace(Path, Boolean)} instead.
-   *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   * @param values The values to add.
-   *
-   * @return The new add patch operation.
-   */
-  @Deprecated
-  public static PatchOperation addBooleanValues(
-      final Path path, final List<Boolean> values)
-  {
-    ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(Boolean value : values)
-    {
-      arrayNode.add(value);
-    }
-    return add(path, arrayNode);
-  }
-
   /**
    * Create a new replace patch operation.
    *
