@@ -238,13 +238,13 @@ public class FilterEvaluatorTestCase
   public void testLessThanFilter() throws Exception
   {
     // node value is greater than that in filter
-    Filter badFilter_greater = Filter.lt("children", new Integer(4));
+    Filter badFilter_greater = Filter.lt("children", 4);
 
     // node value is equal to that in filter
-    Filter badFilter_equal = Filter.lt("children", new Integer(5));
+    Filter badFilter_equal = Filter.lt("children", 5);
 
     // node value is less than that in filter
-    Filter goodFilter_less = Filter.lt("children", new Integer(7));
+    Filter goodFilter_less = Filter.lt("children", 7);
 
     assertFalse(FilterEvaluator.evaluate(badFilter_greater, node));
     assertFalse(FilterEvaluator.evaluate(badFilter_equal, node));
@@ -265,13 +265,13 @@ public class FilterEvaluatorTestCase
   public void testLessOrEqualFilter() throws Exception
   {
     // node value is greater than that in filter
-    Filter badFilter_greater = Filter.le("children", new Integer(4));
+    Filter badFilter_greater = Filter.le("children", 4);
 
     // node value is equal to that in filter
-    Filter goodFilter_equal = Filter.le("children", new Integer(5));
+    Filter goodFilter_equal = Filter.le("children", 5);
 
     // node value is less than that in filter
-    Filter goodFilter_less = Filter.le("children", new Integer(7));
+    Filter goodFilter_less = Filter.le("children", 7);
 
     assertFalse(FilterEvaluator.evaluate(badFilter_greater, node));
     assertTrue(FilterEvaluator.evaluate(goodFilter_equal, node));
@@ -292,13 +292,13 @@ public class FilterEvaluatorTestCase
   public void testGreaterThanFilter() throws Exception
   {
     // node value is greater than that in filter
-    Filter goodFilter_greater = Filter.gt("children", new Integer(4));
+    Filter goodFilter_greater = Filter.gt("children", 4);
 
     // node value is equal to that in filter
-    Filter badFilter_equal = Filter.gt("children", new Integer(5));
+    Filter badFilter_equal = Filter.gt("children", 5);
 
     // node value is less than that in filter
-    Filter badFilter_less = Filter.gt("children", new Integer(7));
+    Filter badFilter_less = Filter.gt("children", 7);
 
     assertTrue(FilterEvaluator.evaluate(goodFilter_greater, node));
     assertFalse(FilterEvaluator.evaluate(badFilter_equal, node));
@@ -318,13 +318,13 @@ public class FilterEvaluatorTestCase
   public void testGreaterOrEqualFilter() throws Exception
   {
     // node value is greater than that in filter
-    Filter goodFilter_greater = Filter.ge("children", new Integer(4));
+    Filter goodFilter_greater = Filter.ge("children", 4);
 
     // node value is equal to that in filter
-    Filter goodFilter_equal = Filter.ge("children", new Integer(5));
+    Filter goodFilter_equal = Filter.ge("children", 5);
 
     // node value is less than that in filter
-    Filter badFilter_less = Filter.ge("children", new Integer(7));
+    Filter badFilter_less = Filter.ge("children", 7);
 
     assertTrue(FilterEvaluator.evaluate(goodFilter_greater, node));
     assertTrue(FilterEvaluator.evaluate(goodFilter_equal, node));

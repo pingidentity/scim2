@@ -2,7 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## v2.4.1 - TBD
+## v3.0.0 - 2023-Oct-03
+Removed support for Java 8. The UnboundID SCIM 2 SDK now requires Java 11 or a later release.
+
+Migrated `javax.*` namespaces to use Jakarta EE. Since Oracle has given stewardship of the Java EE
+project to Eclipse, this change facilitates the usage of these libraries under the Jakarta name,
+which provides better integration with projects such as Spring Boot 3.0. If your project uses
+components from JAX-RS or Jersey related to the SCIM SDK, then these references must be updated to
+match the new method definitions. For example, any code that creates a
+`javax.ws.rs.client.WebTarget` before passing it to the SCIM SDK will need to provide a
+`jakarta.ws.rs.client.WebTarget` instead. To support this change, the following project dependencies
+were also upgraded:
+* Updated `javax.xml.bind-api` to `jakarta.xml.bind-api` version 4.0.1
+* Updated `javax.ws.rs-api` to `jakarta.ws.rs-api` version 3.1.0
+* Updated `javax.annotation-api` to `jakarta.annotation-api` version 2.1.1
+* Updated Jersey from 2.39.1 to 3.1.3
+
 Overhauled many of the class-level Javadocs in the scim2-sdk-common package. This provides better
 descriptions for SCIM entities, SDK-specific constructs (e.g., `ScimResource`), and more background
 on SCIM conventions such as filtering. The new documentation also provides better descriptions for

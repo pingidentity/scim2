@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 /**
  * Test for search requests.
@@ -57,12 +58,12 @@ public class SearchRequestTestCase
 
     assertEquals(searchRequest.getAttributes(),
         StaticUtils.arrayToSet("displayName", "userName"));
-    assertEquals(searchRequest.getExcludedAttributes(), null);
+    assertNull(searchRequest.getExcludedAttributes());
     assertEquals(searchRequest.getFilter(), "displayName sw \"smith\"");
-    assertEquals(searchRequest.getSortBy(), null);
-    assertEquals(searchRequest.getSortOrder(), null);
-    assertEquals(searchRequest.getStartIndex(), new Integer(1));
-    assertEquals(searchRequest.getCount(), new Integer(10));
+    assertNull(searchRequest.getSortBy());
+    assertNull(searchRequest.getSortOrder());
+    assertEquals(searchRequest.getStartIndex(), Integer.valueOf(1));
+    assertEquals(searchRequest.getCount(), Integer.valueOf(10));
 
     searchRequest = JsonUtils.getObjectReader().
         forType(SearchRequest.class).
@@ -74,14 +75,14 @@ public class SearchRequestTestCase
             "     \"sortOrder\": \"descending\"\n" +
             "}");
 
-    assertEquals(searchRequest.getAttributes(), null);
+    assertNull(searchRequest.getAttributes());
     assertEquals(searchRequest.getExcludedAttributes(),
         StaticUtils.arrayToSet("displayName", "userName"));
-    assertEquals(searchRequest.getFilter(), null);
+    assertNull(searchRequest.getFilter());
     assertEquals(searchRequest.getSortBy(), "name.lastName");
     assertEquals(searchRequest.getSortOrder(), SortOrder.DESCENDING);
-    assertEquals(searchRequest.getStartIndex(), null);
-    assertEquals(searchRequest.getCount(), null);
+    assertNull(searchRequest.getStartIndex());
+    assertNull(searchRequest.getCount());
 
     searchRequest = new SearchRequest(
         StaticUtils.arrayToSet("displayName", "userName"),

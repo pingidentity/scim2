@@ -108,6 +108,7 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals(cso.getId(), "user:id");
     Assert.assertEquals(cso.getExternalId(), "user:externalId");
     Meta meta = cso.getMeta();
+    Assert.assertNotNull(meta);
 
     Assert.assertEquals(
         dateFormat.format(meta.getCreated().getTime()),
@@ -210,15 +211,15 @@ public class GenericScimResourceObjectTest
   public void testDoubleMethods() throws ScimException
   {
     String path1 = "path1";
-    Double value1 = new Double(3.5);
+    double value1 = 3.5;
     String path2 = "path2";
-    Double value2 = new Double(7.3);
+    double value2 = 7.3;
     String path3 = "path3";
-    Double arrayValue1 = new Double(8.2);
-    Double arrayValue2 = new Double(12.3);
+    Double arrayValue1 = 8.2;
+    Double arrayValue2 = 12.3;
     String path4 = "path4";
-    Double arrayValue3 = new Double(2.9);
-    Double arrayValue4 = new Double(1.2);
+    Double arrayValue3 = 2.9;
+    Double arrayValue4 = 1.2;
 
     GenericScimResource gsr = new GenericScimResource();
     Assert.assertEquals(gsr.replaceValue(path1, value1).

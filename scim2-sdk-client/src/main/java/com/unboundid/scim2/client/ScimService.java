@@ -17,7 +17,7 @@
 
 package com.unboundid.scim2.client;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.requests.CreateRequestBuilder;
 import com.unboundid.scim2.client.requests.DeleteRequestBuilder;
 import com.unboundid.scim2.client.requests.ModifyRequestBuilder;
@@ -35,8 +35,8 @@ import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 import java.net.URI;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
@@ -68,7 +68,7 @@ public class ScimService implements ScimInterface
   /**
    * Create a new client instance to the SCIM 2 service provider at the
    * provided WebTarget. The path of the WebTarget should be the base URI
-   * SCIM 2 service (ie. http://host/scim/v2).
+   * SCIM 2 service (i.e., {@code https://host/scim/v2}).
    *
    * @param baseTarget The web target for the base URI of the SCIM 2 service
    *                   provider.
@@ -76,8 +76,8 @@ public class ScimService implements ScimInterface
   public ScimService(final WebTarget baseTarget)
   {
     this.baseTarget = baseTarget.register(
-        new JacksonJaxbJsonProvider(JsonUtils.createObjectMapper(),
-            JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
+        new JacksonJsonProvider(JsonUtils.createObjectMapper(),
+            JacksonJsonProvider.BASIC_ANNOTATIONS));
   }
 
   /**
