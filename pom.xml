@@ -73,6 +73,7 @@
     <guava.version>32.1.2-jre</guava.version>
     <testng.version>7.5.1</testng.version>
     <assertj.version>3.24.2</assertj.version>
+    <maven.surefire.version>3.1.2</maven.surefire.version>
   </properties>
 
   <profiles>
@@ -180,7 +181,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.1.2</version>
+          <version>${maven.surefire.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
@@ -266,6 +267,15 @@
             </property>
           </properties>
         </configuration>
+        <dependencies>
+          <!-- Explicitly declare the TestNG dependency to resolve an issue
+               where the scim2-sdk-server tests were skipped. -->
+          <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-testng</artifactId>
+            <version>${maven.surefire.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
