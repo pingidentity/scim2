@@ -1,6 +1,6 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.unboundid.product.scim2/scim2-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.unboundid.product.scim2/scim2-parent)
-[![Javadocs](http://javadoc.io/badge/com.unboundid.product.scim2/scim2-parent.svg)](http://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent) 
-[![Build Status](https://travis-ci.org/pingidentity/scim2.svg?branch=master)](https://travis-ci.org/pingidentity/scim2)
+[![Javadocs](http://javadoc.io/badge/com.unboundid.product.scim2/scim2-parent.svg)](http://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent)
+[![Build Status](https://github.com/pingidentity/scim2/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/pingidentity/scim2/actions/workflows/build-and-test.yaml)
 
 # UnboundID SCIM 2 SDK for Java
 [SCIM](https://www.simplecloud.info), or _System for Cross-domain Identity Management_, is an IETF
