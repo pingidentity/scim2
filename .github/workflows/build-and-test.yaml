@@ -1,0 +1,53 @@
+name: Build Status
+
+on:
+  push:
+    # Run tests on any push to feature branches.
+    branches: [ "master", "main", "DS-[0-9]+*", "ubid-test" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  # Run an explicit Checkstyle stage to highlight any linting errors.
+  checkstyle:
+    name: mvn checkstyle
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install minimum-supported JDK for Checkstyle
+      uses: actions/setup-java@v3
+      with:
+        java-version: 11
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Checkstyle
+      run: |
+        ./mvnw checkstyle:check -Dcheckstyle.config.location=config/scim2-parent-checkstyle.xml
+
+
+  build:
+    name: mvn package
+    runs-on: ubuntu-latest
+    needs: checkstyle
+
+    strategy:
+      matrix:
+        # Compile and build with supported LTS releases of Java.
+        java-version: [ 11, 17, 21 ]
+
+    steps:
+    - run: |
+        echo "This job was triggered by the '${{ github.event_name }}' event."
+    - uses: actions/checkout@v4
+    - name: Install JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build
+      run: |
+        ./mvnw clean package
