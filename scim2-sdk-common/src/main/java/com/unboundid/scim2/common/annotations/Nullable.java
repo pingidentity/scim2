@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Ping Identity Corporation
+ * Copyright 2023-2024 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -15,7 +15,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 /*
- * Copyright 2023 Ping Identity Corporation
+ * Copyright 2023-2024 Ping Identity Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
