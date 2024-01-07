@@ -18,6 +18,7 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unboundid.scim2.common.types.AttributeDefinition.Builder;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
@@ -228,7 +229,6 @@ public class SchemaUtils
       addReferenceTypes(attributeBuilder, schemaProperty);
       addMutability(attributeBuilder, schemaProperty);
       addMultiValued(attributeBuilder, propertyDescriptor, schemaProperty);
-      addCanonicalValues(attributeBuilder, schemaProperty);
 
       Class propertyCls = propertyDescriptor.getPropertyType();
 
@@ -238,6 +238,7 @@ public class SchemaUtils
       {
         propertyCls = schemaProperty.multiValueClass();
       }
+      addCanonicalValues(attributeBuilder, schemaProperty, propertyCls);
 
       AttributeDefinition.Type type = getAttributeType(propertyCls);
       attributeBuilder.setType(type);
@@ -401,15 +402,24 @@ public class SchemaUtils
    * @param attributeBuilder builder for a scim attribute.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
+   * @param propertyCls
    * @return this.
    */
   private static AttributeDefinition.Builder addCanonicalValues(
-      final AttributeDefinition.Builder attributeBuilder,
-      final Attribute schemaProperty)
+          final Builder attributeBuilder,
+          final Attribute schemaProperty,
+          final Class propertyCls)
   {
     if(schemaProperty != null)
     {
-      attributeBuilder.addCanonicalValues(schemaProperty.canonicalValues());
+        if(propertyCls.isEnum()){
+            Enum[] enumVales = (Enum[]) propertyCls.getEnumConstants();
+            for (Enum e: enumVales) {
+                attributeBuilder.addCanonicalValues(e.name());
+            }
+        } else {
+            attributeBuilder.addCanonicalValues(schemaProperty.canonicalValues());
+        }
     }
 
     return attributeBuilder;
@@ -533,7 +543,7 @@ public class SchemaUtils
       return AttributeDefinition.Type.DECIMAL;
     }
     else if ((cls == String.class) ||
-        (cls == boolean.class))
+        (cls == boolean.class) || cls.isEnum())
     {
       return AttributeDefinition.Type.STRING;
     }
