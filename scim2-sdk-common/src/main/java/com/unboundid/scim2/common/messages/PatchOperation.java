@@ -916,9 +916,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addStringValues(
-      @Nullable final String path, @NotNull final List<String> values)
-          throws ScimException
+  public static PatchOperation addStringValues(@NotNull final String path,
+                                               @NotNull final List<String> values)
+      throws ScimException
   {
     return addStringValues(Path.fromString(path), values);
   }
@@ -936,10 +936,10 @@ public abstract class PatchOperation
    * @throws ScimException  If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addStringValues(@Nullable final String path,
+  public static PatchOperation addStringValues(@NotNull final String path,
                                                @NotNull final String value1,
                                                @Nullable final String... values)
-          throws ScimException
+      throws ScimException
   {
     return addStringValues(path, toList(value1, values));
   }
@@ -954,8 +954,8 @@ public abstract class PatchOperation
    * @return The new add patch operation.
    */
   @NotNull
-  public static PatchOperation addStringValues(
-      @Nullable final Path path, @NotNull final List<String> values)
+  public static PatchOperation addStringValues(@NotNull final Path path,
+                                               @NotNull final List<String> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(String value : values)
@@ -1051,7 +1051,7 @@ public abstract class PatchOperation
    * @return The new replace patch operation.
    */
   @NotNull
-  public static PatchOperation replace(@Nullable final Path path,
+  public static PatchOperation replace(@NotNull final Path path,
                                        @NotNull final Boolean value)
   {
     return replace(path, BooleanNode.valueOf(value));
@@ -1072,7 +1072,7 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addDoubleValues(@Nullable final String path,
+  public static PatchOperation addDoubleValues(@NotNull final String path,
                                                @NotNull final List<Double> values)
       throws ScimException
   {
@@ -1092,7 +1092,7 @@ public abstract class PatchOperation
    * @throws ScimException  If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addDoubleValues(@Nullable final String path,
+  public static PatchOperation addDoubleValues(@NotNull final String path,
                                                @NotNull final Double value1,
                                                @Nullable final Double... values)
       throws ScimException
@@ -1110,8 +1110,8 @@ public abstract class PatchOperation
    * @return The new add patch operation.
    */
   @NotNull
-  public static PatchOperation addDoubleValues(
-      @NotNull final Path path, @NotNull final List<Double> values)
+  public static PatchOperation addDoubleValues(@NotNull final Path path,
+                                               @NotNull final List<Double> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(Double value : values)
@@ -1554,8 +1554,8 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addBinaryValues(
-      @NotNull final String path, @NotNull final List<byte[]> values)
+  public static PatchOperation addBinaryValues(@NotNull final String path,
+                                               @NotNull final List<byte[]> values)
           throws ScimException
   {
     return addBinaryValues(Path.fromString(path), values);
@@ -1592,8 +1592,8 @@ public abstract class PatchOperation
    * @return The new add patch operation.
    */
   @NotNull
-  public static PatchOperation addBinaryValues(
-      @NotNull final Path path, @NotNull final List<byte[]> values)
+  public static PatchOperation addBinaryValues(@NotNull final Path path,
+                                               @NotNull final List<byte[]> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(byte[] value : values)
