@@ -174,7 +174,7 @@ public class JsonDiff
     }
   }
 
-  private void replaceNode(final Path parentPath,
+  private void replaceNode(@NotNull final Path parentPath,
       @NotNull final Path path,
       @NotNull final ObjectNode targetToAdd,
       @NotNull final ObjectNode targetToReplace,

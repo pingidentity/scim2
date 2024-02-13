@@ -1018,6 +1018,7 @@ public class JsonUtils
    * @throws JsonProcessingException if an error occurs while binding the JSON
    * node to the value type.
    */
+  @Nullable
   public static <T> List<T> nodeToValues(@NotNull final ArrayNode fromNode,
                                          @NotNull final Class<T> valueType)
       throws JsonProcessingException
@@ -1086,7 +1087,6 @@ public class JsonUtils
    *
    * @param customMapperFactory the custom JSON object mapper.
    */
-  @NotNull
   public static void setCustomMapperFactory(
       @NotNull final MapperFactory customMapperFactory)
   {
