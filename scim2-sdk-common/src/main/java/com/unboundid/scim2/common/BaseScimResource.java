@@ -211,7 +211,7 @@ public abstract class BaseScimResource
    * (the key name doesn't start with "{@code urn:}").
    */
   @JsonAnySetter
-  protected void setAny(@NotNull String key,
+  protected void setAny(@NotNull final String key,
                         @NotNull final JsonNode value)
       throws ScimException
   {

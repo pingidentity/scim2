@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.utils;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

@@ -18,6 +18,7 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
@@ -716,7 +717,7 @@ public class SchemaUtils
    * @param string the string to check.
    * @return true if it's a urn, or false if not.
    */
-  public static boolean isUrn(final String string)
+  public static boolean isUrn(@NotNull final String string)
   {
     return StaticUtils.toLowerCase(string).startsWith("urn:") &&
         string.length() > 4;
