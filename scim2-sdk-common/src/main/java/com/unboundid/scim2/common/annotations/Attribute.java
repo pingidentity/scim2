@@ -60,20 +60,21 @@ public @interface Attribute
    *
    * @return The description of the attribute.
    */
-  String description();
+  @NotNull String description();
 
   /**
    * The canonical values that may appear in an attribute.
    *
    * @return The canonical values that may appear in an attribute.
    */
-  String[] canonicalValues() default {};
+  @NotNull String[] canonicalValues() default {};
 
   /**
    * The return constraint for the attribute.
    *
    * @return The return constraint for the attribute.
    */
+  @NotNull
   AttributeDefinition.Returned returned()
       default AttributeDefinition.Returned.DEFAULT;
 
@@ -82,6 +83,7 @@ public @interface Attribute
    *
    * @return The uniqueness constraint for the attribute.
    */
+  @NotNull
   AttributeDefinition.Uniqueness uniqueness()
       default AttributeDefinition.Uniqueness.NONE;
 
@@ -90,13 +92,14 @@ public @interface Attribute
    *
    * @return The reference types for the attribute.
    */
-  String[] referenceTypes() default {};
+  @NotNull String[] referenceTypes() default {};
 
   /**
    * The mutability constraint for the attribute.
    *
    * @return The mutability constraint for the attribute.
    */
+  @NotNull
   AttributeDefinition.Mutability mutability()
       default AttributeDefinition.Mutability.READ_WRITE;
 
@@ -106,5 +109,5 @@ public @interface Attribute
    *
    * @return For a multi-valued attribute, the type of the child object.
    */
-  Class<?> multiValueClass() default NullType.class;
+  @NotNull Class<?> multiValueClass() default NullType.class;
 }
