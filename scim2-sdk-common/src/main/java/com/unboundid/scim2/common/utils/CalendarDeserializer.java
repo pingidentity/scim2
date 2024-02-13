@@ -36,6 +36,7 @@ public class CalendarDeserializer extends JsonDeserializer<Calendar>
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public Calendar deserialize(@NotNull final JsonParser jp,
                               @Nullable final DeserializationContext ctxt)
       throws IOException, JsonProcessingException

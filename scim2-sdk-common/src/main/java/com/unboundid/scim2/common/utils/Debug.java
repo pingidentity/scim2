@@ -399,6 +399,7 @@ public final class Debug
    *
    * @return  The set of debug types that will be used if debugging is enabled.
    */
+  @NotNull
   public static EnumSet<DebugType> getDebugTypes()
   {
     return debugTypes;

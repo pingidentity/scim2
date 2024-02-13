@@ -21,6 +21,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -34,8 +36,9 @@ public class StatusDeserializer extends JsonDeserializer<Integer>
    * {@inheritDoc}
    */
   @Override
-  public Integer deserialize(final JsonParser jp,
-                             final DeserializationContext ctxt)
+  @NotNull
+  public Integer deserialize(@NotNull final JsonParser jp,
+                             @Nullable final DeserializationContext ctxt)
       throws IOException, JsonProcessingException
   {
     return jp.readValueAs(Integer.class);

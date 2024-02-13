@@ -137,6 +137,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public Boolean visit(@NotNull final ContainsFilter filter,
                        @NotNull final JsonNode object)
       throws ScimException
@@ -147,6 +148,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public Boolean visit(@NotNull final StartsWithFilter filter,
                        @NotNull final JsonNode object)
       throws ScimException
@@ -157,6 +159,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public Boolean visit(@NotNull final EndsWithFilter filter,
                        @NotNull final JsonNode object)
       throws ScimException

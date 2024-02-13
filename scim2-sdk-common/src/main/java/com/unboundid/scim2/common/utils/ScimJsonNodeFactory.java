@@ -19,6 +19,7 @@ package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.annotations.NotNull;
 
 /**
  * Created by boli on 7/29/15.
@@ -26,6 +27,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class ScimJsonNodeFactory extends JsonNodeFactory
 {
   @Override
+  @NotNull
   public ObjectNode objectNode()
   {
     return new CaseIgnoreObjectNode(this);

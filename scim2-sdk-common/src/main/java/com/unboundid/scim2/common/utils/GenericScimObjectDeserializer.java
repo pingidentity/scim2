@@ -37,6 +37,7 @@ public class GenericScimObjectDeserializer
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public GenericScimResource deserialize(@NotNull final JsonParser jp,
       @Nullable final DeserializationContext ctxt)
           throws IOException

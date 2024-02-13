@@ -21,6 +21,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -34,8 +36,9 @@ public class StatusSerializer extends JsonSerializer<Integer>
    * {@inheritDoc}
    */
   @Override
-  public void serialize(final Integer value, final JsonGenerator jgen,
-                        final SerializerProvider serializers)
+  public void serialize(@Nullable final Integer value,
+                        @NotNull final JsonGenerator jgen,
+                        @Nullable final SerializerProvider serializers)
       throws IOException, JsonProcessingException
   {
     jgen.writeString(String.valueOf(value));

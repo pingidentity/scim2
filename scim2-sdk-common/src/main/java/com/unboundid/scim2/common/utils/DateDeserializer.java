@@ -36,6 +36,7 @@ public class DateDeserializer extends JsonDeserializer<Date>
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public Date deserialize(@NotNull final JsonParser jp,
                           @Nullable final DeserializationContext ctxt)
       throws IOException, JsonProcessingException
