@@ -30,14 +30,14 @@ import java.net.URISyntaxException;
  */
 public class AuthenticationScheme
 {
-  @Nullable
+  @NotNull
   @Attribute(description = "The common authentication scheme name; " +
       "e.g., HTTP Basic.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final String name;
 
-  @Nullable
+  @NotNull
   @Attribute(description = "A description of the Authentication Scheme.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
@@ -85,13 +85,16 @@ public class AuthenticationScheme
    *                 scheme is preferred.
    */
   public AuthenticationScheme(
-      @JsonProperty(value = "name", required = true) final String name,
-      @JsonProperty(value = "description", required = true)
+      @NotNull @JsonProperty(value = "name", required = true)
+      final String name,
+      @NotNull @JsonProperty(value = "description", required = true)
       final String description,
-      @JsonProperty(value = "specUri") final URI specUri,
-      @JsonProperty(value = "documentationUri")
+      @Nullable @JsonProperty(value = "specUri")
+      final URI specUri,
+      @Nullable @JsonProperty(value = "documentationUri")
       final URI documentationUri,
-      @JsonProperty(value = "type") final String type,
+      @Nullable @JsonProperty(value = "type")
+      final String type,
       @JsonProperty(value = "primary", defaultValue = "false")
       final boolean primary)
   {
@@ -108,7 +111,7 @@ public class AuthenticationScheme
    *
    * @return The common authentication scheme name.
    */
-  @Nullable
+  @NotNull
   public String getName()
   {
     return name;
@@ -119,7 +122,7 @@ public class AuthenticationScheme
    *
    * @return The description of the Authentication Scheme.
    */
-  @Nullable
+  @NotNull
   public String getDescription()
   {
     return description;

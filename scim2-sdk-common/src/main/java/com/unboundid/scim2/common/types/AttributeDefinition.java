@@ -831,10 +831,10 @@ public class AttributeDefinition
    * @param referenceTypes The reference type of this attribute.
    */
   @JsonCreator
-  AttributeDefinition(@JsonProperty(value = "name", required = true)
-                      @NotNull final String name,
-                      @JsonProperty(value = "type", required = true)
-                      @NotNull final Type type,
+  AttributeDefinition(@NotNull @JsonProperty(value = "name", required = true)
+                      final String name,
+                      @NotNull @JsonProperty(value = "type", required = true)
+                      final Type type,
                       @JsonProperty(value = "subAttributes")
                       @Nullable final Collection<AttributeDefinition> subAttributes,
                       @JsonProperty(value = "multiValued", required = true)
@@ -847,14 +847,14 @@ public class AttributeDefinition
                       @Nullable final Collection<String> canonicalValues,
                       @JsonProperty(value = "caseExact")
                       final boolean caseExact,
-                      @JsonProperty(value = "mutability",  required = true)
-                      @NotNull final Mutability mutability,
-                      @JsonProperty(value = "returned", required = true)
-                      @NotNull final Returned returned,
-                      @JsonProperty(value = "uniqueness")
-                      @NotNull final Uniqueness uniqueness,
-                      @JsonProperty(value = "referenceTypes")
-                      @Nullable final Collection<String> referenceTypes)
+                      @NotNull @JsonProperty(value = "mutability",  required = true)
+                      final Mutability mutability,
+                      @NotNull @JsonProperty(value = "returned", required = true)
+                      final Returned returned,
+                      @NotNull @JsonProperty(value = "uniqueness")
+                      final Uniqueness uniqueness,
+                      @Nullable @JsonProperty(value = "referenceTypes")
+                      final Collection<String> referenceTypes)
   {
     this.name = name;
     this.type = type;

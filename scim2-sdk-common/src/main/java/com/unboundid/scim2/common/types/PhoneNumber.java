@@ -18,12 +18,15 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 /**
  * Phone number for the user.
  */
 public class PhoneNumber
 {
+  @Nullable
   @Attribute(description = "Phone number of the User",
       isRequired = false,
       isCaseExact = false,
@@ -32,6 +35,7 @@ public class PhoneNumber
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
+  @Nullable
   @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
@@ -41,6 +45,7 @@ public class PhoneNumber
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
+  @Nullable
   @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'work' or 'home' or 'mobile' etc.",
       isRequired = false,
@@ -51,6 +56,7 @@ public class PhoneNumber
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
+  @Nullable
   @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute, e.g., the " +
       "preferred phone number or primary phone number. The primary " +
@@ -65,6 +71,7 @@ public class PhoneNumber
    *
    * @return The phone number of the User.
    */
+  @Nullable
   public String getValue()
   {
     return value;
@@ -76,7 +83,8 @@ public class PhoneNumber
    * @param value The phone number of the User.
    * @return This object.
    */
-  public PhoneNumber setValue(final String value)
+  @NotNull
+  public PhoneNumber setValue(@Nullable final String value)
   {
     this.value = value;
     return this;
@@ -87,6 +95,7 @@ public class PhoneNumber
    *
    * @return The display name.
    */
+  @Nullable
   public String getDisplay()
   {
     return display;
@@ -98,7 +107,8 @@ public class PhoneNumber
    * @param display The display name.
    * @return This object.
    */
-  public PhoneNumber setDisplay(final String display)
+  @NotNull
+  public PhoneNumber setDisplay(@Nullable final String display)
   {
     this.display = display;
     return this;
@@ -109,6 +119,7 @@ public class PhoneNumber
    *
    * @return The label indicating the attribute's function.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -120,7 +131,8 @@ public class PhoneNumber
    * @param type The label indicating the attribute's function.
    * @return This object.
    */
-  public PhoneNumber setType(final String type)
+  @NotNull
+  public PhoneNumber setType(@Nullable final String type)
   {
     this.type = type;
     return this;
@@ -133,6 +145,7 @@ public class PhoneNumber
    * @return The Boolean value indicating the 'primary' or preferred
    * attribute value for this attribute.
    */
+  @Nullable
   public Boolean getPrimary()
   {
     return primary;
@@ -146,7 +159,8 @@ public class PhoneNumber
    * attribute value for this attribute.
    * @return This object.
    */
-  public PhoneNumber setPrimary(final Boolean primary)
+  @NotNull
+  public PhoneNumber setPrimary(@Nullable final Boolean primary)
   {
     this.primary = primary;
     return this;
@@ -160,7 +174,7 @@ public class PhoneNumber
    *            number, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

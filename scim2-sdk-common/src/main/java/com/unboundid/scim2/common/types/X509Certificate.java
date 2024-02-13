@@ -18,6 +18,8 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -27,6 +29,7 @@ import java.util.Arrays;
  */
 public class X509Certificate
 {
+  @Nullable
   @Attribute(description = "The value of a X509 certificate.",
       isRequired = false,
       isCaseExact = false,
@@ -35,6 +38,7 @@ public class X509Certificate
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private byte[] value;
 
+  @Nullable
   @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
@@ -44,6 +48,7 @@ public class X509Certificate
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
+  @Nullable
   @Attribute(description = "A label indicating the attribute's " +
       "function.",
       isRequired = false,
@@ -53,6 +58,7 @@ public class X509Certificate
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
+  @Nullable
   @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute. The primary " +
       "attribute value 'true' MUST appear no more than once.",
@@ -66,6 +72,7 @@ public class X509Certificate
    *
    * @return The value of a X509 certificate.
    */
+  @Nullable
   public byte[] getValue()
   {
     return value;
@@ -77,7 +84,8 @@ public class X509Certificate
    * @param value The value of a X509 certificate.
    * @return This object.
    */
-  public X509Certificate setValue(final byte[] value)
+  @NotNull
+  public X509Certificate setValue(@Nullable final byte[] value)
   {
     this.value = value;
     return this;
@@ -88,6 +96,7 @@ public class X509Certificate
    *
    * @return The display name.
    */
+  @Nullable
   public String getDisplay()
   {
     return display;
@@ -99,7 +108,8 @@ public class X509Certificate
    * @param display The display name.
    * @return This object.
    */
-  public X509Certificate setDisplay(final String display)
+  @NotNull
+  public X509Certificate setDisplay(@Nullable final String display)
   {
     this.display = display;
     return this;
@@ -110,6 +120,7 @@ public class X509Certificate
    *
    * @return The label indicating the attribute's function.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -121,7 +132,8 @@ public class X509Certificate
    * @param type The label indicating the attribute's function.
    * @return This object.
    */
-  public X509Certificate setType(final String type)
+  @NotNull
+  public X509Certificate setType(@Nullable final String type)
   {
     this.type = type;
     return this;
@@ -134,6 +146,7 @@ public class X509Certificate
    * @return The Boolean value indicating the 'primary' or preferred
    * attribute value for this attribute.
    */
+  @Nullable
   public Boolean getPrimary()
   {
     return primary;
@@ -147,7 +160,8 @@ public class X509Certificate
    * attribute value for this attribute.
    * @return This object.
    */
-  public X509Certificate setPrimary(final Boolean primary)
+  @NotNull
+  public X509Certificate setPrimary(@Nullable final Boolean primary)
   {
     this.primary = primary;
     return this;
@@ -162,7 +176,7 @@ public class X509Certificate
    *            certificate, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

@@ -112,6 +112,7 @@ public class Address
    *
    * @return The full mailing address
    */
+  @Nullable
   public String getFormatted()
   {
     return formatted;

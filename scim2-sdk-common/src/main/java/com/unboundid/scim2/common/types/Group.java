@@ -19,6 +19,8 @@ package com.unboundid.scim2.common.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 
@@ -27,6 +29,7 @@ import java.net.URI;
  */
 public class Group
 {
+  @Nullable
   @Attribute(description = "The identifier of the User's group.",
       isRequired = false,
       isCaseExact = false,
@@ -35,6 +38,7 @@ public class Group
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
+  @Nullable
   @Attribute(description = "The URI of the corresponding Group " +
       "resource to which the user belongs",
       isRequired = false,
@@ -45,6 +49,7 @@ public class Group
   @JsonProperty("$ref")
   private URI ref;
 
+  @Nullable
   @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
@@ -54,6 +59,7 @@ public class Group
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
+  @Nullable
   @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'direct' or 'indirect'.",
       isRequired = false,
@@ -69,6 +75,7 @@ public class Group
    *
    * @return The identifier of the User's group.
    */
+  @Nullable
   public String getValue()
   {
     return value;
@@ -80,7 +87,8 @@ public class Group
    * @param value The identifier of the User's group.
    * @return This object.
    */
-  public Group setValue(final String value)
+  @NotNull
+  public Group setValue(@Nullable final String value)
   {
     this.value = value;
     return this;
@@ -93,6 +101,7 @@ public class Group
    * @return the URI of the corresponding Group resource to which the user
    * belongs.
    */
+  @Nullable
   public URI getRef()
   {
     return ref;
@@ -106,7 +115,8 @@ public class Group
    * belongs.
    * @return This object.
    */
-  public Group setRef(final URI ref)
+  @NotNull
+  public Group setRef(@Nullable final URI ref)
   {
     this.ref = ref;
     return this;
@@ -117,6 +127,7 @@ public class Group
    *
    * @return The display name.
    */
+  @Nullable
   public String getDisplay()
   {
     return display;
@@ -128,7 +139,8 @@ public class Group
    * @param display The display name.
    * @return This object.
    */
-  public Group setDisplay(final String display)
+  @NotNull
+  public Group setDisplay(@Nullable final String display)
   {
     this.display = display;
     return this;
@@ -139,6 +151,7 @@ public class Group
    *
    * @return The label indicating the attribute's function.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -150,7 +163,8 @@ public class Group
    * @param type The label indicating the attribute's function.
    * @return This object.
    */
-  public Group setType(final String type)
+  @NotNull
+  public Group setType(@Nullable final String type)
   {
     this.type = type;
     return this;
@@ -165,7 +179,7 @@ public class Group
    *            membership identifier, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

@@ -18,6 +18,8 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 
@@ -26,6 +28,7 @@ import java.net.URI;
  */
 public class Photo
 {
+  @Nullable
   @Attribute(description = "URI of a photo of the User.",
       isRequired = false,
       referenceTypes = { "external" },
@@ -34,6 +37,7 @@ public class Photo
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private URI value;
 
+  @Nullable
   @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
@@ -43,6 +47,7 @@ public class Photo
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
+  @Nullable
   @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'photo' or 'thumbnail'.",
       isRequired = false,
@@ -53,6 +58,7 @@ public class Photo
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
+  @Nullable
   @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute, e.g., the " +
       "preferred messenger or primary messenger. The primary attribute " +
@@ -67,6 +73,7 @@ public class Photo
    *
    * @return The email addresses for the user.
    */
+  @Nullable
   public URI getValue()
   {
     return value;
@@ -78,7 +85,8 @@ public class Photo
    * @param value The email addresses for the user.
    * @return This object.
    */
-  public Photo setValue(final URI value)
+  @NotNull
+  public Photo setValue(@Nullable final URI value)
   {
     this.value = value;
     return this;
@@ -89,6 +97,7 @@ public class Photo
    *
    * @return The display name.
    */
+  @Nullable
   public String getDisplay()
   {
     return display;
@@ -100,7 +109,8 @@ public class Photo
    * @param display The display name.
    * @return This object.
    */
-  public Photo setDisplay(final String display)
+  @NotNull
+  public Photo setDisplay(@Nullable final String display)
   {
     this.display = display;
     return this;
@@ -111,6 +121,7 @@ public class Photo
    *
    * @return The label indicating the attribute's function.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -122,7 +133,8 @@ public class Photo
    * @param type The label indicating the attribute's function.
    * @return This object.
    */
-  public Photo setType(final String type)
+  @NotNull
+  public Photo setType(@Nullable final String type)
   {
     this.type = type;
     return this;
@@ -135,6 +147,7 @@ public class Photo
    * @return The Boolean value indicating the 'primary' or preferred
    * attribute value for this attribute.
    */
+  @Nullable
   public Boolean getPrimary()
   {
     return primary;
@@ -148,7 +161,8 @@ public class Photo
    * attribute value for this attribute.
    * @return This object.
    */
-  public Photo setPrimary(final Boolean primary)
+  @NotNull
+  public Photo setPrimary(@Nullable final Boolean primary)
   {
     this.primary = primary;
     return this;
@@ -162,7 +176,7 @@ public class Photo
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

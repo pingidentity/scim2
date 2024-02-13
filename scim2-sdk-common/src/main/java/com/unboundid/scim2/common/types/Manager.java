@@ -19,6 +19,8 @@ package com.unboundid.scim2.common.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 
@@ -28,6 +30,7 @@ import java.net.URI;
  */
 public class Manager
 {
+  @Nullable
   @Attribute(description = "The id of the SCIM resource representing " +
       "the User's manager.",
       isRequired = true,
@@ -37,6 +40,7 @@ public class Manager
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
+  @Nullable
   @Attribute(description = "The URI of the SCIM resource representing " +
       "the User's manager.",
       isRequired = true,
@@ -48,6 +52,7 @@ public class Manager
   @JsonProperty("$ref")
   private URI ref;
 
+  @Nullable
   @Attribute(description = "The displayName of the User's manager.",
       isRequired = false,
       isCaseExact = false,
@@ -61,6 +66,7 @@ public class Manager
    *
    * @return The id of the SCIM resource representing the User's manager.
    */
+  @Nullable
   public String getValue()
   {
     return value;
@@ -72,7 +78,8 @@ public class Manager
    * @param value The id of the SCIM resource representing the User's manager.
    * @return This object.
    */
-  public Manager setValue(final String value)
+  @NotNull
+  public Manager setValue(@Nullable final String value)
   {
     this.value = value;
     return this;
@@ -83,6 +90,7 @@ public class Manager
    *
    * @return The URI of the SCIM resource representing the User's manager.
    */
+  @Nullable
   public URI getRef()
   {
     return ref;
@@ -94,7 +102,8 @@ public class Manager
    * @param ref The URI of the SCIM resource representing the User's manager.
    * @return This object.
    */
-  public Manager setRef(final URI ref)
+  @NotNull
+  public Manager setRef(@Nullable final URI ref)
   {
     this.ref = ref;
     return this;
@@ -105,6 +114,7 @@ public class Manager
    *
    * @return The displayName of the User's manager.
    */
+  @Nullable
   public String getDisplayName()
   {
     return displayName;
@@ -116,7 +126,8 @@ public class Manager
    * @param displayName The displayName of the User's manager.
    * @return This object.
    */
-  public Manager setDisplayName(final String displayName)
+  @NotNull
+  public Manager setDisplayName(@Nullable final String displayName)
   {
     this.displayName = displayName;
     return this;
@@ -131,7 +142,7 @@ public class Manager
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

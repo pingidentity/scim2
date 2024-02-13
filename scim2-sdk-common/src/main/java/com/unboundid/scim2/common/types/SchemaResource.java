@@ -20,6 +20,8 @@ package com.unboundid.scim2.common.types;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.BaseScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
@@ -34,16 +36,19 @@ import java.util.Collections;
     name="Schema", description = "SCIM 2.0 Schema Resource")
 public class SchemaResource extends BaseScimResource
 {
+  @Nullable
   @Attribute(description =
       "The schema's human readable name.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String name;
 
+  @Nullable
   @Attribute(description =
       "The schema's human readable description.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
+  @NotNull
   @Attribute(description =
       "Attributes of the object described by this schema.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -59,13 +64,13 @@ public class SchemaResource extends BaseScimResource
    * @param attributes The schema's attributes.
    */
   @JsonCreator
-  public SchemaResource(@JsonProperty(value = "id", required = true)
+  public SchemaResource(@NotNull @JsonProperty(value = "id", required = true)
                         final String id,
-                        @JsonProperty(value = "name")
+                        @Nullable @JsonProperty(value = "name")
                         final String name,
-                        @JsonProperty(value = "description")
+                        @Nullable @JsonProperty(value = "description")
                         final String description,
-                        @JsonProperty(value = "attributes", required = true)
+                        @NotNull @JsonProperty(value = "attributes", required = true)
                         final Collection<AttributeDefinition> attributes)
   {
     super(id);
@@ -80,6 +85,7 @@ public class SchemaResource extends BaseScimResource
    *
    * @return objects name.
    */
+  @Nullable
   public String getName()
   {
     return name;
@@ -90,6 +96,7 @@ public class SchemaResource extends BaseScimResource
    *
    * @return the name of the SCIM object.
    */
+  @Nullable
   public String getDescription()
   {
     return description;
@@ -100,9 +107,10 @@ public class SchemaResource extends BaseScimResource
    *
    * @return the attributes of the SCIM object.
    */
+  @NotNull
   public Collection<AttributeDefinition> getAttributes()
   {
-    return Collections.unmodifiableCollection(attributes);
+    return attributes;
   }
 
   /**
@@ -113,7 +121,7 @@ public class SchemaResource extends BaseScimResource
    *            resource, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

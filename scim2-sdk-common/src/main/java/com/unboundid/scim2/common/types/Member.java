@@ -18,6 +18,8 @@ package com.unboundid.scim2.common.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Objects;
@@ -27,6 +29,7 @@ import java.util.Objects;
  */
 public class Member
 {
+  @NotNull
   @Attribute(description = "The identifier of a group member.",
       isRequired = true,
       isCaseExact = false,
@@ -35,6 +38,7 @@ public class Member
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
+  @NotNull
   @Attribute(description = "A label indicating the type of resource, e.g.,"
           + " 'User' or 'Group'",
       canonicalValues = { "User", "Group" },
@@ -45,6 +49,7 @@ public class Member
   @JsonProperty("type")
   private String type;
 
+  @Nullable
   @Attribute(description = "The URI of the member resource.",
       isRequired = true,
       referenceTypes = { "User", "Group" },
@@ -54,6 +59,7 @@ public class Member
   @JsonProperty("$ref")
   private URI ref;
 
+  @Nullable
   @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
@@ -68,6 +74,7 @@ public class Member
    *
    * @return The identifier of the group member.
    */
+  @NotNull
   public String getValue()
   {
     return value;
@@ -79,7 +86,8 @@ public class Member
    * @param value The identifier of the group member
    * @return This object.
    */
-  public Member setValue(final String value)
+  @NotNull
+  public Member setValue(@NotNull final String value)
   {
     this.value = value;
     return this;
@@ -90,6 +98,7 @@ public class Member
    *
    * @return The type of the group member.
    */
+  @NotNull
   public String getType()
   {
     return type;
@@ -101,7 +110,8 @@ public class Member
    * @param type The type of the group member.
    * @return This object.
    */
-  public Member setType(final String type)
+  @NotNull
+  public Member setType(@NotNull final String type)
   {
     this.type = type;
     return this;
@@ -112,6 +122,7 @@ public class Member
    *
    * @return The URI of the SCIM resource corresponding to this group member.
    */
+  @Nullable
   public URI getRef()
   {
     return ref;
@@ -123,7 +134,8 @@ public class Member
    * @param ref The URI of the SCIM resource corresponding to this group member
    * @return This object.
    */
-  public Member setRef(final URI ref)
+  @NotNull
+  public Member setRef(@Nullable final URI ref)
   {
     this.ref = ref;
     return this;
@@ -134,6 +146,7 @@ public class Member
    *
    * @return The display name.
    */
+  @Nullable
   public String getDisplay()
   {
     return display;
@@ -145,7 +158,8 @@ public class Member
    * @param display The display name.
    * @return This object.
    */
-  public Member setDisplay(final String display)
+  @NotNull
+  public Member setDisplay(@Nullable final String display)
   {
     this.display = display;
     return this;
@@ -159,7 +173,7 @@ public class Member
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

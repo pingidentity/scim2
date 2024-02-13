@@ -20,6 +20,7 @@ package com.unboundid.scim2.common.types;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 /**
  * A complex type that specifies Sort configuration options.
@@ -65,7 +66,7 @@ public class SortConfig
    *            configuration, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {
