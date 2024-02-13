@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.exceptions;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
@@ -46,7 +48,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  */
 public class MethodNotAllowedException extends ScimException
 {
-  private static final int METHOD_NOT_ALLOWED_CODE = 405;
+  @NotNull private static final int METHOD_NOT_ALLOWED_CODE = 405;
 
 
   /**
@@ -55,7 +57,7 @@ public class MethodNotAllowedException extends ScimException
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public MethodNotAllowedException(final String errorMessage)
+  public MethodNotAllowedException(@Nullable final String errorMessage)
   {
     super(METHOD_NOT_ALLOWED_CODE, errorMessage);
   }
@@ -71,8 +73,8 @@ public class MethodNotAllowedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public MethodNotAllowedException(final ErrorResponse scimError,
-                            final Throwable cause)
+  public MethodNotAllowedException(@NotNull final ErrorResponse scimError,
+                                   @Nullable final Throwable cause)
   {
     super(scimError, cause);
   }

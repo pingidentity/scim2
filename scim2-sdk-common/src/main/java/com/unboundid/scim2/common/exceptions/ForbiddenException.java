@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.exceptions;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
@@ -52,7 +54,7 @@ public class ForbiddenException extends ScimException
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public ForbiddenException(final String errorMessage)
+  public ForbiddenException(@Nullable final String errorMessage)
   {
     super(403, null, errorMessage);
   }
@@ -68,9 +70,9 @@ public class ForbiddenException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public ForbiddenException(final String errorMessage,
-                            final String scimType,
-                            final Throwable cause)
+  public ForbiddenException(@Nullable final String errorMessage,
+                            @Nullable final String scimType,
+                            @Nullable final Throwable cause)
   {
     super(403, scimType, errorMessage, cause);
   }
@@ -84,8 +86,8 @@ public class ForbiddenException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public ForbiddenException(final ErrorResponse scimError,
-                            final Throwable cause)
+  public ForbiddenException(@NotNull final ErrorResponse scimError,
+                            @Nullable final Throwable cause)
   {
     super(scimError, cause);
   }

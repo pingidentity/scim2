@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.exceptions;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
@@ -53,7 +55,7 @@ public class UnauthorizedException extends ScimException
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public UnauthorizedException(final String errorMessage)
+  public UnauthorizedException(@Nullable final String errorMessage)
   {
     super(401, null, errorMessage);
   }
@@ -68,9 +70,9 @@ public class UnauthorizedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public UnauthorizedException(final String errorMessage,
-                               final String scimType,
-                               final Throwable cause)
+  public UnauthorizedException(@Nullable final String errorMessage,
+                               @Nullable final String scimType,
+                               @Nullable final Throwable cause)
   {
     super(401, scimType, errorMessage, cause);
   }
@@ -84,8 +86,8 @@ public class UnauthorizedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public UnauthorizedException(final ErrorResponse scimError,
-                               final Throwable cause)
+  public UnauthorizedException(@NotNull final ErrorResponse scimError,
+                               @Nullable final Throwable cause)
   {
     super(scimError, cause);
   }

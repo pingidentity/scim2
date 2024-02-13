@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.exceptions;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.types.ETagConfig;
 
@@ -65,7 +67,7 @@ public class ResourceConflictException extends ScimException
   /**
    * The SCIM detailed error keyword that indicates a uniqueness conflict.
    */
-  public static final String UNIQUENESS = "uniqueness";
+  @NotNull public static final String UNIQUENESS = "uniqueness";
 
   /**
    * Create a new {@code ResourceConflictException} from the provided
@@ -74,7 +76,7 @@ public class ResourceConflictException extends ScimException
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public ResourceConflictException(final String errorMessage)
+  public ResourceConflictException(@Nullable final String errorMessage)
   {
     super(409, null, errorMessage);
   }
@@ -87,10 +89,10 @@ public class ResourceConflictException extends ScimException
    * @param errorMessage  The error message for this SCIM exception.
    * @param scimType      The SCIM detail error keyword.
    */
-  public ResourceConflictException(final String errorMessage,
-                                   final String scimType)
+  public ResourceConflictException(@Nullable final String errorMessage,
+                                   @Nullable final String scimType)
   {
-    super(409, UNIQUENESS, errorMessage);
+    super(409, scimType, errorMessage);
   }
 
   /**
@@ -101,7 +103,9 @@ public class ResourceConflictException extends ScimException
    * @param errorMessage  The error message for this SCIM exception.
    * @return  The new {@code ResourceConflictException}.
    */
-  public static ResourceConflictException uniqueness(final String errorMessage)
+  @NotNull
+  public static ResourceConflictException uniqueness(
+      @Nullable final String errorMessage)
   {
     return new ResourceConflictException(errorMessage, UNIQUENESS);
   }
@@ -117,9 +121,9 @@ public class ResourceConflictException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public ResourceConflictException(final String errorMessage,
-                                   final String scimType,
-                                   final Throwable cause)
+  public ResourceConflictException(@Nullable final String errorMessage,
+                                   @Nullable final String scimType,
+                                   @Nullable final Throwable cause)
   {
     super(409, scimType, errorMessage, cause);
   }
@@ -134,8 +138,8 @@ public class ResourceConflictException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public ResourceConflictException(final ErrorResponse scimError,
-                                   final Throwable cause)
+  public ResourceConflictException(@NotNull final ErrorResponse scimError,
+                                   @Nullable final Throwable cause)
   {
     super(scimError, cause);
   }
