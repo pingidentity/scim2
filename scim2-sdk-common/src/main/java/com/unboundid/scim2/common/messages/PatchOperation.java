@@ -95,6 +95,17 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *   PatchOperation.create(operationType, path, jsonNodeValue);
  * </pre>
  *
+ * Note that many of the helper methods for {@code add} and {@code replace}
+ * operations do not accept a {@code null} path because they are intended for
+ * targeting an attribute value. For example, to replace a user's email, the
+ * following method may be used:
+ * <pre>
+ *   PatchOperation.replace("emails", "muhammad.ali@example.com")
+ * </pre>
+ * However, the first argument may not be {@code null}. If a {@code null} path
+ * is needed for an {@code add} or {@code replace} operation, then use the
+ * {@link #add(JsonNode)} and {@link #replace(ObjectNode)} methods.
+ *
  * @see PatchRequest
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -905,11 +916,7 @@ public abstract class PatchOperation
   /**
    * Create a new add patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -926,9 +933,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addStringValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -945,10 +951,13 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new add patch operation.
+   * Create a new add patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -968,9 +977,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addStringValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -986,12 +994,8 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1005,11 +1009,16 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new replace patch operation.
+   * Create a new replace patch operation. The {@code path} must not be
+   * {@code null} since this method is used to target an attribute on a resource
+   * (as opposed to targeting the resource itself). Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    */
@@ -1023,12 +1032,8 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1042,11 +1047,14 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new replace patch operation.
+   * Create a new replace patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    */
@@ -1061,11 +1069,7 @@ public abstract class PatchOperation
   /**
    * Create a new add patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1082,9 +1086,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addDoubleValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1101,10 +1104,13 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new add patch operation.
+   * Create a new add patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1124,9 +1130,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addDoubleValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1140,14 +1145,14 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new replace patch operation.
+   * Create a new replace patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1163,9 +1168,8 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    */
@@ -1177,13 +1181,13 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new add patch operation.
+   * Create a new add patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1200,9 +1204,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addIntegerValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1221,8 +1224,7 @@ public abstract class PatchOperation
   /**
    * Create a new add patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1242,9 +1244,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addIntegerValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1258,14 +1259,14 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new replace patch operation.
+   * Create a new replace patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1281,9 +1282,8 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    */
@@ -1295,13 +1295,13 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new add patch operation.
+   * Create a new add patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1318,9 +1318,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addLongValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1339,8 +1338,7 @@ public abstract class PatchOperation
   /**
    * Create a new add patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1360,9 +1358,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addLongValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1378,12 +1375,8 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1397,7 +1390,11 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new replace patch operation.
+   * Create a new replace patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
    * @param path The path targeted by this patch operation.
    * @param value The value(s) to replace.
@@ -1414,11 +1411,7 @@ public abstract class PatchOperation
   /**
    * Create a new add patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1435,9 +1428,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addDateValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1454,10 +1446,14 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new add patch operation.
+   * Create a new add patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
+   *
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1479,9 +1475,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addDateValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1500,12 +1495,8 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1521,11 +1512,15 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new replace patch operation.
+   * Create a new replace patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   *
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    * @throws ScimException if an error occurs.
@@ -1543,11 +1538,7 @@ public abstract class PatchOperation
   /**
    * Create a new add patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
+   * @param path The path targeted by this patch operation.
    * @param values The value(s) to add.
    *
    * @return The new add patch operation.
@@ -1564,9 +1555,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addBinaryValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1583,10 +1573,14 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new add patch operation.
+   * Create a new add patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
+   *
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1606,9 +1600,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addBinaryValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1624,12 +1617,8 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1644,11 +1633,15 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new replace patch operation.
+   * Create a new replace patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   *
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    */
@@ -1663,11 +1656,7 @@ public abstract class PatchOperation
   /**
    * Create a new add patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1684,9 +1673,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addURIValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1703,10 +1691,14 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new add patch operation.
+   * Create a new add patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
+   *
+   * @param path The path targeted by this patch operation.
    * @param values The values to add.
    *
    * @return The new add patch operation.
@@ -1726,9 +1718,8 @@ public abstract class PatchOperation
   /**
    * Alternate version of {@link #addURIValues(String, List)}.
    *
-   * @param path    The attribute path targeted by this patch operation. The
-   *                path must not be {@code null}.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param path    The attribute path targeted by this patch operation.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        A new PatchOperation with an opType of {@code "add"}.
@@ -1744,12 +1735,8 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "{@code userName}"
-   * @param value The value(s) to replace.  The value must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1763,11 +1750,14 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new replace patch operation.
+   * Create a new replace patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    */
@@ -1781,7 +1771,7 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    */
@@ -1794,12 +1784,8 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   *             Path string examples:
-   *               "{@code userName eq 'bjensen'}"
-   *               "userName"
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    * @throws ScimException If the path is invalid.
@@ -1813,11 +1799,18 @@ public abstract class PatchOperation
   }
 
   /**
-   * Create a new replace patch operation.
+   * Create a new replace patch operation. Example paths include:
+   * <ul>
+   *   <li> {@code userName}
+   *   <li> {@code emails[type eq "work"]}
+   * </ul>
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * If a {@code null} path is desired, use the {@link #replace(ObjectNode)}
+   * method, as this is more concise and will also ensure that the JSON value
+   * is an ObjectNode.
+   *
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    */
