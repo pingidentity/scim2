@@ -458,7 +458,7 @@ public abstract class PatchOperation
     @JsonCreator
     private RemoveOperation(
         @NotNull @JsonProperty(value = "path", required = true) final Path path)
-        throws ScimException
+            throws ScimException
     {
       super(path);
       if(path == null)
@@ -578,7 +578,7 @@ public abstract class PatchOperation
      */
     @Override
     @Nullable
-    public <T> T getValue(final Class<T> cls)
+    public <T> T getValue(@NotNull final Class<T> cls)
         throws JsonProcessingException, ScimException, IllegalArgumentException
     {
       if(value.isArray())
@@ -594,7 +594,7 @@ public abstract class PatchOperation
      */
     @Override
     @Nullable
-    public <T> List<T> getValues(final Class<T> cls)
+    public <T> List<T> getValues(@NotNull final Class<T> cls)
         throws JsonProcessingException, ScimException
     {
       ArrayList<T> objects = new ArrayList<T>(value.size());
@@ -748,7 +748,7 @@ public abstract class PatchOperation
    *         retrieve all values.
    */
   @Nullable
-  public <T> T getValue(final Class<T> cls)
+  public <T> T getValue(@NotNull final Class<T> cls)
       throws JsonProcessingException, ScimException, IllegalArgumentException
   {
     return null;
@@ -766,7 +766,7 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @Nullable
-  public <T> List<T> getValues(final Class<T> cls)
+  public <T> List<T> getValues(@NotNull final Class<T> cls)
       throws JsonProcessingException, ScimException
   {
     return null;
@@ -883,8 +883,7 @@ public abstract class PatchOperation
   /**
    * Create a new add patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
+   * @param path The path targeted by this patch operation.
    * @param value The value(s) to add.
    *
    * @return The new add patch operation.
@@ -903,7 +902,6 @@ public abstract class PatchOperation
     }
   }
 
-  // String
   /**
    * Create a new add patch operation.
    *
@@ -999,7 +997,7 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation replace(@Nullable final String path,
+  public static PatchOperation replace(@NotNull final String path,
                                        @NotNull final String value)
       throws ScimException
   {
@@ -1016,7 +1014,7 @@ public abstract class PatchOperation
    * @return The new replace patch operation.
    */
   @NotNull
-  public static PatchOperation replace(@Nullable final Path path,
+  public static PatchOperation replace(@NotNull final Path path,
                                        @NotNull final String value)
   {
     return replace(path, TextNode.valueOf(value));
@@ -1036,8 +1034,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation replace(@Nullable final String path,
-                                       @NotNull final Boolean value) throws ScimException
+  public static PatchOperation replace(@NotNull final String path,
+                                       @NotNull final Boolean value)
+      throws ScimException
   {
     return replace(path, BooleanNode.valueOf(value));
   }
@@ -1112,7 +1111,7 @@ public abstract class PatchOperation
    */
   @NotNull
   public static PatchOperation addDoubleValues(
-      final Path path, final List<Double> values)
+      @NotNull final Path path, @NotNull final List<Double> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(Double value : values)
@@ -1133,8 +1132,9 @@ public abstract class PatchOperation
    * @return        A new PatchOperation with an opType of {@code "add"}.
    */
   @NotNull
-  public static PatchOperation addDoubleValues(
-      final Path path, final Double value1, final Double... values)
+  public static PatchOperation addDoubleValues(@NotNull final Path path,
+                                               @NotNull final Double value1,
+                                               @Nullable final Double... values)
   {
     return addDoubleValues(path, toList(value1, values));
   }
@@ -1153,8 +1153,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation replace(
-      final String path, final Double value) throws ScimException
+  public static PatchOperation replace(@NotNull final String path,
+                                       @NotNull final Double value)
+      throws ScimException
   {
     return replace(path, DoubleNode.valueOf(value));
   }
@@ -1169,13 +1170,12 @@ public abstract class PatchOperation
    * @return The new replace patch operation.
    */
   @NotNull
-  public static PatchOperation replace(
-      final Path path, final Double value)
+  public static PatchOperation replace(@NotNull final Path path,
+                                       @NotNull final Double value)
   {
     return replace(path, DoubleNode.valueOf(value));
   }
 
-  // Integer
   /**
    * Create a new add patch operation.
    *
@@ -1190,8 +1190,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addIntegerValues(
-      final String path, final List<Integer> values) throws ScimException
+  public static PatchOperation addIntegerValues(@NotNull final String path,
+                                                @NotNull final List<Integer> values)
+      throws ScimException
   {
     return addIntegerValues(Path.fromString(path), values);
   }
@@ -1209,9 +1210,10 @@ public abstract class PatchOperation
    * @throws ScimException  If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addIntegerValues(
-      final String path, final Integer value1, final Integer... values)
-          throws ScimException
+  public static PatchOperation addIntegerValues(@NotNull final String path,
+                                                @NotNull final Integer value1,
+                                                @Nullable final Integer... values)
+      throws ScimException
   {
     return addIntegerValues(path, toList(value1, values));
   }
@@ -1226,8 +1228,8 @@ public abstract class PatchOperation
    * @return The new add patch operation.
    */
   @NotNull
-  public static PatchOperation addIntegerValues(
-      final Path path, final List<Integer> values)
+  public static PatchOperation addIntegerValues(@NotNull final Path path,
+                                                @NotNull final List<Integer> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(Integer value : values)
@@ -1248,8 +1250,9 @@ public abstract class PatchOperation
    * @return        A new PatchOperation with an opType of {@code "add"}.
    */
   @NotNull
-  public static PatchOperation addIntegerValues(
-      final Path path, final Integer value1, final Integer... values)
+  public static PatchOperation addIntegerValues(@NotNull final Path path,
+                                                @NotNull final Integer value1,
+                                                @Nullable final Integer... values)
   {
     return addIntegerValues(path, toList(value1, values));
   }
@@ -1268,8 +1271,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation replace(
-      final String path, final Integer value) throws ScimException
+  public static PatchOperation replace(@NotNull final String path,
+                                       @NotNull final Integer value)
+      throws ScimException
   {
     return replace(path, IntNode.valueOf(value));
   }
@@ -1284,13 +1288,12 @@ public abstract class PatchOperation
    * @return The new replace patch operation.
    */
   @NotNull
-  public static PatchOperation replace(
-      final Path path, final Integer value)
+  public static PatchOperation replace(@NotNull final Path path,
+                                       @NotNull final Integer value)
   {
     return replace(path, IntNode.valueOf(value));
   }
 
-  // Long
   /**
    * Create a new add patch operation.
    *
@@ -1305,8 +1308,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addLongValues(
-      final String path, final List<Long> values) throws ScimException
+  public static PatchOperation addLongValues(@NotNull final String path,
+                                             @NotNull final List<Long> values)
+      throws ScimException
   {
     return addLongValues(Path.fromString(path), values);
   }
@@ -1324,9 +1328,10 @@ public abstract class PatchOperation
    * @throws ScimException  If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addLongValues(
-      final String path, final Long value1, final Long... values)
-          throws ScimException
+  public static PatchOperation addLongValues(@NotNull final String path,
+                                             @NotNull final Long value1,
+                                             @Nullable final Long... values)
+      throws ScimException
   {
     return addLongValues(path, toList(value1, values));
   }
@@ -1341,8 +1346,8 @@ public abstract class PatchOperation
    * @return The new add patch operation.
    */
   @NotNull
-  public static PatchOperation addLongValues(
-      final Path path, final List<Long> values)
+  public static PatchOperation addLongValues(@NotNull final Path path,
+                                             @NotNull final List<Long> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(Long value : values)
@@ -1363,8 +1368,9 @@ public abstract class PatchOperation
    * @return        A new PatchOperation with an opType of {@code "add"}.
    */
   @NotNull
-  public static PatchOperation addLongValues(
-      final Path path, final Long value1, final Long... values)
+  public static PatchOperation addLongValues(@NotNull final Path path,
+                                             @NotNull final Long value1,
+                                             @Nullable final Long... values)
   {
     return addLongValues(path, toList(value1, values));
   }
@@ -1383,8 +1389,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation replace(
-      final String path, final Long value) throws ScimException
+  public static PatchOperation replace(@NotNull final String path,
+                                       @NotNull final Long value)
+      throws ScimException
   {
     return replace(path, LongNode.valueOf(value));
   }
@@ -1392,20 +1399,18 @@ public abstract class PatchOperation
   /**
    * Create a new replace patch operation.
    *
-   * @param path The path targeted by this patch operation.  The path
-   *             must not be {@code null}.
-   * @param value The value(s) to replace.  The value(s) must not be {@code null}.
+   * @param path The path targeted by this patch operation.
+   * @param value The value(s) to replace.
    *
    * @return The new replace patch operation.
    */
   @NotNull
-  public static PatchOperation replace(
-      final Path path, final Long value)
+  public static PatchOperation replace(@NotNull final Path path,
+                                       @NotNull final Long value)
   {
     return replace(path, LongNode.valueOf(value));
   }
 
-  // Date
   /**
    * Create a new add patch operation.
    *
@@ -1420,8 +1425,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addDateValues(
-      final String path, final List<Date> values) throws ScimException
+  public static PatchOperation addDateValues(@NotNull final String path,
+                                             @NotNull final List<Date> values)
+      throws ScimException
   {
     return addDateValues(Path.fromString(path), values);
   }
@@ -1439,9 +1445,10 @@ public abstract class PatchOperation
    * @throws ScimException  If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addDateValues(
-      final String path, final Date value1, final Date... values)
-          throws ScimException
+  public static PatchOperation addDateValues(@NotNull final String path,
+                                             @NotNull final Date value1,
+                                             @Nullable final Date... values)
+      throws ScimException
   {
     return addDateValues(path, toList(value1, values));
   }
@@ -1457,8 +1464,9 @@ public abstract class PatchOperation
    * @throws ScimException if an error occurs.
    */
   @NotNull
-  public static PatchOperation addDateValues(
-      final Path path, final List<Date> values) throws ScimException
+  public static PatchOperation addDateValues(@NotNull final Path path,
+                                             @NotNull final List<Date> values)
+      throws ScimException
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(Date value : values)
@@ -1481,9 +1489,10 @@ public abstract class PatchOperation
    * @throws ScimException  If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addDateValues(
-      final Path path, final Date value1, final Date... values)
-          throws ScimException
+  public static PatchOperation addDateValues(@NotNull final Path path,
+                                             @NotNull final Date value1,
+                                             @Nullable final Date... values)
+      throws ScimException
   {
     return addDateValues(path, toList(value1, values));
   }
@@ -1502,8 +1511,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation replace(
-      final String path, final Date value) throws ScimException
+  public static PatchOperation replace(@NotNull final String path,
+                                       @NotNull final Date value)
+      throws ScimException
   {
     String valueString =
         GenericScimResource.getDateJsonNode(value).textValue();
@@ -1521,15 +1531,15 @@ public abstract class PatchOperation
    * @throws ScimException if an error occurs.
    */
   @NotNull
-  public static PatchOperation replace(
-      final Path path, final Date value) throws ScimException
+  public static PatchOperation replace(@NotNull final Path path,
+                                       @NotNull final Date value)
+      throws ScimException
   {
     String valueString =
         GenericScimResource.getDateJsonNode(value).textValue();
     return replace(path, valueString);
   }
 
-  // Binary
   /**
    * Create a new add patch operation.
    *
@@ -1545,7 +1555,8 @@ public abstract class PatchOperation
    */
   @NotNull
   public static PatchOperation addBinaryValues(
-      final String path, final List<byte[]> values) throws ScimException
+      @NotNull final String path, @NotNull final List<byte[]> values)
+          throws ScimException
   {
     return addBinaryValues(Path.fromString(path), values);
   }
@@ -1563,9 +1574,10 @@ public abstract class PatchOperation
    * @throws ScimException  If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addBinaryValues(
-      final String path, final byte[] value1, final byte[]... values)
-          throws ScimException
+  public static PatchOperation addBinaryValues(@NotNull final String path,
+                                               @NotNull final byte[] value1,
+                                               @Nullable final byte[]... values)
+      throws ScimException
   {
     return addBinaryValues(path, toList(value1, values));
   }
@@ -1581,7 +1593,7 @@ public abstract class PatchOperation
    */
   @NotNull
   public static PatchOperation addBinaryValues(
-      final Path path, final List<byte[]> values)
+      @NotNull final Path path, @NotNull final List<byte[]> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(byte[] value : values)
@@ -1602,8 +1614,9 @@ public abstract class PatchOperation
    * @return        A new PatchOperation with an opType of {@code "add"}.
    */
   @NotNull
-  public static PatchOperation addBinaryValues(
-      final Path path, final byte[] value1, final byte[]... values)
+  public static PatchOperation addBinaryValues(@NotNull final Path path,
+                                               @NotNull final byte[] value1,
+                                               @Nullable final byte[]... values)
   {
     return addBinaryValues(path, toList(value1, values));
   }
@@ -1622,8 +1635,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation replace(
-      final String path, final byte[] value) throws ScimException
+  public static PatchOperation replace(@NotNull final String path,
+                                       @NotNull final byte[] value)
+      throws ScimException
   {
     String valueString = Base64Variants.getDefaultVariant().encode(value);
     return replace(path, valueString);
@@ -1639,14 +1653,13 @@ public abstract class PatchOperation
    * @return The new replace patch operation.
    */
   @NotNull
-  public static PatchOperation replace(
-      final Path path, final byte[] value)
+  public static PatchOperation replace(@NotNull final Path path,
+                                       @NotNull final byte[] value)
   {
     String valueString = Base64Variants.getDefaultVariant().encode(value);
     return replace(path, valueString);
   }
 
-  // URI
   /**
    * Create a new add patch operation.
    *
@@ -1661,8 +1674,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addURIValues(
-      final String path, final List<URI> values) throws ScimException
+  public static PatchOperation addURIValues(@NotNull final String path,
+                                            @NotNull final List<URI> values)
+      throws ScimException
   {
     return addURIValues(Path.fromString(path), values);
   }
@@ -1680,9 +1694,10 @@ public abstract class PatchOperation
    * @throws ScimException  If the path is invalid.
    */
   @NotNull
-  public static PatchOperation addURIValues(
-      final String path, final URI value1, final URI... values)
-          throws ScimException
+  public static PatchOperation addURIValues(@NotNull final String path,
+                                            @NotNull final URI value1,
+                                            @Nullable final URI... values)
+      throws ScimException
   {
     return addURIValues(path, toList(value1, values));
   }
@@ -1697,8 +1712,8 @@ public abstract class PatchOperation
    * @return The new add patch operation.
    */
   @NotNull
-  public static PatchOperation addURIValues(
-      final Path path, final List<URI> values)
+  public static PatchOperation addURIValues(@NotNull final Path path,
+                                            @NotNull final List<URI> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(URI value : values)
@@ -1719,8 +1734,9 @@ public abstract class PatchOperation
    * @return        A new PatchOperation with an opType of {@code "add"}.
    */
   @NotNull
-  public static PatchOperation addURIValues(
-      final Path path, final URI value1, final URI... values)
+  public static PatchOperation addURIValues(@NotNull final Path path,
+                                            @NotNull final URI value1,
+                                            @Nullable final URI... values)
   {
     return addURIValues(path, toList(value1, values));
   }
@@ -1739,8 +1755,9 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation replace(
-      final String path, final URI value) throws ScimException
+  public static PatchOperation replace(@NotNull final String path,
+                                       @NotNull final URI value)
+      throws ScimException
   {
     return replace(path, value.toString());
   }
@@ -1755,8 +1772,8 @@ public abstract class PatchOperation
    * @return The new replace patch operation.
    */
   @NotNull
-  public static PatchOperation replace(
-      final Path path, final URI value)
+  public static PatchOperation replace(@NotNull final Path path,
+                                       @NotNull final URI value)
   {
     return replace(path, value.toString());
   }
@@ -1769,7 +1786,7 @@ public abstract class PatchOperation
    * @return The new replace patch operation.
    */
   @NotNull
-  public static PatchOperation replace(final ObjectNode value)
+  public static PatchOperation replace(@NotNull final ObjectNode value)
   {
     return replace((Path) null, value);
   }
@@ -1788,7 +1805,7 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation replace(@Nullable final String path,
+  public static PatchOperation replace(@NotNull final String path,
                                        @NotNull final JsonNode value)
       throws ScimException
   {
@@ -1805,7 +1822,7 @@ public abstract class PatchOperation
    * @return The new replace patch operation.
    */
   @NotNull
-  public static PatchOperation replace(@Nullable final Path path,
+  public static PatchOperation replace(@NotNull final Path path,
                                        @NotNull final JsonNode value)
   {
     try
@@ -1827,7 +1844,8 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation remove(final String path) throws ScimException
+  public static PatchOperation remove(@NotNull final String path)
+      throws ScimException
   {
     return remove(Path.fromString(path));
   }
@@ -1840,7 +1858,7 @@ public abstract class PatchOperation
    * @return The new delete patch operation.
    */
   @NotNull
-  public static PatchOperation remove(final Path path)
+  public static PatchOperation remove(@NotNull final Path path)
   {
     try
     {
@@ -1864,9 +1882,10 @@ public abstract class PatchOperation
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public static PatchOperation create(final PatchOpType opType,
+  public static PatchOperation create(@NotNull final PatchOpType opType,
                                       final String path,
-                                      final JsonNode value) throws ScimException
+                                      @NotNull final JsonNode value)
+      throws ScimException
   {
     return create(opType, Path.fromString(path), value);
   }
@@ -1882,9 +1901,9 @@ public abstract class PatchOperation
    * @return The new patch operation.
    */
   @NotNull
-  public static PatchOperation create(final PatchOpType opType,
+  public static PatchOperation create(@NotNull final PatchOpType opType,
                                       final Path path,
-                                      final JsonNode value)
+                                      @NotNull final JsonNode value)
   {
     switch (opType)
     {
@@ -1914,7 +1933,7 @@ public abstract class PatchOperation
   private static void validateOperationValue(@Nullable final Path path,
                                              @Nullable final JsonNode value,
                                              @NotNull final PatchOpType type)
-          throws ScimException
+      throws ScimException
   {
     if (value == null || value.isNull() ||
             (value.isObject() && value.size() == 0))
