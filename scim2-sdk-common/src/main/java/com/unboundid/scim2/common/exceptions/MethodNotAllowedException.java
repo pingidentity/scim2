@@ -48,7 +48,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  */
 public class MethodNotAllowedException extends ScimException
 {
-  @NotNull private static final int METHOD_NOT_ALLOWED_CODE = 405;
+  private static final int METHOD_NOT_ALLOWED_CODE = 405;
 
 
   /**
