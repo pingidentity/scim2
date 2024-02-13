@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
@@ -59,9 +61,9 @@ public class JsonUtils
      * @return The JsonNode referenced by the element in the parent.
      * @throws ScimException If an error occurs.
      */
-    abstract JsonNode visitInnerNode(final ObjectNode parent,
-                                     final String field,
-                                     final Filter valueFilter)
+    abstract JsonNode visitInnerNode(@NotNull final ObjectNode parent,
+                                     @Nullable final String field,
+                                     @NotNull final Filter valueFilter)
         throws ScimException;
 
     /**
@@ -113,7 +115,7 @@ public class JsonUtils
 
   private static final class GatheringNodeVisitor extends NodeVisitor
   {
-    final List<JsonNode> values = new LinkedList<JsonNode>();
+    final List<JsonNode> values = new LinkedList<>();
     final boolean removeValues;
 
     /**
@@ -203,8 +205,8 @@ public class JsonUtils
      * @param appendValues {@code true} to append the update value or
      *                     {@code false} otherwise.
      */
-    protected UpdatingNodeVisitor(final JsonNode value,
-                        final boolean appendValues)
+    protected UpdatingNodeVisitor(@NotNull final JsonNode value,
+                                  final boolean appendValues)
     {
       this.value = value.deepCopy();
       this.appendValues = appendValues;
@@ -213,9 +215,9 @@ public class JsonUtils
     /**
      * {@inheritDoc}
      */
-    protected JsonNode visitInnerNode(final ObjectNode parent,
-                            final String field,
-                            final Filter valueFilter)
+    protected JsonNode visitInnerNode(@NotNull final ObjectNode parent,
+                            @Nullable final String field,
+                            @Nullable final Filter valueFilter)
         throws ScimException
     {
       JsonNode node = parent.path(field);
@@ -544,8 +546,9 @@ public class JsonUtils
    * @return List of all JSON nodes referenced by the provided path.
    * @throws ScimException If an error occurs while traversing the JSON node.
    */
-  public static List<JsonNode> findMatchingPaths(final Path path,
-                                         final ObjectNode node)
+  @NotNull
+  public static List<JsonNode> findMatchingPaths(@NotNull final Path path,
+                                                 @NotNull final ObjectNode node)
       throws ScimException
   {
     GatheringNodeVisitor visitor = new GatheringNodeVisitor(false);
@@ -691,9 +694,10 @@ public class JsonUtils
    * @param value The replacement value.
    * @throws ScimException If an error occurs while traversing the JSON node.
    */
-  public static void replaceValue(final Path path,
-                                  final ObjectNode node,
-                                  final JsonNode value) throws ScimException
+  public static void replaceValue(@NotNull final Path path,
+                                  @NotNull final ObjectNode node,
+                                  @NotNull final JsonNode value)
+      throws ScimException
   {
     UpdatingNodeVisitor visitor = new UpdatingNodeVisitor(value, false);
     traverseValues(visitor, node, path);
@@ -837,9 +841,10 @@ public class JsonUtils
    *
    * @throws ScimException If an error occurs while traversing the JSON node.
    */
-  public static void traverseValues(final NodeVisitor nodeVisitor,
+  public static void traverseValues(@NotNull final NodeVisitor nodeVisitor,
                                     final ObjectNode node,
-                                    final Path path) throws ScimException
+                                    @NotNull final Path path)
+      throws ScimException
   {
     traverseValues(nodeVisitor, node, 0, path);
   }
@@ -854,10 +859,10 @@ public class JsonUtils
    *
    * @throws ScimException If an error occurs while traversing the JSON node.
    */
-  private static void traverseValues(final NodeVisitor nodeVisitor,
-                                     final ObjectNode node,
+  private static void traverseValues(@NotNull final NodeVisitor nodeVisitor,
+                                     @NotNull final ObjectNode node,
                                      final int index,
-                                     final Path path)
+                                     @NotNull final Path path)
       throws ScimException
   {
     String field = null;
@@ -951,7 +956,9 @@ public class JsonUtils
    * @param fromValue POJO to convert.
    * @return converted JsonNode.
    */
-  public static <T extends JsonNode> T valueToNode(final Object fromValue)
+  @NotNull
+  public static <T extends JsonNode> T valueToNode(
+      @Nullable final Object fromValue)
   {
     return SDK_OBJECT_MAPPER.valueToTree(fromValue);
   }
@@ -967,8 +974,9 @@ public class JsonUtils
    * @throws JsonProcessingException if an error occurs while binding the JSON
    * node to the value type.
    */
-  public static <T> T nodeToValue(final JsonNode fromNode,
-                                  final Class<T> valueType)
+  @Nullable
+  public static <T> T nodeToValue(@Nullable final JsonNode fromNode,
+                                  @NotNull final Class<T> valueType)
       throws JsonProcessingException
   {
     return SDK_OBJECT_MAPPER.treeToValue(fromNode, valueType);
@@ -984,8 +992,8 @@ public class JsonUtils
    * @throws JsonProcessingException if an error occurs while binding the JSON
    * node to the value type.
    */
-  public static <T> List<T> nodeToValues(final ArrayNode fromNode,
-                                         final Class<T> valueType)
+  public static <T> List<T> nodeToValues(@NotNull final ArrayNode fromNode,
+                                         @NotNull final Class<T> valueType)
       throws JsonProcessingException
   {
     final CollectionType collectionType =
@@ -1014,7 +1022,8 @@ public class JsonUtils
    * @throws IllegalArgumentException if the node is not textual or its value
    * cannot be parsed as a SCIM DateTime value.
    */
-  public static Date nodeToDateValue(final JsonNode node)
+  @NotNull
+  public static Date nodeToDateValue(@NotNull final JsonNode node)
       throws IllegalArgumentException
   {
     if(!node.isTextual())
@@ -1037,6 +1046,7 @@ public class JsonUtils
    * @return an Object Mapper with the correct options set for serializing
    *     and deserializing SCIM JSON objects.
    */
+  @NotNull
   public static ObjectMapper createObjectMapper()
   {
     return mapperFactory.createObjectMapper();
@@ -1050,10 +1060,11 @@ public class JsonUtils
    *
    * @param customMapperFactory the custom JSON object mapper.
    */
-  public static void setCustomMapperFactory(final MapperFactory customMapperFactory)
+  @NotNull
+  public static void setCustomMapperFactory(
+      @NotNull final MapperFactory customMapperFactory)
   {
     JsonUtils.mapperFactory = customMapperFactory;
     SDK_OBJECT_MAPPER = customMapperFactory.createObjectMapper();
   }
-
 }
