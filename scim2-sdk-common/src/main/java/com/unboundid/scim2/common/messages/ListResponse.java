@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
@@ -52,21 +54,25 @@ public final class ListResponse<T> extends BaseScimResource
   @Attribute(description = "The total number of results returned by the " +
       "list or query operation")
   @JsonProperty(value = "totalResults", required = true)
+  @NotNull
   private final int totalResults;
 
   @Attribute(description = "The number of resources returned in a list " +
       "response page")
   @JsonProperty("itemsPerPage")
+  @Nullable
   private final Integer itemsPerPage;
 
   @Attribute(description = "The 1-based index of the first result in " +
       "the current set of list results")
   @JsonProperty("startIndex")
+  @Nullable
   private final Integer startIndex;
 
   @Attribute(description = "A multi-valued list of complex objects " +
       "containing the requested resources")
   @JsonProperty(value = "Resources", required = true)
+  @NotNull
   private final List<T> resources;
 
   /**
@@ -76,7 +82,7 @@ public final class ListResponse<T> extends BaseScimResource
    */
   @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
   @SuppressWarnings("unchecked")
-  public ListResponse(final Map<String,Object> props)
+  public ListResponse(@NotNull final Map<String,Object> props)
   {
     final Map<String,Object> properties =
       new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
@@ -108,9 +114,9 @@ public final class ListResponse<T> extends BaseScimResource
    *                     page.
    */
   public ListResponse(final int totalResults,
-                      final List<T> resources,
-                      final Integer startIndex,
-                      final Integer itemsPerPage)
+                      @NotNull final List<T> resources,
+                      @Nullable final Integer startIndex,
+                      @Nullable final Integer itemsPerPage)
   {
     this.totalResults = totalResults;
     this.startIndex   = startIndex;
@@ -136,7 +142,7 @@ public final class ListResponse<T> extends BaseScimResource
    * @param resources A multi-valued list of complex objects containing the
    *                  requested resources.
    */
-  public ListResponse(final Collection<T> resources)
+  public ListResponse(@NotNull final Collection<T> resources)
   {
     this.totalResults = resources.size();
     this.resources = new ArrayList<T>(resources);
@@ -161,6 +167,7 @@ public final class ListResponse<T> extends BaseScimResource
    *
    * @return The list of results returned by the list or query operation.
    */
+  @NotNull
   public List<T> getResources()
   {
     return Collections.unmodifiableList(resources);
@@ -174,6 +181,7 @@ public final class ListResponse<T> extends BaseScimResource
    * results or {@code null} if pagination is not used and the full results are
    * returned.
    */
+  @Nullable
   public Integer getStartIndex()
   {
     return startIndex;
@@ -185,6 +193,7 @@ public final class ListResponse<T> extends BaseScimResource
    * @return The number of resources returned in a list response page or
    * {@code null} if pagination is not used and the full results are returned.
    */
+  @Nullable
   public Integer getItemsPerPage()
   {
     return itemsPerPage;
@@ -194,6 +203,7 @@ public final class ListResponse<T> extends BaseScimResource
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public Iterator<T> iterator()
   {
     return resources.iterator();
@@ -207,7 +217,7 @@ public final class ListResponse<T> extends BaseScimResource
    *            response, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {
@@ -262,8 +272,9 @@ public final class ListResponse<T> extends BaseScimResource
     return result;
   }
 
-  private void checkRequiredProperties(final Map<String,Object> properties,
-                                       final String... requiredProperties)
+  private void checkRequiredProperties(
+      @NotNull final Map<String,Object> properties,
+      @NotNull final String... requiredProperties)
   {
     for (final String property : requiredProperties)
     {
@@ -274,5 +285,4 @@ public final class ListResponse<T> extends BaseScimResource
       }
     }
   }
-
 }

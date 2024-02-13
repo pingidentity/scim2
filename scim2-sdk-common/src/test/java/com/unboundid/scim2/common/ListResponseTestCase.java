@@ -162,5 +162,10 @@ public class ListResponseTestCase
             JsonUtils.getObjectWriter().writeValueAsString(listResponse);
 
     assertEquals(listResponseJSON, expectedJSON);
+
+    var response2 = new ListResponse<String>(0, null, null, null);
+    System.out.println(
+        JsonUtils.getObjectWriter().writeValueAsString(response2)
+    );
   }
 }

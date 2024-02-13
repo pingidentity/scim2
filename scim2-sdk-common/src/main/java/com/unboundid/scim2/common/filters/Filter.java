@@ -19,6 +19,7 @@ package com.unboundid.scim2.common.filters;
 
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
@@ -134,6 +135,7 @@ public abstract class Filter
    *
    * @return The filter type.
    */
+  @NotNull
   public abstract FilterType getFilterType();
 
   /**
