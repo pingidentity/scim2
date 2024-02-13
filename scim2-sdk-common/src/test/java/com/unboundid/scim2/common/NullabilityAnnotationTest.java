@@ -75,7 +75,6 @@ public class NullabilityAnnotationTest
       classes[i][0] = classList.get(i);
     }
 
-    System.out.println(Arrays.deepToString(classes));
     return classes;
   }
 
@@ -479,13 +478,20 @@ public class NullabilityAnnotationTest
 
     if (! errors.isEmpty())
     {
-      var stringBuilder = new StringBuilder();
-      stringBuilder.append("Found nullability errors in class ");
+      StringBuilder stringBuilder = new StringBuilder();
+      stringBuilder.append("Found ");
+      stringBuilder.append(errors.size());
+      stringBuilder.append(" nullability error");
+      if (errors.size() > 1)
+      {
+        stringBuilder.append("s");
+      }
+      stringBuilder.append(" in the ");
       stringBuilder.append(c.getName());
-      stringBuilder.append(":  ");
+      stringBuilder.append(" class:");
       stringBuilder.append(EOL);
 
-      for (var error: errors)
+      for (String error: errors)
       {
         stringBuilder.append(error);
         stringBuilder.append(EOL);
