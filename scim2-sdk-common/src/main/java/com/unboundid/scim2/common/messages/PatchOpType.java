@@ -18,6 +18,8 @@
 package com.unboundid.scim2.common.messages;
 
 
+import com.unboundid.scim2.common.annotations.NotNull;
+
 /**
  * This enumeration defines the set of possible operation types that may
  * be used for SCIM 2 patch operations.
@@ -45,7 +47,7 @@ public enum PatchOpType
   /**
    * The lower case string value for this operation type.
    */
-  private String stringValue;
+  @NotNull private String stringValue;
 
 
   /**
@@ -53,7 +55,7 @@ public enum PatchOpType
    *
    * @param stringValue The lower case string value for this operation type.
    */
-  PatchOpType(final String stringValue)
+  PatchOpType(@NotNull final String stringValue)
   {
     this.stringValue = stringValue;
   }
@@ -64,6 +66,7 @@ public enum PatchOpType
    *
    * @return The lower case string value for this operation type.
    */
+  @NotNull
   public String getStringValue()
   {
     return stringValue;
@@ -75,6 +78,7 @@ public enum PatchOpType
    *
    * @return A string representation of this operation type.
    */
+  @NotNull
   public String toString()
   {
     return getStringValue();

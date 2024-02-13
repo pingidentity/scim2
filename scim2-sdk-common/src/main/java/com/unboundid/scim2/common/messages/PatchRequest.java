@@ -19,6 +19,8 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -72,6 +74,7 @@ public final class PatchRequest
     extends BaseScimResource
     implements Iterable<PatchOperation>
 {
+  @NotNull
   @Attribute(description = "Patch Operations")
   @JsonProperty(value = "Operations", required = true)
   private final List<PatchOperation> operations;
@@ -83,7 +86,7 @@ public final class PatchRequest
    */
   @JsonCreator
   public PatchRequest(
-      @JsonProperty(value = "Operations", required = true)
+      @NotNull @JsonProperty(value = "Operations", required = true)
       final List<PatchOperation> operations)
   {
     this.operations = Collections.unmodifiableList(operations);
@@ -97,8 +100,8 @@ public final class PatchRequest
    * @param operations  An optional field for additional patch operations. Any
    *                    {@code null} values will be ignored.
    */
-  public PatchRequest(final PatchOperation operation,
-                      final PatchOperation... operations)
+  public PatchRequest(@NotNull final PatchOperation operation,
+                      @Nullable final PatchOperation... operations)
   {
     this(toList(operation, operations));
   }
@@ -108,6 +111,7 @@ public final class PatchRequest
    *
    * @return The individual operations in this patch request.
    */
+  @NotNull
   public List<PatchOperation> getOperations()
   {
     return Collections.unmodifiableList(operations);
@@ -117,6 +121,7 @@ public final class PatchRequest
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public Iterator<PatchOperation> iterator()
   {
     return getOperations().iterator();
@@ -129,7 +134,8 @@ public final class PatchRequest
    *
    * @throws ScimException If the one or more patch operations is invalid.
    */
-  public void apply(final GenericScimResource object) throws ScimException
+  public void apply(@NotNull final GenericScimResource object)
+      throws ScimException
   {
     for(PatchOperation operation : this)
     {
@@ -145,7 +151,7 @@ public final class PatchRequest
    *            request, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {
