@@ -29,7 +29,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.fail;
@@ -37,8 +36,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class NullabilityAnnotationTest
 {
-  public static final String EOL =
-      System.getProperty("line.separator", "\n");
+  public static final String EOL = System.getProperty("line.separator", "\n");
 
   /**
    * Retrieves the fully-qualified names of all classes included in the SDK.
