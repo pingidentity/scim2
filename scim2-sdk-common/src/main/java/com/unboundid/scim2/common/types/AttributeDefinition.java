@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 
 import java.util.ArrayList;
@@ -98,6 +100,7 @@ public class AttributeDefinition
      *
      * @return the name of the type.
      */
+    @NotNull
     @JsonValue
     public String getName()
     {
@@ -113,7 +116,7 @@ public class AttributeDefinition
      * @return the type matching the given name.
      */
     @JsonCreator
-    public static Type fromName(final String name)
+    public static Type fromName(@Nullable final String name)
     {
       for(Type type : Type.values())
       {
@@ -174,6 +177,7 @@ public class AttributeDefinition
      *
      * @return the name of the mutability constraint.
      */
+    @NotNull
     @JsonValue
     public String getName()
     {
@@ -190,8 +194,9 @@ public class AttributeDefinition
      * @throws BadRequestException if the name of the mutability constraint is
      *                             invalid.
      */
+    @NotNull
     @JsonCreator
-    public static Mutability fromName(final String name)
+    public static Mutability fromName(@Nullable final String name)
         throws BadRequestException
     {
       for(Mutability mutability : Mutability.values())
@@ -237,14 +242,14 @@ public class AttributeDefinition
     /**
      * The SCIM name for this enum.
      */
-    private String name;
+    @NotNull private String name;
 
     /**
      * Returned enum private constructor.
      *
      * @param name the name of the return constraint.
      */
-    Returned(final String name)
+    Returned(@NotNull final String name)
     {
       this.name = name;
     }
@@ -254,6 +259,7 @@ public class AttributeDefinition
      *
      * @return the name of the return constraint.
      */
+    @NotNull
     @JsonValue
     public String getName()
     {
@@ -271,7 +277,7 @@ public class AttributeDefinition
      *                             invalid.
      */
     @JsonCreator
-    public static Returned fromName(final String name)
+    public static Returned fromName(@Nullable final String name)
         throws BadRequestException
     {
       for(Returned returned : Returned.values())
@@ -321,6 +327,7 @@ public class AttributeDefinition
      *
      * @return the name of the uniqueness constraint.
      */
+    @NotNull
     @JsonValue
     public String getName()
     {
@@ -337,8 +344,9 @@ public class AttributeDefinition
      * @throws BadRequestException if the name of the uniqueness constraint is
      *                             invalid.
      */
+    @NotNull
     @JsonCreator
-    public static Uniqueness fromName(final String name)
+    public static Uniqueness fromName(@Nullable final String name)
         throws BadRequestException
     {
       for(Uniqueness uniqueness : Uniqueness.values())
@@ -352,9 +360,9 @@ public class AttributeDefinition
       throw BadRequestException.invalidSyntax(
           "Unknown SCIM uniquenessConstraint");
     }
-
   }
 
+  @NotNull
   @Attribute(description = "The attribute's name.",
       isRequired = true,
       isCaseExact = false,
@@ -363,6 +371,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final String name;
 
+  @NotNull
   @Attribute(description = "The attribute's data type.",
       isRequired = true,
       isCaseExact = false,
@@ -371,6 +380,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final Type type;
 
+  @Nullable
   @Attribute(description = "When an attribute is of type \"complex\", " +
       "\"subAttributes\" defines set of sub-attributes.",
       isRequired = false,
@@ -390,6 +400,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final boolean multiValued;
 
+  @Nullable
   @Attribute(description = "The attribute's human readable description.",
       isRequired = false,
       isCaseExact = false,
@@ -407,6 +418,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final boolean required;
 
+  @Nullable
   @Attribute(description = "A collection of suggested canonical values " +
       "that MAY be used.",
       isRequired = false,
@@ -426,6 +438,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final boolean caseExact;
 
+  @NotNull
   @Attribute(description = "A single keyword indicating the " +
       "circumstances under which the value of the attribute can be " +
       "(re)defined.",
@@ -436,6 +449,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final Mutability mutability;
 
+  @NotNull
   @Attribute(description = "A single keyword that indicates when an " +
       "attribute and associated values are returned in response to a GET " +
       "request or in response to a PUT, POST, or PATCH request.",
@@ -446,6 +460,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final Returned returned;
 
+  @Nullable
   @Attribute(description = "A single keyword value that specifies how " +
       "the service provider enforces uniqueness of attribute values.",
       isRequired = false,
@@ -455,6 +470,7 @@ public class AttributeDefinition
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final Uniqueness uniqueness;
 
+  @Nullable
   @Attribute(description = "A multi-valued array of JSON strings that " +
       "indicate the SCIM resource types that may be referenced.",
       isRequired = false,
@@ -466,25 +482,25 @@ public class AttributeDefinition
   private final Collection<String> referenceTypes;
 
   /**
-   * Builder class to build SCIM2Attributes.
+   * Builder class to build a SCIM attribute definition.
    */
   public static class Builder
   {
     /**
      * The name of the attribute.
      */
-    private String name;
+    @Nullable private String name;
 
     /**
      * The type of the attribute.  For the possible values, see:
      * {@link AttributeDefinition.Type}
      */
-    private Type type;
+    @NotNull private Type type;
 
     /**
      * The sub-attributes of this attribute.
      */
-    private Collection<AttributeDefinition> subAttributes;
+    @Nullable private Collection<AttributeDefinition> subAttributes;
 
     /**
      * A boolean value indicating whether or not this attribute can have
@@ -495,7 +511,7 @@ public class AttributeDefinition
     /**
      * The description of this attribute.
      */
-    private String description;
+    @Nullable private String description;
 
     /**
      * A boolean indicating whether or not this attribute is required
@@ -506,7 +522,7 @@ public class AttributeDefinition
     /**
      * A Set of canonical values that this attribute may contain.
      */
-    private Collection<String> canonicalValues;
+    @Nullable private Collection<String> canonicalValues;
 
     /**
      * A boolean indicated whether or not searches for this object will
@@ -519,26 +535,26 @@ public class AttributeDefinition
      * This value indicates the mutability constraints of this attribute.
      * See {@link AttributeDefinition.Mutability}
      */
-    private Mutability mutability = Mutability.READ_WRITE;
+    @NotNull private Mutability mutability;
 
     /**
      * Indicates the when this attribute will be returned as part of
      * a scim object.
      * See {@link AttributeDefinition.Returned}
      */
-    private Returned returned = Returned.DEFAULT;
+    @NotNull private Returned returned;
 
     /**
      * This field represents the uniqueness constraints of this
      * attribute.
-     * See {@link AttributeDefinition.Uniqueness}
+     * @see AttributeDefinition.Uniqueness
      */
-    private Uniqueness uniqueness;
+    @Nullable private Uniqueness uniqueness;
 
     /**
      * The reference types of this attribute.
      */
-    private Collection<String> referenceTypes;
+    @Nullable private Collection<String> referenceTypes;
 
     /**
      * Create a new builder.
@@ -560,7 +576,8 @@ public class AttributeDefinition
      * @param name the attribute name.
      * @return this
      */
-    public Builder setName(final String name)
+    @NotNull
+    public Builder setName(@Nullable final String name)
     {
       this.name = name;
       return this;
@@ -572,7 +589,8 @@ public class AttributeDefinition
      * @param type the type of the attribute.
      * @return this.
      */
-    public Builder setType(final Type type)
+    @NotNull
+    public Builder setType(@NotNull final Type type)
     {
       this.type = type;
       return this;
@@ -584,16 +602,21 @@ public class AttributeDefinition
      * @param subAttributes the sub-attributes of the attribute.
      * @return this.
      */
-    public Builder addSubAttributes(final AttributeDefinition ... subAttributes)
+    @NotNull
+    public Builder addSubAttributes(
+        @Nullable final AttributeDefinition ... subAttributes)
     {
-      if(subAttributes != null && subAttributes.length > 0)
+      if (subAttributes == null || subAttributes.length == 0)
       {
-        if (this.subAttributes == null)
-        {
-          this.subAttributes = new LinkedList<AttributeDefinition>();
-        }
-        this.subAttributes.addAll(Arrays.asList(subAttributes));
+        return this;
       }
+
+      if (this.subAttributes == null)
+      {
+        this.subAttributes = new LinkedList<>();
+      }
+
+      this.subAttributes.addAll(Arrays.asList(subAttributes));
       return this;
     }
 
@@ -603,6 +626,7 @@ public class AttributeDefinition
      * @param multiValued a boolean indicating if the attribute is multi-valued.
      * @return this.
      */
+    @NotNull
     public Builder setMultiValued(final boolean multiValued)
     {
       this.multiValued = multiValued;
@@ -615,7 +639,8 @@ public class AttributeDefinition
      * @param description the description of the attribute.
      * @return this.
      */
-    public Builder setDescription(final String description)
+    @NotNull
+    public Builder setDescription(@Nullable final String description)
     {
       this.description = description;
       return this;
@@ -627,6 +652,7 @@ public class AttributeDefinition
      * @param required a boolean indicating if the attribute is required.
      * @return this.
      */
+    @NotNull
     public Builder setRequired(final boolean required)
     {
       this.required = required;
@@ -640,16 +666,20 @@ public class AttributeDefinition
      * @param canonicalValues the possible canonical values for this attribute.
      * @return this.
      */
+    @NotNull
     public Builder addCanonicalValues(final String... canonicalValues)
     {
-      if(canonicalValues != null && canonicalValues.length > 0)
+      if (canonicalValues == null || canonicalValues.length > 0)
       {
-        if (this.canonicalValues == null)
-        {
-          this.canonicalValues = new HashSet<String>();
-        }
-        this.canonicalValues.addAll(Arrays.asList(canonicalValues));
+        return this;
       }
+
+      if (this.canonicalValues == null)
+      {
+        this.canonicalValues = new HashSet<>();
+      }
+
+      this.canonicalValues.addAll(Arrays.asList(canonicalValues));
       return this;
     }
 
@@ -662,6 +692,7 @@ public class AttributeDefinition
      *     should be treated as case sensitive.
      * @return this.
      */
+    @NotNull
     public Builder setCaseExact(final boolean caseExact)
     {
       this.caseExact = caseExact;
@@ -674,7 +705,8 @@ public class AttributeDefinition
      * @param mutability the mutablity constraint for the attribute.
      * @return this.
      */
-    public Builder setMutability(final Mutability mutability)
+    @NotNull
+    public Builder setMutability(@NotNull final Mutability mutability)
     {
       this.mutability = mutability;
       return this;
@@ -686,7 +718,8 @@ public class AttributeDefinition
      * @param returned the return constraint for the attribute.
      * @return this.
      */
-    public Builder setReturned(final Returned returned)
+    @NotNull
+    public Builder setReturned(@NotNull final Returned returned)
     {
       this.returned = returned;
       return this;
@@ -698,7 +731,8 @@ public class AttributeDefinition
      * @param uniqueness the uniqueness constraint of the attribute.
      * @return this.
      */
-    public Builder setUniqueness(final Uniqueness uniqueness)
+    @NotNull
+    public Builder setUniqueness(@Nullable final Uniqueness uniqueness)
     {
       this.uniqueness = uniqueness;
       return this;
@@ -710,16 +744,20 @@ public class AttributeDefinition
      * @param referenceTypes the reference types for the attribute.
      * @return this.
      */
-    public Builder addReferenceTypes(final String ... referenceTypes)
+    @NotNull
+    public Builder addReferenceTypes(@Nullable final String ... referenceTypes)
     {
-      if(referenceTypes != null && referenceTypes.length > 0)
+      if (referenceTypes == null || referenceTypes.length == 0)
       {
-        if (this.referenceTypes == null)
-        {
-          this.referenceTypes = new HashSet<String>();
-        }
-        this.referenceTypes.addAll(Arrays.asList(referenceTypes));
+        return this;
       }
+
+      if (this.referenceTypes == null)
+      {
+        this.referenceTypes = new HashSet<>();
+      }
+
+      this.referenceTypes.addAll(Arrays.asList(referenceTypes));
       return this;
     }
 
@@ -728,6 +766,7 @@ public class AttributeDefinition
      *
      * @return this.
      */
+    @NotNull
     public Builder clear()
     {
       this.name = null;
@@ -746,10 +785,11 @@ public class AttributeDefinition
     }
 
     /**
-     * Builds a new SCIM2Attribute.
+     * Builds a new SCIM Attribute Definition.
      *
-     * @return a new SCIM2Attribute.
+     * @return a new Attribute Definition.
      */
+    @NotNull
     public AttributeDefinition build()
     {
       return new AttributeDefinition(
@@ -792,29 +832,29 @@ public class AttributeDefinition
    */
   @JsonCreator
   AttributeDefinition(@JsonProperty(value = "name", required = true)
-                      final String name,
+                      @NotNull final String name,
                       @JsonProperty(value = "type", required = true)
-                      final Type type,
+                      @NotNull final Type type,
                       @JsonProperty(value = "subAttributes")
-                      final Collection<AttributeDefinition> subAttributes,
+                      @Nullable final Collection<AttributeDefinition> subAttributes,
                       @JsonProperty(value = "multiValued", required = true)
                       final boolean multiValued,
                       @JsonProperty(value = "description")
-                      final String description,
+                      @Nullable final String description,
                       @JsonProperty(value = "required", required = true)
                       final boolean required,
                       @JsonProperty(value = "canonicalValues")
-                      final Collection<String> canonicalValues,
+                      @Nullable final Collection<String> canonicalValues,
                       @JsonProperty(value = "caseExact")
                       final boolean caseExact,
                       @JsonProperty(value = "mutability",  required = true)
-                      final Mutability mutability,
+                      @NotNull final Mutability mutability,
                       @JsonProperty(value = "returned", required = true)
-                      final Returned returned,
+                      @NotNull final Returned returned,
                       @JsonProperty(value = "uniqueness")
-                      final Uniqueness uniqueness,
+                      @NotNull final Uniqueness uniqueness,
                       @JsonProperty(value = "referenceTypes")
-                      final Collection<String> referenceTypes)
+                      @Nullable final Collection<String> referenceTypes)
   {
     this.name = name;
     this.type = type;
@@ -852,6 +892,7 @@ public class AttributeDefinition
    *
    * @return type of the value for this attribute.
    */
+  @NotNull
   public Type getType()
   {
     return type;
@@ -883,6 +924,7 @@ public class AttributeDefinition
    *
    * @return the name of the attribute.
    */
+  @NotNull
   public String getName()
   {
     return name;
@@ -893,16 +935,18 @@ public class AttributeDefinition
    *
    * @return the description of the attribute.
    */
+  @Nullable
   public String getDescription()
   {
     return description;
   }
 
   /**
-   * Gets the subattributes of the attribute.
+   * Gets the sub-attributes of the attribute.
    *
-   * @return the subattributes of the attribute.
+   * @return the sub-attributes of the attribute.
    */
+  @Nullable
   public Collection<AttributeDefinition> getSubAttributes()
   {
     return subAttributes;
@@ -913,6 +957,7 @@ public class AttributeDefinition
    *
    * @return the canonical values of the attribute.
    */
+  @Nullable
   public Collection<String> getCanonicalValues()
   {
     return canonicalValues;
@@ -923,6 +968,7 @@ public class AttributeDefinition
    *
    * @return the mutability constraint for this attribute.
    */
+  @NotNull
   public Mutability getMutability()
   {
     return mutability;
@@ -933,6 +979,7 @@ public class AttributeDefinition
    *
    * @return the return constraint for this attribute.
    */
+  @NotNull
   public Returned getReturned()
   {
     return returned;
@@ -943,6 +990,7 @@ public class AttributeDefinition
    *
    * @return the Uniqueness constraint fo this attribute.
    */
+  @Nullable
   public Uniqueness getUniqueness()
   {
     return uniqueness;
@@ -953,6 +1001,7 @@ public class AttributeDefinition
    *
    * @return the reference types for this attribute.
    */
+  @Nullable
   public Collection<String> getReferenceTypes()
   {
     return referenceTypes;
@@ -964,6 +1013,7 @@ public class AttributeDefinition
    * @return a string representation of the attribute.
    */
   @Override
+  @NotNull
   public String toString()
   {
     return toIndentedString("");
@@ -977,7 +1027,8 @@ public class AttributeDefinition
    *               one might use "  " for a 2 space indent.
    * @return a string representation of this attribute.
    */
-  private String toIndentedString(final String indent)
+  @NotNull
+  private String toIndentedString(@NotNull final String indent)
   {
     StringBuilder builder = new StringBuilder();
     builder.append(indent);
@@ -1011,7 +1062,7 @@ public class AttributeDefinition
    *            definition, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {
