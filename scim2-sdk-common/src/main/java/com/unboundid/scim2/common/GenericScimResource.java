@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.exceptions.ServerErrorException;
 import com.unboundid.scim2.common.types.Meta;
@@ -67,11 +69,16 @@ import java.util.Objects;
 @JsonSerialize(using = GenericScimObjectSerializer.class)
 public final class GenericScimResource implements ScimResource
 {
+  @NotNull
   private static final Path SCHEMAS = Path.root().attribute("schemas");
+  @NotNull
   private static final Path ID = Path.root().attribute("id");
+  @NotNull
   private static final Path EXTERNAL_ID = Path.root().attribute("externalId");
+  @NotNull
   private static final Path META = Path.root().attribute("meta");
 
+  @NotNull
   private final ObjectNode objectNode;
 
   /**
@@ -87,7 +94,7 @@ public final class GenericScimResource implements ScimResource
    *
    * @param objectNode The ObjectNode that backs this object.
    */
-  public GenericScimResource(final ObjectNode objectNode)
+  public GenericScimResource(@NotNull final ObjectNode objectNode)
   {
     this.objectNode = objectNode;
   }
@@ -106,6 +113,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public Meta getMeta()
   {
     try
@@ -128,7 +136,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
-  public void setMeta(final Meta meta)
+  public void setMeta(@Nullable final Meta meta)
   {
     try
     {
@@ -145,6 +153,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public String getId()
   {
     try
@@ -167,7 +176,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
-  public void setId(final String id)
+  public void setId(@Nullable final String id)
   {
     try
     {
@@ -183,6 +192,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public List<String> getSchemaUrns()
   {
     try
@@ -204,7 +214,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * {@inheritDoc}
    */
-  public void setSchemaUrns(final Collection<String> schemaUrns)
+  public void setSchemaUrns(@NotNull final Collection<String> schemaUrns)
   {
     try
     {
@@ -221,7 +231,8 @@ public final class GenericScimResource implements ScimResource
   /**
    * {@inheritDoc}
    */
-  public void setSchemaUrns(final String schemaUrn, final String... schemaUrns)
+  public void setSchemaUrns(@NotNull final String schemaUrn,
+                            @Nullable final String... schemaUrns)
   {
     setSchemaUrns(toList(schemaUrn, schemaUrns));
   }
@@ -230,6 +241,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public String getExternalId()
   {
     try
@@ -252,7 +264,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
-  public void setExternalId(final String externalId)
+  public void setExternalId(@Nullable final String externalId)
   {
     try
     {
@@ -260,7 +272,8 @@ public final class GenericScimResource implements ScimResource
           JsonUtils.valueToNode(externalId));
     }
     catch (ScimException e)
-    { // This should never happen.
+    {
+      // This should never happen.
       throw new RuntimeException(e);
     }
   }
@@ -291,7 +304,8 @@ public final class GenericScimResource implements ScimResource
    * @return the JsonNode at the path, or a NullNode if nothing is found
    * @throws ScimException thrown if an error occurs.
    */
-  public JsonNode getValue(final String path)
+  @NotNull
+  public JsonNode getValue(@Nullable final String path)
       throws ScimException
   {
     return getValue(Path.fromString(path));
@@ -324,7 +338,8 @@ public final class GenericScimResource implements ScimResource
    * @return the JsonNode at the path, or a NullNode if nothing is found
    * @throws ScimException thrown if an error occurs.
    */
-  public JsonNode getValue(final Path path)
+  @NotNull
+  public JsonNode getValue(@NotNull final Path path)
       throws ScimException
   {
     return JsonUtils.getValue(path, objectNode);
@@ -346,8 +361,9 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final String path,
-                                          final JsonNode value)
+  @NotNull
+  public GenericScimResource replaceValue(@Nullable final String path,
+                                          @NotNull final JsonNode value)
       throws ScimException
   {
     replaceValue(Path.fromString(path), value);
@@ -370,8 +386,9 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final Path path,
-                                          final JsonNode value)
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final Path path,
+                                          @NotNull final JsonNode value)
       throws ScimException
   {
     JsonUtils.replaceValue(path, objectNode, value);

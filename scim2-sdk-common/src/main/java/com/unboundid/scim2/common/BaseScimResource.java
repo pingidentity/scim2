@@ -194,7 +194,8 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  public void setSchemaUrns(final String schemaUrn, final String... schemaUrns)
+  public void setSchemaUrns(@NotNull final String schemaUrn,
+                            @Nullable final String... schemaUrns)
   {
     setSchemaUrns(toList(schemaUrn, schemaUrns));
   }
@@ -237,8 +238,8 @@ public abstract class BaseScimResource
    *
    * @return the value of the field.
    */
-  @NotNull
   @JsonAnyGetter
+  @NotNull
   protected Map<String, Object> getAny()
   {
     HashMap<String, Object> map =
@@ -282,7 +283,8 @@ public abstract class BaseScimResource
    * @return List of all JSON nodes referenced by the provided path.
    * @throws ScimException If the path is invalid.
    */
-  public List<JsonNode> getExtensionValues(final String path)
+  @NotNull
+  public List<JsonNode> getExtensionValues(@Nullable final String path)
       throws ScimException
   {
     return getExtensionValues(Path.fromString(path));
@@ -322,7 +324,8 @@ public abstract class BaseScimResource
    * @param value The value(s) to set.
    * @throws ScimException If the path is invalid.
    */
-  public void replaceExtensionValue(@Nullable final String path, final JsonNode value)
+  public void replaceExtensionValue(@Nullable final String path,
+                                    @NotNull final JsonNode value)
       throws ScimException
   {
     replaceExtensionValue(Path.fromString(path), value);
@@ -393,7 +396,7 @@ public abstract class BaseScimResource
    * @param <T> the type of object.
    */
   @JsonIgnore
-  public <T> void setExtension(final T extension)
+  public <T> void setExtension(@NotNull final T extension)
   {
     String schemaUrn = getSchemaUrnOrThrowException(extension.getClass());
     extensionObjectNode.set(schemaUrn, JsonUtils.valueToNode(extension));
@@ -410,7 +413,7 @@ public abstract class BaseScimResource
    * @return  true if the extension was removed, or false if the extension
    *          was not present.
    */
-  public <T> boolean removeExtension(final Class<T> clazz)
+  public <T> boolean removeExtension(@NotNull final Class<T> clazz)
   {
     String schemaUrn = getSchemaUrnOrThrowException(clazz);
     if(extensionObjectNode.remove(schemaUrn) == null)
@@ -424,7 +427,8 @@ public abstract class BaseScimResource
     }
   }
 
-  private <T> String getSchemaUrnOrThrowException(final Class<T> clazz)
+  @NotNull
+  private <T> String getSchemaUrnOrThrowException(@NotNull final Class<T> clazz)
   {
     String schemaUrn = SchemaUtils.getSchemaUrn(clazz);
     if(schemaUrn == null)
@@ -448,7 +452,8 @@ public abstract class BaseScimResource
    * @param values The value(s) to add.
    * @throws ScimException If the path is invalid.
    */
-  public void addExtensionValue(final String path, final ArrayNode values)
+  public void addExtensionValue(@Nullable final String path,
+                                @NotNull final ArrayNode values)
       throws ScimException
   {
     addExtensionValue(Path.fromString(path), values);
@@ -466,11 +471,11 @@ public abstract class BaseScimResource
    * @param values The value(s) to add.
    * @throws ScimException If the path is invalid.
    */
-  public void addExtensionValue(final Path path, final ArrayNode values)
+  public void addExtensionValue(@Nullable final Path path,
+                                @NotNull final ArrayNode values)
       throws ScimException
   {
     JsonUtils.addValue(path, extensionObjectNode, values);
-
   }
 
   /**
@@ -482,7 +487,7 @@ public abstract class BaseScimResource
    * @return Whether one or more values where removed.
    * @throws ScimException If the path is invalid.
    */
-  public boolean removeExtensionValues(final String path)
+  public boolean removeExtensionValues(@Nullable final String path)
       throws ScimException
   {
     return removeExtensionValues(Path.fromString(path));
@@ -497,7 +502,7 @@ public abstract class BaseScimResource
    * @return Whether one or more values where removed.
    * @throws ScimException If the path is invalid.
    */
-  public boolean removeExtensionValues(final Path path)
+  public boolean removeExtensionValues(@NotNull final Path path)
       throws ScimException
   {
     List<JsonNode> nodes = JsonUtils.removeValues(path, extensionObjectNode);
@@ -507,6 +512,7 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public GenericScimResource asGenericScimResource()
   {
     ObjectNode object =
@@ -522,7 +528,7 @@ public abstract class BaseScimResource
    *            BaseScimResource, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {
@@ -585,6 +591,7 @@ public abstract class BaseScimResource
    * @return  A string representation of this BaseScimResource.
    */
   @Override
+  @NotNull
   public String toString()
   {
     try

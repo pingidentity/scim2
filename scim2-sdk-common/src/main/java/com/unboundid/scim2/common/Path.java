@@ -19,6 +19,8 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.SchemaUtils;
@@ -358,7 +360,8 @@ public final class Path implements Iterable<Path.Element>
    * @throws BadRequestException if the path string could not be parsed.
    */
   @JsonCreator
-  public static Path fromString(final String pathString)
+  @NotNull
+  public static Path fromString(@Nullable final String pathString)
       throws BadRequestException
   {
     return Parser.parsePath(pathString);
