@@ -19,6 +19,8 @@ package com.unboundid.scim2.common.utils;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -32,8 +34,9 @@ public class CalendarSerializer extends JsonSerializer<Calendar>
    * {@inheritDoc}
    */
   @Override
-  public void serialize(final Calendar value, final JsonGenerator jgen,
-                        final SerializerProvider serializers)
+  public void serialize(@NotNull final Calendar value,
+                        @NotNull final JsonGenerator jgen,
+                        @Nullable final SerializerProvider serializers)
       throws IOException
   {
     jgen.writeString(DateTimeUtils.format(value));

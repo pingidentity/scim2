@@ -18,6 +18,7 @@
 package com.unboundid.scim2.common.utils;
 
 import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import java.util.regex.Pattern;
  */
 public final class StaticUtils
 {
+  @NotNull
   private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
 
   /**
@@ -53,7 +55,8 @@ public final class StaticUtils
    *
    * @return  An all-lowercase version of the provided string.
    */
-  public static String toLowerCase(final String s)
+  @Nullable
+  public static String toLowerCase(@Nullable final String s)
   {
     if (s == null)
     {

@@ -18,6 +18,8 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -40,20 +42,22 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    */
   private static class CaseIgnoreKey
   {
+    @NotNull
     private final String key;
 
-    CaseIgnoreKey(final String key)
+    CaseIgnoreKey(@NotNull final String key)
     {
       this.key = key;
     }
 
+    @NotNull
     public String getKey()
     {
       return key;
     }
 
     @Override
-    public boolean equals(final Object o)
+    public boolean equals(@Nullable final Object o)
     {
       if (this == o)
       {
@@ -82,14 +86,16 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    */
   private static class KeySet extends AbstractSet<String>
   {
+    @NotNull
     private final Set<CaseIgnoreKey> keys;
 
-    KeySet(final Set<CaseIgnoreKey> keys)
+    KeySet(@NotNull final Set<CaseIgnoreKey> keys)
     {
       this.keys = keys;
     }
 
     @Override
+    @NotNull
     public Iterator<String> iterator()
     {
       return new KeyIterator(keys.iterator());
@@ -107,9 +113,10 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    */
   private static class KeyIterator implements Iterator<String>
   {
+    @NotNull
     private final Iterator<CaseIgnoreKey> iterator;
 
-    KeyIterator(final Iterator<CaseIgnoreKey> iterator)
+    KeyIterator(@NotNull final Iterator<CaseIgnoreKey> iterator)
     {
       this.iterator = iterator;
     }
@@ -119,6 +126,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
       return iterator.hasNext();
     }
 
+    @NotNull
     public String next()
     {
       return iterator.next().getKey();
@@ -135,14 +143,16 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    */
   private static class EntrySet extends AbstractSet<Entry<String, JsonNode>>
   {
+    @NotNull
     private final Set<Entry<CaseIgnoreKey, JsonNode>> entries;
 
-    EntrySet(final Set<Entry<CaseIgnoreKey, JsonNode>> entries)
+    EntrySet(@NotNull final Set<Entry<CaseIgnoreKey, JsonNode>> entries)
     {
       this.entries = entries;
     }
 
     @Override
+    @NotNull
     public Iterator<Entry<String, JsonNode>> iterator()
     {
       return new EntryIterator(entries.iterator());
@@ -161,10 +171,11 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   private static class EntryIterator
       implements Iterator<Entry<String, JsonNode>>
   {
+    @NotNull
     private final Iterator<Entry<CaseIgnoreKey, JsonNode>> iterator;
 
     EntryIterator(
-        final Iterator<Entry<CaseIgnoreKey, JsonNode>> iterator)
+        @NotNull final Iterator<Entry<CaseIgnoreKey, JsonNode>> iterator)
     {
       this.iterator = iterator;
     }
@@ -174,10 +185,11 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
       return iterator.hasNext();
     }
 
+    @NotNull
     public Entry<String, JsonNode> next()
     {
       Entry<CaseIgnoreKey, JsonNode> entry = iterator.next();
-      return new AbstractMap.SimpleEntry<String, JsonNode>(
+      return new AbstractMap.SimpleEntry<>(
           entry.getKey().getKey(), entry.getValue());
     }
 
@@ -187,6 +199,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
     }
   }
 
+  @NotNull
   private final LinkedHashMap<CaseIgnoreKey, JsonNode> attributes;
 
   /**
@@ -194,7 +207,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    */
   public CaseIgnoreMap()
   {
-    attributes = new LinkedHashMap<CaseIgnoreKey, JsonNode>();
+    attributes = new LinkedHashMap<>();
   }
 
   /**
@@ -202,9 +215,9 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    *
    * @param map The map whose mappings are to the placed in this map.
    */
-  public CaseIgnoreMap(final Map<String, JsonNode> map)
+  public CaseIgnoreMap(@NotNull final Map<String, JsonNode> map)
   {
-    attributes = new LinkedHashMap<CaseIgnoreKey, JsonNode>(map.size());
+    attributes = new LinkedHashMap<>(map.size());
     putAll(map);
   }
 
@@ -227,7 +240,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public boolean containsKey(final Object key)
+  public boolean containsKey(@NotNull final Object key)
   {
     return attributes.containsKey(new CaseIgnoreKey(key.toString()));
   }
@@ -235,7 +248,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public boolean containsValue(final Object value)
+  public boolean containsValue(@Nullable final Object value)
   {
     return attributes.containsValue(value);
   }
@@ -243,7 +256,8 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public JsonNode get(final Object key)
+  @Nullable
+  public JsonNode get(@NotNull final Object key)
   {
     return attributes.get(new CaseIgnoreKey(key.toString()));
   }
@@ -251,7 +265,9 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public JsonNode put(final String key, final JsonNode value)
+  @Nullable
+  public JsonNode put(@NotNull final String key,
+                      @NotNull final JsonNode value)
   {
     return attributes.put(new CaseIgnoreKey(key), value);
   }
@@ -259,7 +275,8 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public JsonNode remove(final Object key)
+  @Nullable
+  public JsonNode remove(@NotNull final Object key)
   {
     return attributes.remove(new CaseIgnoreKey(key.toString()));
   }
@@ -267,7 +284,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public void putAll(final Map<? extends String, ? extends JsonNode> m)
+  public void putAll(@NotNull final Map<? extends String, ? extends JsonNode> m)
   {
     for (Entry<? extends String, ? extends JsonNode> entry : m.entrySet())
     {
@@ -286,6 +303,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public Set<String> keySet()
   {
     return new KeySet(attributes.keySet());
@@ -294,6 +312,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public Collection<JsonNode> values()
   {
     return attributes.values();
@@ -302,6 +321,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public Set<Entry<String, JsonNode>> entrySet()
   {
     return new EntrySet(attributes.entrySet());
@@ -315,7 +335,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {
@@ -349,6 +369,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    * @return  A string representation of this map.
    */
   @Override
+  @NotNull
   public String toString()
   {
     return attributes.toString();
