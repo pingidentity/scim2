@@ -54,7 +54,6 @@ public final class ListResponse<T> extends BaseScimResource
   @Attribute(description = "The total number of results returned by the " +
       "list or query operation")
   @JsonProperty(value = "totalResults", required = true)
-  @NotNull
   private final int totalResults;
 
   @Attribute(description = "The number of resources returned in a list " +

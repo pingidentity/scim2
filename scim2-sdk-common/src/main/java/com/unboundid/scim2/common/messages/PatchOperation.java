@@ -1867,7 +1867,9 @@ public abstract class PatchOperation
    * Create a new patch operation based on the parameters provided.
    *
    * @param opType The operation type.
-   * @param path   The path targeted by this patch operation.
+   * @param path   The path targeted by this patch operation. This may not be
+   *               {@code null}. If a {@code null} path is desired, see the
+   *               class-level Javadoc for more details.
    * @param value  The value(s). This field will be ignored for {@code remove}
    *               operations.
    *
@@ -1876,7 +1878,7 @@ public abstract class PatchOperation
    */
   @NotNull
   public static PatchOperation create(@NotNull final PatchOpType opType,
-                                      final String path,
+                                      @NotNull final String path,
                                       @NotNull final JsonNode value)
       throws ScimException
   {
@@ -1887,7 +1889,9 @@ public abstract class PatchOperation
    * Create a new patch operation based on the parameters provided.
    *
    * @param opType The operation type.
-   * @param path   The path targeted by this patch operation.
+   * @param path   The path targeted by this patch operation. This may not be
+   *               {@code null}. If a {@code null} path is desired, see the
+   *               class-level Javadoc for more details.
    * @param value  The value(s). This field will be ignored for {@code remove}
    *               operations.
    *
@@ -1895,7 +1899,7 @@ public abstract class PatchOperation
    */
   @NotNull
   public static PatchOperation create(@NotNull final PatchOpType opType,
-                                      final Path path,
+                                      @NotNull final Path path,
                                       @NotNull final JsonNode value)
   {
     switch (opType)
