@@ -56,9 +56,8 @@ public final class Version
 
 
   /**
-   * The Subversion path associated with the build root directory from which
-   * this build of the @SHORT_NAME@ was generated.  It may be an absolute local
-   * filesystem path if the Subversion path isn't available at build time.
+   * The Git branch associated with the build root directory from which
+   * this build of the @SHORT_NAME@ was generated.
    * For this build, the value is "@GIT_PATH@".
    */
   public static final String REPOSITORY_PATH = "@GIT_PATH@";
@@ -66,8 +65,8 @@ public final class Version
 
   /**
    * The source revision number from which this build of the @SHORT_NAME@ was
-   * generated.  It may be -1 if the Subversion revision isn't available at
-   * build time.  For this build, the value is @GIT_REVISION@.
+   * generated.  For this build, the value is
+   * "@GIT_REVISION@".
    */
   public static final String REVISION_NUMBER = "@GIT_REVISION@";
 
@@ -124,7 +123,7 @@ public final class Version
    */
   public static List<String> getVersionLines()
   {
-    final ArrayList<String> versionLines = new ArrayList<String>(11);
+    final ArrayList<String> versionLines = new ArrayList<>(11);
 
     versionLines.add("Full Version String:   " + FULL_VERSION_STRING);
     versionLines.add("Short Version String:  " + SHORT_VERSION_STRING);

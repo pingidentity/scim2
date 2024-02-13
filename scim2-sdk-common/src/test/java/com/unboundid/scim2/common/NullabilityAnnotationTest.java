@@ -30,12 +30,25 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.fail;
 
 
+/**
+ * This test is responsible for evaluating all of the public-facing methods
+ * available to clients of the SCIM SDK. The {@link #testNullability} method
+ * provides the basis of this analysis. When invoked directly, this test runs
+ * against the methods within the {@code common} module. Coverage in other
+ * modules is accomplished by extending this class within the test packages
+ * of those modules. Each child class invokes the test method with a test
+ * that explicitly calls the superclass.
+ */
 public class NullabilityAnnotationTest
 {
+  /**
+   * The end-of-line character for the operating system.
+   */
   public static final String EOL = System.getProperty("line.separator", "\n");
 
   /**
@@ -55,12 +68,11 @@ public class NullabilityAnnotationTest
     if (baseDirValue == null)
     {
       System.err.println("ERROR: Could not obtain the 'basedir' system"
-          + " property.");
+          + " property. Try running the test via Maven on the command line.");
       throw new NullPointerException();
     }
 
     File baseDir = new File(baseDirValue);
-//    File baseDir = new File("/Users/khalid/workspace/ping/scim2/scim2-sdk-common");
     File buildDir = new File(baseDir, "target");
     File classesDir = new File(buildDir, "classes");
 
@@ -104,7 +116,7 @@ public class NullabilityAnnotationTest
 
     try
     {
-      for (File f : d.listFiles())
+      for (File f : Objects.requireNonNull(d.listFiles()))
       {
         if (f.isDirectory())
         {
@@ -236,7 +248,7 @@ public class NullabilityAnnotationTest
 
     // Make sure that all constructor parameters are annotated properly.
     // Note that enums can have dynamically generated constructors and there
-    // deosn't seem to be a good way to detect them, so we'll just skip this
+    // doesn't seem to be a good way to detect them, so we'll just skip this
     // validation entirely for enums.
     if (! c.isEnum())
     {
