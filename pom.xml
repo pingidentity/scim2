@@ -62,7 +62,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <compileSource>1.8</compileSource>
+    <compileSource>11</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
     <ignore.test.failures>false</ignore.test.failures>
     <jackson.version>2.14.2</jackson.version>
