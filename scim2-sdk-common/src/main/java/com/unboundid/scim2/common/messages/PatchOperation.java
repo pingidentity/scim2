@@ -594,8 +594,8 @@ public abstract class PatchOperation
     @Override
     public void apply(final ObjectNode node) throws ScimException
     {
-      JsonUtils.replaceValue(getPath() == null ? Path.root() :
-          getPath(), node, value);
+      Path path = (getPath() == null) ? Path.root() : getPath();
+      JsonUtils.replaceValue(path, node, value);
       addMissingSchemaUrns(node);
     }
 
