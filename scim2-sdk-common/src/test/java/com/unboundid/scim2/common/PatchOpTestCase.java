@@ -927,7 +927,9 @@ public class PatchOpTestCase
           var e = (BadRequestException) ex;
           assertThat(e.getMessage()).contains("does not have a value matching the filter");
         });
-    assertThat(user.getAddresses()).hasSize(2);
+
+    // The user should still have two addresses.
+    assertThat(newUser.getAddresses()).hasSize(2);
 
     // An exception should also be thrown if any filter is used on attributes
     // without values.

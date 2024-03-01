@@ -372,6 +372,13 @@ public class JsonUtils
         }
       }
 
+      // If the filter did not match any of the elements in the array, then
+      // there is no more processing to do.
+      if (!nodeUpdated)
+      {
+        return false;
+      }
+
       for (int j = indexesToDelete.size() - 1; j >= 0; j--)
       {
         var nodeIndex = indexesToDelete.get(j);
