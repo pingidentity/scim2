@@ -18,9 +18,11 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.core.Base64Variants;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -28,6 +30,10 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchOpType;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
+import com.unboundid.scim2.common.types.Address;
+import com.unboundid.scim2.common.types.Email;
+import com.unboundid.scim2.common.types.Photo;
+import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -37,6 +43,8 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertThrows;
 
@@ -358,10 +366,9 @@ public class PatchOpTestCase
    * Test bad patch requests.
    *
    * @throws IOException If an error occurs.
-   * @throws ScimException If an error occurs.
    */
   @Test
-  public void getTestBadPatch() throws IOException, ScimException
+  public void getTestBadPatch() throws IOException
   {
     try
     {
@@ -774,7 +781,6 @@ public class PatchOpTestCase
     assertThrows(IllegalArgumentException.class,
             () -> PatchOperation.create(PatchOpType.REPLACE, "attr", null));
 
-
     assertThrows(IllegalArgumentException.class,
             () -> PatchOperation.add("attr", EMPTY_OBJECT));
     assertThrows(IllegalArgumentException.class,
@@ -784,12 +790,164 @@ public class PatchOpTestCase
     assertThrows(IllegalArgumentException.class,
             () -> PatchOperation.create(PatchOpType.REPLACE, "attr", EMPTY_OBJECT));
 
+    JsonNode nullNode = NullNode.getInstance();
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.add("attr", nullNode));
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.replace("attr", nullNode));
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.create(PatchOpType.ADD, "attr", nullNode));
+    assertThrows(IllegalArgumentException.class,
+            () -> PatchOperation.create(PatchOpType.REPLACE, "attr", nullNode));
 
     // Empty array values should be accepted.
     PatchOperation.add("myArray", EMPTY_ARRAY);
     PatchOperation.replace("myArray", EMPTY_ARRAY);
     PatchOperation.create(PatchOpType.ADD, "myArray", EMPTY_ARRAY);
     PatchOperation.create(PatchOpType.REPLACE, "myArray", EMPTY_ARRAY);
+  }
+
+  /**
+   * This test validates the behavior of patch operations when the value is an
+   * empty array. When a patch operations sets the {@code value} field to an
+   * empty array, this signifies that the relevant multi-valued attribute must
+   * be cleared of all existing values.
+   */
+  @Test
+  public void testApplyEmptyArray() throws Exception
+  {
+    PatchRequest request;
+    UserResource user = new UserResource();
+    user.setUserName("muhammad.ali");
+    user.setEmails(new Email().setValue("muhammad.ali@example.com"));
+
+    // "Add" an empty array. The resource should be unaffected.
+    request = new PatchRequest(
+        PatchOperation.add("emails", EMPTY_ARRAY)
+    );
+    user = applyPatchRequest(user, request);
+    assertThat(user.getEmails()).hasSize(1);
+
+    // Replace the attribute with an empty array. This should delete all email
+    // values on the resource.
+    request = new PatchRequest(
+        PatchOperation.replace("emails", EMPTY_ARRAY)
+    );
+    user = applyPatchRequest(user, request);
+    assertThat(user.getEmails()).isNull();
+
+    // Apply an "empty" value to a resource that already does not have a value
+    // for the requested attribute.
+    assertThat(user.getAddresses()).isNull();
+    request = new PatchRequest(
+        PatchOperation.add("addresses", EMPTY_ARRAY)
+    );
+    user = applyPatchRequest(user, request);
+    assertThat(user.getAddresses()).isNull();
+
+    // Delete all attribute values when none previously exist.
+    request = new PatchRequest(
+        PatchOperation.replace("addresses", EMPTY_ARRAY)
+    );
+    user = applyPatchRequest(user, request);
+    assertThat(user.getAddresses()).isNull();
+
+    // If multiple values exist on a resource, the behavior of an 'add' should
+    // be unchanged. All values should still be cleared when replaced with an
+    // empty array.
+    user.setPhotos(
+        new Photo().setValue(URI.create("https://example.com/1.png")).setType("profile"),
+        new Photo().setValue(URI.create("https://example.com/2.png")).setType("wallpaper"),
+        new Photo().setValue(URI.create("https://example.com/3.png")).setType("mystery")
+    );
+    request = new PatchRequest(
+        PatchOperation.add("photos", EMPTY_ARRAY)
+    );
+    user = applyPatchRequest(user, request);
+    assertThat(user.getPhotos()).hasSize(3);
+    request = new PatchRequest(
+        PatchOperation.replace("photos", EMPTY_ARRAY)
+    );
+    user = applyPatchRequest(user, request);
+    assertThat(user.getPhotos()).isNull();
+  }
+
+
+  /**
+   * Similar to {@link #testApplyEmptyArray}, but involves replace operations
+   * containing paths with a value selection filter. Validation for add
+   * operations can be found in {@link AddOperationValueFilterTestCase}.
+   */
+  @Test
+  public void testReplaceEmptyArrayAndValueFilter() throws Exception
+  {
+    PatchRequest request;
+    UserResource user = new UserResource().setUserName("MuhammadAli").setEmails(
+        new Email().setValue("fewCupsOfLove@example.com").setType("work"),
+        new Email().setValue("oneTbspPatience@example.com").setType("work"),
+        new Email().setValue("oneTspOfGenerosity@example.com").setType("home"),
+        new Email().setValue("onePintOfKindness@example.com").setType("other")
+    );
+
+    // Delete the home email by replacing its value with an empty array.
+    request = new PatchRequest(
+        PatchOperation.replace("emails[type eq \"home\"]", EMPTY_ARRAY)
+    );
+    user = applyPatchRequest(user, request);
+    assertThat(user.getEmails()).hasSize(3);
+    assertThat(user.getEmails()).noneMatch(
+        email -> "home".equalsIgnoreCase(email.getType())
+    );
+
+    // Delete both work emails.
+    request = new PatchRequest(
+        PatchOperation.replace("emails[type eq \"work\"]", EMPTY_ARRAY)
+    );
+    user = applyPatchRequest(user, request);
+    assertThat(user.getEmails()).hasSize(1);
+    assertThat(user.getEmails()).first().matches(
+        email -> "other".equalsIgnoreCase(email.getType())
+    );
+
+    // Delete the last value. The emails attribute should be null.
+    request = new PatchRequest(
+        PatchOperation.replace("emails[type eq \"other\"]", EMPTY_ARRAY)
+    );
+    user = applyPatchRequest(user, request);
+    assertThat(user.getEmails()).isNull();
+
+    // Send a delete request that does not match any values on the resource.
+    // This should result in an exception.
+    UserResource newUser = new UserResource().setAddresses(
+        new Address().setStreetAddress("1234 Tarrey Town Blvd.").setType("home"),
+        new Address().setStreetAddress("0001 Hyrule Court").setType("castle")
+    );
+    PatchRequest unmatchedRequest = new PatchRequest(
+        PatchOperation.replace("addresses[type eq \"work\"]", EMPTY_ARRAY)
+    );
+    assertThatThrownBy(() -> applyPatchRequest(newUser, unmatchedRequest))
+        .isInstanceOf(BadRequestException.class)
+        .satisfies(ex -> {
+          var e = (BadRequestException) ex;
+          assertThat(e.getMessage()).contains("does not have a value matching the filter");
+        });
+
+    // newUser should still have two addresses since nothing was removed.
+    assertThat(newUser.getAddresses()).hasSize(2);
+
+    // A BadRequestException should be thrown if a replace operation targets an
+    // attribute that did not contain any initial values.
+    UserResource emptyUser = new UserResource().setUserName("emptyUser");
+    PatchRequest emailRequest = new PatchRequest(
+        PatchOperation.replace("emails[type eq \"home\"]", EMPTY_ARRAY)
+    );
+    assertThatThrownBy(() -> applyPatchRequest(emptyUser, emailRequest))
+        .isInstanceOf(BadRequestException.class)
+        .satisfies(ex -> {
+          var e = (BadRequestException) ex;
+          assertThat(e.getMessage()).contains("does not have a value matching the filter");
+        });
+    assertThat(emptyUser.getEmails()).isNull();
   }
 
 
@@ -855,5 +1013,18 @@ public class PatchOpTestCase
             URI.create("https://example.com/"),
             URI.create("https://example.com/cool"));
     assertEquals(operation, operation2);
+  }
+
+  /**
+   * This method applies a patch request to a UserResource object and returns
+   * a new UserResource reflecting the modifications.
+   */
+  private static UserResource applyPatchRequest(UserResource userResource,
+                                                PatchRequest request)
+      throws JsonProcessingException, ScimException
+  {
+    GenericScimResource user = userResource.asGenericScimResource();
+    request.apply(user);
+    return JsonUtils.nodeToValue(user.getObjectNode(), UserResource.class);
   }
 }

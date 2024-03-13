@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
@@ -35,6 +37,7 @@ import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -254,55 +257,131 @@ public class JsonUtils
     /**
      * {@inheritDoc}
      */
-    protected void visitLeafNode(final ObjectNode parent,
-                       final String field,
-                       final Filter valueFilter)
+    protected void visitLeafNode(@NotNull final ObjectNode parent,
+                                 @Nullable final String field,
+                                 @Nullable final Filter valueFilter)
         throws ScimException
     {
-      if(field != null)
+      boolean matchesFound = false;
+
+      if (field == null)
       {
-        JsonNode node = parent.path(field);
-        if (!appendValues && valueFilter != null)
+        updateNode(parent, null, value);
+        return;
+      }
+
+      // Operations without a value filter can be updated normally without any
+      // special considerations. Note that add operations with value filters are
+      // already handled in PatchOperation#applyAddWithValueFilter.
+      if (appendValues || valueFilter == null)
+      {
+        updateNode(parent, field, value);
+        return;
+      }
+
+      // in replace mode, a value filter requires that the target node
+      // be an array and that we can find matching value(s)
+      JsonNode node = parent.path(field);
+      if (node.isArray())
+      {
+        var array = (ArrayNode) node;
+        matchesFound = processArrayReplace(parent, field, array, valueFilter);
+      }
+      // exception: this allows filters on singular values if
+      // and only if the filter uses the "value" attribute to
+      // reference the value of the value node.
+      else if (FilterEvaluator.evaluate(valueFilter, node))
+      {
+        matchesFound = true;
+        updateNode(parent, field, value);
+      }
+
+      if (!matchesFound)
+      {
+        throw BadRequestException.noTarget("Attribute " +
+            field + " does not have a value matching " +
+            "the filter " + valueFilter);
+      }
+    }
+
+    /**
+     * This method processes a replace operation for a multi-valued attribute
+     * (e.g., {@code emails, addresses}) with a value selection filter. If the
+     * {@code value} of the patch operation is an empty array, then attribute
+     * values that match the filter will be removed from the target resource.
+     *
+     * @param parent        The resource that contains the multi-valued
+     *                      attribute.
+     * @param field         The name of the multi-valued attribute (e.g.,
+     *                      {@code emails}).
+     * @param array         The current value of the multi-valued attribute.
+     * @param valueFilter   The value filter indicating the subset of attribute
+     *                      values that should be modified.
+     *
+     * @return  {@code true} if at least one value in the {@code array} was
+     *          updated with the new value.
+     *
+     * @throws ScimException  If an error occurred while processing the filter.
+     */
+    private boolean processArrayReplace(@NotNull final ObjectNode parent,
+                                        @NotNull final String field,
+                                        @NotNull final ArrayNode array,
+                                        @NotNull final Filter valueFilter)
+        throws ScimException
+    {
+      boolean nodeUpdated = false;
+
+      // If the 'value' is an empty array, then the client is actually
+      // requesting that we delete values that match the filter.
+      boolean isDelete = isNullNodeOrEmptyArray(value);
+      List<Integer> indexesToDelete = new ArrayList<>();
+
+      for (int i = 0; i < array.size(); i++)
+      {
+        JsonNode attributeValue = array.get(i);
+
+        // We should only perform processing on this inner node if it matches
+        // the filter.
+        if (!FilterEvaluator.evaluate(valueFilter, attributeValue))
         {
-          // in replace mode, a value filter requires that the target node
-          // be an array and that we can find matching value(s)
-          boolean matchesFound = false;
-          if (node.isArray())
-          {
-            for(int i = 0; i < node.size(); i++)
-            {
-              if(FilterEvaluator.evaluate(valueFilter, node.get(i)))
-              {
-                matchesFound = true;
-                if(node.get(i).isObject() && value.isObject())
-                {
-                  updateNode((ObjectNode) node.get(i), null, value);
-                }
-                else
-                {
-                  ((ArrayNode) node).set(i, value);
-                }
-              }
-            }
-          }
-          // exception: this allows filters on singular values if
-          // and only if the filter uses the "value" attribute to
-          // reference the value of the value node.
-          else if (FilterEvaluator.evaluate(valueFilter, node))
-          {
-            matchesFound = true;
-            updateNode(parent, field, value);
-          }
-          if(!matchesFound)
-          {
-            throw BadRequestException.noTarget("Attribute " +
-                field + " does not have a value matching " +
-                "the filter " + valueFilter);
-          }
-          return;
+          continue;
+        }
+        nodeUpdated = true;
+
+
+        if (attributeValue.isObject() && value.isObject())
+        {
+          updateNode((ObjectNode) attributeValue, null, value);
+        }
+        else if (isDelete && attributeValue.isObject())
+        {
+          // Mark the current index as a child that must be deleted. We cannot
+          // delete this yet because it would modify the 'i' index, which we are
+          // currently iterating over.
+          indexesToDelete.add(i);
+        }
+        else
+        {
+          array.set(i, value);
         }
       }
-      updateNode(parent, field, value);
+
+      for (int j = indexesToDelete.size() - 1; j >= 0; j--)
+      {
+        var nodeIndex = indexesToDelete.get(j);
+        array.remove(nodeIndex);
+      }
+
+      // If we have pruned all remaining values on the field, then we should
+      // completely delete the attribute. For example, if a resource only has a
+      // single email that is deleted, the 'emails' field in the JsonNode should
+      // explicitly be set to null.
+      if (array.isEmpty())
+      {
+        updateNode(parent, field, NullNode.getInstance());
+      }
+
+      return nodeUpdated;
     }
 
     /**
@@ -313,17 +392,27 @@ public class JsonUtils
      * @param key The key of the field to update.
      * @param value The update value.
      */
-    protected void updateNode(final ObjectNode parent, final String key,
-                              final JsonNode value)
+    protected void updateNode(@NotNull final ObjectNode parent,
+                              @Nullable final String key,
+                              @Nullable final JsonNode value)
     {
-      if(value.isNull() || value.isArray() && value.size() == 0)
+      // RFC 7643 section 2.5 states:
+      // "Unassigned attributes, the null value, or empty array (in the case of
+      // a multi-valued attribute) SHALL be considered to be equivalent in
+      // 'state'. Assigning an attribute with the value 'null' or an empty
+      // array... has the effect of making the attribute 'unassigned'."
+      if (isNullNodeOrEmptyArray(value))
       {
-        // draft-ietf-scim-core-schema section 2.4 states "Unassigned
-        // attributes, the null value, or empty array (in the case of
-        // a multi-valued attribute) SHALL be considered to be
-        // equivalent in 'state'".
+        // Replace operations should remove the field. If this is an add
+        // operation, there is no update to make.
+        if (!appendValues && key != null)
+        {
+          parent.remove(key);
+        }
+
         return;
       }
+
       // When key is null, the node to update is the parent itself.
       JsonNode node = key == null ? parent : parent.path(key);
       if(node.isObject())
@@ -1056,4 +1145,17 @@ public class JsonUtils
     SDK_OBJECT_MAPPER = customMapperFactory.createObjectMapper();
   }
 
+
+  /**
+   * Validates whether the provided node is null or an empty array.
+   */
+  private static boolean isNullNodeOrEmptyArray(@Nullable final JsonNode node)
+  {
+    if (node == null || node.isNull())
+    {
+      return true;
+    }
+
+    return (node.isArray() && node.isEmpty());
+  }
 }
