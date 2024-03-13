@@ -3,7 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v3.0.1 - TBD
-Placeholder for the next release.
+Resolved an issue with replace operations that set the `value` field to an empty array. When these
+operations are applied, the SCIM SDK now clears all matching values of the targeted multi-valued
+attribute. If the `path` of the replace operation does not have a filter, then the multi-valued
+attribute will be deleted from the resource.
 
 ## v3.0.0 - 2023-Oct-03
 Removed support for Java 8. The UnboundID SCIM 2 SDK now requires Java 11 or a later release.
