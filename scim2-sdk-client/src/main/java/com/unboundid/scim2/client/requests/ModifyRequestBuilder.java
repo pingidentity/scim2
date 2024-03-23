@@ -67,7 +67,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * {@inheritDoc}
    */
   @Override
-  Invocation.Builder buildRequest()
+  protected Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();
     if(version != null)
