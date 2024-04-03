@@ -20,8 +20,13 @@ package com.unboundid.scim2.common;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
+import com.unboundid.scim2.common.types.Member;
+import com.unboundid.scim2.common.utils.JsonUtils;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 import org.testng.annotations.Test;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -69,4 +74,29 @@ public class PatchRequestTest
     );
     assertEquals(singleOperation.getOperations().size(), 1);
   }
+    @Test
+    public void PatchRequestIsSerialisable() throws Exception
+    {
+        Member member = new Member();
+        member.setValue("testID");
+        member.setDisplay("testName");
+        member.setRef(new URI("testURI"));
+        PatchRequest request = new PatchRequest(PatchOperation.add("members", JsonUtils.valueToNode(member)));
+        Jsonb jsonb = JsonbBuilder.create();
+        String result = jsonb.toJson(request, PatchRequest.class);
+        assertEquals(result, "{\"extensionObjectNode\":{\"array\":false,\"bigDecimal" +
+                "\":false,\"bigInteger\":false,\"binary\":false,\"boolean\":false,\"containerNode" +
+                "\":true,\"double\":false,\"float\":false,\"floatingPointNumber\":false,\"int\":false," +
+                "\"integralNumber\":false,\"long\":false,\"missingNode\":false,\"null\":false,\"number" +
+                "\":false,\"pojo\":false,\"short\":false,\"textual\":false,\"valueNode\":false,\"empty" +
+                "\":true,\"nodeType\":\"OBJECT\",\"object\":true},\"schemaUrns" +
+                "\":[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"],\"operations" +
+                "\":[{\"path\":{\"root\":false},\"jsonNode\":{\"array\":false,\"bigDecimal" +
+                "\":false,\"bigInteger\":false,\"binary\":false,\"boolean\":false," +
+                "\"containerNode\":true,\"double\":false,\"float\":false,\"floatingPointNumber" +
+                "\":false,\"int\":false,\"integralNumber\":false,\"long\":false,\"missingNode" +
+                "\":false,\"null\":false,\"number\":false,\"pojo\":false,\"short\":false,\"textual" +
+                "\":false,\"valueNode\":false,\"empty\":false,\"nodeType\":" +
+                "\"OBJECT\",\"object\":true},\"opType\":\"ADD\"}]}");
+    }
 }

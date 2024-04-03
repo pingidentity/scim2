@@ -109,7 +109,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
         name="replace", names= {"replace", "Replace", "REPLACE"})})
 public abstract class PatchOperation
 {
-  static final class AddOperation extends PatchOperation
+  public static final class AddOperation extends PatchOperation
   {
     @JsonProperty
     private final JsonNode value;
@@ -436,7 +436,7 @@ public abstract class PatchOperation
     }
   }
 
-  static final class RemoveOperation extends PatchOperation
+  public static final class RemoveOperation extends PatchOperation
   {
     /**
      * Create a new remove patch operation.
@@ -517,7 +517,7 @@ public abstract class PatchOperation
     }
   }
 
-  static final class ReplaceOperation extends PatchOperation
+  public static final class ReplaceOperation extends PatchOperation
   {
     @JsonProperty
     private final JsonNode value;
