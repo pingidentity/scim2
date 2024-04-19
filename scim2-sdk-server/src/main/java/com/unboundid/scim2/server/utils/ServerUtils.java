@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.server.utils;
 
+import com.unboundid.scim2.common.annotations.NotNull;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -32,6 +33,7 @@ public class ServerUtils
   /**
    * The SCIM media type.
    */
+  @NotNull
   public static final MediaType MEDIA_TYPE_SCIM_TYPE =
       MediaType.valueOf(MEDIA_TYPE_SCIM);
 
@@ -44,9 +46,10 @@ public class ServerUtils
    *                        Request.getAcceptableMediaTypes.
    * @return The response builder.
    */
+  @NotNull
   public static Response.ResponseBuilder setAcceptableType(
-      final Response.ResponseBuilder response,
-      final List<MediaType> acceptableTypes)
+      @NotNull final Response.ResponseBuilder response,
+      @NotNull final List<MediaType> acceptableTypes)
   {
     MediaType responseType = null;
     for(MediaType mediaType : acceptableTypes)
@@ -74,7 +77,8 @@ public class ServerUtils
    * @param s the string with zero or more template parameter names
    * @return the string with encoded template parameter names.
    */
-  public static String encodeTemplateNames(final String s)
+  @NotNull
+  public static String encodeTemplateNames(@NotNull final String s)
   {
     String s1 = s;
     int i = s1.indexOf('{');

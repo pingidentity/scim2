@@ -20,6 +20,8 @@ package com.unboundid.scim2.server.utils;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
@@ -45,12 +47,25 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
 public class SimpleSearchResults<T extends ScimResource>
     extends ListResponseStreamingOutput<T>
 {
+  @NotNull
   private final List<ScimResource> resources;
+
+  @NotNull
   private final Filter filter;
+
+  @Nullable
   private final Integer startIndex;
+
+  @Nullable
   private final Integer count;
+
+  @NotNull
   private final SchemaAwareFilterEvaluator filterEvaluator;
+
+  @Nullable
   private final ResourceComparator<ScimResource> resourceComparator;
+
+  @NotNull
   private final ResourcePreparer<ScimResource> responsePreparer;
 
   /**
@@ -61,8 +76,9 @@ public class SimpleSearchResults<T extends ScimResource>
    * @throws BadRequestException if the filter or paths in the search operation
    * is invalid.
    */
-  public SimpleSearchResults(final ResourceTypeDefinition resourceType,
-                             final UriInfo uriInfo) throws BadRequestException
+  public SimpleSearchResults(@NotNull final ResourceTypeDefinition resourceType,
+                             @NotNull final UriInfo uriInfo)
+      throws BadRequestException
   {
     this.filterEvaluator = new SchemaAwareFilterEvaluator(resourceType);
     this.responsePreparer =
@@ -140,7 +156,8 @@ public class SimpleSearchResults<T extends ScimResource>
    * @throws ScimException If an error occurs during filtering or setting the
    * meta attributes.
    */
-  public SimpleSearchResults add(final T resource) throws ScimException
+  @NotNull
+  public SimpleSearchResults add(@NotNull final T resource) throws ScimException
   {
     // Convert to GenericScimResource
     GenericScimResource genericResource;
@@ -175,7 +192,8 @@ public class SimpleSearchResults<T extends ScimResource>
    * @throws ScimException If an error occurs during filtering or setting the
    * meta attributes.
    */
-  public SimpleSearchResults addAll(final Collection<T> resources)
+  @NotNull
+  public SimpleSearchResults addAll(@NotNull final Collection<T> resources)
       throws ScimException
   {
     for(T resource : resources)
@@ -188,9 +206,9 @@ public class SimpleSearchResults<T extends ScimResource>
   /**
    * {@inheritDoc}
    */
-  @SuppressWarnings("unchecked")
   @Override
-  public void write(final ListResponseWriter<T> os)
+  @SuppressWarnings("unchecked")
+  public void write(@NotNull final ListResponseWriter<T> os)
       throws IOException
   {
     if(resourceComparator != null)

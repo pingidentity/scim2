@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.server.providers;
 
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.server.utils.ServerUtils;
 
@@ -32,13 +33,15 @@ import jakarta.ws.rs.ext.Provider;
 @Provider
 public class ScimExceptionMapper implements ExceptionMapper<ScimException>
 {
+  @NotNull
   @Context
   private HttpHeaders headers;
 
   /**
    * {@inheritDoc}
    */
-  public Response toResponse(final ScimException throwable)
+  @NotNull
+  public Response toResponse(@NotNull final ScimException throwable)
   {
     return ServerUtils.setAcceptableType(
             Response.status(throwable.getScimError().getStatus()).

@@ -20,6 +20,8 @@ package com.unboundid.scim2.server.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.types.SchemaResource;
@@ -57,12 +59,19 @@ public class SchemaChecker
    */
   public static class Results
   {
+    @NotNull
     private final List<String> syntaxIssues = new LinkedList<String>();
+
+    @NotNull
     private final List<String> mutabilityIssues = new LinkedList<String>();
+
+    @NotNull
     private final List<String> pathIssues = new LinkedList<String>();
+
+    @NotNull
     private final List<String> filterIssues = new LinkedList<String>();
 
-    void addFilterIssue(final String issue)
+    void addFilterIssue(@NotNull final String issue)
     {
       filterIssues.add(issue);
     }
@@ -72,6 +81,7 @@ public class SchemaChecker
      *
      * @return syntax issues found during schema checking.
      */
+    @NotNull
     public List<String> getSyntaxIssues()
     {
       return Collections.unmodifiableList(syntaxIssues);
@@ -82,6 +92,7 @@ public class SchemaChecker
      *
      * @return mutability issues found during schema checking.
      */
+    @NotNull
     public List<String> getMutabilityIssues()
     {
       return Collections.unmodifiableList(mutabilityIssues);
@@ -92,6 +103,7 @@ public class SchemaChecker
      *
      * @return path issues found during schema checking.
      */
+    @NotNull
     public List<String> getPathIssues()
     {
       return Collections.unmodifiableList(pathIssues);
@@ -102,6 +114,7 @@ public class SchemaChecker
      *
      * @return filter issues found during schema checking.
      */
+    @NotNull
     public List<String> getFilterIssues()
     {
       return Collections.unmodifiableList(filterIssues);
@@ -117,7 +130,7 @@ public class SchemaChecker
      * @throws BadRequestException if issues are found during schema checking.
      */
     public void throwSchemaExceptions()
-      throws BadRequestException
+        throws BadRequestException
     {
       if(syntaxIssues.size() > 0)
       {
@@ -140,7 +153,8 @@ public class SchemaChecker
       }
     }
 
-    private String getErrorString(final List<String> issues)
+    @Nullable
+    private String getErrorString(@Nullable final List<String> issues)
     {
       if ((issues == null) || issues.isEmpty())
       {
@@ -172,8 +186,13 @@ public class SchemaChecker
     ALLOW_UNDEFINED_SUB_ATTRIBUTES;
   }
 
+  @NotNull
   private final ResourceTypeDefinition resourceType;
+
+  @NotNull
   private final Collection<AttributeDefinition> commonAndCoreAttributes;
+
+  @NotNull
   private final Set<Option> enabledOptions;
 
   /**
@@ -182,7 +201,7 @@ public class SchemaChecker
    *
    * @param resourceType The resource type whose schema(s) to enforce.
    */
-  public SchemaChecker(final ResourceTypeDefinition resourceType)
+  public SchemaChecker(@NotNull final ResourceTypeDefinition resourceType)
   {
     this.resourceType = resourceType;
     this.commonAndCoreAttributes = new LinkedHashSet<AttributeDefinition>(
@@ -199,7 +218,7 @@ public class SchemaChecker
    *
    * @param option The option to enable.
    */
-  public void enable(final Option option)
+  public void enable(@NotNull final Option option)
   {
     enabledOptions.add(option);
   }
@@ -209,7 +228,7 @@ public class SchemaChecker
    *
    * @param option The option to disable.
    */
-  public void disable(final Option option)
+  public void disable(@NotNull final Option option)
   {
     enabledOptions.remove(option);
   }
@@ -249,7 +268,9 @@ public class SchemaChecker
    * @return Schema checking results.
    * @throws ScimException If an error occurred while checking the schema.
    */
-  public Results checkCreate(final ObjectNode objectNode) throws ScimException
+  @NotNull
+  public Results checkCreate(@NotNull final ObjectNode objectNode)
+      throws ScimException
   {
     ObjectNode copyNode = objectNode.deepCopy();
     Results results = new Results();
@@ -306,9 +327,11 @@ public class SchemaChecker
    * @return Schema checking results.
    * @throws ScimException If an error occurred while checking the schema.
    */
-  public Results checkModify(final Iterable<PatchOperation> patchOperations,
-                             final ObjectNode currentObjectNode)
-      throws ScimException
+  @NotNull
+  public Results checkModify(
+      @NotNull final Iterable<PatchOperation> patchOperations,
+      @Nullable final ObjectNode currentObjectNode)
+          throws ScimException
   {
     ObjectNode copyCurrentNode =
         currentObjectNode == null ? null : currentObjectNode.deepCopy();
@@ -483,8 +506,9 @@ public class SchemaChecker
    * @return Schema checking results.
    * @throws ScimException If an error occurred while checking the schema.
    */
-  public Results checkReplace(final ObjectNode replacementObjectNode,
-                              final ObjectNode currentObjectNode)
+  @NotNull
+  public Results checkReplace(@NotNull final ObjectNode replacementObjectNode,
+                              @NotNull final ObjectNode currentObjectNode)
       throws ScimException
   {
     ObjectNode copyReplacementNode = replacementObjectNode.deepCopy();
@@ -507,7 +531,9 @@ public class SchemaChecker
    * @return A copy of the SCIM resource with the read-only attributes (if any)
    *         removed.
    */
-  public ObjectNode removeReadOnlyAttributes(final ObjectNode objectNode)
+  @NotNull
+  public ObjectNode removeReadOnlyAttributes(
+      @NotNull final ObjectNode objectNode)
   {
     ObjectNode copyNode = objectNode.deepCopy();
     for(SchemaResource schemaExtension :
@@ -533,7 +559,8 @@ public class SchemaChecker
    * @return Schema checking results.
    * @throws ScimException If an error occurred while checking the schema.
    */
-  public Results checkSearch(final Filter filter)
+  @NotNull
+  public Results checkSearch(@NotNull final Filter filter)
       throws ScimException
   {
     Results results = new Results();
@@ -553,9 +580,9 @@ public class SchemaChecker
    *                        if no prefix is needed.
    * @param  messages       The generated messages are to be added to this list.
    */
-  void addMessageForUndefinedAttr(final Path path,
-                                  final String messagePrefix,
-                                  final List<String> messages)
+  void addMessageForUndefinedAttr(@NotNull final Path path,
+                                  @NotNull final String messagePrefix,
+                                  @NotNull final List<String> messages)
   {
     if(path.size() > 1)
     {
@@ -600,8 +627,8 @@ public class SchemaChecker
    * @param objectNode The ObjectNode to remove from.
    */
   private void removeReadOnlyAttributes(
-      final Collection<AttributeDefinition> attributes,
-      final ObjectNode objectNode)
+      @NotNull final Collection<AttributeDefinition> attributes,
+      @NotNull final ObjectNode objectNode)
   {
     for(AttributeDefinition attribute : attributes)
     {
@@ -644,13 +671,14 @@ public class SchemaChecker
    * @param isPartialAdd Whether this is a partial add.
    * @throws ScimException If an error occurs.
    */
-  private void checkPartialResource(final String prefix,
-                                    final ObjectNode objectNode,
-                                    final Results results,
-                                    final ObjectNode currentObjectNode,
-                                    final boolean isPartialReplace,
-                                    final boolean isPartialAdd)
-      throws ScimException
+  private void checkPartialResource(
+      @NotNull final String prefix,
+      @NotNull final ObjectNode objectNode,
+      @NotNull final Results results,
+      @Nullable final ObjectNode currentObjectNode,
+      final boolean isPartialReplace,
+      final boolean isPartialAdd)
+          throws ScimException
   {
 
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
@@ -708,10 +736,10 @@ public class SchemaChecker
    * @param isReplace Whether this is a replace.
    * @throws ScimException If an error occurs.
    */
-  private void checkResource(final String prefix,
-                             final ObjectNode objectNode,
-                             final Results results,
-                             final ObjectNode currentObjectNode,
+  private void checkResource(@NotNull final String prefix,
+                             @NotNull final ObjectNode objectNode,
+                             @NotNull final Results results,
+                             @Nullable final ObjectNode currentObjectNode,
                              final boolean isReplace)
       throws ScimException
   {
@@ -849,12 +877,12 @@ public class SchemaChecker
    * @param isReplace Whether this is a replace.
    * @throws ScimException If an error occurs.
    */
-  private void checkAttributeMutability(final String prefix,
-                                        final JsonNode node,
-                                        final Path path,
-                                        final AttributeDefinition attribute,
-                                        final Results results,
-                                        final ObjectNode currentObjectNode,
+  private void checkAttributeMutability(@NotNull final String prefix,
+                                        @Nullable final JsonNode node,
+                                        @NotNull final Path path,
+                                        @NotNull final AttributeDefinition attribute,
+                                        @NotNull final Results results,
+                                        @Nullable final ObjectNode currentObjectNode,
                                         final boolean isPartialReplace,
                                         final boolean isPartialAdd,
                                         final boolean isReplace)
@@ -936,10 +964,11 @@ public class SchemaChecker
    * @param attribute The attribute definition.
    * @param results The schema check results.
    */
-  private void checkAttributeRequired(final String prefix,
-                                      final Path path,
-                                      final AttributeDefinition attribute,
-                                      final Results results)
+  private void checkAttributeRequired(
+      @NotNull final String prefix,
+      @NotNull final Path path,
+      @NotNull final AttributeDefinition attribute,
+      @NotNull final Results results)
   {
     // Check required attributes are all present.
     if(attribute.isRequired())
@@ -962,15 +991,16 @@ public class SchemaChecker
    * @param isPartialAdd Whether this is a partial add.
    * @throws ScimException If an error occurs.
    */
-  private void checkAttributeValues(final String prefix,
-                                    final JsonNode node,
-                                    final Path path,
-                                    final AttributeDefinition attribute,
-                                    final Results results,
-                                    final ObjectNode currentObjectNode,
-                                    final boolean isPartialReplace,
-                                    final boolean isPartialAdd)
-      throws ScimException
+  private void checkAttributeValues(
+      @NotNull final String prefix,
+      @NotNull final JsonNode node,
+      @NotNull final Path path,
+      @NotNull final AttributeDefinition attribute,
+      @NotNull final Results results,
+      @Nullable final ObjectNode currentObjectNode,
+      final boolean isPartialReplace,
+      final boolean isPartialAdd)
+          throws ScimException
   {
     if(attribute.isMultiValued() && !node.isArray())
     {
@@ -1025,15 +1055,16 @@ public class SchemaChecker
    * @param isPartialAdd Whether this is a partial add.
    * @throws ScimException If an error occurs.
    */
-  private void checkAttributeValue(final String prefix,
-                                   final JsonNode node,
-                                   final Path path,
-                                   final AttributeDefinition attribute,
-                                   final Results results,
-                                   final ObjectNode currentObjectNode,
-                                   final boolean isPartialReplace,
-                                   final boolean isPartialAdd)
-      throws ScimException
+  private void checkAttributeValue(
+      @NotNull final String prefix,
+      @NotNull final JsonNode node,
+      @NotNull final Path path,
+      @NotNull final AttributeDefinition attribute,
+      @NotNull final Results results,
+      @Nullable final ObjectNode currentObjectNode,
+      final boolean isPartialReplace,
+      final boolean isPartialAdd)
+          throws ScimException
   {
     if(node.isNull())
     {
@@ -1215,12 +1246,12 @@ public class SchemaChecker
    * @throws ScimException If an error occurs.
    */
   private void checkObjectNode(
-      final String prefix,
-      final Path parentPath,
-      final Collection<AttributeDefinition> attributes,
-      final ObjectNode objectNode,
-      final Results results,
-      final ObjectNode currentObjectNode,
+      @NotNull final String prefix,
+      @NotNull final Path parentPath,
+      @NotNull final Collection<AttributeDefinition> attributes,
+      @NotNull final ObjectNode objectNode,
+      @NotNull final Results results,
+      @Nullable final ObjectNode currentObjectNode,
       final boolean isPartialReplace,
       final boolean isPartialAdd,
       final boolean isReplace) throws ScimException

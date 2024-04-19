@@ -19,6 +19,7 @@ package com.unboundid.scim2.server.providers;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
@@ -55,7 +56,7 @@ public class DotSearchFilter implements ContainerRequestFilter
   /**
    * {@inheritDoc}
    */
-  public void filter(final ContainerRequestContext requestContext)
+  public void filter(@NotNull final ContainerRequestContext requestContext)
       throws IOException
   {
     if(requestContext.getMethod().equals(HttpMethod.POST) &&

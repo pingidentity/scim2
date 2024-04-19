@@ -18,6 +18,8 @@
 package com.unboundid.scim2.server.utils;
 
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.utils.FilterEvaluator;
 
@@ -26,6 +28,7 @@ import com.unboundid.scim2.common.utils.FilterEvaluator;
  */
 public class SchemaAwareFilterEvaluator extends FilterEvaluator
 {
+  @NotNull
   private final ResourceTypeDefinition resourceType;
 
   /**
@@ -33,7 +36,8 @@ public class SchemaAwareFilterEvaluator extends FilterEvaluator
    *
    * @param resourceType The resource type definition.
    */
-  public SchemaAwareFilterEvaluator(final ResourceTypeDefinition resourceType)
+  public SchemaAwareFilterEvaluator(
+      @NotNull final ResourceTypeDefinition resourceType)
   {
     this.resourceType = resourceType;
   }
@@ -42,7 +46,8 @@ public class SchemaAwareFilterEvaluator extends FilterEvaluator
    * {@inheritDoc}
    */
   @Override
-  protected AttributeDefinition getAttributeDefinition(final Path path)
+  @Nullable
+  protected AttributeDefinition getAttributeDefinition(@NotNull final Path path)
   {
     return resourceType.getAttributeDefinition(path);
   }
