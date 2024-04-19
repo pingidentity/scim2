@@ -19,6 +19,8 @@ package com.unboundid.scim2.common.filters;
 
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
@@ -134,6 +136,7 @@ public abstract class Filter
    *
    * @return The filter type.
    */
+  @NotNull
   public abstract FilterType getFilterType();
 
   /**
@@ -146,8 +149,9 @@ public abstract class Filter
    * @return The return type from the filter visitor.
    * @throws ScimException The exception thrown from the filter visitor.
    */
-  public abstract <R, P> R visit(final FilterVisitor<R, P> visitor,
-                                 final P param)
+  @NotNull
+  public abstract <R, P> R visit(@NotNull final FilterVisitor<R, P> visitor,
+                                 @Nullable final P param)
       throws ScimException;
 
   /**
@@ -156,7 +160,7 @@ public abstract class Filter
    * @param builder The buffer to which the string representation of the
    *                filter is to be appended.
    */
-  public abstract void toString(final StringBuilder builder);
+  public abstract void toString(@NotNull final StringBuilder builder);
 
   /**
    * Whether this filter instance is a {@link CombiningFilter}.
@@ -175,6 +179,7 @@ public abstract class Filter
    * @return The subordinate filter components for a logical combining filter,
    *         or {@code null} if the filter is not a {@link CombiningFilter}.
    */
+  @Nullable
   public List<Filter> getCombinedFilters()
   {
     return null;
@@ -198,6 +203,7 @@ public abstract class Filter
    * @return The inverted version of this filter, or {@code null} if this filter
    *         instance is not a {@link NotFilter}.
    */
+  @Nullable
   public Filter getInvertedFilter()
   {
     return null;
@@ -222,6 +228,7 @@ public abstract class Filter
    * @return The value filter for complex multi-valued attribute value filter
    * or {@code null} if this filter is not a value filter.
    */
+  @Nullable
   public Filter getValueFilter()
   {
     return null;
@@ -234,6 +241,7 @@ public abstract class Filter
    *
    * @return The attribute or sub-attribute to filter by.
    */
+  @Nullable
   public Path getAttributePath()
   {
     return null;
@@ -257,6 +265,7 @@ public abstract class Filter
    * @return The comparison value, or {@code null} if this filter is not
    * a comparison filter.
    */
+  @Nullable
   public ValueNode getComparisonValue()
   {
     return null;
@@ -268,6 +277,7 @@ public abstract class Filter
    * @return  A string representation of this filter.
    */
   @Override
+  @NotNull
   public String toString()
   {
     final StringBuilder builder = new StringBuilder();
@@ -282,8 +292,9 @@ public abstract class Filter
    * @param filterValue   The filter attribute value.
    * @return A new {@code equal} filter.
    */
-  public static Filter eq(final Path attributePath,
-                          final ValueNode filterValue)
+  @NotNull
+  public static Filter eq(@NotNull final Path attributePath,
+                          @Nullable final ValueNode filterValue)
   {
     return new EqualFilter(attributePath, filterValue);
   }
@@ -296,8 +307,9 @@ public abstract class Filter
    * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter eq(final String attributePath,
-                          final Integer filterValue)
+  @NotNull
+  public static Filter eq(@NotNull final String attributePath,
+                          @Nullable final Integer filterValue)
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
@@ -312,7 +324,9 @@ public abstract class Filter
    * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter eq(final String attributePath, final Long filterValue)
+  @NotNull
+  public static Filter eq(@NotNull final String attributePath,
+                          @Nullable final Long filterValue)
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
@@ -327,7 +341,9 @@ public abstract class Filter
    * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter eq(final String attributePath, final Double filterValue)
+  @NotNull
+  public static Filter eq(@NotNull final String attributePath,
+                          @Nullable final Double filterValue)
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
@@ -342,7 +358,9 @@ public abstract class Filter
    * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter eq(final String attributePath, final Float filterValue)
+  @NotNull
+  public static Filter eq(@NotNull final String attributePath,
+                          @Nullable final Float filterValue)
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
@@ -357,7 +375,9 @@ public abstract class Filter
    * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter eq(final String attributePath, final String filterValue)
+  @NotNull
+  public static Filter eq(@NotNull final String attributePath,
+                          @Nullable final String filterValue)
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
@@ -372,8 +392,9 @@ public abstract class Filter
    * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter eq(final String attributePath,
-                          final Boolean filterValue)
+  @NotNull
+  public static Filter eq(@NotNull final String attributePath,
+                          @Nullable final Boolean filterValue)
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
@@ -388,7 +409,9 @@ public abstract class Filter
    * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter eq(final String attributePath, final byte[] filterValue)
+  @NotNull
+  public static Filter eq(@NotNull final String attributePath,
+                          @Nullable final byte[] filterValue)
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
@@ -403,7 +426,9 @@ public abstract class Filter
    * @return A new {@code equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter eq(final String attributePath, final Date filterValue)
+  @NotNull
+  public static Filter eq(@NotNull final String attributePath,
+                          @Nullable final Date filterValue)
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
@@ -418,8 +443,9 @@ public abstract class Filter
    * @param filterValue   The filter attribute value.
    * @return A new {@code not equal} filter.
    */
-  public static Filter ne(final Path attributePath,
-                          final ValueNode filterValue)
+  @NotNull
+  public static Filter ne(@NotNull final Path attributePath,
+                          @Nullable final ValueNode filterValue)
   {
     return new NotEqualFilter(attributePath, filterValue);
   }
@@ -432,8 +458,9 @@ public abstract class Filter
    * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ne(final String attributePath,
-                          final Integer filterValue)
+  @NotNull
+  public static Filter ne(@NotNull final String attributePath,
+                          @Nullable final Integer filterValue)
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
@@ -448,7 +475,9 @@ public abstract class Filter
    * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ne(final String attributePath, final Long filterValue)
+  @NotNull
+  public static Filter ne(@NotNull final String attributePath,
+                          @Nullable final Long filterValue)
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
@@ -463,7 +492,9 @@ public abstract class Filter
    * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ne(final String attributePath, final Double filterValue)
+  @NotNull
+  public static Filter ne(@NotNull final String attributePath,
+                          @Nullable final Double filterValue)
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
@@ -478,7 +509,9 @@ public abstract class Filter
    * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ne(final String attributePath, final Float filterValue)
+  @NotNull
+  public static Filter ne(@NotNull final String attributePath,
+                          @Nullable final Float filterValue)
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
@@ -493,7 +526,9 @@ public abstract class Filter
    * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ne(final String attributePath, final String filterValue)
+  @NotNull
+  public static Filter ne(@NotNull final String attributePath,
+                          @Nullable final String filterValue)
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
@@ -508,8 +543,9 @@ public abstract class Filter
    * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ne(final String attributePath,
-                          final Boolean filterValue)
+  @NotNull
+  public static Filter ne(@NotNull final String attributePath,
+                          @Nullable final Boolean filterValue)
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
@@ -524,7 +560,9 @@ public abstract class Filter
    * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ne(final String attributePath, final byte[] filterValue)
+  @NotNull
+  public static Filter ne(@NotNull final String attributePath,
+                          @Nullable final byte[] filterValue)
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
@@ -539,7 +577,9 @@ public abstract class Filter
    * @return A new {@code not equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ne(final String attributePath, final Date filterValue)
+  @NotNull
+  public static Filter ne(@NotNull final String attributePath,
+                          @Nullable final Date filterValue)
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
@@ -554,8 +594,9 @@ public abstract class Filter
    * @param filterValue   The filter attribute value.
    * @return A new {@code contains} filter.
    */
-  public static Filter co(final Path attributePath,
-                          final ValueNode filterValue)
+  @NotNull
+  public static Filter co(@NotNull final Path attributePath,
+                          @Nullable final ValueNode filterValue)
   {
     return new ContainsFilter(attributePath, filterValue);
   }
@@ -568,7 +609,9 @@ public abstract class Filter
    * @return A new {@code contains} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter co(final String attributePath, final String filterValue)
+  @NotNull
+  public static Filter co(@NotNull final String attributePath,
+                          @Nullable final String filterValue)
       throws BadRequestException
   {
     return new ContainsFilter(Path.fromString(attributePath),
@@ -582,8 +625,9 @@ public abstract class Filter
    * @param filterValue   The filter attribute value.
    * @return A new {@code starts with} filter.
    */
-  public static Filter sw(final Path attributePath,
-                          final ValueNode filterValue)
+  @NotNull
+  public static Filter sw(@NotNull final Path attributePath,
+                          @Nullable final ValueNode filterValue)
   {
     return new StartsWithFilter(attributePath, filterValue);
   }
@@ -596,7 +640,9 @@ public abstract class Filter
    * @return A new {@code starts with} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter sw(final String attributePath, final String filterValue)
+  @NotNull
+  public static Filter sw(@NotNull final String attributePath,
+                          @Nullable final String filterValue)
       throws BadRequestException
   {
     return new StartsWithFilter(Path.fromString(attributePath),
@@ -610,8 +656,9 @@ public abstract class Filter
    * @param filterValue   The filter attribute value.
    * @return A new {@code ends with} filter.
    */
-  public static Filter ew(final Path attributePath,
-                          final ValueNode filterValue)
+  @NotNull
+  public static Filter ew(@NotNull final Path attributePath,
+                          @Nullable final ValueNode filterValue)
   {
     return new EndsWithFilter(attributePath, filterValue);
   }
@@ -624,7 +671,9 @@ public abstract class Filter
    * @return A new {@code ends with} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ew(final String attributePath, final String filterValue)
+  @NotNull
+  public static Filter ew(@NotNull final String attributePath,
+                          @Nullable final String filterValue)
       throws BadRequestException
   {
     return new EndsWithFilter(Path.fromString(attributePath),
@@ -637,7 +686,8 @@ public abstract class Filter
    * @param attributePath The path to the attribute to filter by.
    * @return A new {@code present} filter.
    */
-  public static Filter pr(final Path attributePath)
+  @NotNull
+  public static Filter pr(@NotNull final Path attributePath)
   {
     return new PresentFilter(attributePath);
   }
@@ -649,7 +699,8 @@ public abstract class Filter
    * @return A new {@code present} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter pr(final String attributePath)
+  @NotNull
+  public static Filter pr(@NotNull final String attributePath)
       throws BadRequestException
   {
     return new PresentFilter(Path.fromString(attributePath));
@@ -662,8 +713,9 @@ public abstract class Filter
    * @param filterValue   The filter attribute value.
    * @return A new {@code greater than} filter.
    */
-  public static Filter gt(final Path attributePath,
-                          final ValueNode filterValue)
+  @NotNull
+  public static Filter gt(@NotNull final Path attributePath,
+                          @Nullable final ValueNode filterValue)
   {
     return new GreaterThanFilter(attributePath, filterValue);
   }
@@ -676,8 +728,9 @@ public abstract class Filter
    * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter gt(final String attributePath,
-                          final Integer filterValue)
+  @NotNull
+  public static Filter gt(@NotNull final String attributePath,
+                          @Nullable final Integer filterValue)
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
@@ -692,7 +745,9 @@ public abstract class Filter
    * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter gt(final String attributePath, final Long filterValue)
+  @NotNull
+  public static Filter gt(@NotNull final String attributePath,
+                          @Nullable final Long filterValue)
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
@@ -707,7 +762,9 @@ public abstract class Filter
    * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter gt(final String attributePath, final Double filterValue)
+  @NotNull
+  public static Filter gt(@NotNull final String attributePath,
+                          @Nullable final Double filterValue)
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
@@ -722,7 +779,9 @@ public abstract class Filter
    * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter gt(final String attributePath, final Float filterValue)
+  @NotNull
+  public static Filter gt(@NotNull final String attributePath,
+                          @Nullable final Float filterValue)
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
@@ -737,7 +796,9 @@ public abstract class Filter
    * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter gt(final String attributePath, final String filterValue)
+  @NotNull
+  public static Filter gt(@NotNull final String attributePath,
+                          @Nullable final String filterValue)
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
@@ -752,7 +813,9 @@ public abstract class Filter
    * @return A new {@code greater than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter gt(final String attributePath, final Date filterValue)
+  @NotNull
+  public static Filter gt(@NotNull final String attributePath,
+                          @Nullable final Date filterValue)
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
@@ -767,8 +830,9 @@ public abstract class Filter
    * @param filterValue   The filter attribute value.
    * @return A new {@code greater than or equal} filter.
    */
-  public static Filter ge(final Path attributePath,
-                          final ValueNode filterValue)
+  @NotNull
+  public static Filter ge(@NotNull final Path attributePath,
+                          @Nullable final ValueNode filterValue)
   {
     return new GreaterThanOrEqualFilter(attributePath, filterValue);
   }
@@ -781,8 +845,9 @@ public abstract class Filter
    * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ge(final String attributePath,
-                          final Integer filterValue)
+  @NotNull
+  public static Filter ge(@NotNull final String attributePath,
+                          @Nullable final Integer filterValue)
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
@@ -797,7 +862,9 @@ public abstract class Filter
    * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ge(final String attributePath, final Long filterValue)
+  @NotNull
+  public static Filter ge(@NotNull final String attributePath,
+                          @Nullable final Long filterValue)
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
@@ -812,7 +879,9 @@ public abstract class Filter
    * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ge(final String attributePath, final Double filterValue)
+  @NotNull
+  public static Filter ge(@NotNull final String attributePath,
+                          @Nullable final Double filterValue)
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
@@ -827,7 +896,9 @@ public abstract class Filter
    * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ge(final String attributePath, final Float filterValue)
+  @NotNull
+  public static Filter ge(@NotNull final String attributePath,
+                          @Nullable final Float filterValue)
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
@@ -842,7 +913,9 @@ public abstract class Filter
    * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ge(final String attributePath, final String filterValue)
+  @NotNull
+  public static Filter ge(@NotNull final String attributePath,
+                          @Nullable final String filterValue)
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
@@ -857,7 +930,9 @@ public abstract class Filter
    * @return A new {@code greater than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter ge(final String attributePath, final Date filterValue)
+  @NotNull
+  public static Filter ge(@NotNull final String attributePath,
+                          @Nullable final Date filterValue)
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
@@ -872,8 +947,9 @@ public abstract class Filter
    * @param filterValue   The filter attribute value.
    * @return A new {@code less than} filter.
    */
-  public static Filter lt(final Path attributePath,
-                          final ValueNode filterValue)
+  @NotNull
+  public static Filter lt(@NotNull final Path attributePath,
+                          @Nullable final ValueNode filterValue)
   {
     return new LessThanFilter(attributePath, filterValue);
   }
@@ -886,8 +962,9 @@ public abstract class Filter
    * @return A new {@code less than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter lt(final String attributePath,
-                          final Integer filterValue)
+  @NotNull
+  public static Filter lt(@NotNull final String attributePath,
+                          @Nullable final Integer filterValue)
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
@@ -902,7 +979,9 @@ public abstract class Filter
    * @return A new {@code less than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter lt(final String attributePath, final Long filterValue)
+  @NotNull
+  public static Filter lt(@NotNull final String attributePath,
+                          @Nullable final Long filterValue)
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
@@ -917,7 +996,9 @@ public abstract class Filter
    * @return A new {@code less than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter lt(final String attributePath, final Double filterValue)
+  @NotNull
+  public static Filter lt(@NotNull final String attributePath,
+                          @Nullable final Double filterValue)
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
@@ -932,7 +1013,9 @@ public abstract class Filter
    * @return A new {@code less than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter lt(final String attributePath, final Float filterValue)
+  @NotNull
+  public static Filter lt(@NotNull final String attributePath,
+                          @Nullable final Float filterValue)
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
@@ -947,7 +1030,9 @@ public abstract class Filter
    * @return A new {@code less than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter lt(final String attributePath, final String filterValue)
+  @NotNull
+  public static Filter lt(@NotNull final String attributePath,
+                          @Nullable final String filterValue)
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
@@ -962,7 +1047,9 @@ public abstract class Filter
    * @return A new {@code less than} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter lt(final String attributePath, final Date filterValue)
+  @NotNull
+  public static Filter lt(@NotNull final String attributePath,
+                          @Nullable final Date filterValue)
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
@@ -977,8 +1064,9 @@ public abstract class Filter
    * @param filterValue   The filter attribute value.
    * @return A new {@code less than or equal} filter.
    */
-  public static Filter le(final Path attributePath,
-                          final ValueNode filterValue)
+  @NotNull
+  public static Filter le(@NotNull final Path attributePath,
+                          @Nullable final ValueNode filterValue)
   {
     return new LessThanOrEqualFilter(attributePath, filterValue);
   }
@@ -991,8 +1079,9 @@ public abstract class Filter
    * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter le(final String attributePath,
-                          final Integer filterValue)
+  @NotNull
+  public static Filter le(@NotNull final String attributePath,
+                          @Nullable final Integer filterValue)
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
@@ -1007,7 +1096,9 @@ public abstract class Filter
    * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter le(final String attributePath, final Long filterValue)
+  @NotNull
+  public static Filter le(@NotNull final String attributePath,
+                          @Nullable final Long filterValue)
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
@@ -1022,7 +1113,9 @@ public abstract class Filter
    * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter le(final String attributePath, final Double filterValue)
+  @NotNull
+  public static Filter le(@NotNull final String attributePath,
+                          @Nullable final Double filterValue)
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
@@ -1037,7 +1130,9 @@ public abstract class Filter
    * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter le(final String attributePath, final Float filterValue)
+  @NotNull
+  public static Filter le(@NotNull final String attributePath,
+                          @Nullable final Float filterValue)
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
@@ -1052,7 +1147,9 @@ public abstract class Filter
    * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter le(final String attributePath, final String filterValue)
+  @NotNull
+  public static Filter le(@NotNull final String attributePath,
+                          @Nullable final String filterValue)
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
@@ -1067,7 +1164,9 @@ public abstract class Filter
    * @return A new {@code less than or equal} filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter le(final String attributePath, final Date filterValue)
+  @NotNull
+  public static Filter le(@NotNull final String attributePath,
+                          @Nullable final Date filterValue)
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
@@ -1083,11 +1182,13 @@ public abstract class Filter
    * @param filters Additional filter components.
    * @return A new {@code and} filter.
    */
-  public static Filter and(final Filter filter1, final Filter filter2,
-                           final Filter... filters)
+  @NotNull
+  public static Filter and(@NotNull final Filter filter1,
+                           @NotNull final Filter filter2,
+                           @Nullable final Filter... filters)
   {
     ArrayList<Filter> components =
-        new ArrayList<Filter>(filters != null ? 2 + filters.length : 2);
+        new ArrayList<>(filters != null ? 2 + filters.length : 2);
     components.add(filter1);
     components.add(filter2);
     if (filters != null)
@@ -1106,12 +1207,14 @@ public abstract class Filter
    * @return A new {@code and} filter.
    * @throws BadRequestException If one of the filters could not be parsed.
    */
-  public static Filter and(final String filter1, final String filter2,
-                           final String... filters)
+  @NotNull
+  public static Filter and(@NotNull final String filter1,
+                           @NotNull final String filter2,
+                           @Nullable final String... filters)
       throws BadRequestException
   {
     ArrayList<Filter> components =
-        new ArrayList<Filter>(filters != null ? 2 + filters.length : 2);
+        new ArrayList<>(filters != null ? 2 + filters.length : 2);
     components.add(fromString(filter1));
     components.add(fromString(filter2));
     if (filters != null)
@@ -1132,11 +1235,13 @@ public abstract class Filter
    * @param filters Additional filter components.
    * @return A new {@code or} filter.
    */
-  public static Filter or(final Filter filter1, final Filter filter2,
-                          final Filter... filters)
+  @NotNull
+  public static Filter or(@NotNull final Filter filter1,
+                          @NotNull final Filter filter2,
+                          @Nullable final Filter... filters)
   {
     ArrayList<Filter> components =
-        new ArrayList<Filter>(filters != null ? 2 + filters.length : 2);
+        new ArrayList<>(filters != null ? 2 + filters.length : 2);
     components.add(filter1);
     components.add(filter2);
     if (filters != null)
@@ -1155,12 +1260,14 @@ public abstract class Filter
    * @return A new {@code or} filter.
    * @throws BadRequestException If one of the filters could not be parsed.
    */
-  public static Filter or(final String filter1, final String filter2,
-                          final String... filters)
+  @NotNull
+  public static Filter or(@NotNull final String filter1,
+                          @NotNull final String filter2,
+                          @Nullable final String... filters)
       throws BadRequestException
   {
     ArrayList<Filter> components =
-        new ArrayList<Filter>(filters != null ? 2 + filters.length : 2);
+        new ArrayList<>(filters != null ? 2 + filters.length : 2);
     components.add(fromString(filter1));
     components.add(fromString(filter2));
     if (filters != null)
@@ -1179,14 +1286,15 @@ public abstract class Filter
    * @param filters The filter components.
    * @return A new {@code and} filter.
    */
-  public static Filter and(final List<Filter> filters)
+  @NotNull
+  public static Filter and(@NotNull final List<Filter> filters)
   {
     if (filters.size() < 2)
     {
       throw new IllegalArgumentException(
           "and logical filter must combine at least 2 filters");
     }
-    return new AndFilter(new ArrayList<Filter>(filters));
+    return new AndFilter(new ArrayList<>(filters));
   }
 
   /**
@@ -1195,14 +1303,15 @@ public abstract class Filter
    * @param filters The filter components.
    * @return A new {@code or} filter.
    */
-  public static Filter or(final List<Filter> filters)
+  @NotNull
+  public static Filter or(@NotNull final List<Filter> filters)
   {
     if (filters.size() < 2)
     {
       throw new IllegalArgumentException(
           "or logical filter must combine at least 2 filters");
     }
-    return new OrFilter(new ArrayList<Filter>(filters));
+    return new OrFilter(new ArrayList<>(filters));
   }
 
   /**
@@ -1211,7 +1320,8 @@ public abstract class Filter
    * @param filter The inverted filter.
    * @return A new {@code not} filter.
    */
-  public static Filter not(final Filter filter)
+  @NotNull
+  public static Filter not(@NotNull final Filter filter)
   {
     return new NotFilter(filter);
   }
@@ -1223,7 +1333,9 @@ public abstract class Filter
    * @return A new {@code not} filter.
    * @throws BadRequestException If the filter could not be parsed.
    */
-  public static Filter not(final String filter) throws BadRequestException
+  @NotNull
+  public static Filter not(@NotNull final String filter)
+      throws BadRequestException
   {
     return new NotFilter(fromString(filter));
   }
@@ -1235,8 +1347,9 @@ public abstract class Filter
    * @param valueFilter   The value filter.
    * @return A new complex multi-valued attribute value filter.
    */
-  public static Filter hasComplexValue(final Path attributePath,
-                                       final Filter valueFilter)
+  @NotNull
+  public static Filter hasComplexValue(@NotNull final Path attributePath,
+                                       @Nullable final Filter valueFilter)
   {
     return new ComplexValueFilter(attributePath, valueFilter);
   }
@@ -1249,8 +1362,9 @@ public abstract class Filter
    * @return A new complex multi-valued attribute value filter.
    * @throws BadRequestException If the path could not be parsed.
    */
-  public static Filter hasComplexValue(final String attributePath,
-                                       final Filter valueFilter)
+  @NotNull
+  public static Filter hasComplexValue(@NotNull final String attributePath,
+                                       @Nullable final Filter valueFilter)
       throws BadRequestException
   {
     return new ComplexValueFilter(Path.fromString(attributePath), valueFilter);
@@ -1264,8 +1378,9 @@ public abstract class Filter
    * @return A new complex multi-valued attribute value filter.
    * @throws BadRequestException If the path or filter could not be parsed.
    */
-  public static Filter hasComplexValue(final String attributePath,
-                                       final String valueFilter)
+  @NotNull
+  public static Filter hasComplexValue(@NotNull final String attributePath,
+                                       @Nullable final String valueFilter)
       throws BadRequestException
   {
     return new ComplexValueFilter(Path.fromString(attributePath),
@@ -1279,7 +1394,8 @@ public abstract class Filter
    * @return The parsed filter.
    * @throws BadRequestException If the filter could not be parsed.
    */
-  public static Filter fromString(final String filterString)
+  @NotNull
+  public static Filter fromString(@NotNull final String filterString)
       throws BadRequestException
   {
     return Parser.parseFilter(filterString);

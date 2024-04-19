@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.Meta;
 
 import java.util.Collection;
@@ -55,6 +57,7 @@ public interface ScimResource
    *
    * @return {@code Meta} containing metadata about the object.
    */
+  @Nullable
   Meta getMeta();
 
   /**
@@ -62,13 +65,14 @@ public interface ScimResource
    *
    * @param meta {@code Meta} containing metadata for the object.
    */
-  void setMeta(Meta meta);
+  void setMeta(@Nullable Meta meta);
 
   /**
    * Gets the id of the object.
    *
    * @return the id of the object.
    */
+  @Nullable
   String getId();
 
 
@@ -77,13 +81,14 @@ public interface ScimResource
    *
    * @param id The object's id.
    */
-  void setId(String id);
+  void setId(@Nullable String id);
 
   /**
    * Gets the objects external id.
    *
    * @return The external id of the object.
    */
+  @Nullable
   String getExternalId();
 
   /**
@@ -91,7 +96,7 @@ public interface ScimResource
    *
    * @param externalId The external id of the object.
    */
-  void setExternalId(String externalId);
+  void setExternalId(@Nullable String externalId);
 
   /**
    * Gets the schema urns for this object.  This includes the one for the
@@ -100,6 +105,7 @@ public interface ScimResource
    *
    * @return the schema urns for this object.
    */
+  @NotNull
   Collection<String> getSchemaUrns();
 
   /**
@@ -109,7 +115,7 @@ public interface ScimResource
    *
    * @param schemaUrns A Collection containing the schema urns for this object.
    */
-  void setSchemaUrns(Collection<String> schemaUrns);
+  void setSchemaUrns(@NotNull Collection<String> schemaUrns);
 
   /**
    * An alternate version of {@link #setSchemaUrns(Collection)}.
@@ -119,7 +125,7 @@ public interface ScimResource
    * @param schemaUrns An optional parameter for additional schema URNs. Any
    *                   {@code null} values will be ignored.
    */
-  void setSchemaUrns(String schemaUrn, String... schemaUrns);
+  void setSchemaUrns(@NotNull String schemaUrn, @Nullable String... schemaUrns);
 
   /**
    * Returns the GenericScimResource representation of this ScimResource. If
@@ -128,5 +134,6 @@ public interface ScimResource
    *
    * @return The GenericScimResource representation of this ScimResource.
    */
+  @NotNull
   GenericScimResource asGenericScimResource();
 }

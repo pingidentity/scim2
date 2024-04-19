@@ -17,6 +17,9 @@
 
 package com.unboundid.scim2.common.filters;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +40,7 @@ import java.util.List;
  */
 public abstract class CombiningFilter extends Filter
 {
+  @NotNull
   private final List<Filter> filterComponents;
 
   /**
@@ -44,7 +48,7 @@ public abstract class CombiningFilter extends Filter
    *
    * @param filterComponents The filter components to combine.
    */
-  CombiningFilter(final List<Filter> filterComponents)
+  CombiningFilter(@NotNull final List<Filter> filterComponents)
   {
     this.filterComponents = Collections.unmodifiableList(filterComponents);
   }
@@ -62,6 +66,7 @@ public abstract class CombiningFilter extends Filter
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public List<Filter> getCombinedFilters()
   {
     return filterComponents;
@@ -73,7 +78,7 @@ public abstract class CombiningFilter extends Filter
    * @param builder The buffer to which the string representation of the
    *                filter is to be appended.
    */
-  public void toString(final StringBuilder builder)
+  public void toString(@NotNull final StringBuilder builder)
   {
     builder.append('(');
 

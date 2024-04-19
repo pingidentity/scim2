@@ -18,6 +18,8 @@ package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 
 import java.util.List;
@@ -32,6 +34,7 @@ import java.util.Objects;
     name="Group", description = "Group")
 public class GroupResource extends BaseScimResource
 {
+  @NotNull
   @Attribute(description = "A human-readable name for the Group.",
       isRequired = true,
       isCaseExact = false,
@@ -40,6 +43,7 @@ public class GroupResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String displayName;
 
+  @Nullable
   @Attribute(description = "A list of members of the Group.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -52,6 +56,7 @@ public class GroupResource extends BaseScimResource
    *
    * @return The name of the Group, suitable for display to end-users.
    */
+  @NotNull
   public String getDisplayName()
   {
     return displayName;
@@ -60,10 +65,12 @@ public class GroupResource extends BaseScimResource
   /**
    * Specifies the name of the Group, suitable for display to end-users.
    *
-   * @param displayName The name of the Group, suitable for display to end-users.
+   * @param displayName The name of the Group, suitable for display to
+   *                    end-users.
    * @return This object.
    */
-  public GroupResource setDisplayName(final String displayName)
+  @NotNull
+  public GroupResource setDisplayName(@NotNull final String displayName)
   {
     this.displayName = displayName;
     return this;
@@ -74,6 +81,7 @@ public class GroupResource extends BaseScimResource
    *
    * @return The list of group members.
    */
+  @Nullable
   public List<Member> getMembers()
   {
     return members;
@@ -85,7 +93,8 @@ public class GroupResource extends BaseScimResource
    * @param members The list of group members.
    * @return This object.
    */
-  public GroupResource setMembers(final List<Member> members)
+  @NotNull
+  public GroupResource setMembers(@Nullable final List<Member> members)
   {
     this.members = members;
     return this;
@@ -99,7 +108,7 @@ public class GroupResource extends BaseScimResource
    *            resource, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

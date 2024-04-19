@@ -21,6 +21,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.unboundid.scim2.common.GenericScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -35,9 +37,10 @@ public class GenericScimObjectSerializer
    * {@inheritDoc}
    */
   @Override
-  public void serialize(final GenericScimResource value,
-      final JsonGenerator jgen, final SerializerProvider provider)
-      throws IOException
+  public void serialize(@NotNull final GenericScimResource value,
+      @NotNull final JsonGenerator jgen,
+      @Nullable final SerializerProvider provider)
+          throws IOException
   {
     JsonUtils.getObjectWriter().writeValue(jgen, value.getObjectNode());
   }

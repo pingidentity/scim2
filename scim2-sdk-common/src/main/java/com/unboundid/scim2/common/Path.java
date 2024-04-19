@@ -19,6 +19,8 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.SchemaUtils;
@@ -38,12 +40,21 @@ import java.util.List;
  */
 public final class Path implements Iterable<Path.Element>
 {
+  @Nullable
+  private final String schemaUrn;
+
+  @NotNull
+  private final List<Element> elements;
+
   /**
    * This class represents an element of the path.
    */
   public static final class Element
   {
+    @NotNull
     private final String attribute;
+
+    @Nullable
     private final Filter valueFilter;
 
     /**
@@ -52,7 +63,8 @@ public final class Path implements Iterable<Path.Element>
      * @param attribute The attribute referenced by this path element.
      * @param valueFilter The optional value filter.
      */
-    private Element(final String attribute, final Filter valueFilter)
+    private Element(@NotNull final String attribute,
+                    @Nullable final Filter valueFilter)
     {
       this.attribute = attribute;
       this.valueFilter = valueFilter;
@@ -63,6 +75,7 @@ public final class Path implements Iterable<Path.Element>
      *
      * @return The attribute referenced by this path element.
      */
+    @NotNull
     public String getAttribute()
     {
       return attribute;
@@ -74,8 +87,9 @@ public final class Path implements Iterable<Path.Element>
      *
      * @return The value filter that may be used to narrow down the values of
      * the attribute referenced by this path element or {@code null} if all
-     * values are referened by this path element.
+     * values are referenced by this path element.
      */
+    @Nullable
     public Filter getValueFilter()
     {
       return valueFilter;
@@ -89,7 +103,7 @@ public final class Path implements Iterable<Path.Element>
      *            element, or {@code false} if not.
      */
     @Override
-    public boolean equals(final Object o)
+    public boolean equals(@Nullable final Object o)
     {
       if (this == o)
       {
@@ -135,6 +149,7 @@ public final class Path implements Iterable<Path.Element>
      * @return  A string representation of this path element.
      */
     @Override
+    @NotNull
     public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -149,7 +164,7 @@ public final class Path implements Iterable<Path.Element>
      * @param builder  The buffer to which the string representation of the
      *                 path element is to be appended.
      */
-    public void toString(final StringBuilder builder)
+    public void toString(@NotNull final StringBuilder builder)
     {
       builder.append(attribute);
       if(valueFilter != null)
@@ -161,15 +176,13 @@ public final class Path implements Iterable<Path.Element>
     }
   }
 
-  private final String schemaUrn;
-  private final List<Element> elements;
-
   /**
    * Create a new path with the provided elements.
    *
    * @param elements The path elements.
    */
-  private Path(final String schemaUrn, final List<Element> elements)
+  private Path(@Nullable final String schemaUrn,
+               @NotNull final List<Element> elements)
   {
     this.schemaUrn = schemaUrn;
     this.elements = Collections.unmodifiableList(elements);
@@ -184,7 +197,8 @@ public final class Path implements Iterable<Path.Element>
    * @return A new path to a sub-attribute of the attribute referenced by this
    * path.
    */
-  public Path attribute(final String attribute)
+  @NotNull
+  public Path attribute(@NotNull final String attribute)
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.add(new Element(attribute, null));
@@ -201,7 +215,9 @@ public final class Path implements Iterable<Path.Element>
    * @return A new path to a sub-attribute of the attribute referenced by this
    * path.
    */
-  public Path attribute(final String attribute, final Filter valueFilter)
+  @NotNull
+  public Path attribute(@NotNull final String attribute,
+                        @Nullable final Filter valueFilter)
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.add(new Element(attribute, valueFilter));
@@ -217,7 +233,8 @@ public final class Path implements Iterable<Path.Element>
    * @return A new path to a sub-attribute of the attribute referenced by this
    * path.
    */
-  public Path attribute(final Path path)
+  @NotNull
+  public Path attribute(@NotNull final Path path)
   {
     List<Element> newElements = new ArrayList<Element>(
         this.elements.size() + path.size());
@@ -235,9 +252,10 @@ public final class Path implements Iterable<Path.Element>
    * @param valueFilter The replacement value filter.
    * @return The new path.
    */
+  @NotNull
   public Path replace(final int index,
-                      final String attribute,
-                      final Filter valueFilter)
+                      @NotNull final String attribute,
+                      @Nullable final Filter valueFilter)
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.set(index, new Element(attribute, valueFilter));
@@ -252,7 +270,8 @@ public final class Path implements Iterable<Path.Element>
    * @param attribute The replacement attribute.
    * @return The new path.
    */
-  public Path replace(final int index, final String attribute)
+  @NotNull
+  public Path replace(final int index, @NotNull final String attribute)
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.set(index,
@@ -268,7 +287,8 @@ public final class Path implements Iterable<Path.Element>
    * @param valueFilter The replacement value filter.
    * @return The new path.
    */
-  public Path replace(final int index, final Filter valueFilter)
+  @NotNull
+  public Path replace(final int index, @Nullable final Filter valueFilter)
   {
     List<Element> newElements = new ArrayList<Element>(this.elements);
     newElements.set(index,
@@ -286,6 +306,7 @@ public final class Path implements Iterable<Path.Element>
    * @throws IndexOutOfBoundsException if the index is out of range
    *         ({@code index < 0 || index > size()})
    */
+  @NotNull
   public Path subPath(final int index) throws IndexOutOfBoundsException
   {
     return new Path(schemaUrn, elements.subList(0, index));
@@ -294,6 +315,7 @@ public final class Path implements Iterable<Path.Element>
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public Iterator<Element> iterator()
   {
     return elements.iterator();
@@ -307,6 +329,7 @@ public final class Path implements Iterable<Path.Element>
    * @throws IndexOutOfBoundsException if the index is out of range
    *         ({@code index < 0 || index >= size()})
    */
+  @Nullable
   public Element getElement(final int index) throws IndexOutOfBoundsException
   {
     return elements.get(index);
@@ -340,6 +363,7 @@ public final class Path implements Iterable<Path.Element>
    *
    * @return A new path from this path with any value filters removed.
    */
+  @NotNull
   public Path withoutFilters()
   {
     ArrayList<Element> newElements = new ArrayList<Element>(elements.size());
@@ -358,7 +382,8 @@ public final class Path implements Iterable<Path.Element>
    * @throws BadRequestException if the path string could not be parsed.
    */
   @JsonCreator
-  public static Path fromString(final String pathString)
+  @NotNull
+  public static Path fromString(@Nullable final String pathString)
       throws BadRequestException
   {
     return Parser.parsePath(pathString);
@@ -371,6 +396,7 @@ public final class Path implements Iterable<Path.Element>
    * @return The path to the root of the JSON object that represents the
    * SCIM resource.
    */
+  @NotNull
   public static Path root()
   {
     return new Path(null, Collections.emptyList());
@@ -385,7 +411,8 @@ public final class Path implements Iterable<Path.Element>
    * @return The path to the root of the JSON object that contains all the
    * attributes of an extension URN.
    */
-  public static Path root(final String schemaUrn)
+  @NotNull
+  public static Path root(@Nullable final String schemaUrn)
   {
     if(schemaUrn != null && !SchemaUtils.isUrn(schemaUrn))
     {
@@ -408,7 +435,8 @@ public final class Path implements Iterable<Path.Element>
    * @return The path to the root of the JSON object that contains all the
    * extension attributes of an extension schema.
    */
-  public static <T> Path root(final Class<T> extensionClass)
+  @NotNull
+  public static <T> Path root(@NotNull final Class<T> extensionClass)
   {
     return root(SchemaUtils.getSchemaUrn(extensionClass));
   }
@@ -419,6 +447,7 @@ public final class Path implements Iterable<Path.Element>
    * @return The schema URN of the attribute referenced by this path or
    * {@code null} if not specified.
    */
+  @Nullable
   public String getSchemaUrn()
   {
     return schemaUrn;
@@ -432,7 +461,7 @@ public final class Path implements Iterable<Path.Element>
    *            path, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@NotNull final Object o)
   {
     if (this == o)
     {
@@ -474,6 +503,7 @@ public final class Path implements Iterable<Path.Element>
    * @return  A string representation of this Path.
    */
   @Override
+  @NotNull
   @JsonValue
   public String toString()
   {
@@ -489,7 +519,7 @@ public final class Path implements Iterable<Path.Element>
    * @param builder  The buffer to which the string representation of the
    *                 attribute path is to be appended.
    */
-  public void toString(final StringBuilder builder)
+  public void toString(@NotNull final StringBuilder builder)
   {
     if(schemaUrn != null)
     {

@@ -18,6 +18,8 @@
 package com.unboundid.scim2.common.filters;
 
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
@@ -51,8 +53,10 @@ import com.unboundid.scim2.common.exceptions.ScimException;
  */
 public final class ComplexValueFilter extends Filter
 {
+  @NotNull
   private final Path filterAttribute;
 
+  @NotNull
   private final Filter valueFilter;
 
   /**
@@ -61,7 +65,8 @@ public final class ComplexValueFilter extends Filter
    * @param filterAttribute The complex attribute to filter.
    * @param valueFilter The value filter.
    */
-  ComplexValueFilter(final Path filterAttribute, final Filter valueFilter)
+  ComplexValueFilter(@NotNull final Path filterAttribute,
+                     @NotNull final Filter valueFilter)
   {
     this.filterAttribute = filterAttribute;
     this.valueFilter = valueFilter;
@@ -71,6 +76,7 @@ public final class ComplexValueFilter extends Filter
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public Path getAttributePath()
   {
     return filterAttribute;
@@ -91,6 +97,7 @@ public final class ComplexValueFilter extends Filter
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public Filter getValueFilter()
   {
     return valueFilter;
@@ -102,7 +109,7 @@ public final class ComplexValueFilter extends Filter
    * @param builder The buffer to which the string representation of the
    *                filter is to be appended.
    */
-  public void toString(final StringBuilder builder)
+  public void toString(@NotNull final StringBuilder builder)
   {
     builder.append(filterAttribute);
     builder.append('[');
@@ -113,7 +120,9 @@ public final class ComplexValueFilter extends Filter
   /**
    * {@inheritDoc}
    */
-  public <R, P> R visit(final FilterVisitor<R, P> visitor, final P param)
+  @NotNull
+  public <R, P> R visit(@NotNull final FilterVisitor<R, P> visitor,
+                        @Nullable final P param)
       throws ScimException
   {
     return visitor.visit(this, param);
@@ -123,6 +132,7 @@ public final class ComplexValueFilter extends Filter
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public FilterType getFilterType()
   {
     return FilterType.COMPLEX_VALUE;
@@ -137,7 +147,7 @@ public final class ComplexValueFilter extends Filter
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

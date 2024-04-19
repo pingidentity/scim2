@@ -23,6 +23,8 @@ import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.core.json.JsonReadContext;
 import com.fasterxml.jackson.core.json.ReaderBasedJsonParser;
 import com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.io.Reader;
 
@@ -30,9 +32,8 @@ import java.io.Reader;
  * A parser that can be used for parsing JSON objects contained
  * within a SCIM filter specification.
  */
-public class ScimFilterJsonParser extends ReaderBasedJsonParser {
-
-
+public class ScimFilterJsonParser extends ReaderBasedJsonParser
+{
   /**
    * Constructor.
    *
@@ -43,12 +44,12 @@ public class ScimFilterJsonParser extends ReaderBasedJsonParser {
    * @param st see superclass
    */
   public ScimFilterJsonParser(
-      final IOContext ctxt,
+      @NotNull final IOContext ctxt,
       final int features,
-      final Reader r,
-      final ObjectCodec codec,
-      final CharsToNameCanonicalizer st) {
-
+      @Nullable final Reader r,
+      @Nullable final ObjectCodec codec,
+      @NotNull final CharsToNameCanonicalizer st)
+  {
     super(ctxt, features, r, codec, st);
     // By default the JSON read context is set to JsonStreamContext.TYPE_ROOT,
     // which will require whitespace after any unquoted token (for example, a number).

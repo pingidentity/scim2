@@ -18,12 +18,15 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 /**
  * Address for the user.
  */
 public class Address
 {
+  @Nullable
   @Attribute(description = "The full mailing address, formatted for " +
       "display or use with a mailing label. This attribute MAY " +
       "contain newlines.",
@@ -34,6 +37,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String formatted;
 
+  @Nullable
   @Attribute(description = "The full street address component, which " +
       "may include house number, street name, PO BOX, and multi-line " +
       "extended street address information. This attribute MAY contain " +
@@ -45,6 +49,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String streetAddress;
 
+  @Nullable
   @Attribute(description = "The city or locality component.",
       isRequired = false,
       isCaseExact = false,
@@ -53,6 +58,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String locality;
 
+  @Nullable
   @Attribute(description = "The state or region component.",
       isRequired = false,
       isCaseExact = false,
@@ -61,6 +67,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String region;
 
+  @Nullable
   @Attribute(description = "The zipcode or postal code component.",
       isRequired = false,
       isCaseExact = false,
@@ -69,6 +76,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String postalCode;
 
+  @Nullable
   @Attribute(description = "The country name component.",
       isRequired = false,
       isCaseExact = false,
@@ -77,6 +85,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String country;
 
+  @Nullable
   @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'work' or 'home'.",
       isRequired = false,
@@ -87,6 +96,7 @@ public class Address
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
+  @Nullable
   @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute, e.g., the " +
       "preferred address. The primary attribute value 'true' MUST appear " +
@@ -102,6 +112,7 @@ public class Address
    *
    * @return The full mailing address
    */
+  @Nullable
   public String getFormatted()
   {
     return formatted;
@@ -114,7 +125,8 @@ public class Address
    * @param formatted The full mailing address
    * @return This object.
    */
-  public Address setFormatted(final String formatted)
+  @NotNull
+  public Address setFormatted(@Nullable final String formatted)
   {
     this.formatted = formatted;
     return this;
@@ -127,6 +139,7 @@ public class Address
    *
    * @return the full street address component.
    */
+  @Nullable
   public String getStreetAddress()
   {
     return streetAddress;
@@ -140,7 +153,8 @@ public class Address
    * @param streetAddress the full street address component.
    * @return This object.
    */
-  public Address setStreetAddress(final String streetAddress)
+  @NotNull
+  public Address setStreetAddress(@Nullable final String streetAddress)
   {
     this.streetAddress = streetAddress;
     return this;
@@ -151,6 +165,7 @@ public class Address
    *
    * @return The city or locality component.
    */
+  @Nullable
   public String getLocality()
   {
     return locality;
@@ -162,7 +177,8 @@ public class Address
    * @param locality The city or locality component.
    * @return This object.
    */
-  public Address setLocality(final String locality)
+  @NotNull
+  public Address setLocality(@Nullable final String locality)
   {
     this.locality = locality;
     return this;
@@ -173,6 +189,7 @@ public class Address
    *
    * @return The state or region component.
    */
+  @Nullable
   public String getRegion()
   {
     return region;
@@ -184,7 +201,8 @@ public class Address
    * @param region The state or region component.
    * @return This object.
    */
-  public Address setRegion(final String region)
+  @NotNull
+  public Address setRegion(@Nullable final String region)
   {
     this.region = region;
     return this;
@@ -195,6 +213,7 @@ public class Address
    *
    * @return The zipcode or postal code component.
    */
+  @Nullable
   public String getPostalCode()
   {
     return postalCode;
@@ -206,7 +225,8 @@ public class Address
    * @param postalCode The zipcode or postal code component.
    * @return This object.
    */
-  public Address setPostalCode(final String postalCode)
+  @NotNull
+  public Address setPostalCode(@Nullable final String postalCode)
   {
     this.postalCode = postalCode;
     return this;
@@ -217,6 +237,7 @@ public class Address
    *
    * @return The country name component.
    */
+  @Nullable
   public String getCountry()
   {
     return country;
@@ -228,7 +249,8 @@ public class Address
    * @param country The country name component.
    * @return This object.
    */
-  public Address setCountry(final String country)
+  @NotNull
+  public Address setCountry(@Nullable final String country)
   {
     this.country = country;
     return this;
@@ -241,6 +263,7 @@ public class Address
    * @return A label indicating the attribute's function; for example, 'work' or
    * 'home'.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -253,7 +276,8 @@ public class Address
    * @param type a label indicating the attribute's function.
    * @return This object.
    */
-  public Address setType(final String type)
+  @NotNull
+  public Address setType(@Nullable final String type)
   {
     this.type = type;
     return this;
@@ -267,6 +291,7 @@ public class Address
    * @return The Boolean value indicating the 'primary' or preferred attribute
    * value for this attribute
    */
+  @Nullable
   public Boolean getPrimary()
   {
     return primary;
@@ -274,14 +299,15 @@ public class Address
 
   /**
    * Specifies the Boolean value indicating the 'primary' or preferred attribute
-      * value for this attribute, for example, the preferred address. The primary
-      * attribute value 'true' MUST appear no more than once.
+   * value for this attribute, for example, the preferred address. The primary
+   * attribute value 'true' MUST appear no more than once.
    *
    * @param primary The Boolean value indicating the 'primary' or preferred
    *                attribute value for this attribute
    * @return This object.
    */
-  public Address setPrimary(final Boolean primary)
+  @NotNull
+  public Address setPrimary(@Nullable final Boolean primary)
   {
     this.primary = primary;
     return this;
@@ -295,7 +321,7 @@ public class Address
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

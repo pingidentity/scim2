@@ -18,6 +18,8 @@
 package com.unboundid.scim2.common.filters;
 
 
+import com.unboundid.scim2.common.annotations.NotNull;
+
 /**
  * This enumeration defines the set of possible filter types that may
  * be used for SCIM query filters.
@@ -111,6 +113,7 @@ public enum FilterType
   /**
    * The lower case string value for this filter type.
    */
+  @NotNull
   private String stringValue;
 
 
@@ -119,7 +122,7 @@ public enum FilterType
    *
    * @param stringValue The lower case string value for this filter type.
    */
-  FilterType(final String stringValue)
+  FilterType(@NotNull final String stringValue)
   {
     this.stringValue = stringValue;
   }
@@ -130,6 +133,7 @@ public enum FilterType
    *
    * @return The lower case string value for this filter type.
    */
+  @NotNull
   public String getStringValue()
   {
     return stringValue;
@@ -141,6 +145,7 @@ public enum FilterType
    *
    * @return A string representation of this filter type.
    */
+  @NotNull
   public String toString()
   {
     return getStringValue();

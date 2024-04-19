@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.exceptions;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
@@ -82,6 +84,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  */
 public class ScimException extends Exception
 {
+  @NotNull
   private final ErrorResponse scimError;
 
 
@@ -91,7 +94,8 @@ public class ScimException extends Exception
    * @param statusCode    The HTTP status code for this SCIM exception.
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public ScimException(final int statusCode, final String errorMessage)
+  public ScimException(final int statusCode,
+                       @Nullable final String errorMessage)
   {
     this(statusCode, null, errorMessage);
   }
@@ -108,8 +112,9 @@ public class ScimException extends Exception
    *                      and may be {@code null}.
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public ScimException(final int statusCode, final String scimType,
-                       final String errorMessage)
+  public ScimException(final int statusCode,
+                       @Nullable final String scimType,
+                       @Nullable final String errorMessage)
   {
     scimError = new ErrorResponse(statusCode);
     scimError.setScimType(scimType);
@@ -128,9 +133,10 @@ public class ScimException extends Exception
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public ScimException(final int statusCode, final String scimType,
-                       final String errorMessage,
-                       final Throwable cause)
+  public ScimException(final int statusCode,
+                       @Nullable final String scimType,
+                       @Nullable final String errorMessage,
+                       @Nullable final Throwable cause)
   {
     super(cause);
 
@@ -148,7 +154,8 @@ public class ScimException extends Exception
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public ScimException(final ErrorResponse scimError, final Throwable cause)
+  public ScimException(@NotNull final ErrorResponse scimError,
+                       @Nullable final Throwable cause)
   {
     super(cause);
 
@@ -159,6 +166,7 @@ public class ScimException extends Exception
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public String getMessage()
   {
     return scimError.getDetail();
@@ -169,6 +177,7 @@ public class ScimException extends Exception
    *
    * @return the ErrorResponse wrapped by this exception.
    */
+  @NotNull
   public ErrorResponse getScimError()
   {
     return scimError;
@@ -181,8 +190,9 @@ public class ScimException extends Exception
    * @param errorMessage  The error message for this SCIM exception.
    * @return The appropriate ScimException from the provided information.
    */
-  public static ScimException createException(final int statusCode,
-                                              final String errorMessage)
+  @NotNull
+  public static ScimException createException(
+      final int statusCode, @Nullable final String errorMessage)
   {
     return createException(statusCode, errorMessage, null);
   }
@@ -198,9 +208,10 @@ public class ScimException extends Exception
    *                      nonexistent or unknown.
    * @return The appropriate ScimException from the provided information.
    */
+  @NotNull
   public static ScimException createException(final int statusCode,
-                                              final String errorMessage,
-                                              final Exception cause)
+                                              @Nullable final String errorMessage,
+                                              @Nullable final Exception cause)
   {
     ErrorResponse scimError = new ErrorResponse(statusCode);
     scimError.setDetail(errorMessage);
@@ -217,8 +228,9 @@ public class ScimException extends Exception
    *                      nonexistent or unknown.
    * @return The appropriate ScimException from the provided information.
    */
-  public static ScimException createException(final ErrorResponse scimError,
-                                              final Exception cause)
+  @NotNull
+  public static ScimException createException(
+      @NotNull final ErrorResponse scimError, @Nullable final Exception cause)
   {
     switch (scimError.getStatus())
     {

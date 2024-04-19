@@ -19,6 +19,8 @@ package com.unboundid.scim2.common.filters;
 
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
 /**
@@ -35,8 +37,10 @@ import com.unboundid.scim2.common.utils.JsonUtils;
  */
 public abstract class ComparisonFilter extends Filter
 {
+  @NotNull
   private final Path filterAttribute;
 
+  @NotNull
   private final ValueNode filterValue;
 
   /**
@@ -45,7 +49,8 @@ public abstract class ComparisonFilter extends Filter
    * @param filterAttribute The path to the attribute to compare.
    * @param filterValue The comparison value.
    */
-  ComparisonFilter(final Path filterAttribute, final ValueNode filterValue)
+  ComparisonFilter(@NotNull final Path filterAttribute,
+                   @Nullable final ValueNode filterValue)
   {
     this.filterAttribute = filterAttribute;
     if (filterValue == null)
@@ -62,6 +67,7 @@ public abstract class ComparisonFilter extends Filter
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public Path getAttributePath()
   {
     return filterAttribute;
@@ -71,6 +77,7 @@ public abstract class ComparisonFilter extends Filter
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public ValueNode getComparisonValue()
   {
     return filterValue;
@@ -91,7 +98,7 @@ public abstract class ComparisonFilter extends Filter
    * @param builder The buffer to which the string representation of the
    *                filter is to be appended.
    */
-  public void toString(final StringBuilder builder)
+  public void toString(@NotNull final StringBuilder builder)
   {
     builder.append(filterAttribute);
     builder.append(' ');

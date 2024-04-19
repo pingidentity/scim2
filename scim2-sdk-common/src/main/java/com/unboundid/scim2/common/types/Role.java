@@ -18,12 +18,15 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 /**
  * Role for the user.
  */
 public class Role
 {
+  @Nullable
   @Attribute(description = "The value of a role.",
       isRequired = false,
       isCaseExact = false,
@@ -32,6 +35,7 @@ public class Role
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
+  @Nullable
   @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
@@ -41,6 +45,7 @@ public class Role
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
+  @Nullable
   @Attribute(description = "A label indicating the attribute's " +
       "function.",
       isRequired = false,
@@ -50,6 +55,7 @@ public class Role
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
+  @Nullable
   @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute. The primary " +
       "attribute value 'true' MUST appear no more than once.",
@@ -63,6 +69,7 @@ public class Role
    *
    * @return The value of a role.
    */
+  @Nullable
   public String getValue()
   {
     return value;
@@ -74,7 +81,8 @@ public class Role
    * @param value The value of a role.
    * @return This object.
    */
-  public Role setValue(final String value)
+  @NotNull
+  public Role setValue(@Nullable final String value)
   {
     this.value = value;
     return this;
@@ -85,6 +93,7 @@ public class Role
    *
    * @return The display name.
    */
+  @Nullable
   public String getDisplay()
   {
     return display;
@@ -96,7 +105,8 @@ public class Role
    * @param display The display name.
    * @return This object.
    */
-  public Role setDisplay(final String display)
+  @NotNull
+  public Role setDisplay(@Nullable final String display)
   {
     this.display = display;
     return this;
@@ -107,6 +117,7 @@ public class Role
    *
    * @return The label indicating the attribute's function.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -118,7 +129,8 @@ public class Role
    * @param type The label indicating the attribute's function.
    * @return This object.
    */
-  public Role setType(final String type)
+  @NotNull
+  public Role setType(@Nullable final String type)
   {
     this.type = type;
     return this;
@@ -131,6 +143,7 @@ public class Role
    * @return The Boolean value indicating the 'primary' or preferred
    * attribute value for this attribute.
    */
+  @Nullable
   public Boolean getPrimary()
   {
     return primary;
@@ -144,7 +157,8 @@ public class Role
    * attribute value for this attribute.
    * @return This object.
    */
-  public Role setPrimary(final Boolean primary)
+  @NotNull
+  public Role setPrimary(@Nullable final Boolean primary)
   {
     this.primary = primary;
     return this;
@@ -158,7 +172,7 @@ public class Role
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

@@ -19,6 +19,7 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
@@ -34,38 +35,45 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
     name="Search Operation", description = "SCIM 2.0 Search Request")
 public final class SearchRequest extends BaseScimResource
 {
+  @Nullable
   @Attribute(description = "A multi-valued list of strings indicating " +
       "the names of resource attributes to return in the response overriding " +
       "the set of attributes that would be returned by default")
   @JsonProperty
   private final Set<String> attributes;
 
+  @Nullable
   @Attribute(description = "A multi-valued list of strings indicating " +
       "the names of resource attributes to be removed from the default set " +
       "of attributes to return")
   @JsonProperty
   private final Set<String> excludedAttributes;
 
+  @Nullable
   @Attribute(description = "The filter string used to request a subset " +
       "of resources")
   @JsonProperty
   private final String filter;
 
+  @Nullable
   @Attribute(description = "A string indicating the attribute whose " +
       "value shall be used to order the returned responses")
   @JsonProperty
   private final String sortBy;
 
+  @Nullable
   @Attribute(description = "A string indicating the order in which the " +
       "sortBy parameter is applied")
   @JsonProperty
   private final SortOrder sortOrder;
 
+  @Nullable
   @Attribute(description = "An integer indicating the 1-based index of " +
       "the first query result")
   @JsonProperty
   private final Integer startIndex;
 
+  @Nullable
   @Attribute(description = "An integer indicating the desired maximum " +
       "number of query results per page")
   @JsonProperty
@@ -88,19 +96,19 @@ public final class SearchRequest extends BaseScimResource
    * @param count the desired maximum number of query results per page.
    */
   @JsonCreator
-  public SearchRequest(@JsonProperty(QUERY_PARAMETER_ATTRIBUTES)
+  public SearchRequest(@Nullable @JsonProperty(QUERY_PARAMETER_ATTRIBUTES)
                        final Set<String> attributes,
-                       @JsonProperty(QUERY_PARAMETER_EXCLUDED_ATTRIBUTES)
+                       @Nullable @JsonProperty(QUERY_PARAMETER_EXCLUDED_ATTRIBUTES)
                        final Set<String> excludedAttributes,
-                       @JsonProperty(QUERY_PARAMETER_FILTER)
+                       @Nullable @JsonProperty(QUERY_PARAMETER_FILTER)
                        final String filter,
-                       @JsonProperty(QUERY_PARAMETER_SORT_BY)
+                       @Nullable @JsonProperty(QUERY_PARAMETER_SORT_BY)
                        final String sortBy,
-                       @JsonProperty(QUERY_PARAMETER_SORT_ORDER)
+                       @Nullable @JsonProperty(QUERY_PARAMETER_SORT_ORDER)
                        final SortOrder sortOrder,
-                       @JsonProperty(QUERY_PARAMETER_PAGE_START_INDEX)
+                       @Nullable @JsonProperty(QUERY_PARAMETER_PAGE_START_INDEX)
                        final Integer startIndex,
-                       @JsonProperty(QUERY_PARAMETER_PAGE_SIZE)
+                       @Nullable @JsonProperty(QUERY_PARAMETER_PAGE_SIZE)
                        final Integer count)
   {
     this.attributes = attributes;
@@ -120,6 +128,7 @@ public final class SearchRequest extends BaseScimResource
    * @return The list of strings indicating the names of resource attributes
    * to return.
    */
+  @Nullable
   public Set<String> getAttributes()
   {
     return attributes;
@@ -132,6 +141,7 @@ public final class SearchRequest extends BaseScimResource
    * @return The list of strings indicating the names of resource attributes to
    * be removed.
    */
+  @Nullable
   public Set<String> getExcludedAttributes()
   {
     return excludedAttributes;
@@ -142,6 +152,7 @@ public final class SearchRequest extends BaseScimResource
    *
    * @return The filter string used to request a subset of resources.
    */
+  @Nullable
   public String getFilter()
   {
     return filter;
@@ -154,6 +165,7 @@ public final class SearchRequest extends BaseScimResource
    * @return The string indicating the attribute whose value shall be used to
    * order the returned responses or {@code null} if sorting is not required.
    */
+  @Nullable
   public String getSortBy()
   {
     return sortBy;
@@ -165,6 +177,7 @@ public final class SearchRequest extends BaseScimResource
    * @return the order in which the sortBy parameter is applied or {@code null}
    * if sorting is not required.
    */
+  @Nullable
   public SortOrder getSortOrder()
   {
     return sortOrder;
@@ -176,6 +189,7 @@ public final class SearchRequest extends BaseScimResource
    * @return the 1-based index of the first query result or {@code null} if
    * pagination is not required.
    */
+  @Nullable
   public Integer getStartIndex()
   {
     return startIndex;
@@ -187,6 +201,7 @@ public final class SearchRequest extends BaseScimResource
    * @return the desired maximum number of query results per page or
    * {@code null} to not enforce a limit.
    */
+  @Nullable
   public Integer getCount()
   {
     return count;
@@ -200,7 +215,7 @@ public final class SearchRequest extends BaseScimResource
    *            request, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

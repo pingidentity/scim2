@@ -18,6 +18,8 @@
 package com.unboundid.scim2.common.filters;
 
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.UserResource;
 
@@ -44,6 +46,7 @@ import com.unboundid.scim2.common.types.UserResource;
  */
 public final class PresentFilter extends Filter
 {
+  @NotNull
   private final Path filterAttribute;
 
   /**
@@ -51,7 +54,7 @@ public final class PresentFilter extends Filter
    *
    * @param filterAttribute The path to the attribute.
    */
-  PresentFilter(final Path filterAttribute)
+  PresentFilter(@NotNull final Path filterAttribute)
   {
     this.filterAttribute = filterAttribute;
   }
@@ -60,6 +63,7 @@ public final class PresentFilter extends Filter
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public Path getAttributePath()
   {
     return filterAttribute;
@@ -71,7 +75,7 @@ public final class PresentFilter extends Filter
    * @param builder The buffer to which the string representation of the
    *                filter is to be appended.
    */
-  public void toString(final StringBuilder builder)
+  public void toString(@NotNull final StringBuilder builder)
   {
     builder.append(filterAttribute);
     builder.append(' ');
@@ -81,7 +85,9 @@ public final class PresentFilter extends Filter
   /**
    * {@inheritDoc}
    */
-  public <R, P> R visit(final FilterVisitor<R, P> visitor, final P param)
+  @NotNull
+  public <R, P> R visit(@NotNull final FilterVisitor<R, P> visitor,
+                        @Nullable final P param)
       throws ScimException
   {
     return visitor.visit(this, param);
@@ -91,6 +97,7 @@ public final class PresentFilter extends Filter
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public FilterType getFilterType()
   {
     return FilterType.PRESENT;
@@ -104,7 +111,7 @@ public final class PresentFilter extends Filter
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

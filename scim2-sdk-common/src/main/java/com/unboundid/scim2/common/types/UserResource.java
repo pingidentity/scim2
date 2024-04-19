@@ -18,6 +18,8 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.BaseScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
@@ -36,6 +38,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
     name="User", description = "User Account")
 public class UserResource extends BaseScimResource
 {
+  @Nullable
   @Attribute(description = "Unique identifier for the User typically " +
       "used by the user to directly authenticate to the service provider.",
       isRequired = true,
@@ -45,6 +48,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.SERVER)
   private String userName;
 
+  @Nullable
   @Attribute(description = "The components of the user's real name.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -52,6 +56,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private Name name;
 
+  @Nullable
   @Attribute(description = "The name of the User, suitable for display " +
       "to end-users. The name SHOULD be the full name of the User being " +
       "described if known.",
@@ -62,6 +67,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String displayName;
 
+  @Nullable
   @Attribute(description = "The casual way to address the user in real " +
       "life, e.g.'Bob' or 'Bobby' instead of 'Robert'. This attribute SHOULD " +
       "NOT be used to represent a User's username " +
@@ -73,6 +79,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String nickName;
 
+  @Nullable
   @Attribute(description = "A fully qualified URL to a page " +
       "representing the User's online profile",
       isRequired = false,
@@ -82,6 +89,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private URI profileUrl;
 
+  @Nullable
   @Attribute(description = "The user's title, such as \"Vice " +
       "President\".",
       isRequired = false,
@@ -91,6 +99,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String title;
 
+  @Nullable
   @Attribute(description = "Used to identify the organization to user " +
       "relationship. Typical values used might be 'Contractor', 'Employee', " +
       "'Intern', 'Temp', 'External', and 'Unknown' but any value may be used.",
@@ -101,6 +110,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String userType;
 
+  @Nullable
   @Attribute(description = "Indicates the User's preferred written or " +
       "spoken language.  Generally used for selecting a localized User " +
       "interface. e.g., 'en_US' specifies the language English and country US.",
@@ -111,6 +121,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String preferredLanguage;
 
+  @Nullable
   @Attribute(description = "Used to indicate the User's default " +
       "location for purposes of localizing items such as currency, date time " +
       "format, numerical representations, etc.",
@@ -121,6 +132,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String locale;
 
+  @Nullable
   @Attribute(description = "The User's time zone in the 'Olson' " +
       "timezone database format; e.g.,'America/Los_Angeles'",
       isRequired = false,
@@ -130,6 +142,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String timezone;
 
+  @Nullable
   @Attribute(description = "A Boolean value indicating the User's " +
       "administrative status.",
       isRequired = false,
@@ -138,6 +151,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private Boolean active;
 
+  @Nullable
   @Attribute(description = "The User's clear text password. This " +
       "attribute is intended to be used as a means to specify an initial " +
       "password when creating a new User or to reset an existing User's " +
@@ -149,6 +163,7 @@ public class UserResource extends BaseScimResource
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String password;
 
+  @Nullable
   @Attribute(description = "E-mail addresses for the user. The value " +
       "SHOULD be canonicalized by the Service Provider, e.g., " +
       "bjensen@example.com instead of bjensen@EXAMPLE.COM. Canonical Type " +
@@ -160,6 +175,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = Email.class)
   private List<Email> emails;
 
+  @Nullable
   @Attribute(description = "Phone numbers for the User.  The value " +
       "SHOULD be canonicalized by the Service Provider according to format " +
       "in RFC3966 e.g., 'tel:+1-201-555-0123'.  Canonical Type values of " +
@@ -171,6 +187,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = PhoneNumber.class)
   private List<PhoneNumber> phoneNumbers;
 
+  @Nullable
   @Attribute(description = "Instant messaging addresses for the User.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -179,6 +196,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = InstantMessagingAddress.class)
   private List<InstantMessagingAddress> ims;
 
+  @Nullable
   @Attribute(description = "URIs of photos of the User.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -187,6 +205,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = Photo.class)
   private List<Photo> photos;
 
+  @Nullable
   @Attribute(description = "Physical mailing addresses for this User.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -195,6 +214,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = Address.class)
   private List<Address> addresses;
 
+  @Nullable
   @Attribute(description = "A list of groups that the user belongs to, " +
       "either thorough direct membership, nested groups, or dynamically " +
       "calculated.",
@@ -204,6 +224,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = Group.class)
   private List<Group> groups;
 
+  @Nullable
   @Attribute(description = "A list of entitlements for the User that " +
       "represent a thing the User has.",
       isRequired = false,
@@ -211,6 +232,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = Entitlement.class)
   private List<Entitlement> entitlements;
 
+  @Nullable
   @Attribute(description = "A list of roles for the User that " +
       "collectively represent who the User is; e.g., 'Student', 'Faculty'.",
       isRequired = false,
@@ -218,6 +240,7 @@ public class UserResource extends BaseScimResource
       multiValueClass = Role.class)
   private List<Role> roles;
 
+  @Nullable
   @Attribute(description = "A list of certificates issued to the User.",
       isRequired = false,
       returned = AttributeDefinition.Returned.DEFAULT,
@@ -231,6 +254,7 @@ public class UserResource extends BaseScimResource
    * @return The unique identifier for the User typically used by the user
    * to directly authenticate to the service provider.
    */
+  @Nullable
   public String getUserName()
   {
     return userName;
@@ -244,7 +268,8 @@ public class UserResource extends BaseScimResource
    *                 user to directly authenticate to the service provider.
    * @return This object.
    */
-  public UserResource setUserName(final String userName)
+  @NotNull
+  public UserResource setUserName(@Nullable final String userName)
   {
     this.userName = userName;
     return this;
@@ -255,6 +280,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The components of the user's full name.
    */
+  @Nullable
   public Name getName()
   {
     return name;
@@ -266,7 +292,8 @@ public class UserResource extends BaseScimResource
    * @param name The components of the user's full name.
    * @return The components of the user's full name.
    */
-  public UserResource setName(final Name name)
+  @NotNull
+  public UserResource setName(@Nullable final Name name)
   {
     this.name = name;
     return this;
@@ -277,6 +304,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The name of the User, suitable for display to end-users.
    */
+  @Nullable
   public String getDisplayName()
   {
     return displayName;
@@ -288,7 +316,8 @@ public class UserResource extends BaseScimResource
    * @param displayName The name of the User, suitable for display to end-users.
    * @return This object.
    */
-  public UserResource setDisplayName(final String displayName)
+  @NotNull
+  public UserResource setDisplayName(@Nullable final String displayName)
   {
     this.displayName = displayName;
     return this;
@@ -300,6 +329,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The casual way to address the user in real life.
    */
+  @Nullable
   public String getNickName()
   {
     return nickName;
@@ -312,7 +342,8 @@ public class UserResource extends BaseScimResource
    * @param nickName The casual way to address the user in real life.
    * @return This object.
    */
-  public UserResource setNickName(final String nickName)
+  @NotNull
+  public UserResource setNickName(@Nullable final String nickName)
   {
     this.nickName = nickName;
     return this;
@@ -325,6 +356,7 @@ public class UserResource extends BaseScimResource
    * @return The fully qualified URL to a page representing the User's online
    * profile.
    */
+  @Nullable
   public URI getProfileUrl()
   {
     return profileUrl;
@@ -338,7 +370,8 @@ public class UserResource extends BaseScimResource
    *                   online profile.
    * @return This object.
    */
-  public UserResource setProfileUrl(final URI profileUrl)
+  @NotNull
+  public UserResource setProfileUrl(@Nullable final URI profileUrl)
   {
     this.profileUrl = profileUrl;
     return this;
@@ -349,6 +382,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The user's title.
    */
+  @Nullable
   public String getTitle()
   {
     return title;
@@ -360,7 +394,8 @@ public class UserResource extends BaseScimResource
    * @param title The user's title.
    * @return This object.
    */
-  public UserResource setTitle(final String title)
+  @NotNull
+  public UserResource setTitle(@Nullable final String title)
   {
     this.title = title;
     return this;
@@ -374,6 +409,7 @@ public class UserResource extends BaseScimResource
    * @return The string used to identify the organization to user
    * relationship.
    */
+  @Nullable
   public String getUserType()
   {
     return userType;
@@ -388,7 +424,8 @@ public class UserResource extends BaseScimResource
    * relationship.
    * @return This object.
    */
-  public UserResource setUserType(final String userType)
+  @NotNull
+  public UserResource setUserType(@Nullable final String userType)
   {
     this.userType = userType;
     return this;
@@ -401,6 +438,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The User's preferred written or spoken language.
    */
+  @Nullable
   public String getPreferredLanguage()
   {
     return preferredLanguage;
@@ -414,7 +452,9 @@ public class UserResource extends BaseScimResource
    * @param preferredLanguage The User's preferred written or spoken language.
    * @return This object.
    */
-  public UserResource setPreferredLanguage(final String preferredLanguage)
+  @NotNull
+  public UserResource setPreferredLanguage(
+      @Nullable final String preferredLanguage)
   {
     this.preferredLanguage = preferredLanguage;
     return this;
@@ -426,6 +466,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The User's default location
    */
+  @Nullable
   public String getLocale()
   {
     return locale;
@@ -438,7 +479,8 @@ public class UserResource extends BaseScimResource
    * @param locale The User's default location
    * @return This object.
    */
-  public UserResource setLocale(final String locale)
+  @NotNull
+  public UserResource setLocale(@Nullable final String locale)
   {
     this.locale = locale;
     return this;
@@ -450,6 +492,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The User's time zone in the 'Olson' timezone database format.
    */
+  @Nullable
   public String getTimezone()
   {
     return timezone;
@@ -463,7 +506,8 @@ public class UserResource extends BaseScimResource
    *                 format.
    * @return This object.
    */
-  public UserResource setTimezone(final String timezone)
+  @NotNull
+  public UserResource setTimezone(@Nullable final String timezone)
   {
     this.timezone = timezone;
     return this;
@@ -474,6 +518,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The Boolean value indicating the User's administrative status.
    */
+  @Nullable
   public Boolean getActive()
   {
     return active;
@@ -486,7 +531,8 @@ public class UserResource extends BaseScimResource
    *               status.
    * @return This object.
    */
-  public UserResource setActive(final Boolean active)
+  @NotNull
+  public UserResource setActive(@Nullable final Boolean active)
   {
     this.active = active;
     return this;
@@ -497,6 +543,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The User's clear text password.
    */
+  @Nullable
   public String getPassword()
   {
     return password;
@@ -508,7 +555,8 @@ public class UserResource extends BaseScimResource
    * @param password The User's clear text password.
    * @return This object.
    */
-  public UserResource setPassword(final String password)
+  @NotNull
+  public UserResource setPassword(@Nullable final String password)
   {
     this.password = password;
     return this;
@@ -519,6 +567,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The email addresses for the user.
    */
+  @Nullable
   public List<Email> getEmails()
   {
     return emails;
@@ -530,7 +579,8 @@ public class UserResource extends BaseScimResource
    * @param emails The email addresses for the user.
    * @return This object.
    */
-  public UserResource setEmails(final List<Email> emails)
+  @NotNull
+  public UserResource setEmails(@Nullable final List<Email> emails)
   {
     this.emails = emails;
     return this;
@@ -544,7 +594,9 @@ public class UserResource extends BaseScimResource
    *                {@code null} values will be ignored.
    * @return This object.
    */
-  public UserResource setEmails(final Email email, final Email... emails)
+  @NotNull
+  public UserResource setEmails(@NotNull final Email email,
+                                @Nullable final Email... emails)
   {
     setEmails(toList(email, emails));
     return this;
@@ -555,6 +607,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The Phone numbers for the User.
    */
+  @Nullable
   public List<PhoneNumber> getPhoneNumbers()
   {
     return phoneNumbers;
@@ -566,7 +619,9 @@ public class UserResource extends BaseScimResource
    * @param phoneNumbers The phone numbers for the User.
    * @return This object.
    */
-  public UserResource setPhoneNumbers(final List<PhoneNumber> phoneNumbers)
+  @NotNull
+  public UserResource setPhoneNumbers(
+      @Nullable final List<PhoneNumber> phoneNumbers)
   {
     this.phoneNumbers = phoneNumbers;
     return this;
@@ -580,8 +635,10 @@ public class UserResource extends BaseScimResource
    *                      {@code null} values will be ignored.
    * @return This object.
    */
-  public UserResource setPhoneNumbers(final PhoneNumber phoneNumber,
-                                      final PhoneNumber... phoneNumbers)
+  @NotNull
+  public UserResource setPhoneNumbers(
+      @NotNull final PhoneNumber phoneNumber,
+      @Nullable final PhoneNumber... phoneNumbers)
   {
     setPhoneNumbers(toList(phoneNumber, phoneNumbers));
     return this;
@@ -592,6 +649,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The instant messaging addresses for the User.
    */
+  @Nullable
   public List<InstantMessagingAddress> getIms()
   {
     return ims;
@@ -603,7 +661,8 @@ public class UserResource extends BaseScimResource
    * @param ims The instant messaging addresses for the User.
    * @return This object.
    */
-  public UserResource setIms(final List<InstantMessagingAddress> ims)
+  @NotNull
+  public UserResource setIms(@Nullable final List<InstantMessagingAddress> ims)
   {
     this.ims = ims;
     return this;
@@ -617,8 +676,9 @@ public class UserResource extends BaseScimResource
    *               {@code null} values will be ignored.
    * @return This object.
    */
-  public UserResource setIms(final InstantMessagingAddress ims1,
-                             final InstantMessagingAddress... ims)
+  @NotNull
+  public UserResource setIms(@NotNull final InstantMessagingAddress ims1,
+                             @Nullable final InstantMessagingAddress... ims)
   {
     setIms(toList(ims1, ims));
     return this;
@@ -629,6 +689,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The URIs of photos of the User.
    */
+  @Nullable
   public List<Photo> getPhotos()
   {
     return photos;
@@ -640,7 +701,8 @@ public class UserResource extends BaseScimResource
    * @param photos The URIs of photos of the User.
    * @return This object.
    */
-  public UserResource setPhotos(final List<Photo> photos)
+  @NotNull
+  public UserResource setPhotos(@Nullable final List<Photo> photos)
   {
     this.photos = photos;
     return this;
@@ -654,7 +716,9 @@ public class UserResource extends BaseScimResource
    *                {@code null}  values will be ignored.
    * @return This object.
    */
-  public UserResource setPhotos(final Photo photo, final Photo... photos)
+  @NotNull
+  public UserResource setPhotos(@NotNull final Photo photo,
+                                @Nullable final Photo... photos)
   {
     setPhotos(toList(photo, photos));
     return this;
@@ -665,6 +729,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The physical mailing addresses for this User.
    */
+  @Nullable
   public List<Address> getAddresses()
   {
     return addresses;
@@ -676,7 +741,8 @@ public class UserResource extends BaseScimResource
    * @param addresses The physical mailing addresses for this User.
    * @return This object.
    */
-  public UserResource setAddresses(final List<Address> addresses)
+  @NotNull
+  public UserResource setAddresses(@Nullable final List<Address> addresses)
   {
     this.addresses = addresses;
     return this;
@@ -690,8 +756,9 @@ public class UserResource extends BaseScimResource
    *                   {@code null} values will be ignored.
    * @return This object.
    */
-  public UserResource setAddresses(final Address address,
-                                   final Address... addresses)
+  @NotNull
+  public UserResource setAddresses(@NotNull final Address address,
+                                   @Nullable final Address... addresses)
   {
     setAddresses(toList(address, addresses));
     return this;
@@ -703,6 +770,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The list of groups that the user belongs to.
    */
+  @Nullable
   public List<Group> getGroups()
   {
     return groups;
@@ -715,7 +783,8 @@ public class UserResource extends BaseScimResource
    * @param groups The list of groups that the user belongs to.
    * @return This object.
    */
-  public UserResource setGroups(final List<Group> groups)
+  @NotNull
+  public UserResource setGroups(@Nullable final List<Group> groups)
   {
     this.groups = groups;
     return this;
@@ -729,7 +798,9 @@ public class UserResource extends BaseScimResource
    *                 {@code null} values will be ignored.
    * @return This object.
    */
-  public UserResource setGroups(final Group group1, final Group... groups)
+  @NotNull
+  public UserResource setGroups(@NotNull final Group group1,
+                                @Nullable final Group... groups)
   {
     setGroups(toList(group1, groups));
     return this;
@@ -741,6 +812,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The list of entitlements for the User.
    */
+  @Nullable
   public List<Entitlement> getEntitlements()
   {
     return entitlements;
@@ -753,7 +825,9 @@ public class UserResource extends BaseScimResource
    * @param entitlements The list of entitlements for the User.
    * @return This object.
    */
-  public UserResource setEntitlements(final List<Entitlement> entitlements)
+  @NotNull
+  public UserResource setEntitlements(
+      @Nullable final List<Entitlement> entitlements)
   {
     this.entitlements = entitlements;
     return this;
@@ -767,8 +841,10 @@ public class UserResource extends BaseScimResource
    *                       {@code null} values will be ignored.
    * @return This object.
    */
-  public UserResource setEntitlements(final Entitlement entitlement1,
-                                      final Entitlement... entitlements)
+  @NotNull
+  public UserResource setEntitlements(
+      @NotNull final Entitlement entitlement1,
+      @Nullable final Entitlement... entitlements)
   {
     setEntitlements(toList(entitlement1, entitlements));
     return this;
@@ -780,6 +856,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The list of roles for the User.
    */
+  @Nullable
   public List<Role> getRoles()
   {
     return roles;
@@ -792,7 +869,8 @@ public class UserResource extends BaseScimResource
    * @param roles The list of roles for the User.
    * @return This object.
    */
-  public UserResource setRoles(final List<Role> roles)
+  @NotNull
+  public UserResource setRoles(@Nullable final List<Role> roles)
   {
     this.roles = roles;
     return this;
@@ -806,7 +884,9 @@ public class UserResource extends BaseScimResource
    *               {@code null} values will be ignored.
    * @return This object.
    */
-  public UserResource setRoles(final Role role1, final Role... roles)
+  @NotNull
+  public UserResource setRoles(@NotNull final Role role1,
+                               @Nullable final Role... roles)
   {
     setRoles(toList(role1, roles));
     return this;
@@ -817,6 +897,7 @@ public class UserResource extends BaseScimResource
    *
    * @return The list of certificates issued to the User.
    */
+  @Nullable
   public List<X509Certificate> getX509Certificates()
   {
     return x509Certificates;
@@ -828,8 +909,9 @@ public class UserResource extends BaseScimResource
    * @param x509Certificates The list of certificates issued to the User.
    * @return This object.
    */
+  @NotNull
   public UserResource setX509Certificates(
-      final List<X509Certificate> x509Certificates)
+      @Nullable final List<X509Certificate> x509Certificates)
   {
     this.x509Certificates = x509Certificates;
     return this;
@@ -843,9 +925,10 @@ public class UserResource extends BaseScimResource
    *                          {@code null} values will be ignored.
    * @return This object.
    */
+  @NotNull
   public UserResource setX509Certificates(
-      final X509Certificate x509Certificate1,
-      final X509Certificate... x509Certificates)
+      @NotNull final X509Certificate x509Certificate1,
+      @Nullable final X509Certificate... x509Certificates)
   {
     setX509Certificates(toList(x509Certificate1, x509Certificates));
     return this;
@@ -859,7 +942,7 @@ public class UserResource extends BaseScimResource
    *            resource, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

@@ -17,17 +17,21 @@
 
 package com.unboundid.scim2.common.utils;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Configuration class for nonstandard parser options.
- *
- * <p>NOTE: SCIM server implementations are not guaranteed to support a given option.</p>
+ * <p>
+ * NOTE: SCIM server implementations are not guaranteed to support a given
+ * option.
  */
 public class ParserOptions
 {
+  @NotNull
   private Set<Character> extendedAttributeNameCharacters = new HashSet<>();
 
 
@@ -39,8 +43,9 @@ public class ParserOptions
    *
    * @return The updated {@code ParserOptions}.
    */
+  @NotNull
   public ParserOptions addExtendedAttributeNameCharacters(
-      final Character... extendedChars)
+      @NotNull final Character... extendedChars)
   {
     for (Character extendedChar : extendedChars)
     {
@@ -56,6 +61,7 @@ public class ParserOptions
    *
    * @return The updated {@code ParserOptions}.
    */
+  @NotNull
   public ParserOptions clearExtendedAttributeNameCharacters()
   {
     this.extendedAttributeNameCharacters.clear();
@@ -69,6 +75,7 @@ public class ParserOptions
    * @return The extended set. By default this will be empty, indicating that
    *         only standard attribute naming characters are allowed.
    */
+  @NotNull
   public Set<Character> getExtendedAttributeNameCharacters()
   {
     return Collections.unmodifiableSet(extendedAttributeNameCharacters);

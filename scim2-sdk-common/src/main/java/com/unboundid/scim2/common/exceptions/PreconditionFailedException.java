@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.exceptions;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.types.ETagConfig;
 
@@ -49,6 +51,7 @@ import com.unboundid.scim2.common.types.ETagConfig;
  */
 public class PreconditionFailedException extends ScimException
 {
+  @Nullable
   private final String version;
 
   /**
@@ -57,7 +60,7 @@ public class PreconditionFailedException extends ScimException
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public PreconditionFailedException(final String errorMessage)
+  public PreconditionFailedException(@Nullable final String errorMessage)
   {
     super(412, null, errorMessage);
     this.version = null;
@@ -73,8 +76,8 @@ public class PreconditionFailedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public PreconditionFailedException(final String errorMessage,
-                                     final Throwable cause)
+  public PreconditionFailedException(@Nullable final String errorMessage,
+                                     @Nullable final Throwable cause)
   {
     super(412, null, errorMessage, cause);
     this.version = null;
@@ -92,10 +95,10 @@ public class PreconditionFailedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public PreconditionFailedException(final String errorMessage,
-                                     final String scimType,
-                                     final String version,
-                                     final Throwable cause)
+  public PreconditionFailedException(@Nullable final String errorMessage,
+                                     @Nullable final String scimType,
+                                     @Nullable final String version,
+                                     @Nullable final Throwable cause)
   {
     super(412, scimType, errorMessage, cause);
     this.version = version;
@@ -112,9 +115,9 @@ public class PreconditionFailedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public PreconditionFailedException(final ErrorResponse scimError,
-                                     final String version,
-                                     final Throwable cause)
+  public PreconditionFailedException(@NotNull final ErrorResponse scimError,
+                                     @Nullable final String version,
+                                     @Nullable final Throwable cause)
   {
     super(scimError, cause);
     this.version = version;
@@ -125,6 +128,7 @@ public class PreconditionFailedException extends ScimException
    *
    * @return The current version of the Resource.
    */
+  @Nullable
   public String getVersion()
   {
     return version;

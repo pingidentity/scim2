@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.exceptions.ServerErrorException;
 import com.unboundid.scim2.common.types.Meta;
@@ -67,11 +69,19 @@ import java.util.Objects;
 @JsonSerialize(using = GenericScimObjectSerializer.class)
 public final class GenericScimResource implements ScimResource
 {
+  @NotNull
   private static final Path SCHEMAS = Path.root().attribute("schemas");
+
+  @NotNull
   private static final Path ID = Path.root().attribute("id");
+
+  @NotNull
   private static final Path EXTERNAL_ID = Path.root().attribute("externalId");
+
+  @NotNull
   private static final Path META = Path.root().attribute("meta");
 
+  @NotNull
   private final ObjectNode objectNode;
 
   /**
@@ -87,7 +97,7 @@ public final class GenericScimResource implements ScimResource
    *
    * @param objectNode The ObjectNode that backs this object.
    */
-  public GenericScimResource(final ObjectNode objectNode)
+  public GenericScimResource(@NotNull final ObjectNode objectNode)
   {
     this.objectNode = objectNode;
   }
@@ -97,6 +107,7 @@ public final class GenericScimResource implements ScimResource
    *
    * @return an {@code ObjectNode} representing this generic SCIM resource.
    */
+  @NotNull
   public ObjectNode getObjectNode()
   {
     return this.objectNode;
@@ -106,6 +117,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public Meta getMeta()
   {
     try
@@ -128,7 +140,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
-  public void setMeta(final Meta meta)
+  public void setMeta(@Nullable final Meta meta)
   {
     try
     {
@@ -145,6 +157,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public String getId()
   {
     try
@@ -167,7 +180,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
-  public void setId(final String id)
+  public void setId(@Nullable final String id)
   {
     try
     {
@@ -183,6 +196,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public List<String> getSchemaUrns()
   {
     try
@@ -204,7 +218,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * {@inheritDoc}
    */
-  public void setSchemaUrns(final Collection<String> schemaUrns)
+  public void setSchemaUrns(@NotNull final Collection<String> schemaUrns)
   {
     try
     {
@@ -221,7 +235,8 @@ public final class GenericScimResource implements ScimResource
   /**
    * {@inheritDoc}
    */
-  public void setSchemaUrns(final String schemaUrn, final String... schemaUrns)
+  public void setSchemaUrns(@NotNull final String schemaUrn,
+                            @Nullable final String... schemaUrns)
   {
     setSchemaUrns(toList(schemaUrn, schemaUrns));
   }
@@ -230,6 +245,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
+  @Nullable
   public String getExternalId()
   {
     try
@@ -252,7 +268,7 @@ public final class GenericScimResource implements ScimResource
    * {@inheritDoc}
    */
   @Override
-  public void setExternalId(final String externalId)
+  public void setExternalId(@Nullable final String externalId)
   {
     try
     {
@@ -260,7 +276,8 @@ public final class GenericScimResource implements ScimResource
           JsonUtils.valueToNode(externalId));
     }
     catch (ScimException e)
-    { // This should never happen.
+    {
+      // This should never happen.
       throw new RuntimeException(e);
     }
   }
@@ -291,7 +308,8 @@ public final class GenericScimResource implements ScimResource
    * @return the JsonNode at the path, or a NullNode if nothing is found
    * @throws ScimException thrown if an error occurs.
    */
-  public JsonNode getValue(final String path)
+  @NotNull
+  public JsonNode getValue(@NotNull final String path)
       throws ScimException
   {
     return getValue(Path.fromString(path));
@@ -324,7 +342,8 @@ public final class GenericScimResource implements ScimResource
    * @return the JsonNode at the path, or a NullNode if nothing is found
    * @throws ScimException thrown if an error occurs.
    */
-  public JsonNode getValue(final Path path)
+  @NotNull
+  public JsonNode getValue(@NotNull final Path path)
       throws ScimException
   {
     return JsonUtils.getValue(path, objectNode);
@@ -346,8 +365,9 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final String path,
-                                          final JsonNode value)
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final String path,
+                                          @NotNull final JsonNode value)
       throws ScimException
   {
     replaceValue(Path.fromString(path), value);
@@ -370,8 +390,9 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final Path path,
-                                          final JsonNode value)
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final Path path,
+                                          @NotNull final JsonNode value)
       throws ScimException
   {
     JsonUtils.replaceValue(path, objectNode, value);
@@ -393,8 +414,9 @@ public final class GenericScimResource implements ScimResource
    * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public GenericScimResource addValues(final String path,
-                                       final ArrayNode values)
+  @NotNull
+  public GenericScimResource addValues(@NotNull final String path,
+                                       @NotNull final ArrayNode values)
       throws ScimException
   {
     addValues(Path.fromString(path), values);
@@ -416,8 +438,9 @@ public final class GenericScimResource implements ScimResource
    * @return This object.
    * @throws ScimException If the path is invalid.
    */
-  public GenericScimResource addValues(final Path path,
-                                       final ArrayNode values)
+  @NotNull
+  public GenericScimResource addValues(@NotNull final Path path,
+                                       @NotNull final ArrayNode values)
       throws ScimException
   {
     JsonUtils.addValue(path, objectNode, values);
@@ -430,10 +453,10 @@ public final class GenericScimResource implements ScimResource
    * JsonUtils.removeValue(Path.fromString(path), getObjectNode(), values).
    *
    * @param path The path to the attribute whose values to remove.
-   * @return Whether one or more values where removed.
+   * @return Whether one or more values were removed.
    * @throws ScimException If the path is invalid.
    */
-  public boolean removeValues(final String path)
+  public boolean removeValues(@NotNull final String path)
       throws ScimException
   {
     return removeValues(Path.fromString(path));
@@ -445,10 +468,10 @@ public final class GenericScimResource implements ScimResource
    * JsonUtils.removeValue(Path.fromString(path), getObjectNode(), values).
    *
    * @param path The path to the attribute whose values to remove.
-   * @return Whether one or more values where removed.
+   * @return Whether one or more values were removed.
    * @throws ScimException If the path is invalid.
    */
-  public boolean removeValues(final Path path)
+  public boolean removeValues(@NotNull final Path path)
       throws ScimException
   {
     List<JsonNode> nodes = JsonUtils.removeValues(path, objectNode);
@@ -458,6 +481,7 @@ public final class GenericScimResource implements ScimResource
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public GenericScimResource asGenericScimResource()
   {
     return this;
@@ -467,8 +491,11 @@ public final class GenericScimResource implements ScimResource
    * Retrieves a string representation of this generic SCIM resource.
    *
    * @return  A string representation of this generic SCIM resource.
+   * @throws RuntimeException   If the resource cannot be parsed as a valid JSON
+   *                            object.
    */
   @Override
+  @NotNull
   public String toString()
   {
     try
@@ -491,7 +518,7 @@ public final class GenericScimResource implements ScimResource
    *            SCIM resource, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (!(o instanceof GenericScimResource))
     {
@@ -553,8 +580,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final String path,
-      final String value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final String path,
+                                          @NotNull final String value)
+      throws ScimException
   {
     return replaceValue(Path.fromString(path), value);
   }
@@ -591,8 +620,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final Path path,
-      final String value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final Path path,
+                                          @NotNull final String value)
+      throws ScimException
   {
     return replaceValue(path, JsonUtils.getJsonNodeFactory().textNode(value));
   }
@@ -628,8 +659,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addStringValues(final String path,
-      final List<String> values) throws ScimException
+  @NotNull
+  public GenericScimResource addStringValues(@NotNull final String path,
+                                             @NotNull final List<String> values)
+      throws ScimException
   {
     return addStringValues(Path.fromString(path), values);
   }
@@ -638,16 +671,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addStringValues(String, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addStringValues(final String path,
-      final String value1, final String... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addStringValues(@NotNull final String path,
+                                             @NotNull final String value1,
+                                             @Nullable final String... values)
+      throws ScimException
   {
     return addStringValues(path, toList(value1, values));
   }
@@ -684,8 +719,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addStringValues(final Path path,
-      final List<String> values) throws ScimException
+  @NotNull
+  public GenericScimResource addStringValues(@NotNull final Path path,
+                                             @NotNull final List<String> values)
+      throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(String value : values)
@@ -700,16 +737,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addStringValues(Path, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addStringValues(final Path path,
-      final String value1, final String... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addStringValues(@NotNull final Path path,
+                                             @NotNull final String value1,
+                                             @Nullable final String... values)
+      throws ScimException
   {
     return addStringValues(path, toList(value1, values));
   }
@@ -740,7 +779,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public String getStringValue(final String path) throws ScimException
+  @Nullable
+  public String getStringValue(@NotNull final String path)
+      throws ScimException
   {
     return getStringValue(Path.fromString(path));
   }
@@ -771,7 +812,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public String getStringValue(final Path path) throws ScimException
+  @Nullable
+  public String getStringValue(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode jsonNode = getValue(path);
     return jsonNode.isNull() ? null : jsonNode.textValue();
@@ -803,7 +846,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<String> getStringValueList(final String path) throws ScimException
+  @NotNull
+  public List<String> getStringValueList(@NotNull final String path)
+      throws ScimException
   {
     return getStringValueList(Path.fromString(path));
   }
@@ -834,7 +879,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<String> getStringValueList(final Path path) throws ScimException
+  @NotNull
+  public List<String> getStringValueList(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode valueNode = getValue(path);
     List<String> values = new ArrayList<>();
@@ -882,8 +929,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final String path,
-      final Boolean value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final String path,
+                                          @NotNull final Boolean value)
+      throws ScimException
   {
     return replaceValue(Path.fromString(path), value);
   }
@@ -921,8 +970,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(
-      final Path path, final Boolean value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final Path path,
+                                          @NotNull final Boolean value)
+      throws ScimException
   {
     return replaceValue(path, JsonUtils.getJsonNodeFactory().booleanNode(value));
   }
@@ -954,7 +1005,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public Boolean getBooleanValue(final String path) throws ScimException
+  @Nullable
+  public Boolean getBooleanValue(@NotNull final String path)
+      throws ScimException
   {
     return getBooleanValue(Path.fromString(path));
   }
@@ -985,7 +1038,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public Boolean getBooleanValue(final Path path) throws ScimException
+  @Nullable
+  public Boolean getBooleanValue(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode jsonNode = getValue(path);
     return jsonNode.isNull() ? null : jsonNode.booleanValue();
@@ -1025,8 +1080,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final String path,
-      final Double value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final String path,
+                                          @NotNull final Double value)
+      throws ScimException
   {
     return replaceValue(Path.fromString(path), value);
   }
@@ -1063,8 +1120,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final Path path,
-      final Double value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final Path path,
+                                          @NotNull final Double value)
+      throws ScimException
   {
     return replaceValue(path, JsonUtils.getJsonNodeFactory().numberNode(value));
   }
@@ -1101,8 +1160,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addDoubleValues(final String path,
-      final List<Double> values) throws ScimException
+  @NotNull
+  public GenericScimResource addDoubleValues(@NotNull final String path,
+                                             @NotNull final List<Double> values)
+      throws ScimException
   {
     return addDoubleValues(Path.fromString(path), values);
   }
@@ -1111,16 +1172,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addDoubleValues(String, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addDoubleValues(final String path,
-      final Double value1, final Double... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addDoubleValues(@NotNull final String path,
+                                             @NotNull final Double value1,
+                                             @Nullable final Double... values)
+      throws ScimException
   {
     return addDoubleValues(path, toList(value1, values));
   }
@@ -1157,8 +1220,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addDoubleValues(final Path path,
-      final List<Double> values) throws ScimException
+  @NotNull
+  public GenericScimResource addDoubleValues(@NotNull final Path path,
+                                             @NotNull final List<Double> values)
+      throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(Double value : values)
@@ -1173,16 +1238,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addDoubleValues(Path, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addDoubleValues(final Path path,
-      final Double value1, final Double... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addDoubleValues(@NotNull final Path path,
+                                             @NotNull final Double value1,
+                                             @Nullable final Double... values)
+      throws ScimException
   {
     return addDoubleValues(path, toList(value1, values));
   }
@@ -1213,7 +1280,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public Double getDoubleValue(final String path) throws ScimException
+  @Nullable
+  public Double getDoubleValue(@NotNull final String path)
+      throws ScimException
   {
     return getDoubleValue(Path.fromString(path));
   }
@@ -1244,7 +1313,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public Double getDoubleValue(final Path path) throws ScimException
+  @Nullable
+  public Double getDoubleValue(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode jsonNode = getValue(path);
     return jsonNode.isNull() ? null : jsonNode.doubleValue();
@@ -1276,7 +1347,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<Double> getDoubleValueList(final String path) throws ScimException
+  @NotNull
+  public List<Double> getDoubleValueList(@NotNull final String path)
+      throws ScimException
   {
     return getDoubleValueList(Path.fromString(path));
   }
@@ -1307,7 +1380,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<Double> getDoubleValueList(final Path path) throws ScimException
+  @NotNull
+  public List<Double> getDoubleValueList(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode valueNode = getValue(path);
     List<Double> values = new ArrayList<Double>();
@@ -1355,8 +1430,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final String path,
-      final Integer value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final String path,
+                                          @NotNull final Integer value)
+      throws ScimException
   {
     return replaceValue(Path.fromString(path), value);
   }
@@ -1393,8 +1470,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final Path path,
-      final Integer value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final Path path,
+                                          @NotNull final Integer value)
+      throws ScimException
   {
     return replaceValue(path, JsonUtils.getJsonNodeFactory().numberNode(value));
   }
@@ -1431,8 +1510,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addIntegerValues(final String path,
-      final List<Integer> values) throws ScimException
+  @NotNull
+  public GenericScimResource addIntegerValues(@NotNull final String path,
+      @NotNull final List<Integer> values)
+          throws ScimException
   {
     return addIntegerValues(Path.fromString(path), values);
   }
@@ -1441,16 +1522,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addIntegerValues(String, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addIntegerValues(final String path,
-      final Integer value1, final Integer... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addIntegerValues(@NotNull final String path,
+                                              @NotNull final Integer value1,
+                                              @Nullable final Integer... values)
+      throws ScimException
   {
     return addIntegerValues(path, toList(value1, values));
   }
@@ -1487,8 +1570,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addIntegerValues(final Path path,
-      final List<Integer> values) throws ScimException
+  @NotNull
+  public GenericScimResource addIntegerValues(@NotNull final Path path,
+      @NotNull final List<Integer> values)
+          throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(Integer value : values)
@@ -1503,16 +1588,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addIntegerValues(Path, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addIntegerValues(final Path path,
-      final Integer value1, final Integer... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addIntegerValues(@NotNull final Path path,
+                                              @NotNull final Integer value1,
+                                              @Nullable final Integer... values)
+      throws ScimException
   {
     return addIntegerValues(path, toList(value1, values));
   }
@@ -1543,7 +1630,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public Integer getIntegerValue(final String path) throws ScimException
+  @Nullable
+  public Integer getIntegerValue(@NotNull final String path)
+      throws ScimException
   {
     return getIntegerValue(Path.fromString(path));
   }
@@ -1574,7 +1663,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public Integer getIntegerValue(final Path path) throws ScimException
+  @Nullable
+  public Integer getIntegerValue(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode jsonNode = getValue(path);
     return jsonNode.isNull() ? null : jsonNode.intValue();
@@ -1606,7 +1697,8 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<Integer> getIntegerValueList(final String path)
+  @NotNull
+  public List<Integer> getIntegerValueList(@NotNull final String path)
       throws ScimException
   {
     return getIntegerValueList(Path.fromString(path));
@@ -1638,7 +1730,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<Integer> getIntegerValueList(final Path path) throws ScimException
+  @NotNull
+  public List<Integer> getIntegerValueList(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode valueNode = getValue(path);
     List<Integer> values = new ArrayList<Integer>();
@@ -1686,8 +1780,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(
-      final String path, final Long value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final String path,
+                                          @NotNull final Long value)
+      throws ScimException
   {
     return replaceValue(Path.fromString(path), value);
   }
@@ -1724,8 +1820,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(
-      final Path path, final Long value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final Path path,
+                                          @NotNull final Long value)
+      throws ScimException
   {
     return replaceValue(path, JsonUtils.getJsonNodeFactory().numberNode(value));
   }
@@ -1762,8 +1860,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addLongValues(
-      final String path, final List<Long> values) throws ScimException
+  @NotNull
+  public GenericScimResource addLongValues(@NotNull final String path,
+                                           @NotNull final List<Long> values)
+      throws ScimException
   {
     return addLongValues(Path.fromString(path), values);
   }
@@ -1772,16 +1872,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addLongValues(String, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addLongValues(
-      final String path, final Long value1, final Long... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addLongValues(@NotNull final String path,
+                                           @NotNull final Long value1,
+                                           @Nullable final Long... values)
+      throws ScimException
   {
     return addLongValues(path, toList(value1, values));
   }
@@ -1818,8 +1920,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addLongValues(
-      final Path path, final List<Long> values) throws ScimException
+  @NotNull
+  public GenericScimResource addLongValues(@NotNull final Path path,
+                                           @NotNull final List<Long> values)
+      throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(Long value : values)
@@ -1834,16 +1938,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addLongValues(Path, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addLongValues(
-      final Path path, final Long value1, final Long... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addLongValues(@NotNull final Path path,
+                                           @NotNull final Long value1,
+                                           @Nullable final Long... values)
+      throws ScimException
   {
     return addLongValues(path, toList(value1, values));
   }
@@ -1874,7 +1980,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public Long getLongValue(final String path) throws ScimException
+  @Nullable
+  public Long getLongValue(@NotNull final String path)
+      throws ScimException
   {
     return getLongValue(Path.fromString(path));
   }
@@ -1905,7 +2013,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public Long getLongValue(final Path path) throws ScimException
+  @Nullable
+  public Long getLongValue(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode jsonNode = getValue(path);
     return jsonNode.isNull() ? null : jsonNode.longValue();
@@ -1937,7 +2047,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<Long> getLongValueList(final String path) throws ScimException
+  @NotNull
+  public List<Long> getLongValueList(@NotNull final String path)
+      throws ScimException
   {
     return getLongValueList(Path.fromString(path));
   }
@@ -1968,7 +2080,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<Long> getLongValueList(final Path path) throws ScimException
+  @NotNull
+  public List<Long> getLongValueList(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode valueNode = getValue(path);
     List<Long> values = new ArrayList<Long>();
@@ -2016,8 +2130,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(
-      final String path, final Date value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final String path,
+                                          @NotNull final Date value)
+      throws ScimException
   {
     return replaceValue(Path.fromString(path), value);
   }
@@ -2054,8 +2170,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(
-      final Path path, final Date value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final Path path,
+                                          @NotNull final Date value)
+      throws ScimException
   {
     return replaceValue(path, GenericScimResource.getDateJsonNode(value));
   }
@@ -2092,8 +2210,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addDateValues(
-      final String path, final List<Date> values) throws ScimException
+  @NotNull
+  public GenericScimResource addDateValues(@NotNull final String path,
+                                           @NotNull final List<Date> values)
+      throws ScimException
   {
     return addDateValues(Path.fromString(path), values);
   }
@@ -2102,16 +2222,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addDateValues(String, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addDateValues(
-      final String path, final Date value1, final Date... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addDateValues(@NotNull final String path,
+                                           @NotNull final Date value1,
+                                           @Nullable final Date... values)
+      throws ScimException
   {
     return addDateValues(path, toList(value1, values));
   }
@@ -2148,8 +2270,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addDateValues(
-      final Path path, final List<Date> values) throws ScimException
+  @NotNull
+  public GenericScimResource addDateValues(@NotNull final Path path,
+                                           @NotNull final List<Date> values)
+      throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for (Date value : values)
@@ -2164,16 +2288,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addDateValues(Path, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addDateValues(
-      final Path path, final Date value1, final Date... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addDateValues(@NotNull final Path path,
+                                           @NotNull final Date value1,
+                                           @Nullable final Date... values)
+      throws ScimException
   {
     return addDateValues(path, toList(value1, values));
   }
@@ -2204,7 +2330,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public Date getDateValue(final String path) throws ScimException
+  @Nullable
+  public Date getDateValue(@NotNull final String path)
+      throws ScimException
   {
     return getDateValue(Path.fromString(path));
   }
@@ -2235,7 +2363,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public Date getDateValue(final Path path) throws ScimException
+  @Nullable
+  public Date getDateValue(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode jsonNode = getValue(path);
     if(jsonNode.isNull())
@@ -2272,7 +2402,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<Date> getDateValueList(final String path) throws ScimException
+  @NotNull
+  public List<Date> getDateValueList(@NotNull final String path)
+      throws ScimException
   {
     return getDateValueList(Path.fromString(path));
   }
@@ -2304,7 +2436,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<Date> getDateValueList(final Path path) throws ScimException
+  @NotNull
+  public List<Date> getDateValueList(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode valueNode = getValue(path);
     List<Date> values = new ArrayList<Date>();
@@ -2324,7 +2458,8 @@ public final class GenericScimResource implements ScimResource
    * @return the JsonNode representing the date.
    * @throws ScimException thrown if an error occurs.
    */
-  public static TextNode getDateJsonNode(final Date date)
+  @NotNull
+  public static TextNode getDateJsonNode(@Nullable final Date date)
       throws ScimException
   {
     return JsonUtils.valueToNode(date);
@@ -2337,7 +2472,8 @@ public final class GenericScimResource implements ScimResource
    * @return the date represented by the JsonNode.
    * @throws ScimException thrown if an error occurs.
    */
-  public static Date getDateFromJsonNode(final JsonNode node)
+  @Nullable
+  public static Date getDateFromJsonNode(@NotNull final JsonNode node)
       throws ScimException
   {
     try
@@ -2389,8 +2525,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(
-      final String path, final byte[] value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final String path,
+                                          @NotNull final byte[] value)
+      throws ScimException
   {
     return replaceValue(Path.fromString(path), value);
   }
@@ -2427,8 +2565,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(
-      final Path path, final byte[] value) throws ScimException
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final Path path,
+                                          @NotNull final byte[] value)
+      throws ScimException
   {
     return replaceValue(path, JsonUtils.getJsonNodeFactory().binaryNode(value));
   }
@@ -2465,8 +2605,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addBinaryValues(
-      final String path, final List<byte[]> values) throws ScimException
+  @NotNull
+  public GenericScimResource addBinaryValues(@NotNull final String path,
+                                             @NotNull final List<byte[]> values)
+      throws ScimException
   {
     return addBinaryValues(Path.fromString(path), values);
   }
@@ -2475,16 +2617,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addBinaryValues(String, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addBinaryValues(
-      final String path, final byte[] value1, final byte[]... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addBinaryValues(@NotNull final String path,
+                                             @NotNull final byte[] value1,
+                                             @Nullable final byte[]... values)
+      throws ScimException
   {
     return addBinaryValues(path, toList(value1, values));
   }
@@ -2521,8 +2665,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addBinaryValues(
-      final Path path, final List<byte[]> values) throws ScimException
+  @NotNull
+  public GenericScimResource addBinaryValues(@NotNull final Path path,
+                                             @NotNull final List<byte[]> values)
+      throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for (byte[] value : values)
@@ -2537,16 +2683,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addBinaryValues(Path, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addBinaryValues(
-      final Path path, final byte[] value1, final byte[]... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addBinaryValues(@NotNull final Path path,
+                                             @NotNull final byte[] value1,
+                                             @Nullable final byte[]... values)
+      throws ScimException
   {
     return addBinaryValues(path, toList(value1, values));
   }
@@ -2578,7 +2726,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public byte[] getBinaryValue(final String path) throws ScimException
+  @Nullable
+  public byte[] getBinaryValue(@NotNull final String path)
+      throws ScimException
   {
     return getBinaryValue(Path.fromString(path));
   }
@@ -2609,7 +2759,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public byte[] getBinaryValue(final Path path) throws ScimException
+  @Nullable
+  public byte[] getBinaryValue(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode jsonNode = getValue(path);
     if(jsonNode.isNull())
@@ -2654,7 +2806,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<byte[]> getBinaryValueList(final String path) throws ScimException
+  @NotNull
+  public List<byte[]> getBinaryValueList(@NotNull final String path)
+      throws ScimException
   {
     return getBinaryValueList(Path.fromString(path));
   }
@@ -2686,7 +2840,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<byte[]> getBinaryValueList(final Path path) throws ScimException
+  @NotNull
+  public List<byte[]> getBinaryValueList(@NotNull final Path path)
+      throws ScimException
   {
     JsonNode valueNode = getValue(path);
     List<byte[]> values = new ArrayList<byte[]>();
@@ -2748,7 +2904,9 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final String path, final URI value)
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final String path,
+                                          @NotNull final URI value)
       throws ScimException
   {
     return replaceValue(Path.fromString(path), value);
@@ -2784,7 +2942,9 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource replaceValue(final Path path, final URI value)
+  @NotNull
+  public GenericScimResource replaceValue(@NotNull final Path path,
+                                          @NotNull final URI value)
       throws ScimException
   {
     return replaceValue(path,
@@ -2827,8 +2987,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addURIValues(
-      final String path, final List<URI> values) throws ScimException
+  @NotNull
+  public GenericScimResource addURIValues(@NotNull final String path,
+                                          @NotNull final List<URI> values)
+      throws ScimException
   {
     return addURIValues(Path.fromString(path), values);
   }
@@ -2837,16 +2999,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addURIValues(String, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addURIValues(
-      final String path, final URI value1, final URI... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addURIValues(@NotNull final String path,
+                                          @NotNull final URI value1,
+                                          @Nullable final URI... values)
+      throws ScimException
   {
     return addURIValues(path, toList(value1, values));
   }
@@ -2886,8 +3050,10 @@ public final class GenericScimResource implements ScimResource
    * @throws ScimException thrown if an error occurs (for example
    * if the path or value is "{@code null}" or invalid).
    */
-  public GenericScimResource addURIValues(
-      final Path path, final List<URI> values) throws ScimException
+  @NotNull
+  public GenericScimResource addURIValues(@NotNull final Path path,
+                                          @NotNull final List<URI> values)
+      throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for(URI value : values)
@@ -2902,16 +3068,18 @@ public final class GenericScimResource implements ScimResource
    * Alternate version of {@link #addURIValues(Path, List)}.
    *
    * @param path    The path to the attribute that should be updated.
-   * @param value1  The first value. This must not be {@code null}.
+   * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
    * @return        This object.
    *
    * @throws ScimException  If the path is invalid.
    */
-  public GenericScimResource addURIValues(
-      final Path path, final URI value1, final URI... values)
-          throws ScimException
+  @NotNull
+  public GenericScimResource addURIValues(@NotNull final Path path,
+                                          @NotNull final URI value1,
+                                          @Nullable final URI... values)
+      throws ScimException
   {
     return addURIValues(path, toList(value1, values));
   }
@@ -2942,7 +3110,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public URI getURIValue(final String path) throws ScimException
+  @Nullable
+  public URI getURIValue(@NotNull final String path)
+      throws ScimException
   {
     return getURIValue(Path.fromString(path));
   }
@@ -2973,7 +3143,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or null.
    * @throws ScimException thrown if an error occurs.
    */
-  public URI getURIValue(final Path path) throws ScimException
+  @Nullable
+  public URI getURIValue(@NotNull final Path path)
+      throws ScimException
   {
     try
     {
@@ -3016,7 +3188,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<URI> getURIValueList(final String path) throws ScimException
+  @NotNull
+  public List<URI> getURIValueList(@NotNull final String path)
+      throws ScimException
   {
     return getURIValueList(Path.fromString(path));
   }
@@ -3052,7 +3226,9 @@ public final class GenericScimResource implements ScimResource
    * @return the value at the path, or an empty list.
    * @throws ScimException thrown if an error occurs.
    */
-  public List<URI> getURIValueList(final Path path) throws ScimException
+  @NotNull
+  public List<URI> getURIValueList(@NotNull final Path path)
+      throws ScimException
   {
     try
     {

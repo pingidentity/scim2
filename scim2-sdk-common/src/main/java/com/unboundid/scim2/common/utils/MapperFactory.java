@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.unboundid.scim2.common.annotations.NotNull;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -36,16 +37,25 @@ import java.util.Map;
  */
 public class MapperFactory
 {
+  @NotNull
   private static Map<DeserializationFeature, Boolean> deserializationCustomFeatures =
-      Collections.<DeserializationFeature, Boolean>emptyMap();
+      Collections.emptyMap();
+
+  @NotNull
   private static Map<JsonParser.Feature, Boolean> jsonParserCustomFeatures =
-      Collections.<JsonParser.Feature, Boolean>emptyMap();
+      Collections.emptyMap();
+
+  @NotNull
   private static Map<JsonGenerator.Feature, Boolean> jsonGeneratorCustomFeatures =
-      Collections.<JsonGenerator.Feature, Boolean>emptyMap();
+      Collections.emptyMap();
+
+  @NotNull
   private static Map<MapperFeature, Boolean> mapperCustomFeatures =
-      Collections.<MapperFeature, Boolean>emptyMap();
+      Collections.emptyMap();
+
+  @NotNull
   private static Map<SerializationFeature, Boolean> serializationCustomFeatures =
-      Collections.<SerializationFeature, Boolean>emptyMap();
+      Collections.emptyMap();
 
   /**
    * Sets custom deserialization features for any JSON ObjectMapper that is
@@ -56,8 +66,9 @@ public class MapperFactory
    * @param customFeatures The list of custom deserialization feature settings.
    * @return this object.
    */
+  @NotNull
   public MapperFactory setDeserializationCustomFeatures(
-      final Map<DeserializationFeature, Boolean> customFeatures)
+      @NotNull final Map<DeserializationFeature, Boolean> customFeatures)
   {
     deserializationCustomFeatures = customFeatures;
     return this;
@@ -72,8 +83,9 @@ public class MapperFactory
    * @param customFeatures The list of custom JSON generator feature settings.
    * @return this object.
    */
+  @NotNull
   public MapperFactory setJsonGeneratorCustomFeatures(
-      final Map<JsonGenerator.Feature, Boolean> customFeatures)
+      @NotNull final Map<JsonGenerator.Feature, Boolean> customFeatures)
   {
     jsonGeneratorCustomFeatures = customFeatures;
     return this;
@@ -88,8 +100,9 @@ public class MapperFactory
    * @param customFeatures The list of custom JSON parser feature settings.
    * @return this object.
    */
+  @NotNull
   public MapperFactory setJsonParserCustomFeatures(
-      final Map<JsonParser.Feature, Boolean> customFeatures)
+      @NotNull final Map<JsonParser.Feature, Boolean> customFeatures)
   {
     jsonParserCustomFeatures = customFeatures;
     return this;
@@ -104,8 +117,9 @@ public class MapperFactory
    * @param customFeatures The list of custom mapper feature settings.
    * @return this object.
    */
+  @NotNull
   public MapperFactory setMapperCustomFeatures(
-      final Map<MapperFeature, Boolean> customFeatures)
+      @NotNull final Map<MapperFeature, Boolean> customFeatures)
   {
     mapperCustomFeatures = customFeatures;
     return this;
@@ -120,8 +134,9 @@ public class MapperFactory
    * @param customFeatures The list of custom serialization feature settings.
    * @return this object.
   */
+  @NotNull
   public MapperFactory setSerializationCustomFeatures(
-      final Map<SerializationFeature, Boolean> customFeatures)
+      @NotNull final Map<SerializationFeature, Boolean> customFeatures)
   {
     serializationCustomFeatures = customFeatures;
     return this;
@@ -136,6 +151,7 @@ public class MapperFactory
    * @return an Object Mapper with the correct options set for serializing
    *     and deserializing SCIM JSON objects.
    */
+  @NotNull
   public static ObjectMapper createObjectMapper()
   {
     ObjectMapper mapper = new ObjectMapper(new ScimJsonFactory());

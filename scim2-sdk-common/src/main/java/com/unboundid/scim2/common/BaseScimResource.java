@@ -26,6 +26,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -70,15 +72,20 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 public abstract class BaseScimResource
     implements ScimResource
 {
+  @Nullable
   private String id;
 
+  @Nullable
   private String externalId;
 
+  @Nullable
   private Meta meta;
 
+  @NotNull
   @JsonProperty("schemas")
   private Set<String> schemaUrns = new LinkedHashSet<>();
 
+  @NotNull
   private final ObjectNode extensionObjectNode =
       JsonUtils.getJsonNodeFactory().objectNode();
 
@@ -97,7 +104,7 @@ public abstract class BaseScimResource
    *
    * @param id The ID fo the object.
    */
-  public BaseScimResource(final String id)
+  public BaseScimResource(@Nullable final String id)
   {
     this.id = id;
     addMyUrn();
@@ -108,6 +115,7 @@ public abstract class BaseScimResource
    *
    * @return an {@code ObjectNode}.
    */
+  @NotNull
   @JsonIgnore
   public ObjectNode getExtensionObjectNode()
   {
@@ -117,6 +125,7 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
+  @Nullable
   public Meta getMeta()
   {
     return meta;
@@ -125,7 +134,7 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  public void setMeta(final Meta meta)
+  public void setMeta(@Nullable final Meta meta)
   {
     this.meta = meta;
   }
@@ -133,6 +142,7 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
+  @Nullable
   public String getId()
   {
     return id;
@@ -141,7 +151,7 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  public void setId(final String id)
+  public void setId(@Nullable final String id)
   {
     this.id = id;
   }
@@ -149,6 +159,7 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
+  @Nullable
   public String getExternalId()
   {
     return externalId;
@@ -157,7 +168,7 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  public void setExternalId(final String externalId)
+  public void setExternalId(@Nullable final String externalId)
   {
     this.externalId = externalId;
   }
@@ -165,6 +176,7 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public Set<String> getSchemaUrns()
   {
     return schemaUrns;
@@ -173,7 +185,7 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  public void setSchemaUrns(final Collection<String> schemaUrns)
+  public void setSchemaUrns(@NotNull final Collection<String> schemaUrns)
   {
     Objects.requireNonNull(schemaUrns);
     this.schemaUrns = new LinkedHashSet<>(schemaUrns);
@@ -182,7 +194,8 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
-  public void setSchemaUrns(final String schemaUrn, final String... schemaUrns)
+  public void setSchemaUrns(@NotNull final String schemaUrn,
+                            @Nullable final String... schemaUrns)
   {
     setSchemaUrns(toList(schemaUrn, schemaUrns));
   }
@@ -199,8 +212,8 @@ public abstract class BaseScimResource
    * (the key name doesn't start with "{@code urn:}").
    */
   @JsonAnySetter
-  protected void setAny(final String key,
-                        final JsonNode value)
+  protected void setAny(@NotNull final String key,
+                        @NotNull final JsonNode value)
       throws ScimException
   {
     if(SchemaUtils.isUrn(key) && value.isObject())
@@ -226,6 +239,7 @@ public abstract class BaseScimResource
    * @return the value of the field.
    */
   @JsonAnyGetter
+  @NotNull
   protected Map<String, Object> getAny()
   {
     HashMap<String, Object> map =
@@ -269,7 +283,8 @@ public abstract class BaseScimResource
    * @return List of all JSON nodes referenced by the provided path.
    * @throws ScimException If the path is invalid.
    */
-  public List<JsonNode> getExtensionValues(final String path)
+  @NotNull
+  public List<JsonNode> getExtensionValues(@Nullable final String path)
       throws ScimException
   {
     return getExtensionValues(Path.fromString(path));
@@ -289,7 +304,8 @@ public abstract class BaseScimResource
    * @return List of all JSON nodes referenced by the provided path.
    * @throws ScimException If the path is invalid.
    */
-  public List<JsonNode> getExtensionValues(final Path path)
+  @NotNull
+  public List<JsonNode> getExtensionValues(@NotNull final Path path)
       throws ScimException
   {
     return JsonUtils.findMatchingPaths(path, extensionObjectNode);
@@ -300,7 +316,7 @@ public abstract class BaseScimResource
    * Equivalent to using the {@link JsonUtils#replaceValue(Path, ObjectNode,
    * JsonNode)} method: JsonUtils.replaceValues(Path.fromString(path),
    * getExtensionObjectNode(), value).
-   *
+   * <p>
    * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
    * the given value instance to a JSON node.
    *
@@ -308,7 +324,8 @@ public abstract class BaseScimResource
    * @param value The value(s) to set.
    * @throws ScimException If the path is invalid.
    */
-  public void replaceExtensionValue(final String path, final JsonNode value)
+  public void replaceExtensionValue(@Nullable final String path,
+                                    @NotNull final JsonNode value)
       throws ScimException
   {
     replaceExtensionValue(Path.fromString(path), value);
@@ -327,7 +344,8 @@ public abstract class BaseScimResource
    * @param value The value(s) to set.
    * @throws ScimException If the path is invalid.
    */
-  public void replaceExtensionValue(final Path path, final JsonNode value)
+  public void replaceExtensionValue(@NotNull final Path path,
+                                    @NotNull final JsonNode value)
       throws ScimException
   {
     JsonUtils.replaceValue(path, extensionObjectNode, value);
@@ -345,8 +363,9 @@ public abstract class BaseScimResource
    * @return The matching extension object, or {@code null} if no extension of
    * that type exists.
    */
+  @Nullable
   @JsonIgnore
-  public <T> T getExtension(final Class<T> clazz)
+  public <T> T getExtension(@NotNull final Class<T> clazz)
   {
     try
     {
@@ -377,7 +396,7 @@ public abstract class BaseScimResource
    * @param <T> the type of object.
    */
   @JsonIgnore
-  public <T> void setExtension(final T extension)
+  public <T> void setExtension(@NotNull final T extension)
   {
     String schemaUrn = getSchemaUrnOrThrowException(extension.getClass());
     extensionObjectNode.set(schemaUrn, JsonUtils.valueToNode(extension));
@@ -394,7 +413,7 @@ public abstract class BaseScimResource
    * @return  true if the extension was removed, or false if the extension
    *          was not present.
    */
-  public <T> boolean removeExtension(final Class<T> clazz)
+  public <T> boolean removeExtension(@NotNull final Class<T> clazz)
   {
     String schemaUrn = getSchemaUrnOrThrowException(clazz);
     if(extensionObjectNode.remove(schemaUrn) == null)
@@ -408,7 +427,8 @@ public abstract class BaseScimResource
     }
   }
 
-  private <T> String getSchemaUrnOrThrowException(final Class<T> clazz)
+  @NotNull
+  private <T> String getSchemaUrnOrThrowException(@NotNull final Class<T> clazz)
   {
     String schemaUrn = SchemaUtils.getSchemaUrn(clazz);
     if(schemaUrn == null)
@@ -432,7 +452,8 @@ public abstract class BaseScimResource
    * @param values The value(s) to add.
    * @throws ScimException If the path is invalid.
    */
-  public void addExtensionValue(final String path, final ArrayNode values)
+  public void addExtensionValue(@Nullable final String path,
+                                @NotNull final ArrayNode values)
       throws ScimException
   {
     addExtensionValue(Path.fromString(path), values);
@@ -450,11 +471,11 @@ public abstract class BaseScimResource
    * @param values The value(s) to add.
    * @throws ScimException If the path is invalid.
    */
-  public void addExtensionValue(final Path path, final ArrayNode values)
+  public void addExtensionValue(@Nullable final Path path,
+                                @NotNull final ArrayNode values)
       throws ScimException
   {
     JsonUtils.addValue(path, extensionObjectNode, values);
-
   }
 
   /**
@@ -466,7 +487,7 @@ public abstract class BaseScimResource
    * @return Whether one or more values where removed.
    * @throws ScimException If the path is invalid.
    */
-  public boolean removeExtensionValues(final String path)
+  public boolean removeExtensionValues(@Nullable final String path)
       throws ScimException
   {
     return removeExtensionValues(Path.fromString(path));
@@ -481,7 +502,7 @@ public abstract class BaseScimResource
    * @return Whether one or more values where removed.
    * @throws ScimException If the path is invalid.
    */
-  public boolean removeExtensionValues(final Path path)
+  public boolean removeExtensionValues(@NotNull final Path path)
       throws ScimException
   {
     List<JsonNode> nodes = JsonUtils.removeValues(path, extensionObjectNode);
@@ -491,6 +512,7 @@ public abstract class BaseScimResource
   /**
    * {@inheritDoc}
    */
+  @NotNull
   public GenericScimResource asGenericScimResource()
   {
     ObjectNode object =
@@ -506,7 +528,7 @@ public abstract class BaseScimResource
    *            BaseScimResource, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {
@@ -569,6 +591,7 @@ public abstract class BaseScimResource
    * @return  A string representation of this BaseScimResource.
    */
   @Override
+  @NotNull
   public String toString()
   {
     try

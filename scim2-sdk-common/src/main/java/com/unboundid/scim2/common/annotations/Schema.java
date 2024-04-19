@@ -34,19 +34,19 @@ public @interface Schema
    *
    * @return The object's id as a URN.
    */
-  String id() default "urn:pingidentity:scim:api:messages:2.0";
+  @NotNull String id() default "urn:pingidentity:scim:api:messages:2.0";
 
   /**
    * The description for the object.
    *
    * @return The object's description.
    */
-  String description();
+  @NotNull String description();
 
   /**
    * The human-readable name for the object.
    *
    * @return The object's human-readable name.
    */
-  String name();
+  @NotNull String name();
 }

@@ -20,6 +20,8 @@ package com.unboundid.scim2.common.types;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.BaseScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
@@ -43,46 +45,54 @@ import java.util.List;
     description = "SCIM 2.0 Service Provider Config Resource")
 public class ServiceProviderConfigResource extends BaseScimResource
 {
+  @Nullable
   @Attribute(description = "An HTTP addressable URI pointing to the " +
       "service provider's human consumable help documentation.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String documentationUri;
 
+  @NotNull
   @Attribute(description = "A complex type that specifies PATCH " +
       "configuration options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final PatchConfig patch;
 
+  @NotNull
   @Attribute(description = "A complex type that specifies Bulk " +
       "configuration options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final BulkConfig bulk;
 
+  @NotNull
   @Attribute(description = "A complex type that specifies FILTER options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final FilterConfig filter;
 
+  @NotNull
   @Attribute(description = "A complex type that specifies Change " +
       "Password configuration options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final ChangePasswordConfig changePassword;
 
+  @NotNull
   @Attribute(description = "A complex type that specifies Sort " +
       "configuration options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final SortConfig sort;
 
+  @NotNull
   @Attribute(description = "A complex type that specifies Etag " +
       "configuration options.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final ETagConfig etag;
 
+  @NotNull
   @Attribute(description = "A complex type that specifies supported " +
       "Authentication Scheme properties.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -107,16 +117,21 @@ public class ServiceProviderConfigResource extends BaseScimResource
    */
   @JsonCreator
   public ServiceProviderConfigResource(
-      @JsonProperty(value = "documentationUri") final String documentationUri,
-      @JsonProperty(value = "patch", required = true) final PatchConfig patch,
-      @JsonProperty(value = "bulk", required = true) final BulkConfig bulk,
-      @JsonProperty(value = "filter", required = true)
+      @Nullable @JsonProperty(value = "documentationUri")
+      final String documentationUri,
+      @NotNull @JsonProperty(value = "patch", required = true)
+      final PatchConfig patch,
+      @NotNull @JsonProperty(value = "bulk", required = true)
+      final BulkConfig bulk,
+      @NotNull @JsonProperty(value = "filter", required = true)
       final FilterConfig filter,
-      @JsonProperty(value = "changePassword", required = true)
+      @NotNull @JsonProperty(value = "changePassword", required = true)
       final ChangePasswordConfig changePassword,
-      @JsonProperty(value = "sort", required = true) final SortConfig sort,
-      @JsonProperty(value = "etag", required = true) final ETagConfig etag,
-      @JsonProperty(value = "authenticationSchemes", required = true)
+      @NotNull @JsonProperty(value = "sort", required = true)
+      final SortConfig sort,
+      @NotNull @JsonProperty(value = "etag", required = true)
+      final ETagConfig etag,
+      @NotNull @JsonProperty(value = "authenticationSchemes", required = true)
       final List<AuthenticationScheme> authenticationSchemes)
   {
     this.documentationUri = documentationUri;
@@ -137,6 +152,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    * @return The HTTP addressable URI pointing to the service provider's
    * human consumable help documentation.
    */
+  @Nullable
   public String getDocumentationUri()
   {
     return documentationUri;
@@ -147,6 +163,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    *
    * @return The complex type that specifies PATCH configuration options.
    */
+  @NotNull
   public PatchConfig getPatch()
   {
     return patch;
@@ -157,6 +174,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    *
    * @return The complex type that specifies Bulk configuration options.
    */
+  @NotNull
   public BulkConfig getBulk()
   {
     return bulk;
@@ -167,6 +185,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    *
    * @return The complex type that specifies FILTER options.
    */
+  @NotNull
   public FilterConfig getFilter()
   {
     return filter;
@@ -179,6 +198,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    * @return The complex type that specifies Change Password configuration
    * options.
    */
+  @NotNull
   public ChangePasswordConfig getChangePassword()
   {
     return changePassword;
@@ -189,6 +209,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    *
    * @return The complex type that specifies Sort configuration options.
    */
+  @NotNull
   public SortConfig getSort()
   {
     return sort;
@@ -199,6 +220,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    *
    * @return The complex type that specifies Etag configuration options.
    */
+  @NotNull
   public ETagConfig getEtag()
   {
     return etag;
@@ -211,6 +233,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    * @return The complex type that specifies supported Authentication Scheme
    * properties.
    */
+  @NotNull
   public List<AuthenticationScheme> getAuthenticationSchemes()
   {
     return authenticationSchemes;
@@ -225,7 +248,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
    *            ServiceProviderConfig, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

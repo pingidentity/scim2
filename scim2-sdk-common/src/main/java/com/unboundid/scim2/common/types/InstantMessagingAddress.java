@@ -18,12 +18,15 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 /**
  * Instant messaging address for the user.
  */
 public class InstantMessagingAddress
 {
+  @Nullable
   @Attribute(description = "Instant messaging address for the User.",
       isRequired = false,
       isCaseExact = false,
@@ -32,6 +35,7 @@ public class InstantMessagingAddress
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
+  @Nullable
   @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
@@ -41,6 +45,7 @@ public class InstantMessagingAddress
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
+  @Nullable
   @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'aim', 'gtalk', 'mobile' etc.",
       isRequired = false,
@@ -52,6 +57,7 @@ public class InstantMessagingAddress
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
+  @Nullable
   @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute, e.g., the " +
       "preferred messenger or primary messenger. The primary attribute " +
@@ -66,6 +72,7 @@ public class InstantMessagingAddress
    *
    * @return The instant messaging address for the User.
    */
+  @Nullable
   public String getValue()
   {
     return value;
@@ -77,7 +84,8 @@ public class InstantMessagingAddress
    * @param value The instant messaging address for the User.
    * @return This object.
    */
-  public InstantMessagingAddress setValue(final String value)
+  @NotNull
+  public InstantMessagingAddress setValue(@Nullable final String value)
   {
     this.value = value;
     return this;
@@ -88,6 +96,7 @@ public class InstantMessagingAddress
    *
    * @return The display name.
    */
+  @Nullable
   public String getDisplay()
   {
     return display;
@@ -99,7 +108,8 @@ public class InstantMessagingAddress
    * @param display The display name.
    * @return This object.
    */
-  public InstantMessagingAddress setDisplay(final String display)
+  @NotNull
+  public InstantMessagingAddress setDisplay(@Nullable final String display)
   {
     this.display = display;
     return this;
@@ -110,6 +120,7 @@ public class InstantMessagingAddress
    *
    * @return The label indicating the attribute's function.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -121,7 +132,8 @@ public class InstantMessagingAddress
    * @param type The label indicating the attribute's function.
    * @return This object.
    */
-  public InstantMessagingAddress setType(final String type)
+  @NotNull
+  public InstantMessagingAddress setType(@Nullable final String type)
   {
     this.type = type;
     return this;
@@ -134,6 +146,7 @@ public class InstantMessagingAddress
    * @return The Boolean value indicating the 'primary' or preferred
    * attribute value for this attribute.
    */
+  @Nullable
   public Boolean getPrimary()
   {
     return primary;
@@ -147,7 +160,8 @@ public class InstantMessagingAddress
    * attribute value for this attribute.
    * @return This object.
    */
-  public InstantMessagingAddress setPrimary(final Boolean primary)
+  @NotNull
+  public InstantMessagingAddress setPrimary(@Nullable final Boolean primary)
   {
     this.primary = primary;
     return this;
@@ -162,7 +176,7 @@ public class InstantMessagingAddress
    *            messaging address, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

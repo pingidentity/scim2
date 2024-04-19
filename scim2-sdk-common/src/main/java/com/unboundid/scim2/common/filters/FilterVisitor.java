@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.filters;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
@@ -33,7 +35,9 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final EqualFilter filter, final P param) throws ScimException;
+  @NotNull
+  R visit(@NotNull final EqualFilter filter, @Nullable final P param)
+      throws ScimException;
 
   /**
    * Operate on a {@code not equal} filter.
@@ -43,7 +47,8 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final NotEqualFilter filter, final P param)
+  @NotNull
+  R visit(@NotNull final NotEqualFilter filter, @Nullable final P param)
       throws ScimException;
 
   /**
@@ -54,7 +59,8 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final ContainsFilter filter, final P param)
+  @NotNull
+  R visit(@NotNull final ContainsFilter filter, @Nullable final P param)
       throws ScimException;
 
   /**
@@ -65,7 +71,8 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final StartsWithFilter filter, final P param)
+  @NotNull
+  R visit(@NotNull final StartsWithFilter filter, @Nullable final P param)
       throws ScimException;
 
   /**
@@ -76,7 +83,8 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final EndsWithFilter filter, final P param)
+  @NotNull
+  R visit(@NotNull final EndsWithFilter filter, @Nullable final P param)
       throws ScimException;
 
   /**
@@ -87,7 +95,8 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final PresentFilter filter, final P param)
+  @NotNull
+  R visit(@NotNull final PresentFilter filter, @Nullable final P param)
       throws ScimException;
 
   /**
@@ -98,7 +107,8 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final GreaterThanFilter filter, final P param)
+  @NotNull
+  R visit(@NotNull final GreaterThanFilter filter, @Nullable final P param)
       throws ScimException;
 
   /**
@@ -109,7 +119,9 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final GreaterThanOrEqualFilter filter, final P param)
+  @NotNull
+  R visit(@NotNull final GreaterThanOrEqualFilter filter,
+          @Nullable final P param)
       throws ScimException;
 
   /**
@@ -120,7 +132,8 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final LessThanFilter filter, final P param)
+  @NotNull
+  R visit(@NotNull final LessThanFilter filter, @Nullable final P param)
       throws ScimException;
 
   /**
@@ -131,7 +144,8 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final LessThanOrEqualFilter filter, final P param)
+  @NotNull
+  R visit(@NotNull final LessThanOrEqualFilter filter, @Nullable final P param)
       throws ScimException;
 
   /**
@@ -142,7 +156,9 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final AndFilter filter, final P param) throws ScimException;
+  @NotNull
+  R visit(@NotNull final AndFilter filter, @Nullable final P param)
+      throws ScimException;
 
   /**
    * Operate on a {@code or} filter.
@@ -152,7 +168,9 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final OrFilter filter, final P param) throws ScimException;
+  @NotNull
+  R visit(@NotNull final OrFilter filter, @Nullable final P param)
+      throws ScimException;
 
   /**
    * Operate on a {@code not} filter.
@@ -162,7 +180,9 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final NotFilter filter, final P param) throws ScimException;
+  @NotNull
+  R visit(@NotNull final NotFilter filter, @Nullable final P param)
+      throws ScimException;
 
   /**
    * Operate on a complex multi-valued attribute value filter.
@@ -172,6 +192,7 @@ public interface FilterVisitor<R, P>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  R visit(final ComplexValueFilter filter, final P param)
+  @NotNull
+  R visit(@NotNull final ComplexValueFilter filter, @Nullable final P param)
       throws ScimException;
 }

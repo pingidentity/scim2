@@ -16,6 +16,7 @@
  */
 package com.unboundid.scim2.common.utils;
 
+import com.unboundid.scim2.common.annotations.NotNull;
 import jakarta.xml.bind.DatatypeConverter;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,6 +28,7 @@ import java.util.TimeZone;
  */
 public final class DateTimeUtils
 {
+  @NotNull
   private static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getTimeZone("UTC");
 
   /**
@@ -35,7 +37,8 @@ public final class DateTimeUtils
    * @param date A Date value.
    * @return The value as a SCIM 2 DateTime string.
    */
-  public static String format(final Date date)
+  @NotNull
+  public static String format(@NotNull final Date date)
   {
     return format(date, DEFAULT_TIME_ZONE);
   }
@@ -47,7 +50,9 @@ public final class DateTimeUtils
    * @param timeZone The time zone.
    * @return The value as a SCIM 2 DateTime string.
    */
-  public static String format(final Date date, final TimeZone timeZone)
+  @NotNull
+  public static String format(@NotNull final Date date,
+                              @NotNull final TimeZone timeZone)
   {
     Calendar calendar = Calendar.getInstance(timeZone);
     calendar.setTime(date);
@@ -60,7 +65,8 @@ public final class DateTimeUtils
    * @param calendar A Calendar value.
    * @return The value as a SCIM 2 DateTime string.
    */
-  public static String format(final Calendar calendar)
+  @NotNull
+  public static String format(@NotNull final Calendar calendar)
   {
     return DatatypeConverter.printDateTime(calendar);
   }
@@ -73,7 +79,8 @@ public final class DateTimeUtils
    * @throws IllegalArgumentException if the string cannot be parsed as an
    * xsd:dateTime value.
    */
-  public static Calendar parse(final String dateStr)
+  @NotNull
+  public static Calendar parse(@NotNull final String dateStr)
       throws IllegalArgumentException
   {
     return DatatypeConverter.parseDateTime(dateStr);

@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.types;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
@@ -28,6 +30,7 @@ import com.unboundid.scim2.common.annotations.Attribute;
     name="EnterpriseUser", description = "Enterprise User")
 public class EnterpriseUserExtension
 {
+  @Nullable
   @Attribute(description = "Numeric or alphanumeric identifier assigned " +
       "to a person, typically based on order of hire or association with " +
       "an organization.",
@@ -38,6 +41,7 @@ public class EnterpriseUserExtension
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String employeeNumber;
 
+  @Nullable
   @Attribute(description = "Identifies the name of a cost center.",
       isRequired = false,
       isCaseExact = false,
@@ -46,6 +50,7 @@ public class EnterpriseUserExtension
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String costCenter;
 
+  @Nullable
   @Attribute(description = "Identifies the name of an organization.",
       isRequired = false,
       isCaseExact = false,
@@ -54,6 +59,7 @@ public class EnterpriseUserExtension
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String organization;
 
+  @Nullable
   @Attribute(description = "Identifies the name of a division.",
       isRequired = false,
       isCaseExact = false,
@@ -62,6 +68,7 @@ public class EnterpriseUserExtension
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String division;
 
+  @Nullable
   @Attribute(description = "Identifies the name of a department.",
       isRequired = false,
       isCaseExact = false,
@@ -70,6 +77,7 @@ public class EnterpriseUserExtension
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String department;
 
+  @Nullable
   @Attribute(description = "The User's manager.",
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -81,6 +89,7 @@ public class EnterpriseUserExtension
    *
    * @return The numeric or alphanumeric identifier assigned to a person.
    */
+  @Nullable
   public String getEmployeeNumber()
   {
     return employeeNumber;
@@ -93,7 +102,9 @@ public class EnterpriseUserExtension
    *                       person.
    * @return This object.
    */
-  public EnterpriseUserExtension setEmployeeNumber(final String employeeNumber)
+  @NotNull
+  public EnterpriseUserExtension setEmployeeNumber(
+      @Nullable final String employeeNumber)
   {
     this.employeeNumber = employeeNumber;
     return this;
@@ -104,6 +115,7 @@ public class EnterpriseUserExtension
    *
    * @return The name of a cost center.
    */
+  @Nullable
   public String getCostCenter()
   {
     return costCenter;
@@ -115,7 +127,9 @@ public class EnterpriseUserExtension
    * @param costCenter The name of a cost center.
    * @return This object.
    */
-  public EnterpriseUserExtension setCostCenter(final String costCenter)
+  @NotNull
+  public EnterpriseUserExtension setCostCenter(
+      @Nullable final String costCenter)
   {
     this.costCenter = costCenter;
     return this;
@@ -126,6 +140,7 @@ public class EnterpriseUserExtension
    *
    * @return The name of an organization.
    */
+  @Nullable
   public String getOrganization()
   {
     return organization;
@@ -137,7 +152,9 @@ public class EnterpriseUserExtension
    * @param organization The name of an organization.
    * @return This object.
    */
-  public EnterpriseUserExtension setOrganization(final String organization)
+  @NotNull
+  public EnterpriseUserExtension setOrganization(
+      @Nullable final String organization)
   {
     this.organization = organization;
     return this;
@@ -148,6 +165,7 @@ public class EnterpriseUserExtension
    *
    * @return The name of a division.
    */
+  @Nullable
   public String getDivision()
   {
     return division;
@@ -159,7 +177,8 @@ public class EnterpriseUserExtension
    * @param division The name of a division.
    * @return This object.
    */
-  public EnterpriseUserExtension setDivision(final String division)
+  @NotNull
+  public EnterpriseUserExtension setDivision(@Nullable final String division)
   {
     this.division = division;
     return this;
@@ -170,6 +189,7 @@ public class EnterpriseUserExtension
    *
    * @return The name of a department.
    */
+  @Nullable
   public String getDepartment()
   {
     return department;
@@ -181,7 +201,9 @@ public class EnterpriseUserExtension
    * @param department the name of a department.
    * @return This object.
    */
-  public EnterpriseUserExtension setDepartment(final String department)
+  @NotNull
+  public EnterpriseUserExtension setDepartment(
+      @Nullable final String department)
   {
     this.department = department;
     return this;
@@ -192,6 +214,7 @@ public class EnterpriseUserExtension
    *
    * @return The User's manager.
    */
+  @Nullable
   public Manager getManager()
   {
     return manager;
@@ -203,7 +226,8 @@ public class EnterpriseUserExtension
    * @param manager The User's manager.
    * @return This object.
    */
-  public EnterpriseUserExtension setManager(final Manager manager)
+  @NotNull
+  public EnterpriseUserExtension setManager(@Nullable final Manager manager)
   {
     this.manager = manager;
     return this;
@@ -218,7 +242,7 @@ public class EnterpriseUserExtension
    *            user extension, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

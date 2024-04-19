@@ -18,12 +18,15 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 /**
  * The components of the user's full name.
  */
 public class Name
 {
+  @Nullable
   @Attribute(description = "The full name, including all middle " +
       "names, titles, and suffixes as appropriate, formatted for display " +
       "(for example, Ms. Barbara J Jensen, III.).",
@@ -34,6 +37,7 @@ public class Name
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String formatted;
 
+  @Nullable
   @Attribute(description = "The family name of the User, or Last " +
       "Name in most Western languages (for example, Jensen given the full name Ms. " +
       "Barbara J Jensen, III.).",
@@ -44,6 +48,7 @@ public class Name
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String familyName;
 
+  @Nullable
   @Attribute(description = "The given name of the User, or First Name " +
       "in most Western languages (for example, Barbara given the full name Ms. " +
       "Barbara J Jensen, III.).",
@@ -54,6 +59,7 @@ public class Name
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String givenName;
 
+  @Nullable
   @Attribute(description = "The middle name(s) of the User (for example, " +
       "Robert given the full name Ms. Barbara J Jensen, III.).",
       isRequired = false,
@@ -63,6 +69,7 @@ public class Name
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String middleName;
 
+  @Nullable
   @Attribute(description = "The honorific prefix(es) of the User, or " +
       "Title in most Western languages (for example, Ms. given the full name " +
       "Ms. Barbara J Jensen, III.).",
@@ -73,6 +80,7 @@ public class Name
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String honorificPrefix;
 
+  @Nullable
   @Attribute(description = "The honorific suffix(es) of the User, or " +
       "Suffix in most Western languages (for example, III. given the full name " +
       "Ms. Barbara J Jensen, III.)",
@@ -91,6 +99,7 @@ public class Name
    * @return The full name, including all middle names, titles, and
    * suffixes as appropriate, formatted for display.
    */
+  @Nullable
   public String getFormatted()
   {
     return formatted;
@@ -105,7 +114,8 @@ public class Name
    * suffixes as appropriate, formatted for display.
    * @return This object.
    */
-  public Name setFormatted(final String formatted)
+  @NotNull
+  public Name setFormatted(@Nullable final String formatted)
   {
     this.formatted = formatted;
     return this;
@@ -118,6 +128,7 @@ public class Name
    * @return The family name of the User, or Last Name in most Western
    * languages.
    */
+  @Nullable
   public String getFamilyName()
   {
     return familyName;
@@ -131,7 +142,8 @@ public class Name
    * languages.
    * @return This object.
    */
-  public Name setFamilyName(final String familyName)
+  @NotNull
+  public Name setFamilyName(@Nullable final String familyName)
   {
     this.familyName = familyName;
     return this;
@@ -144,6 +156,7 @@ public class Name
    * @return The given name of the User, or First Name in most Western
    * languages.
    */
+  @Nullable
   public String getGivenName()
   {
     return givenName;
@@ -157,7 +170,8 @@ public class Name
    * languages.
    * @return This object.
    */
-  public Name setGivenName(final String givenName)
+  @NotNull
+  public Name setGivenName(@Nullable final String givenName)
   {
     this.givenName = givenName;
     return this;
@@ -169,6 +183,7 @@ public class Name
    *
    * @return the middle name(s) of the User.
    */
+  @Nullable
   public String getMiddleName()
   {
     return middleName;
@@ -181,7 +196,8 @@ public class Name
    * @param middleName The middle name(s) of the User.
    * @return This object.
    */
-  public Name setMiddleName(final String middleName)
+  @NotNull
+  public Name setMiddleName(@Nullable final String middleName)
   {
     this.middleName = middleName;
     return this;
@@ -194,6 +210,7 @@ public class Name
    * @return The honorific prefix(es) of the User, or Title in most Western
    * languages.
    */
+  @Nullable
   public String getHonorificPrefix()
   {
     return honorificPrefix;
@@ -207,7 +224,8 @@ public class Name
    *                        most Western languages.
    * @return This object.
    */
-  public Name setHonorificPrefix(final String honorificPrefix)
+  @NotNull
+  public Name setHonorificPrefix(@Nullable final String honorificPrefix)
   {
     this.honorificPrefix = honorificPrefix;
     return this;
@@ -220,6 +238,7 @@ public class Name
    * @return the honorific suffix(es) of the User, or Suffix in most Western
    * languages.
    */
+  @Nullable
   public String getHonorificSuffix()
   {
     return honorificSuffix;
@@ -233,7 +252,8 @@ public class Name
    *                        most Western languages.
    * @return This object.
    */
-  public Name setHonorificSuffix(final String honorificSuffix)
+  @NotNull
+  public Name setHonorificSuffix(@Nullable final String honorificSuffix)
   {
     this.honorificSuffix = honorificSuffix;
     return this;
@@ -247,7 +267,7 @@ public class Name
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

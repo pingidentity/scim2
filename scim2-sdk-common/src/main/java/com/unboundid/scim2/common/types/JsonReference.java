@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.types;
 
+import com.unboundid.scim2.common.annotations.Nullable;
+
 /**
  * This class can be used in a bean that is converted to json.  If
  * used with the JsonReferenceBeanSerializer, the json that is created
@@ -29,6 +31,8 @@ package com.unboundid.scim2.common.types;
 public class JsonReference<T>
 {
   private boolean set;
+
+  @Nullable
   private T obj;
 
   /**
@@ -45,7 +49,7 @@ public class JsonReference<T>
    *
    * @param obj the object that this JsonReference refers to.
    */
-  public JsonReference(final T obj)
+  public JsonReference(@Nullable final T obj)
   {
     set = true;
     this.obj = obj;
@@ -67,6 +71,7 @@ public class JsonReference<T>
    *
    * @return the object that this JsonReference refers to.
    */
+  @Nullable
   public T getObjIfSet()
   {
     if(set)
@@ -83,6 +88,7 @@ public class JsonReference<T>
    *
    * @return the object referred to, or null.
    */
+  @Nullable
   public T getObj()
   {
     return set ? obj : null;
@@ -96,7 +102,7 @@ public class JsonReference<T>
    *            reference, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

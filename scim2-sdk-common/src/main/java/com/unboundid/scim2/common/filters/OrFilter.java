@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.filters;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 import java.util.List;
@@ -58,7 +60,7 @@ public final class OrFilter extends CombiningFilter
    *
    * @param filterComponents The component filters to logically OR together.
    */
-  OrFilter(final List<Filter> filterComponents)
+  OrFilter(@NotNull final List<Filter> filterComponents)
   {
     super(filterComponents);
   }
@@ -66,7 +68,9 @@ public final class OrFilter extends CombiningFilter
   /**
    * {@inheritDoc}
    */
-  public <R, P> R visit(final FilterVisitor<R, P> visitor, final P param)
+  @NotNull
+  public <R, P> R visit(@NotNull final FilterVisitor<R, P> visitor,
+                        @Nullable final P param)
       throws ScimException
   {
     return visitor.visit(this, param);
@@ -76,6 +80,7 @@ public final class OrFilter extends CombiningFilter
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public FilterType getFilterType()
   {
     return FilterType.OR;
@@ -89,7 +94,7 @@ public final class OrFilter extends CombiningFilter
    *            or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

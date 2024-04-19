@@ -17,6 +17,9 @@
 
 package com.unboundid.scim2.common.utils;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
+
 import static com.unboundid.scim2.common.utils.StaticUtils.*;
 
 
@@ -52,6 +55,7 @@ public enum DebugType
 
 
   // The name for this debug type.
+  @NotNull
   private final String name;
 
 
@@ -62,7 +66,7 @@ public enum DebugType
    * @param  name  The name for this debug type.  It should be in all lowercase
    *               characters.
    */
-  DebugType(final String name)
+  DebugType(@NotNull final String name)
   {
     this.name = name;
   }
@@ -74,6 +78,7 @@ public enum DebugType
    *
    * @return  The name for this debug type.
    */
+  @NotNull
   public String getName()
   {
     return name;
@@ -89,7 +94,8 @@ public enum DebugType
    * @return  The requested debug type, or {@code null} if there is no such
    *          debug type.
    */
-  public static DebugType forName(final String name)
+  @Nullable
+  public static DebugType forName(@NotNull final String name)
   {
     final String lowerName = toLowerCase(name);
 
@@ -116,6 +122,7 @@ public enum DebugType
    *
    * @return  A comma-delimited list of the defined debug type names.
    */
+  @NotNull
   public static String getTypeNameList()
   {
     final StringBuilder buffer = new StringBuilder();
@@ -141,7 +148,8 @@ public enum DebugType
    *
    * @return  A string representation of this debug type.
    */
-  @Override()
+  @Override
+  @NotNull
   public String toString()
   {
     return name;
