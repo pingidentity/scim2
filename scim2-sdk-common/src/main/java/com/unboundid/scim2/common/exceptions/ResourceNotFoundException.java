@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.exceptions;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
@@ -52,7 +54,7 @@ public class ResourceNotFoundException extends ScimException
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public ResourceNotFoundException(final String errorMessage)
+  public ResourceNotFoundException(@Nullable final String errorMessage)
   {
     super(404, null, errorMessage);
   }
@@ -68,9 +70,9 @@ public class ResourceNotFoundException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public ResourceNotFoundException(final String errorMessage,
-                                   final String scimType,
-                                   final Throwable cause)
+  public ResourceNotFoundException(@Nullable final String errorMessage,
+                                   @Nullable final String scimType,
+                                   @Nullable final Throwable cause)
   {
     super(404, scimType, errorMessage, cause);
   }
@@ -85,8 +87,8 @@ public class ResourceNotFoundException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public ResourceNotFoundException(final ErrorResponse scimError,
-                                   final Throwable cause)
+  public ResourceNotFoundException(@NotNull final ErrorResponse scimError,
+                                   @Nullable final Throwable cause)
   {
     super(scimError, cause);
   }

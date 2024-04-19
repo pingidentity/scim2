@@ -19,6 +19,8 @@ package com.unboundid.scim2.common.filters;
 
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
@@ -48,7 +50,8 @@ public final class EqualFilter extends ComparisonFilter
    * @param filterAttribute The path to the attribute to compare.
    * @param filterValue The comparison value.
    */
-  EqualFilter(final Path filterAttribute, final ValueNode filterValue)
+  EqualFilter(@NotNull final Path filterAttribute,
+              @Nullable final ValueNode filterValue)
   {
     super(filterAttribute, filterValue);
   }
@@ -56,7 +59,9 @@ public final class EqualFilter extends ComparisonFilter
   /**
    * {@inheritDoc}
    */
-  public <R, P> R visit(final FilterVisitor<R, P> visitor, final P param)
+  @NotNull
+  public <R, P> R visit(@NotNull final FilterVisitor<R, P> visitor,
+                        @Nullable final P param)
       throws ScimException
   {
     return visitor.visit(this, param);
@@ -66,6 +71,7 @@ public final class EqualFilter extends ComparisonFilter
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public FilterType getFilterType()
   {
     return FilterType.EQUAL;
@@ -79,7 +85,7 @@ public final class EqualFilter extends ComparisonFilter
    *            filter, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

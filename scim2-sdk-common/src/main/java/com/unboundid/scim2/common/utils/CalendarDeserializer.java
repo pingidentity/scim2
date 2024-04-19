@@ -21,6 +21,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -34,8 +36,9 @@ public class CalendarDeserializer extends JsonDeserializer<Calendar>
    * {@inheritDoc}
    */
   @Override
-  public Calendar deserialize(final JsonParser jp,
-                              final DeserializationContext ctxt)
+  @NotNull
+  public Calendar deserialize(@NotNull final JsonParser jp,
+                              @Nullable final DeserializationContext ctxt)
       throws IOException, JsonProcessingException
   {
     String dateStr = jp.getText();

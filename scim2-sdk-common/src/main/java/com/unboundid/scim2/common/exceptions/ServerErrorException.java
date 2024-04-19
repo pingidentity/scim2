@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.exceptions;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
@@ -49,7 +51,7 @@ public class ServerErrorException extends ScimException
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public ServerErrorException(final String errorMessage)
+  public ServerErrorException(@Nullable final String errorMessage)
   {
     super(500, null, errorMessage);
   }
@@ -64,9 +66,9 @@ public class ServerErrorException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public ServerErrorException(final String errorMessage,
-                              final String scimType,
-                              final Throwable cause)
+  public ServerErrorException(@Nullable final String errorMessage,
+                              @Nullable final String scimType,
+                              @Nullable final Throwable cause)
   {
     super(500, scimType, errorMessage, cause);
   }
@@ -80,8 +82,8 @@ public class ServerErrorException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public ServerErrorException(final ErrorResponse scimError,
-                              final Throwable cause)
+  public ServerErrorException(@NotNull final ErrorResponse scimError,
+                              @Nullable final Throwable cause)
   {
     super(scimError, cause);
   }

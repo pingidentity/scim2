@@ -22,6 +22,8 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.io.IOContext;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -48,8 +50,8 @@ public class ScimJsonFactory extends JsonFactory
    *                        be serialized and deserialized. This may be
    *                        {@code null}.
    */
-  protected ScimJsonFactory(final ScimJsonFactory sourceFactory,
-                            final ObjectCodec codec)
+  protected ScimJsonFactory(@NotNull final ScimJsonFactory sourceFactory,
+                            @Nullable final ObjectCodec codec)
   {
     super(sourceFactory, codec);
   }
@@ -62,7 +64,8 @@ public class ScimJsonFactory extends JsonFactory
    * @return ScimFilterJsonParser object
    * @throws IOException on parse error
    */
-  JsonParser createScimFilterParser(final Reader r)
+  @NotNull
+  JsonParser createScimFilterParser(@NotNull final Reader r)
       throws IOException
   {
     IOContext ctxt = _createContext(r, false);
@@ -76,6 +79,7 @@ public class ScimJsonFactory extends JsonFactory
    * @return A new ScimJsonFactory instance.
    */
   @Override
+  @NotNull
   public ScimJsonFactory copy()
   {
     return new ScimJsonFactory(this, _objectCodec);

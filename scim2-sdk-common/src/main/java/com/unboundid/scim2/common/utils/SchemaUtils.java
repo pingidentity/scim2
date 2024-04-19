@@ -18,6 +18,8 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
@@ -50,27 +52,32 @@ public class SchemaUtils
   /**
    * The attribute definition for the SCIM 2 standard schemas attribute.
    */
+  @NotNull
   public static final AttributeDefinition SCHEMAS_ATTRIBUTE_DEFINITION;
 
   /**
    * The attribute definition for the SCIM 2 standard id attribute.
    */
+  @NotNull
   public static final AttributeDefinition ID_ATTRIBUTE_DEFINITION;
 
   /**
    * The attribute definition for the SCIM 2 standard externalId attribute.
    */
+  @NotNull
   public static final AttributeDefinition EXTERNAL_ID_ATTRIBUTE_DEFINITION;
 
   /**
    * The attribute definition for the SCIM 2 standard meta attribute.
    */
+  @NotNull
   public static final AttributeDefinition META_ATTRIBUTE_DEFINITION;
 
   /**
    * The collection of attribute definitions for SCIM 2 standard common
    * attributes: schemas, id, externalId, and meta.
    */
+  @NotNull
   public static final Collection<AttributeDefinition>
       COMMON_ATTRIBUTE_DEFINITIONS;
 
@@ -109,7 +116,7 @@ public class SchemaUtils
     {
       Collection<AttributeDefinition> subAttributes = getAttributes(Meta.class);
       builder.addSubAttributes(subAttributes.toArray(
-          new AttributeDefinition[subAttributes.size()]));
+          new AttributeDefinition[0]));
     }
     catch (IntrospectionException e)
     {
@@ -131,9 +138,10 @@ public class SchemaUtils
    * @throws java.beans.IntrospectionException throw if there are any
    * introspection errors.
    */
-  public static Collection<PropertyDescriptor>
-  getPropertyDescriptors(final Class<?> cls)
-      throws IntrospectionException
+  @NotNull
+  public static Collection<PropertyDescriptor> getPropertyDescriptors(
+      @NotNull final Class<?> cls)
+          throws IntrospectionException
   {
     BeanInfo beanInfo = Introspector.getBeanInfo(cls, Object.class);
     PropertyDescriptor[] propertyDescriptors =
@@ -149,9 +157,10 @@ public class SchemaUtils
    * @throws IntrospectionException thrown if an introspection error occurs.
    */
   @Transient
+  @NotNull
   public static Collection<AttributeDefinition> getAttributes(
-      final Class<?> cls)
-      throws IntrospectionException
+      @NotNull final Class<?> cls)
+          throws IntrospectionException
   {
     Stack<String> classesProcessed = new Stack<>();
     return getAttributes(classesProcessed, cls);
@@ -167,9 +176,11 @@ public class SchemaUtils
    * @throws IntrospectionException thrown if an error occurs during
    *    Introspection.
    */
+  @NotNull
   private static Collection<AttributeDefinition> getAttributes(
-      final Stack<String> classesProcessed, final Class<?> cls)
-      throws IntrospectionException
+      @NotNull final Stack<String> classesProcessed,
+      @NotNull final Class<?> cls)
+          throws IntrospectionException
   {
     String className = cls.getCanonicalName();
     if(!cls.isAssignableFrom(AttributeDefinition.class) &&
@@ -269,10 +280,11 @@ public class SchemaUtils
    * @param jsonProperty the Jackson JsonProperty annotation for the field.
    * @return this.
    */
+  @NotNull
   private static AttributeDefinition.Builder addName(
-      final AttributeDefinition.Builder attributeBuilder,
-      final PropertyDescriptor propertyDescriptor,
-      final JsonProperty jsonProperty)
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @NotNull final PropertyDescriptor propertyDescriptor,
+      @Nullable final JsonProperty jsonProperty)
   {
     if(jsonProperty != null &&
         !jsonProperty.value().equals(JsonProperty.USE_DEFAULT_NAME))
@@ -298,10 +310,11 @@ public class SchemaUtils
    *                       to build an attribute for.
    * @return this.
    */
+  @NotNull
   private static AttributeDefinition.Builder addMultiValued(
-      final AttributeDefinition.Builder attributeBuilder,
-      final PropertyDescriptor propertyDescriptor,
-      final Attribute schemaProperty)
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @NotNull final PropertyDescriptor propertyDescriptor,
+      @NotNull final Attribute schemaProperty)
   {
     Class<?> multiValuedClass = schemaProperty.multiValueClass();
     boolean multiValued = !multiValuedClass.equals(NullType.class);
@@ -340,9 +353,10 @@ public class SchemaUtils
    *                       to build an attribute for.
    * @return this.
    */
+  @NotNull
   private static AttributeDefinition.Builder addDescription(
-      final AttributeDefinition.Builder attributeBuilder,
-      final Attribute schemaProperty)
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @Nullable final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -361,9 +375,10 @@ public class SchemaUtils
    *                       to build an attribute for.
    * @return this.
    */
+  @NotNull
   private static AttributeDefinition.Builder addCaseExact(
-      final AttributeDefinition.Builder attributeBuilder,
-      final Attribute schemaProperty)
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @Nullable final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -382,9 +397,10 @@ public class SchemaUtils
    *                       to build an attribute for.
    * @return this.
    */
+  @NotNull
   private static AttributeDefinition.Builder addRequired(
-      final AttributeDefinition.Builder attributeBuilder,
-      final Attribute schemaProperty)
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @Nullable final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -403,9 +419,10 @@ public class SchemaUtils
    *                       to build an attribute for.
    * @return this.
    */
+  @NotNull
   private static AttributeDefinition.Builder addCanonicalValues(
-      final AttributeDefinition.Builder attributeBuilder,
-      final Attribute schemaProperty)
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @Nullable final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -424,9 +441,10 @@ public class SchemaUtils
    *                       to build an attribute for.
    * @return this.
    */
+  @NotNull
   private static AttributeDefinition.Builder addReturned(
-      final AttributeDefinition.Builder attributeBuilder,
-      final Attribute schemaProperty)
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @Nullable final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -445,9 +463,10 @@ public class SchemaUtils
    *                       to build an attribute for.
    * @return this.
    */
+  @NotNull
   private static AttributeDefinition.Builder addUniqueness(
-      final AttributeDefinition.Builder attributeBuilder,
-      final Attribute schemaProperty)
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @Nullable final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -466,9 +485,10 @@ public class SchemaUtils
    *                       to build an attribute for.
    * @return this.
    */
+  @NotNull
   private static AttributeDefinition.Builder addReferenceTypes(
-      final AttributeDefinition.Builder attributeBuilder,
-      final Attribute schemaProperty)
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @Nullable final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -480,16 +500,18 @@ public class SchemaUtils
 
   /**
    * This method will find the mutability constraint for the attribute, and add
-   * it to the builder.
+   * it to the builder. If the schema property is {@code null}, the mutability
+   * will be considered "read-write".
    *
    * @param attributeBuilder builder for a scim attribute.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
    * @return this.
    */
+  @NotNull
   private static AttributeDefinition.Builder addMutability(
-      final AttributeDefinition.Builder attributeBuilder,
-      final Attribute schemaProperty)
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @Nullable final Attribute schemaProperty)
   {
     if(schemaProperty != null)
     {
@@ -511,8 +533,9 @@ public class SchemaUtils
    * @param cls java Class for an attribute of a SCIM object.
    * @return an attribute type.
    */
+  @NotNull
   private static AttributeDefinition.Type getAttributeType(
-      final Class cls)
+      @NotNull final Class<?> cls)
   {
     if((cls == Integer.class) ||
         (cls == int.class))
@@ -532,8 +555,7 @@ public class SchemaUtils
     {
       return AttributeDefinition.Type.DECIMAL;
     }
-    else if ((cls == String.class) ||
-        (cls == boolean.class))
+    else if ((cls == String.class))
     {
       return AttributeDefinition.Type.STRING;
     }
@@ -564,7 +586,8 @@ public class SchemaUtils
    * @return the schema.
    * @throws IntrospectionException if an exception occurs during introspection.
    */
-  public static SchemaResource getSchema(final Class<?> cls)
+  @Nullable
+  public static SchemaResource getSchema(@NotNull final Class<?> cls)
       throws IntrospectionException
   {
     Schema schemaAnnotation = cls.getAnnotation(Schema.class);
@@ -587,10 +610,11 @@ public class SchemaUtils
    *
    * @param cls the java Class to search.
    * @param fieldName the name of the field to find.
-   * @return the java field.
+   * @return the Java field.
    */
-  public static Field findField(final Class<?> cls,
-                                 final String fieldName)
+  @NotNull
+  public static Field findField(@Nullable final Class<?> cls,
+                                @NotNull final String fieldName)
   {
     Class<?> currentClass = cls;
     while(currentClass != null)
@@ -616,7 +640,7 @@ public class SchemaUtils
    * @param cls the class to check.
    * @return true if the class is a collection or an array, or false if not.
    */
-  private static boolean isCollectionOrArray(final Class<?> cls)
+  private static boolean isCollectionOrArray(@NotNull final Class<?> cls)
   {
     return (cls.isArray() && byte[].class != cls) ||
         Collection.class.isAssignableFrom(cls);
@@ -630,7 +654,8 @@ public class SchemaUtils
    * @param cls class to find the schema id property of the annotation from.
    * @return the id of the schema, or {@code null} if it was not provided.
    */
-  public static String getSchemaIdFromAnnotation(final Class<?> cls)
+  @Nullable
+  public static String getSchemaIdFromAnnotation(@NotNull final Class<?> cls)
   {
     Schema schema = cls.getAnnotation(Schema.class);
     return SchemaUtils.getSchemaIdFromAnnotation(schema);
@@ -643,8 +668,9 @@ public class SchemaUtils
    * @param schemaAnnotation the SCIM SchemaInfo annotation.
    * @return the id of the schema, or {@code null} if it was not provided.
    */
+  @Nullable
   private static String getSchemaIdFromAnnotation(
-      final Schema schemaAnnotation)
+      @Nullable final Schema schemaAnnotation)
   {
     if(schemaAnnotation != null)
     {
@@ -661,7 +687,8 @@ public class SchemaUtils
    * @param cls class to find the schema name property of the annotation from.
    * @return the name of the schema.
    */
-  public static String getNameFromSchemaAnnotation(final Class<?> cls)
+  @Nullable
+  public static String getNameFromSchemaAnnotation(@NotNull final Class<?> cls)
   {
     Schema schema = (Schema)cls.getAnnotation(Schema.class);
     return SchemaUtils.getNameFromSchemaAnnotation(schema);
@@ -673,8 +700,9 @@ public class SchemaUtils
    * @param schemaAnnotation the SCIM SchemaInfo annotation.
    * @return the name of the schema or a generated name.
    */
+  @Nullable
   private static String getNameFromSchemaAnnotation(
-      final Schema schemaAnnotation)
+      @Nullable final Schema schemaAnnotation)
   {
     if(schemaAnnotation != null)
     {
@@ -690,7 +718,8 @@ public class SchemaUtils
    * @param cls The class of the object.
    * @return The schema urn for the object.
    */
-  public static String getSchemaUrn(final Class<?> cls)
+  @NotNull
+  public static String getSchemaUrn(@NotNull final Class<?> cls)
   {
     // The 'schemaId' is the URN. Make sure it begins with the "urn:" prefix.
     // The 'name' field is a human-friendly name for the object.
@@ -716,7 +745,7 @@ public class SchemaUtils
    * @param string the string to check.
    * @return true if it's a urn, or false if not.
    */
-  public static boolean isUrn(final String string)
+  public static boolean isUrn(@NotNull final String string)
   {
     return StaticUtils.toLowerCase(string).startsWith("urn:") &&
         string.length() > 4;
@@ -734,7 +763,8 @@ public class SchemaUtils
    * @param string the string to force to be a urn.
    * @return the urn.
    */
-  public static String forceToBeUrn(final String string)
+  @NotNull
+  public static String forceToBeUrn(@NotNull final String string)
   {
     if(isUrn(string))
     {
@@ -743,5 +773,4 @@ public class SchemaUtils
 
     return "urn:" + string;
   }
-
 }

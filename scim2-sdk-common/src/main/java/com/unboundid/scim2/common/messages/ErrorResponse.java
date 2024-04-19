@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
@@ -68,10 +70,12 @@ import com.unboundid.scim2.common.utils.StatusSerializer;
     name="Error Response", description = "SCIM 2.0 Error Response")
 public final class ErrorResponse extends BaseScimResource
 {
+  @Nullable
   @Attribute(description = "A SCIM detailed error keyword.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String scimType;
 
+  @Nullable
   @Attribute(description = "A detailed, human readable message.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String detail;
@@ -100,6 +104,7 @@ public final class ErrorResponse extends BaseScimResource
    *
    * @return the type of the error.
    */
+  @Nullable
   public String getScimType()
   {
     return scimType;
@@ -110,7 +115,7 @@ public final class ErrorResponse extends BaseScimResource
    *
    * @param scimType the type of the SCIM error.
    */
-  public void setScimType(final String scimType)
+  public void setScimType(@Nullable final String scimType)
   {
     this.scimType = scimType;
   }
@@ -120,6 +125,7 @@ public final class ErrorResponse extends BaseScimResource
    *
    * @return the summary of the SCIM error.
    */
+  @Nullable
   public String getDetail()
   {
     return detail;
@@ -130,7 +136,7 @@ public final class ErrorResponse extends BaseScimResource
    *
    * @param detail the summary of the SCIM error.
    */
-  public void setDetail(final String detail)
+  public void setDetail(@Nullable final String detail)
   {
     this.detail = detail;
   }
@@ -140,6 +146,7 @@ public final class ErrorResponse extends BaseScimResource
    *
    * @return the HTTP status of the SCIM error.
    */
+  @NotNull
   public Integer getStatus()
   {
     return status;
@@ -153,7 +160,7 @@ public final class ErrorResponse extends BaseScimResource
    *            response, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

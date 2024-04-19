@@ -18,6 +18,7 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Calendar;
@@ -27,26 +28,31 @@ import java.util.Calendar;
  */
 public final class Meta
 {
+  @Nullable
   @Attribute(description = "The resource Type",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.ALWAYS)
   private String resourceType;
 
+  @Nullable
   @Attribute(description = "Date and time the resource was created",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.ALWAYS)
   private Calendar created;
 
+  @Nullable
   @Attribute(description = "Date and time the resource was last modified",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.ALWAYS)
   private Calendar lastModified;
 
+  @Nullable
   @Attribute(description = "The location (URI) of the resource",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.ALWAYS)
   private URI location;
 
+  @Nullable
   @Attribute(description = "The version of the resource",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.ALWAYS)
@@ -57,6 +63,7 @@ public final class Meta
    *
    * @return the date and time the SCIM object was created.
    */
+  @Nullable
   public Calendar getCreated()
   {
     return created;
@@ -67,7 +74,7 @@ public final class Meta
    *
    * @param created the date and time the SCIM object was created.
    */
-  public void setCreated(final Calendar created)
+  public void setCreated(@Nullable final Calendar created)
   {
     this.created = created;
   }
@@ -77,6 +84,7 @@ public final class Meta
    *
    * @return the timestamp of the last modification.
    */
+  @Nullable
   public Calendar getLastModified()
   {
     return lastModified;
@@ -87,7 +95,7 @@ public final class Meta
    *
    * @param lastModified the timestamp of the last modification.
    */
-  public void setLastModified(final Calendar lastModified)
+  public void setLastModified(@Nullable final Calendar lastModified)
   {
     this.lastModified = lastModified;
   }
@@ -97,6 +105,7 @@ public final class Meta
    *
    * @return the location URI of the SCIM object.
    */
+  @Nullable
   public URI getLocation()
   {
     return location;
@@ -107,7 +116,7 @@ public final class Meta
    *
    * @param location the location URI of the SCIM object.
    */
-  public void setLocation(final URI location)
+  public void setLocation(@Nullable final URI location)
   {
     this.location = location;
   }
@@ -117,6 +126,7 @@ public final class Meta
    *
    * @return the version of the SCIM object.
    */
+  @Nullable
   public String getVersion()
   {
     return version;
@@ -127,7 +137,7 @@ public final class Meta
    *
    * @param version the version of the SCIM object.
    */
-  public void setVersion(final String version)
+  public void setVersion(@Nullable final String version)
   {
     this.version = version;
   }
@@ -137,6 +147,7 @@ public final class Meta
    *
    * @return the resource type of the SCIM object.
    */
+  @Nullable
   public String getResourceType()
   {
     return resourceType;
@@ -147,7 +158,7 @@ public final class Meta
    *
    * @param resourceType the resource type of the SCIM object.
    */
-  public void setResourceType(final String resourceType)
+  public void setResourceType(@Nullable final String resourceType)
   {
     this.resourceType = resourceType;
   }
@@ -160,7 +171,7 @@ public final class Meta
    *            or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

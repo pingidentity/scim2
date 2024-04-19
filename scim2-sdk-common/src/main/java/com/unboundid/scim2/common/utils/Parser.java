@@ -20,6 +20,8 @@ package com.unboundid.scim2.common.utils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.filters.FilterType;
@@ -40,6 +42,7 @@ public class Parser
    * A {@code ThreadLocal} parser options object, to configure nonstandard
    * settings such as permitting semicolons in attribute names.
    */
+  @NotNull
   private static final ThreadLocal<ParserOptions> threadLocalOptions
       = ThreadLocal.withInitial(ParserOptions::new);
 
@@ -54,7 +57,7 @@ public class Parser
      *
      * @param string The string to read from.
      */
-    private StringReader(final String string)
+    private StringReader(@NotNull final String string)
     {
       this.string = string;
     }
@@ -161,7 +164,8 @@ public class Parser
    * @return A parsed SCIM filter.
    * @throws BadRequestException If the filter string could not be parsed.
    */
-  public static Filter parseFilter(final String filterString)
+  @NotNull
+  public static Filter parseFilter(@NotNull final String filterString)
       throws BadRequestException
   {
     return readFilter(new StringReader(filterString.trim()), false);
@@ -172,6 +176,7 @@ public class Parser
    *
    * @return  The current parser options.
    */
+  @NotNull
   public static ParserOptions getOptions()
   {
     return Parser.threadLocalOptions.get();
@@ -200,7 +205,9 @@ public class Parser
    *
    * @return  The prior parser options.
    */
-  public static ParserOptions setOptions(final ParserOptions newOptions)
+  @NotNull
+  public static ParserOptions setOptions(
+      @NotNull final ParserOptions newOptions)
   {
     ParserOptions priorOptions = Parser.threadLocalOptions.get();
     Parser.threadLocalOptions.set(newOptions);
@@ -215,7 +222,8 @@ public class Parser
    * @return A parsed SCIM path.
    * @throws BadRequestException If the path string could not be parsed.
    */
-  public static Path parsePath(final String pathString)
+  @NotNull
+  public static Path parsePath(@Nullable final String pathString)
       throws BadRequestException
   {
     if(pathString == null)
@@ -329,7 +337,6 @@ public class Parser
    *   <li>
    *     An attribute name terminated by an opening brace.
    *   </li>
-   *   <li>
    * </ul>
    *
    * @param reader The reader to read from.
@@ -338,7 +345,8 @@ public class Parser
    *         the input has been reached.
    * @throws BadRequestException If the path string could not be parsed.
    */
-  private static String readPathToken(final StringReader reader)
+  @Nullable
+  private static String readPathToken(@NotNull final StringReader reader)
       throws BadRequestException
   {
     ParserOptions options = Parser.getOptions();
@@ -409,9 +417,6 @@ public class Parser
    *   <li>
    *     An closing brace.
    *   </li>
-   *   <li>
-   *
-   *   </li>
    * </ul>
    *
    * @param reader The reader to read from.
@@ -421,7 +426,8 @@ public class Parser
    *         the input has been reached.
    * @throws BadRequestException If the filter string could not be parsed.
    */
-  private static String readFilterToken(final StringReader reader,
+  @Nullable
+  private static String readFilterToken(@NotNull final StringReader reader,
                                         final boolean isValueFilter)
       throws BadRequestException
   {
@@ -507,7 +513,8 @@ public class Parser
    * @return The parsed filter.
    * @throws BadRequestException If the filter string could not be parsed.
    */
-  private static Filter readFilter(final StringReader reader,
+  @NotNull
+  private static Filter readFilter(@NotNull final StringReader reader,
                                    final boolean isValueFilter)
       throws BadRequestException
   {
@@ -781,8 +788,9 @@ public class Parser
    * @return The last operator encountered that signaled the end of the group.
    * @throws BadRequestException If the filter string could not be parsed.
    */
-  private static String closeGrouping(final Stack<String> operators,
-                                      final Stack<Filter> output,
+  @NotNull
+  private static String closeGrouping(@NotNull final Stack<String> operators,
+                                      @NotNull final Stack<Filter> output,
                                       final boolean isAtTheEnd)
       throws BadRequestException
   {
@@ -863,7 +871,7 @@ public class Parser
    * @param previousToken The previous filter token.
    * @return Whether a new filter token is expected.
    */
-  private static boolean expectsNewFilter(final String previousToken)
+  private static boolean expectsNewFilter(@Nullable final String previousToken)
   {
     return previousToken == null ||
         previousToken.equals("(") ||

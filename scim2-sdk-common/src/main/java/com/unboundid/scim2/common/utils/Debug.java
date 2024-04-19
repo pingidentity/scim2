@@ -17,6 +17,9 @@
 
 package com.unboundid.scim2.common.utils;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
+
 import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Properties;
@@ -68,6 +71,7 @@ public final class Debug
    * property is "{@code com.unboundid.scim2.sdk.debug.enabled}".  If it is set,
    * then it should have a value of either "{@code true}" or "{@code false}".
    */
+  @NotNull
   public static final String PROPERTY_DEBUG_ENABLED =
        "com.unboundid.scim2.sdk.debug.enabled";
 
@@ -80,6 +84,7 @@ public final class Debug
    * is "{@code com.unboundid.scim2.sdk.debug.includeStackTrace}".  If it is
    * set, then it should have a value of either {@code "true"} or {@code "false"}.
    */
+  @NotNull
   public static final String PROPERTY_INCLUDE_STACK_TRACE =
        "com.unboundid.scim2.sdk.debug.includeStackTrace";
 
@@ -93,6 +98,7 @@ public final class Debug
    * "{@code INFO}", "{@code CONFIG}", "{@code FINE}", "{@code FINER}", or
    * "{@code FINEST}".
    */
+  @NotNull
   public static final String PROPERTY_DEBUG_LEVEL =
        "com.unboundid.scim2.sdk.debug.level";
 
@@ -106,6 +112,7 @@ public final class Debug
    * be a comma-delimited list of the names of the desired debug types.  See the
    * {@link DebugType} enum for the available debug types.
    */
+  @NotNull
   public static final String PROPERTY_DEBUG_TYPE =
        "com.unboundid.scim2.sdk.debug.type";
 
@@ -115,6 +122,7 @@ public final class Debug
    * The name that will be used for the Java logger that will actually handle
    * the debug messages if debugging is enabled.
    */
+  @NotNull
   public static final String LOGGER_NAME = "com.unboundid.scim2.sdk";
 
 
@@ -123,6 +131,7 @@ public final class Debug
    * The logger that will be used to handle the debug messages if debugging is
    * enabled.
    */
+  @NotNull
   private static final Logger logger = Logger.getLogger(LOGGER_NAME);
 
 
@@ -142,6 +151,7 @@ public final class Debug
   private static boolean includeStackTrace;
 
   // The set of debug types for which debugging is enabled.
+  @NotNull
   private static EnumSet<DebugType> debugTypes;
 
 
@@ -187,7 +197,7 @@ public final class Debug
    * @param  properties  The set of properties to use to initialize this
    *                     debugger.
    */
-  public static void initialize(final Properties properties)
+  public static void initialize(@Nullable final Properties properties)
   {
     // First, apply the default values for the properties.
     initialize();
@@ -279,6 +289,7 @@ public final class Debug
    *
    * @return  The logger that will be used to write the debug messages.
    */
+  @NotNull
   public static Logger getLogger()
   {
     return logger;
@@ -307,7 +318,7 @@ public final class Debug
    * @return  {@code true} if debugging is enabled for messages of the specified
    *          debug type, or {@code false} if not.
    */
-  public static boolean debugEnabled(final DebugType debugType)
+  public static boolean debugEnabled(@NotNull final DebugType debugType)
   {
     return (debugEnabled && debugTypes.contains(debugType));
   }
@@ -338,7 +349,7 @@ public final class Debug
    *                  all debug types.
    */
   public static void setEnabled(final boolean enabled,
-                                final Set<DebugType> types)
+                                @Nullable final Set<DebugType> types)
   {
     if ((types == null) || types.isEmpty())
     {
@@ -388,6 +399,7 @@ public final class Debug
    *
    * @return  The set of debug types that will be used if debugging is enabled.
    */
+  @NotNull
   public static EnumSet<DebugType> getDebugTypes()
   {
     return debugTypes;
@@ -402,7 +414,7 @@ public final class Debug
    *
    * @param  t  The exception for which debug information should be written.
    */
-  public static void debugException(final Throwable t)
+  public static void debugException(@NotNull final Throwable t)
   {
     if (debugEnabled && debugTypes.contains(DebugType.EXCEPTION))
     {
@@ -418,7 +430,8 @@ public final class Debug
    * @param  l  The log level that should be used for the debug information.
    * @param  t  The exception for which debug information should be written.
    */
-  public static void debugException(final Level l, final Throwable t)
+  public static void debugException(@NotNull final Level l,
+                                    @NotNull final Throwable t)
   {
     if (debugEnabled && debugTypes.contains(DebugType.EXCEPTION))
     {
@@ -442,7 +455,7 @@ public final class Debug
    * @param  t  The {@code Throwable} object that was created and will be thrown
    *            as a result of the coding error.
    */
-  public static void debugCodingError(final Throwable t)
+  public static void debugCodingError(@NotNull final Throwable t)
   {
     if (debugEnabled && debugTypes.contains(DebugType.CODING_ERROR))
     {
@@ -465,7 +478,9 @@ public final class Debug
    * @param  t  The debug type to use to determine whether to write the message.
    * @param  m  The message to be written.
    */
-  public static void debug(final Level l, final DebugType t, final String m)
+  public static void debug(@NotNull final Level l,
+                           @NotNull final DebugType t,
+                           @Nullable final String m)
   {
     if (debugEnabled && debugTypes.contains(t))
     {
@@ -489,8 +504,10 @@ public final class Debug
    * @param  m  The message to be written.
    * @param  e  An exception to include with the log message.
    */
-  public static void debug(final Level l, final DebugType t, final String m,
-                           final Throwable e)
+  public static void debug(@NotNull final Level l,
+                           @NotNull final DebugType t,
+                           @Nullable final String m,
+                           @Nullable final Throwable e)
   {
     if (debugEnabled && debugTypes.contains(t))
     {
@@ -517,8 +534,8 @@ public final class Debug
    * @param  buffer  The buffer to which the information should be appended.
    * @param  level   The log level for the message that will be written.
    */
-  private static void addCommonHeader(final StringBuilder buffer,
-                                      final Level level)
+  private static void addCommonHeader(@NotNull final StringBuilder buffer,
+                                      @NotNull final Level level)
   {
     buffer.append("level=\"");
     buffer.append(level.getName());

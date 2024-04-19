@@ -20,6 +20,8 @@ package com.unboundid.scim2.common.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.AndFilter;
@@ -51,7 +53,10 @@ import java.util.List;
  */
 public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
 {
+  @NotNull
   private static final FilterEvaluator SINGLETON = new FilterEvaluator();
+
+  @NotNull
   private static final Path VALUE_PATH = Path.root().attribute("value");
 
   /**
@@ -63,7 +68,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    * otherwise.
    * @throws ScimException If the filter is not valid for matching.
    */
-  public static boolean evaluate(final Filter filter, final JsonNode jsonNode)
+  public static boolean evaluate(@NotNull final Filter filter,
+                                 @NotNull final JsonNode jsonNode)
       throws ScimException
   {
     return filter.visit(SINGLETON, jsonNode);
@@ -72,7 +78,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final EqualFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final EqualFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     Iterable<JsonNode> nodes =
@@ -100,7 +108,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final NotEqualFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final NotEqualFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     Iterable<JsonNode> nodes =
@@ -127,7 +137,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final ContainsFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final ContainsFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     return substringMatch(filter, object);
@@ -136,7 +148,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final StartsWithFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final StartsWithFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     return substringMatch(filter, object);
@@ -145,7 +159,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final EndsWithFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final EndsWithFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     return substringMatch(filter, object);
@@ -154,7 +170,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final PresentFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final PresentFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     Iterable<JsonNode> nodes =
@@ -176,7 +194,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final GreaterThanFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final GreaterThanFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     Iterable<JsonNode> nodes =
@@ -201,8 +221,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final GreaterThanOrEqualFilter filter,
-                       final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final GreaterThanOrEqualFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     Iterable<JsonNode> nodes =
@@ -226,7 +247,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final LessThanFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final LessThanFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     Iterable<JsonNode> nodes =
@@ -250,8 +273,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final LessThanOrEqualFilter filter,
-                       final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final LessThanOrEqualFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     Iterable<JsonNode> nodes =
@@ -275,7 +299,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final AndFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final AndFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     for (Filter combinedFilter : filter.getCombinedFilters())
@@ -291,7 +317,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final OrFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final OrFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     for (Filter combinedFilter : filter.getCombinedFilters())
@@ -307,7 +335,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final NotFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final NotFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     return !filter.getInvertedFilter().visit(this, object);
@@ -316,7 +346,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   /**
    * {@inheritDoc}
    */
-  public Boolean visit(final ComplexValueFilter filter, final JsonNode object)
+  @NotNull
+  public Boolean visit(@NotNull final ComplexValueFilter filter,
+                       @NotNull final JsonNode object)
       throws ScimException
   {
     Iterable<JsonNode> nodes =
@@ -351,7 +383,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    * @return the attribute definition or {@code null} if not available, in which
    *         case case insensitive string value matching will be performed.
    */
-  protected AttributeDefinition getAttributeDefinition(final Path path)
+  @Nullable
+  protected AttributeDefinition getAttributeDefinition(@NotNull final Path path)
   {
     return null;
   }
@@ -364,8 +397,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    * @return The JsonNodes to compare against.
    * @throws ScimException If an exception occurs during the operation.
    */
-  private Iterable<JsonNode> getCandidateNodes(final Path path,
-                                               final JsonNode jsonNode)
+  @NotNull
+  private Iterable<JsonNode> getCandidateNodes(@NotNull final Path path,
+                                               @NotNull final JsonNode jsonNode)
       throws ScimException
   {
     if(jsonNode.isArray())
@@ -412,7 +446,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    * @param node node to examine
    * @return boolean
    */
-  private boolean isEmpty(final JsonNode node)
+  private boolean isEmpty(@NotNull final JsonNode node)
   {
     if (node.isArray())
     {
@@ -438,7 +472,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    * @param nodes list of nodes as returned from JsonUtils.findMatchingPaths
    * @return true if the list contains only empty array(s)
    */
-  private boolean isEmpty(final Iterable<JsonNode> nodes)
+  private boolean isEmpty(@NotNull final Iterable<JsonNode> nodes)
   {
     for (JsonNode node : nodes) {
       if (!isEmpty(node)) {
@@ -456,7 +490,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    * @return The return value from the operation.
    * @throws ScimException If an exception occurs during the operation.
    */
-  private boolean substringMatch(final Filter filter, final JsonNode object)
+  private boolean substringMatch(@NotNull final Filter filter,
+                                 @NotNull final JsonNode object)
       throws ScimException
   {
     Iterable<JsonNode> nodes =

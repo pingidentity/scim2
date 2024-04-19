@@ -19,6 +19,8 @@ package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.text.FieldPosition;
 import java.util.Date;
@@ -49,9 +51,10 @@ public class ScimDateFormat extends ISO8601DateFormat
    * {@inheritDoc}
    */
   @Override
-  public StringBuffer format(final Date date,
-                             final StringBuffer toAppendTo,
-                             final FieldPosition fieldPosition)
+  @NotNull
+  public StringBuffer format(@NotNull final Date date,
+                             @NotNull final StringBuffer toAppendTo,
+                             @Nullable final FieldPosition fieldPosition)
   {
     final String value = ISO8601Utils.format(date, true);
     toAppendTo.append(value);

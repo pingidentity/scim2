@@ -20,6 +20,7 @@ package com.unboundid.scim2.common.utils;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.types.JsonReference;
 
 import java.beans.IntrospectionException;
@@ -41,8 +42,9 @@ public class JsonRefBeanSerializer extends JsonSerializer<Object>
    * {@inheritDoc}
    */
   @Override
-  public void serialize(final Object value, final JsonGenerator gen,
-                        final SerializerProvider serializers)
+  public void serialize(@NotNull final Object value,
+                        @NotNull final JsonGenerator gen,
+                        @NotNull final SerializerProvider serializers)
       throws IOException
   {
     Class <?> clazz = value.getClass();
@@ -73,13 +75,9 @@ public class JsonRefBeanSerializer extends JsonSerializer<Object>
       }
       gen.writeEndObject();
     }
-    catch (IntrospectionException e)
-    {
-      e.printStackTrace();
-    } catch (IllegalAccessException e)
+    catch (IntrospectionException | IllegalAccessException e)
     {
       e.printStackTrace();
     }
-
   }
 }

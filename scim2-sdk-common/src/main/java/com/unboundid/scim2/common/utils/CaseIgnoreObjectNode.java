@@ -23,6 +23,8 @@ package com.unboundid.scim2.common.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,7 @@ public class CaseIgnoreObjectNode extends ObjectNode
    *
    * @param nc The JsonNodeFactory.
    */
-  public CaseIgnoreObjectNode(final JsonNodeFactory nc)
+  public CaseIgnoreObjectNode(@NotNull final JsonNodeFactory nc)
   {
     super(nc, new CaseIgnoreMap());
   }
@@ -51,8 +53,8 @@ public class CaseIgnoreObjectNode extends ObjectNode
    * @param nc   The JsonNodeFactory.
    * @param kids The fields to put in this CaseIgnoreObjectNode.
    */
-  public CaseIgnoreObjectNode(final JsonNodeFactory nc,
-                              final Map<String, JsonNode> kids)
+  public CaseIgnoreObjectNode(@NotNull final JsonNodeFactory nc,
+                              @NotNull final Map<String, JsonNode> kids)
   {
     super(nc, new CaseIgnoreMap(kids));
   }
@@ -61,6 +63,7 @@ public class CaseIgnoreObjectNode extends ObjectNode
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public ObjectNode deepCopy()
   {
     CaseIgnoreObjectNode ret = new CaseIgnoreObjectNode(_nodeFactory);
@@ -77,7 +80,8 @@ public class CaseIgnoreObjectNode extends ObjectNode
    * {@inheritDoc}
    */
   @Override
-  public JsonNode findValue(final String fieldName)
+  @Nullable
+  public JsonNode findValue(@NotNull final String fieldName)
   {
     for (Map.Entry<String, JsonNode> entry : _children.entrySet())
     {
@@ -95,11 +99,18 @@ public class CaseIgnoreObjectNode extends ObjectNode
   }
 
   /**
-   * {@inheritDoc}
+   * Similar to {@link #findValue}, but returns multiple values.
+   *
+   * @param fieldName   The name of the JSON field/attribute.
+   * @param foundSoFar  An optional argument for recursive calls. External
+   *                    callers should set this value to {@code null}.
+   *
+   * @return  The list of values.
    */
   @Override
-  public List<JsonNode> findValues(final String fieldName,
-                                   final List<JsonNode> foundSoFar)
+  @NotNull
+  public List<JsonNode> findValues(@NotNull final String fieldName,
+                                   @Nullable final List<JsonNode> foundSoFar)
   {
     List<JsonNode> localFoundSoFar = foundSoFar;
     for (Map.Entry<String, JsonNode> entry : _children.entrySet())
@@ -111,7 +122,8 @@ public class CaseIgnoreObjectNode extends ObjectNode
           localFoundSoFar = new ArrayList<JsonNode>();
         }
         localFoundSoFar.add(entry.getValue());
-      } else
+      }
+      else
       { // only add children if parent not added
         localFoundSoFar = entry.getValue().findValues(fieldName, foundSoFar);
       }
@@ -120,11 +132,19 @@ public class CaseIgnoreObjectNode extends ObjectNode
   }
 
   /**
-   * {@inheritDoc}
+   * Similar to {@link #findValues}, but invokes {@link #asText()} on each
+   * element.
+   *
+   * @param fieldName   The name of the JSON field/attribute.
+   * @param foundSoFar  An optional argument to specify known values. External
+   *                    calls generally should set this value to {@code null}.
+   *
+   * @return  The list of values.
    */
   @Override
-  public List<String> findValuesAsText(final String fieldName,
-                                       final List<String> foundSoFar)
+  @NotNull
+  public List<String> findValuesAsText(@NotNull final String fieldName,
+                                       @Nullable final List<String> foundSoFar)
   {
     List<String> localFoundSoFar = foundSoFar;
     for (Map.Entry<String, JsonNode> entry : _children.entrySet())
@@ -136,7 +156,8 @@ public class CaseIgnoreObjectNode extends ObjectNode
           localFoundSoFar = new ArrayList<String>();
         }
         localFoundSoFar.add(entry.getValue().asText());
-      } else
+      }
+      else
       { // only add children if parent not added
         localFoundSoFar = entry.getValue().findValuesAsText(fieldName,
             foundSoFar);
@@ -149,7 +170,8 @@ public class CaseIgnoreObjectNode extends ObjectNode
    * {@inheritDoc}
    */
   @Override
-  public ObjectNode findParent(final String fieldName)
+  @Nullable
+  public ObjectNode findParent(@NotNull final String fieldName)
   {
     for (Map.Entry<String, JsonNode> entry : _children.entrySet())
     {
@@ -170,8 +192,9 @@ public class CaseIgnoreObjectNode extends ObjectNode
    * {@inheritDoc}
    */
   @Override
-  public List<JsonNode> findParents(final String fieldName,
-                                    final List<JsonNode> foundSoFar)
+  @NotNull
+  public List<JsonNode> findParents(@NotNull final String fieldName,
+                                    @Nullable final List<JsonNode> foundSoFar)
   {
     List<JsonNode> localFoundSoFar = foundSoFar;
     for (Map.Entry<String, JsonNode> entry : _children.entrySet())
@@ -183,7 +206,8 @@ public class CaseIgnoreObjectNode extends ObjectNode
           localFoundSoFar = new ArrayList<JsonNode>();
         }
         localFoundSoFar.add(this);
-      } else
+      }
+      else
       { // only add children if parent not added
         localFoundSoFar = entry.getValue()
             .findParents(fieldName, foundSoFar);
@@ -191,6 +215,4 @@ public class CaseIgnoreObjectNode extends ObjectNode
     }
     return localFoundSoFar;
   }
-
-
 }

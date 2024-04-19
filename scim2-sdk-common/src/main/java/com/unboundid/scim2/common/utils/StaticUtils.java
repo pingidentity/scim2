@@ -17,6 +17,9 @@
 
 package com.unboundid.scim2.common.utils;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +35,7 @@ import java.util.regex.Pattern;
  */
 public final class StaticUtils
 {
+  @NotNull
   private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
 
   /**
@@ -51,7 +55,8 @@ public final class StaticUtils
    *
    * @return  An all-lowercase version of the provided string.
    */
-  public static String toLowerCase(final String s)
+  @Nullable
+  public static String toLowerCase(@Nullable final String s)
   {
     if (s == null)
     {
@@ -158,14 +163,16 @@ public final class StaticUtils
 
   /**
    * Creates a string representation of the elements in the
-   * <code>list</code> separated by <code>separator</code>.
+   * list separated by {@code separator}.
    *
    * @param list the list to print
    * @param separator to use between elements
    *
    * @return String representing the list
    */
-  public static String listToString(final List<?> list, final String separator)
+  @NotNull
+  public static String listToString(@NotNull final List<?> list,
+                                    @Nullable final String separator)
   {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < list.size(); i++) {
@@ -181,15 +188,17 @@ public final class StaticUtils
 
   /**
    * Creates a string representation of the elements in the
-   * <code>collection</code> separated by <code>separator</code>.
+   * collection separated by {@code separator}.
    *
    * @param collection to print
    * @param separator to use between elements
    *
    * @return String representing the collection
    */
-  public static String collectionToString(final Collection<?> collection,
-                                          final String separator)
+  @NotNull
+  public static String collectionToString(
+      @NotNull final Collection<?> collection,
+      @Nullable final String separator)
   {
     StringBuilder sb = new StringBuilder();
     for (Iterator<?> iter = collection.iterator(); iter.hasNext();) {
@@ -210,7 +219,8 @@ public final class StaticUtils
    * @param <T> The type of items in the array.
    * @return The set.
    */
-  public static <T> Set<T> arrayToSet(final T... i)
+  @NotNull
+  public static <T> Set<T> arrayToSet(@NotNull final T... i)
   {
     Set<T> set = new LinkedHashSet<T>(i.length);
     Collections.addAll(set, i);
@@ -227,74 +237,11 @@ public final class StaticUtils
    * @return The array of strings computed by splitting this string around
    * commas.
    */
-  public static String[] splitCommaSeparatedString(final String str)
+  @NotNull
+  public static String[] splitCommaSeparatedString(@NotNull final String str)
   {
     return SEPARATOR.split(str.trim());
   }
-
-
-
-  /**
-   * Retrieves a UTF-8 byte representation of the provided string.
-   *
-   * @param  s  The string for which to retrieve the UTF-8 byte representation.
-   *
-   * @return  The UTF-8 byte representation for the provided string.
-   */
-  public static byte[] getUTF8Bytes(final String s)
-  {
-    final int length;
-    if((s == null) || ((length = s.length()) == 0))
-    {
-      return new byte[0];
-    }
-
-    final byte[] b = new byte[length];
-    for(int i = 0; i < length; i++)
-    {
-      final char c = s.charAt(i);
-      if(c <= 0x7F)
-      {
-        b[i] = (byte) (c & 0x7F);
-      }
-      else
-      {
-        try
-        {
-          return s.getBytes("UTF-8");
-        }
-        catch(Exception e)
-        {
-          // This should never happen.
-          Debug.debugException(e);
-          return s.getBytes();
-        }
-      }
-    }
-    return b;
-  }
-
-
-
-  /**
-   * Retrieves a single-line string representation of the stack trace for the
-   * provided {@code Throwable}.  It will include the unqualified name of the
-   * {@code Throwable} class, a list of source files and line numbers (if
-   * available) for the stack trace, and will also include the stack trace for
-   * the cause (if present).
-   *
-   * @param  t  The {@code Throwable} for which to retrieve the stack trace.
-   *
-   * @return  A single-line string representation of the stack trace for the
-   *          provided {@code Throwable}.
-   */
-  public static String getStackTrace(final Throwable t)
-  {
-    final StringBuilder buffer = new StringBuilder();
-    getStackTrace(t, buffer);
-    return buffer.toString();
-  }
-
 
 
   /**
@@ -308,8 +255,8 @@ public final class StaticUtils
    *                 trace.
    * @param  buffer  The buffer to which the information should be appended.
    */
-  public static void getStackTrace(final Throwable t,
-                                   final StringBuilder buffer)
+  public static void getStackTrace(@NotNull final Throwable t,
+                                   @NotNull final StringBuilder buffer)
   {
     buffer.append(t.getClass().getSimpleName());
     buffer.append('(');
@@ -338,25 +285,6 @@ public final class StaticUtils
   }
 
 
-
-  /**
-   * Returns a single-line string representation of the stack trace.  It will
-   * include a list of source files and line numbers (if available) for the
-   * stack trace.
-   *
-   * @param  elements  The stack trace.
-   *
-   * @return  A single-line string representation of the stack trace.
-   */
-  public static String getStackTrace(final StackTraceElement[] elements)
-  {
-    final StringBuilder buffer = new StringBuilder();
-    getStackTrace(elements, buffer);
-    return buffer.toString();
-  }
-
-
-
   /**
    * Appends a single-line string representation of the stack trace to the given
    * buffer.  It will include a list of source files and line numbers
@@ -365,8 +293,8 @@ public final class StaticUtils
    * @param  elements  The stack trace.
    * @param  buffer  The buffer to which the information should be appended.
    */
-  public static void getStackTrace(final StackTraceElement[] elements,
-                                   final StringBuilder buffer)
+  public static void getStackTrace(@NotNull final StackTraceElement[] elements,
+                                   @NotNull final StringBuilder buffer)
   {
     for (int i=0; i < elements.length; i++)
     {
@@ -390,48 +318,6 @@ public final class StaticUtils
   }
 
 
-
-  /**
-   * Inspects the Throwable to obtain the root cause. This method walks through
-   * the exception chain to the last element (the "root" of the tree) and
-   * returns that exception.
-   * <p>
-   * This method handles recursive <code>cause</code> structures that
-   * might otherwise cause infinite loops. If the Throwable parameter has a
-   * <code>cause</code> of itself, then a reference to itself will be returned.
-   * If the <code>cause</code> chain loops, the last element in the chain before
-   * it loops is returned.
-   *
-   * @param t the Throwable to get the root cause for. This may be {@code null}.
-   * @return the root cause of the Throwable, or {@code null} if none is found or the
-   *         input is {@code null}.
-   */
-  public static Throwable getRootCause(final Throwable t)
-  {
-    if(t == null)
-    {
-      return null;
-    }
-
-    List<Throwable> chain = new ArrayList<Throwable>(10);
-    Throwable current = t;
-    while(current != null && !chain.contains(current))
-    {
-      chain.add(current);
-      current = current.getCause();
-    }
-
-    if(chain.size() < 2)
-    {
-      return t;
-    }
-    else
-    {
-      return chain.get(chain.size() - 1);
-    }
-  }
-
-
   /**
    * Converts an array of objects into a List form. This method is primarily
    * used by the SDK for converting arrays into lists used by multi-valued
@@ -446,7 +332,9 @@ public final class StaticUtils
    *
    * @return  A list of the elements. All entries in this list will be non-null.
    */
-  public static <T> List<T> toList(final T firstElement, final T[] elements)
+  @NotNull
+  public static <T> List<T> toList(@NotNull final T firstElement,
+                                   @Nullable final T[] elements)
   {
     Objects.requireNonNull(firstElement);
 

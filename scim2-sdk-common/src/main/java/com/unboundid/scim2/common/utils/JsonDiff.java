@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.PatchOperation;
 
@@ -53,11 +55,12 @@ public class JsonDiff
    * @return A diff with modifications that can be applied to the source
    *         resource in order to make it match the target resource.
    */
-  public List<PatchOperation> diff(
-      final ObjectNode source, final ObjectNode target,
-      final boolean removeMissing)
+  @NotNull
+  public List<PatchOperation> diff(@NotNull final ObjectNode source,
+                                   @NotNull final ObjectNode target,
+                                   final boolean removeMissing)
   {
-    List<PatchOperation> ops = new LinkedList<PatchOperation>();
+    List<PatchOperation> ops = new LinkedList<>();
     ObjectNode targetToAdd = target.deepCopy();
     ObjectNode targetToReplace = target.deepCopy();
     diff(Path.root(), source, targetToAdd, targetToReplace, ops, removeMissing);
@@ -87,12 +90,12 @@ public class JsonDiff
    * @param removeMissing Whether to remove fields that are missing in the
    *                      target node.
    */
-  private void diff(final Path parentPath,
-                           final ObjectNode source,
-                           final ObjectNode targetToAdd,
-                           final ObjectNode targetToReplace,
-                           final List<PatchOperation> operations,
-                           final boolean removeMissing)
+  private void diff(@NotNull final Path parentPath,
+                    @NotNull final ObjectNode source,
+                    @NotNull final ObjectNode targetToAdd,
+                    @NotNull final ObjectNode targetToReplace,
+                    @NotNull final List<PatchOperation> operations,
+                    final boolean removeMissing)
   {
     // First iterate through the source fields and compare it to the target
     Iterator<Map.Entry<String, JsonNode>> si = source.fields();
@@ -122,17 +125,18 @@ public class JsonDiff
     removeNullAndEmptyValues(targetToReplace);
   }
 
-  private void processEntry(final Path parentPath,
-                                   final ObjectNode targetToAdd,
-                                   final ObjectNode targetToReplace,
-                                   final List<PatchOperation> operations,
-                                   final boolean removeMissing,
-                                   final Map.Entry<String, JsonNode> sourceEntry)
+  private void processEntry(
+      @NotNull final Path parentPath,
+      @NotNull final ObjectNode targetToAdd,
+      @NotNull final ObjectNode targetToReplace,
+      @NotNull final List<PatchOperation> operations,
+      final boolean removeMissing,
+      @NotNull final Map.Entry<String, JsonNode> sourceEntry)
   {
     String sourceKey = sourceEntry.getKey();
     JsonNode sourceNode = sourceEntry.getValue();
 
-    Path path = computeDiffPath(parentPath, sourceKey, sourceNode);
+    Path path = computeDiffPath(parentPath, sourceKey);
     JsonNode targetValueToAdd = targetToAdd.remove(sourceKey);
     JsonNode targetValueToReplace =
         targetToReplace == targetToAdd ? targetValueToAdd :
@@ -162,7 +166,8 @@ public class JsonDiff
       {
         // Explicitly clear attribute value.
         operations.add(PatchOperation.remove(path));
-      } else
+      }
+      else
       {
         // Just replace with the target value.
         targetToReplace.set(sourceKey, targetValueToReplace);
@@ -170,16 +175,17 @@ public class JsonDiff
     }
   }
 
-  private void replaceNode(final Path parentPath, final Path path,
-                                  final ObjectNode targetToAdd,
-                                  final ObjectNode targetToReplace,
-                                  final List<PatchOperation> operations,
-                                  final boolean removeMissing,
-                                  final JsonNode sourceNode,
-                                  final JsonNode targetValueToAdd,
-                                  final JsonNode targetValueToReplace,
-                                  final String sourceKey
-  )
+  private void replaceNode(
+      @NotNull final Path parentPath,
+      @NotNull final Path path,
+      @NotNull final ObjectNode targetToAdd,
+      @NotNull final ObjectNode targetToReplace,
+      @NotNull final List<PatchOperation> operations,
+      final boolean removeMissing,
+      @NotNull final JsonNode sourceNode,
+      @NotNull final JsonNode targetValueToAdd,
+      @NotNull final JsonNode targetValueToReplace,
+      @NotNull final String sourceKey)
   {
     // Value present in both and they are of the same type.
     if (sourceNode.isObject())
@@ -215,22 +221,24 @@ public class JsonDiff
    *         first argument is less than, equal to, or greater than the second.
    */
   protected int compareTo(
-      final Path path,
-      final JsonNode sourceNode,
-      final JsonNode targetNode)
+      @NotNull final Path path,
+      @NotNull final JsonNode sourceNode,
+      @NotNull final JsonNode targetNode)
   {
     return JsonUtils.compareTo(sourceNode, targetNode, null);
   }
 
-  private void computeArrayNodeDiffs(final Path parentPath, final Path path,
-                                     final ObjectNode targetToAdd,
-                                     final ObjectNode targetToReplace,
-                                     final List<PatchOperation> operations,
-                                     final boolean removeMissing,
-                                     final JsonNode sourceNode,
-                                     final JsonNode targetValueToAdd,
-                                     final JsonNode targetValueToReplace,
-                                     final String sourceKey)
+  private void computeArrayNodeDiffs(
+      @NotNull final Path parentPath,
+      @NotNull final Path path,
+      @NotNull final ObjectNode targetToAdd,
+      @NotNull final ObjectNode targetToReplace,
+      @NotNull final List<PatchOperation> operations,
+      final boolean removeMissing,
+      @NotNull final JsonNode sourceNode,
+      @NotNull final JsonNode targetValueToAdd,
+      @NotNull final JsonNode targetValueToReplace,
+      @NotNull final String sourceKey)
   {
     if (targetValueToAdd.size() == 0)
     {
@@ -323,14 +331,16 @@ public class JsonDiff
     }
   }
 
-  private void computeObjectNodeDiffs(final Path path, final JsonNode sourceNode,
-                                       final JsonNode targetValueToAdd,
-                                       final JsonNode targetValueToReplace,
-                                       final List<PatchOperation>operations,
-                                       final boolean removeMissing,
-                                       final ObjectNode targetToAdd,
-                                       final ObjectNode targetToReplace,
-                                       final String sourceKey)
+  private void computeObjectNodeDiffs(
+      @NotNull final Path path,
+      @NotNull final JsonNode sourceNode,
+      @NotNull final JsonNode targetValueToAdd,
+      @NotNull final JsonNode targetValueToReplace,
+      @NotNull final List<PatchOperation> operations,
+      final boolean removeMissing,
+      @NotNull final ObjectNode targetToAdd,
+      @NotNull final ObjectNode targetToReplace,
+      @NotNull final String sourceKey)
   {
     // Recursively diff the object node.
     diff(path,
@@ -347,8 +357,9 @@ public class JsonDiff
     }
   }
 
-  private Path computeDiffPath(
-      final Path parentPath, final String sourceKey, final JsonNode sourceNode)
+  @NotNull
+  private Path computeDiffPath(@NotNull final Path parentPath,
+                               @NotNull final String sourceKey)
   {
     return parentPath.isRoot() &&
         SchemaUtils.isUrn(sourceKey) ?
@@ -365,8 +376,9 @@ public class JsonDiff
    * @return The matching value that was removed or {@code null} if no matching
    *         value was found.
    */
-  private JsonNode removeMatchingValue(final JsonNode sourceValue,
-                                              final ArrayNode targetValues)
+  @Nullable
+  private JsonNode removeMatchingValue(@NotNull final JsonNode sourceValue,
+                                       @NotNull final ArrayNode targetValues)
   {
     if(sourceValue.isObject())
     {
@@ -447,7 +459,8 @@ public class JsonDiff
    * @return The value filter or {@code null} if a value filter can not be used
    *         to uniquely identify the node.
    */
-  private Filter generateValueFilter(final JsonNode value)
+  @Nullable
+  private Filter generateValueFilter(@NotNull final JsonNode value)
   {
     if (value.isValueNode())
     {
@@ -494,7 +507,7 @@ public class JsonDiff
    *
    * @param node The node with {@code null} and empty array values removed.
    */
-  private void removeNullAndEmptyValues(final JsonNode node)
+  private void removeNullAndEmptyValues(@NotNull final JsonNode node)
   {
     Iterator<JsonNode> si = node.elements();
     while (si.hasNext())
@@ -518,7 +531,8 @@ public class JsonDiff
    * @param n2  The second node.
    * @return  {@code true} iff the nodes have the same JSON data type.
    */
-  public boolean isSameType(final JsonNode n1, final JsonNode n2)
+  public boolean isSameType(@NotNull final JsonNode n1,
+                            @NotNull final JsonNode n2)
   {
     return (n1.getNodeType() == n2.getNodeType() ||
         ((n1.isTextual() || n1.isBinary()) &&

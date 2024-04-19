@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.GenericScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -35,8 +37,10 @@ public class GenericScimObjectDeserializer
    * {@inheritDoc}
    */
   @Override
-  public GenericScimResource deserialize(final JsonParser jp,
-      final DeserializationContext ctxt) throws IOException
+  @NotNull
+  public GenericScimResource deserialize(@NotNull final JsonParser jp,
+      @Nullable final DeserializationContext ctxt)
+          throws IOException
   {
     ObjectNode objectNode = JsonUtils.getObjectReader().readTree(jp);
     return new GenericScimResource(objectNode);

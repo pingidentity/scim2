@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.exceptions;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
@@ -53,7 +55,7 @@ public class NotImplementedException extends ScimException
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public NotImplementedException(final String errorMessage)
+  public NotImplementedException(@Nullable final String errorMessage)
   {
     super(501, null, errorMessage);
   }
@@ -69,9 +71,9 @@ public class NotImplementedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public NotImplementedException(final String errorMessage,
-                                 final String scimType,
-                                 final Throwable cause)
+  public NotImplementedException(@Nullable final String errorMessage,
+                                 @Nullable final String scimType,
+                                 @Nullable final Throwable cause)
   {
     super(501, scimType, errorMessage, cause);
   }
@@ -85,8 +87,8 @@ public class NotImplementedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public NotImplementedException(final ErrorResponse scimError,
-                                 final Throwable cause)
+  public NotImplementedException(@NotNull final ErrorResponse scimError,
+                                 @Nullable final Throwable cause)
   {
     super(scimError, cause);
   }

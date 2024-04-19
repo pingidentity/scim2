@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.common.exceptions;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.types.ETagConfig;
 
@@ -45,6 +47,7 @@ import com.unboundid.scim2.common.types.ETagConfig;
  */
 public class NotModifiedException extends ScimException
 {
+  @Nullable
   private final String version;
 
   /**
@@ -52,7 +55,7 @@ public class NotModifiedException extends ScimException
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public NotModifiedException(final String errorMessage)
+  public NotModifiedException(@Nullable final String errorMessage)
   {
     super(304, null, errorMessage);
     version = null;
@@ -67,8 +70,8 @@ public class NotModifiedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public NotModifiedException(final String errorMessage,
-                              final Throwable cause)
+  public NotModifiedException(@Nullable final String errorMessage,
+                              @Nullable final Throwable cause)
   {
     super(304, null, errorMessage, cause);
     version = null;
@@ -85,10 +88,10 @@ public class NotModifiedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public NotModifiedException(final String errorMessage,
-                              final String scimType,
-                              final String version,
-                              final Throwable cause)
+  public NotModifiedException(@Nullable final String errorMessage,
+                              @Nullable final String scimType,
+                              @Nullable final String version,
+                              @Nullable final Throwable cause)
   {
     super(304, scimType, errorMessage, cause);
     this.version = version;
@@ -104,9 +107,9 @@ public class NotModifiedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public NotModifiedException(final ErrorResponse scimError,
-                              final String version,
-                              final Throwable cause)
+  public NotModifiedException(@NotNull final ErrorResponse scimError,
+                              @Nullable final String version,
+                              @Nullable final Throwable cause)
   {
     super(scimError, cause);
     this.version = version;
@@ -118,6 +121,7 @@ public class NotModifiedException extends ScimException
    *
    * @return The current version of the Resource.
    */
+  @Nullable
   public String getVersion()
   {
     return version;

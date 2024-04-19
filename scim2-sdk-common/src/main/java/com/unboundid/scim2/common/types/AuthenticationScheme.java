@@ -19,6 +19,8 @@ package com.unboundid.scim2.common.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,27 +30,32 @@ import java.net.URISyntaxException;
  */
 public class AuthenticationScheme
 {
+  @NotNull
   @Attribute(description = "The common authentication scheme name; " +
       "e.g., HTTP Basic.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final String name;
 
+  @NotNull
   @Attribute(description = "A description of the Authentication Scheme.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final String description;
 
+  @Nullable
   @Attribute(description = "An HTTP addressable URI pointing to the " +
       "Authentication Scheme's specification.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final URI specUri;
 
+  @Nullable
   @Attribute(description = "An HTTP addressable URI pointing to the " +
       "Authentication Scheme's usage documentation.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final URI documentationUri;
 
+  @Nullable
   @Attribute(description = "A label indicating the authentication " +
       "scheme type; e.g., \"oauth\" or \"oauth2\".",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -62,6 +69,7 @@ public class AuthenticationScheme
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       isRequired = true)
   private final boolean primary;
+
   /**
    * Create a new complex type that specifies supported Authentication Scheme
    * properties.
@@ -77,13 +85,16 @@ public class AuthenticationScheme
    *                 scheme is preferred.
    */
   public AuthenticationScheme(
-      @JsonProperty(value = "name", required = true) final String name,
-      @JsonProperty(value = "description", required = true)
+      @NotNull @JsonProperty(value = "name", required = true)
+      final String name,
+      @NotNull @JsonProperty(value = "description", required = true)
       final String description,
-      @JsonProperty(value = "specUri") final URI specUri,
-      @JsonProperty(value = "documentationUri")
+      @Nullable @JsonProperty(value = "specUri")
+      final URI specUri,
+      @Nullable @JsonProperty(value = "documentationUri")
       final URI documentationUri,
-      @JsonProperty(value = "type") final String type,
+      @Nullable @JsonProperty(value = "type")
+      final String type,
       @JsonProperty(value = "primary", defaultValue = "false")
       final boolean primary)
   {
@@ -100,6 +111,7 @@ public class AuthenticationScheme
    *
    * @return The common authentication scheme name.
    */
+  @NotNull
   public String getName()
   {
     return name;
@@ -110,6 +122,7 @@ public class AuthenticationScheme
    *
    * @return The description of the Authentication Scheme.
    */
+  @NotNull
   public String getDescription()
   {
     return description;
@@ -122,6 +135,7 @@ public class AuthenticationScheme
    * @return The HTTP addressable URI pointing to the Authentication
    * Scheme's specification.
    */
+  @Nullable
   public URI getSpecUri()
   {
     return specUri;
@@ -134,6 +148,7 @@ public class AuthenticationScheme
    * @return The HTTP addressable URI pointing to the Authentication
    * Scheme's usage documentation.
    */
+  @Nullable
   public URI getDocumentationUri()
   {
     return documentationUri;
@@ -144,6 +159,7 @@ public class AuthenticationScheme
    *
    * @return The label indicating the authentication scheme type.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -170,7 +186,7 @@ public class AuthenticationScheme
    *            authentication scheme, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {
@@ -240,6 +256,7 @@ public class AuthenticationScheme
    *
    * @return A new AuthenticationScheme instances for HTTP BASIC.
    */
+  @NotNull
   public static AuthenticationScheme createHttpBasic(final boolean primary)
   {
     try
@@ -269,6 +286,7 @@ public class AuthenticationScheme
    *
    * @return A new AuthenticationScheme instances for OAuth 2 bearer token.
    */
+  @NotNull
   public static AuthenticationScheme createOAuth2BearerToken(
       final boolean primary)
   {

@@ -18,12 +18,15 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 /**
  * email address for the user.
  */
 public class Email
 {
+  @Nullable
   @Attribute(description = "E-mail addresses for the user. The value\n" +
       "SHOULD be canonicalized by the Service Provider, e.g.\n" +
       "bjensen@example.com instead of bjensen@EXAMPLE.COM. Canonical Type\n" +
@@ -35,6 +38,7 @@ public class Email
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
+  @Nullable
   @Attribute(description = "A human readable name, primarily used for " +
       "display purposes.",
       isRequired = false,
@@ -44,6 +48,7 @@ public class Email
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String display;
 
+  @Nullable
   @Attribute(description = "A label indicating the attribute's " +
       "function; e.g., 'work' or 'home'.",
       isRequired = false,
@@ -54,6 +59,7 @@ public class Email
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String type;
 
+  @Nullable
   @Attribute(description = "A Boolean value indicating the 'primary' " +
       "or preferred attribute value for this attribute, e.g., the " +
       "preferred mailing address or primary e-mail address. The primary " +
@@ -68,6 +74,7 @@ public class Email
    *
    * @return The email addresses for the user.
    */
+  @Nullable
   public String getValue()
   {
     return value;
@@ -79,7 +86,8 @@ public class Email
    * @param value The email addresses for the user.
    * @return This object.
    */
-  public Email setValue(final String value)
+  @NotNull
+  public Email setValue(@Nullable final String value)
   {
     this.value = value;
     return this;
@@ -90,6 +98,7 @@ public class Email
    *
    * @return The display name.
    */
+  @Nullable
   public String getDisplay()
   {
     return display;
@@ -101,7 +110,8 @@ public class Email
    * @param display The display name.
    * @return This object.
    */
-  public Email setDisplay(final String display)
+  @NotNull
+  public Email setDisplay(@Nullable final String display)
   {
     this.display = display;
     return this;
@@ -112,6 +122,7 @@ public class Email
    *
    * @return The label indicating the attribute's function.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -123,7 +134,8 @@ public class Email
    * @param type The label indicating the attribute's function.
    * @return This object.
    */
-  public Email setType(final String type)
+  @NotNull
+  public Email setType(@Nullable final String type)
   {
     this.type = type;
     return this;
@@ -136,6 +148,7 @@ public class Email
    * @return The Boolean value indicating the 'primary' or preferred
    * attribute value for this attribute.
    */
+  @Nullable
   public Boolean getPrimary()
   {
     return primary;
@@ -149,7 +162,8 @@ public class Email
    * attribute value for this attribute.
    * @return This object.
    */
-  public Email setPrimary(final Boolean primary)
+  @NotNull
+  public Email setPrimary(@Nullable final Boolean primary)
   {
     this.primary = primary;
     return this;
@@ -163,7 +177,7 @@ public class Email
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

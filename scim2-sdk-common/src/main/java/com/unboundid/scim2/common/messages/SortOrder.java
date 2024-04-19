@@ -19,6 +19,7 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 
 /**
@@ -41,6 +42,7 @@ public enum SortOrder
   /**
    * The lower case string value for this sort order.
    */
+  @NotNull
   private String name;
 
 
@@ -49,7 +51,7 @@ public enum SortOrder
    *
    * @param name the name of the sort order.
    */
-  SortOrder(final String name)
+  SortOrder(@NotNull final String name)
   {
     this.name = name;
   }
@@ -59,6 +61,7 @@ public enum SortOrder
    *
    * @return the name of the sort order.
    */
+  @NotNull
   @JsonValue
   public String getName()
   {
@@ -66,14 +69,15 @@ public enum SortOrder
   }
 
   /**
-   * finds the sort order by name.
+   * Finds the sort order by name.
    *
    * @param name the name of the mutability constraint.
    * @return the enum value for the given name.
    * @throws BadRequestException if the name of the sort order is invalid.
    */
+  @NotNull
   @JsonCreator
-  public static SortOrder fromName(final String name)
+  public static SortOrder fromName(@NotNull final String name)
       throws BadRequestException
   {
     for(SortOrder sortOrder : SortOrder.values())
