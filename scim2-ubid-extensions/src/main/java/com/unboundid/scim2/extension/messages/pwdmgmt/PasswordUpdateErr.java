@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.extension.messages.pwdmgmt;
 
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
@@ -32,6 +33,7 @@ import java.util.List;
     name = "PasswordUpdateError")
 public class PasswordUpdateErr
 {
+  @NotNull
   @Attribute(
       description = "A list of errors that occurred while attempting"
           + " to change the password.",
@@ -46,6 +48,7 @@ public class PasswordUpdateErr
    * @return the password requirements returned from the attempted
    * password change.
    */
+  @NotNull
   public List<PasswordRequirementResult> getPasswordRequirements()
   {
     return passwordRequirements;
@@ -58,9 +61,8 @@ public class PasswordUpdateErr
    *                             the attempted password change.
    */
   public void setPasswordRequirements(
-      final List<PasswordRequirementResult> passwordRequirementResults)
+      @NotNull final List<PasswordRequirementResult> passwordRequirementResults)
   {
     this.passwordRequirements = passwordRequirementResults;
   }
-
 }

@@ -20,6 +20,7 @@ package com.unboundid.scim2.extension.messages.externalidentity;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
@@ -31,35 +32,42 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
     name = "ExternalIdentity")
 public final class ExternalIdentity extends BaseScimResource
 {
+  @Nullable
   @Attribute(description = "The external IDP.",
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       isRequired = true)
   private final Provider provider;
 
+  @Nullable
   @Attribute(description = "The user ID at the provider. If not available, " +
       "the user is not linked to any external identities at the provider.",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final String providerUserId;
 
+  @Nullable
   @Attribute(description = "The access token issued by the provider that " +
       "may be used to retrieve additional data.",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final String accessToken;
 
+  @Nullable
   @Attribute(description = "The refresh token issued by the provider that " +
       "may be used to retrieve a new access token.",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final String refreshToken;
 
+  @Nullable
   @Attribute(description = "The provider redirect url can be used to obtain " +
       "an auth code for this external identity provider.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String providerRedirectUrl;
 
+  @Nullable
   @Attribute(description = "The OAuth2 callback url",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final String callbackUrl;
 
+  @Nullable
   @Attribute(description = "The parameters received during an OAuth2 callback",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private ObjectNode callbackParameters;
@@ -82,8 +90,8 @@ public final class ExternalIdentity extends BaseScimResource
    * @param callbackUrl the callback uri that is used for the external
    *                    identity provider.
    */
-  public ExternalIdentity(final String providerName,
-                          final String callbackUrl)
+  public ExternalIdentity(@Nullable final String providerName,
+                          @Nullable final String callbackUrl)
   {
     this.provider = new Provider.Builder().setName(providerName).build();
     this.providerUserId = null;
@@ -99,7 +107,7 @@ public final class ExternalIdentity extends BaseScimResource
    *
    * @param provider the provider
    */
-  public ExternalIdentity(final Provider provider)
+  public ExternalIdentity(@Nullable final Provider provider)
   {
     this.provider = provider;
     this.providerUserId = null;
@@ -117,8 +125,8 @@ public final class ExternalIdentity extends BaseScimResource
    * @param providerRedirectUrl the provider redirect url from the external
    *                            identity.
    */
-  public ExternalIdentity(final Provider provider,
-                          final String providerRedirectUrl)
+  public ExternalIdentity(@Nullable final Provider provider,
+                          @Nullable final String providerRedirectUrl)
   {
     this.provider = provider;
     this.providerUserId = null;
@@ -137,8 +145,10 @@ public final class ExternalIdentity extends BaseScimResource
    * @param accessToken the access token.
    * @param refreshToken the refresh token (optional.  May be null.).
    */
-  public ExternalIdentity(final Provider provider, final String providerUserId,
-      final String accessToken, final String refreshToken)
+  public ExternalIdentity(@Nullable final Provider provider,
+                          @Nullable final String providerUserId,
+                          @Nullable final String accessToken,
+                          @Nullable final String refreshToken)
   {
     this.provider = provider;
     this.providerUserId = providerUserId;
@@ -151,8 +161,9 @@ public final class ExternalIdentity extends BaseScimResource
   /**
    * Gets the external identity provider.
    *
-   * @return the external idenity provider.
+   * @return the external identity provider.
    */
+  @Nullable
   public Provider getProvider()
   {
     return provider;
@@ -163,6 +174,7 @@ public final class ExternalIdentity extends BaseScimResource
    *
    * @return the user id for the external identity provider.
    */
+  @Nullable
   public String getProviderUserId()
   {
     return providerUserId;
@@ -173,6 +185,7 @@ public final class ExternalIdentity extends BaseScimResource
    *
    * @return the access token for the external identity provider.
    */
+  @Nullable
   public String getAccessToken()
   {
     return accessToken;
@@ -183,6 +196,7 @@ public final class ExternalIdentity extends BaseScimResource
    *
    * @return the refresh token for the external identity provider.
    */
+  @Nullable
   public String getRefreshToken()
   {
     return refreshToken;
@@ -195,6 +209,7 @@ public final class ExternalIdentity extends BaseScimResource
    *
    * @return the provider redirect url.
    */
+  @Nullable
   public String getProviderRedirectUrl()
   {
     return providerRedirectUrl;
@@ -205,6 +220,7 @@ public final class ExternalIdentity extends BaseScimResource
    *
    * @return the callback uri.
    */
+  @Nullable
   public String getcallbackUrl()
   {
     return callbackUrl;
@@ -215,6 +231,7 @@ public final class ExternalIdentity extends BaseScimResource
    *
    * @return the callback parameters.
    */
+  @Nullable
   public ObjectNode getCallbackParameters()
   {
     return callbackParameters;
@@ -225,7 +242,8 @@ public final class ExternalIdentity extends BaseScimResource
    *
    * @param callbackParameters the callback parameters.
    */
-  public void setCallbackParameters(final ObjectNode callbackParameters)
+  public void setCallbackParameters(
+      @Nullable final ObjectNode callbackParameters)
   {
     this.callbackParameters = callbackParameters;
   }
@@ -239,7 +257,7 @@ public final class ExternalIdentity extends BaseScimResource
    *            identity provider, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

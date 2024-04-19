@@ -20,6 +20,8 @@ package com.unboundid.scim2.extension.messages.pwdmgmt;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.annotations.Attribute;
 
@@ -31,21 +33,30 @@ import java.util.Map;
  */
 public class PasswordRequirementResult
 {
+  @Nullable
   @Attribute(description = "The type of password requirement.",
         mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String type;
+
+  @Nullable
   @Attribute(description = "True if this requirement was satisfied.  " +
       "False if not.",
         mutability = AttributeDefinition.Mutability.READ_ONLY)
   private Boolean requirementSatisfied;
+
+  @Nullable
   @Attribute(description = "The description associated with this " +
       "password validator.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String description;
+
+  @Nullable
   @Attribute(description = "Additional information about the request, " +
       "such as the message associated with a password validation failure.",
         mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String additionalInfo;
+
+  @NotNull
   private Map<String, JsonNode> properties =
       new LinkedHashMap<>();
 
@@ -54,6 +65,7 @@ public class PasswordRequirementResult
    *
    * @return the type of password requirement.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -64,7 +76,7 @@ public class PasswordRequirementResult
    *
    * @param type the type of password requirement.
    */
-  public void setType(final String type)
+  public void setType(@Nullable final String type)
   {
     this.type = type;
   }
@@ -74,6 +86,7 @@ public class PasswordRequirementResult
    *
    * @return true if the requirement is satisfied, or false if not.
    */
+  @Nullable
   public Boolean isRequirementSatisfied()
   {
     return requirementSatisfied;
@@ -85,7 +98,8 @@ public class PasswordRequirementResult
    * @param requirementSatisfied boolean indicating if the password requirement
    *                             is satisfied or not.
    */
-  public void setRequirementSatisfied(final Boolean requirementSatisfied)
+  public void setRequirementSatisfied(
+      @Nullable final Boolean requirementSatisfied)
   {
     this.requirementSatisfied = requirementSatisfied;
   }
@@ -96,6 +110,7 @@ public class PasswordRequirementResult
    * @return the additional information, such as the failure message
    * for this password update error.
    */
+  @Nullable
   public String getAdditionalInfo()
   {
     return additionalInfo;
@@ -107,7 +122,7 @@ public class PasswordRequirementResult
    * @param additionalInfo additional information, such as the failure message
    *   for this password update error.
    */
-  public void setAdditionalInfo(final String additionalInfo)
+  public void setAdditionalInfo(@Nullable final String additionalInfo)
   {
     this.additionalInfo = additionalInfo;
   }
@@ -117,6 +132,7 @@ public class PasswordRequirementResult
    *
    * @return the description for this password requirement.
    */
+  @Nullable
   public String getDescription()
   {
     return description;
@@ -127,7 +143,7 @@ public class PasswordRequirementResult
    *
    * @param description the description for this password requirement.
    */
-  public void setDescription(final String description)
+  public void setDescription(@Nullable final String description)
   {
     this.description = description;
   }
@@ -137,6 +153,7 @@ public class PasswordRequirementResult
    *
    * @return the properties for this password requirement.
    */
+  @NotNull
   @JsonAnyGetter
   public Map<String, JsonNode> getProperties()
   {
@@ -150,8 +167,8 @@ public class PasswordRequirementResult
    * @param propertyValue The value of the property.
    */
   @JsonAnySetter
-  public void putProperty(final String propertyName,
-                          final JsonNode propertyValue)
+  public void putProperty(@NotNull final String propertyName,
+                          @NotNull final JsonNode propertyValue)
   {
     properties.put(propertyName, propertyValue);
   }

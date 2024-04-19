@@ -18,6 +18,7 @@
 package com.unboundid.scim2.extension.messages.pwdmgmt;
 
 import com.unboundid.scim2.common.BaseScimResource;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
@@ -33,17 +34,21 @@ import java.util.List;
     name = "PasswordQualityRequirement")
 public class PasswordQualityRequirementResponse extends BaseScimResource
 {
+  @Nullable
   @Attribute(description =
       "True if the user's password is required for password updates.")
   private Boolean currentPasswordRequired;
 
+  @Nullable
   @Attribute(description = "True if the user's password must be changed.")
   private Boolean mustChangePassword;
 
+  @Nullable
   @Attribute(
       description = "The number of seconds before the password will expire.")
   private Integer secondsUntilPasswordExpiration;
 
+  @Nullable
   @Attribute(
       description = "A list of password requirements that must be met.",
       multiValueClass = PasswordRequirementResult.class)
@@ -57,6 +62,7 @@ public class PasswordQualityRequirementResponse extends BaseScimResource
    * @return true if the current password is required, or false
    * if not.
    */
+  @Nullable
   public Boolean isCurrentPasswordRequired()
   {
     return currentPasswordRequired;
@@ -69,7 +75,8 @@ public class PasswordQualityRequirementResponse extends BaseScimResource
    * @param currentPasswordRequired a boolean that is true if the
    * current password is required, or false if not.
    */
-  public void setCurrentPasswordRequired(final Boolean currentPasswordRequired)
+  public void setCurrentPasswordRequired(
+      @Nullable final Boolean currentPasswordRequired)
   {
     this.currentPasswordRequired = currentPasswordRequired;
   }
@@ -79,6 +86,7 @@ public class PasswordQualityRequirementResponse extends BaseScimResource
    *
    * @return true if the user's password must change, or false if not.
    */
+  @Nullable
   public Boolean isMustChangePassword()
   {
     return mustChangePassword;
@@ -90,7 +98,7 @@ public class PasswordQualityRequirementResponse extends BaseScimResource
    * @param mustChangePassword a boolean value that is true if the user's
    * password must change, or false if not.
    */
-  public void setMustChangePassword(final Boolean mustChangePassword)
+  public void setMustChangePassword(@Nullable final Boolean mustChangePassword)
   {
     this.mustChangePassword = mustChangePassword;
   }
@@ -100,6 +108,7 @@ public class PasswordQualityRequirementResponse extends BaseScimResource
    *
    * @return the number of seconds until the user's password expires.
    */
+  @Nullable
   public Integer getSecondsUntilPasswordExpiration()
   {
     return secondsUntilPasswordExpiration;
@@ -112,7 +121,7 @@ public class PasswordQualityRequirementResponse extends BaseScimResource
    * the user's password expires.
    */
   public void setSecondsUntilPasswordExpiration(
-      final Integer secondsUntilPasswordExpiration)
+      @Nullable final Integer secondsUntilPasswordExpiration)
   {
     this.secondsUntilPasswordExpiration = secondsUntilPasswordExpiration;
   }
@@ -122,6 +131,7 @@ public class PasswordQualityRequirementResponse extends BaseScimResource
    *
    * @return the list of password requirements.
    */
+  @Nullable
   public List<PasswordRequirementResult> getPasswordRequirements()
   {
     return passwordRequirements;

@@ -19,13 +19,17 @@ package com.unboundid.scim2.extension.messages.pwdmgmt;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 /**
  * Model class for an account usability issues.
  */
 public class AccountUsabilityIssue
 {
+  @Nullable
   private final String name;
+
+  @Nullable
   private final String message;
 
   /**
@@ -37,8 +41,8 @@ public class AccountUsabilityIssue
    */
   @JsonCreator
   public AccountUsabilityIssue(
-      @JsonProperty(value = "name") final String name,
-      @JsonProperty(value = "message") final String message)
+      @Nullable @JsonProperty(value = "name") final String name,
+      @Nullable @JsonProperty(value = "message") final String message)
   {
     this.name = name;
     this.message = message;
@@ -49,6 +53,7 @@ public class AccountUsabilityIssue
    *
    * @return  The name for this account usability issue.
    */
+  @Nullable
   public String getName()
   {
     return name;
@@ -62,6 +67,7 @@ public class AccountUsabilityIssue
    *          account usability issue, or {@code null} if no message is
    *          available.
    */
+  @Nullable
   public String getMessage()
   {
     return message;
@@ -76,7 +82,7 @@ public class AccountUsabilityIssue
    *            usability issue, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

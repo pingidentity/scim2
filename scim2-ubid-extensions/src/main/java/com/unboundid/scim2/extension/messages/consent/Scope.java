@@ -18,6 +18,8 @@
 package com.unboundid.scim2.extension.messages.consent;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
 /**
@@ -28,23 +30,33 @@ public final class Scope
   /**
    * Consent string constant used to show that the user has granted consent.
    */
+  @NotNull
   public static final String CONSENT_GRANTED = "granted";
 
   /**
    * Consent string constant used to show that the user has denied consent.
    */
+  @NotNull
   public static final String CONSENT_DENIED = "denied";
 
   /**
    * Consent string constant used to show that the consent was revoked.
    */
+  @NotNull
   public static final String CONSENT_REVOKED = "revoked";
 
   public static class Builder
   {
+    @Nullable
     private String name;
+
+    @Nullable
     private String description;
+
+    @Nullable
     private String consentPromptText;
+
+    @Nullable
     private String consent;
 
     /**
@@ -53,7 +65,8 @@ public final class Scope
      * @param name the name of this scope.
      * @return this.
      */
-    public Builder setName(final String name)
+    @NotNull
+    public Builder setName(@Nullable final String name)
     {
       this.name = name;
       return this;
@@ -66,7 +79,8 @@ public final class Scope
      *                    for end-users.
      * @return this.
      */
-    public Builder setDescription(final String description)
+    @NotNull
+    public Builder setDescription(@Nullable final String description)
     {
       this.description = description;
       return this;
@@ -78,7 +92,9 @@ public final class Scope
      * @param consentPromptText the consent prompt text for this scope.
      * @return this.
      */
-    public Builder setConsentPromptText(final String consentPromptText)
+    @NotNull
+    public Builder setConsentPromptText(
+        @Nullable final String consentPromptText)
     {
       this.consentPromptText = consentPromptText;
       return this;
@@ -90,7 +106,8 @@ public final class Scope
      * @param consent the consent action for this scope.
      * @return this.
      */
-    public Builder setConsent(final String consent)
+    @NotNull
+    public Builder setConsent(@Nullable final String consent)
     {
       this.consent = consent;
       return this;
@@ -101,24 +118,29 @@ public final class Scope
      *
      * @return a new Scope object.
      */
+    @NotNull
     public Scope build()
     {
       return new Scope(this);
     }
   }
 
+  @Nullable
   @Attribute(description = "The name of the scope.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String name;
 
+  @Nullable
   @Attribute(description = "The description of the scope.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
+  @Nullable
   @Attribute(description = "The consent prompt text of the scope.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String consentPromptText;
 
+  @Nullable
   @Attribute(description = "Consent (Granted, Denied, Revoked).",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final String consent;
@@ -129,7 +151,7 @@ public final class Scope
     this(new Builder());
   }
 
-  private Scope(final Builder builder)
+  private Scope(@NotNull final Builder builder)
   {
     this.name = builder.name;
     this.description = builder.description;
@@ -142,6 +164,7 @@ public final class Scope
    *
    * @return the name of this scope.
    */
+  @Nullable
   public String getName()
   {
     return name;
@@ -152,6 +175,7 @@ public final class Scope
    *
    * @return the description of this scope.
    */
+  @Nullable
   public String getDescription()
   {
     return description;
@@ -162,6 +186,7 @@ public final class Scope
    *
    * @return the consent action for this scope.
    */
+  @Nullable
   public String getConsent()
   {
     return consent;
@@ -172,6 +197,7 @@ public final class Scope
    *
    * @return the consent prompt text for this scope.
    */
+  @Nullable
   public String getConsentPromptText()
   {
     return consentPromptText;
@@ -185,7 +211,7 @@ public final class Scope
    *            or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

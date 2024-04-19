@@ -20,6 +20,8 @@ package com.unboundid.scim2.extension.messages.pwdmgmt;
 
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
@@ -31,14 +33,17 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
     name = "PasswordUpdateRequest")
 public final class PasswordUpdateRequest extends BaseScimResource
 {
+  @Nullable
   @Attribute(description = "The current password.",
       mutability = AttributeDefinition.Mutability.WRITE_ONLY)
   private String currentPassword;
 
+  @Nullable
   @Attribute(description = "The new password.",
       mutability = AttributeDefinition.Mutability.WRITE_ONLY)
   private String newPassword;
 
+  @Nullable
   @Attribute(
       description = "Contains a generated password" +
           " if a password was generated.",
@@ -50,8 +55,13 @@ public final class PasswordUpdateRequest extends BaseScimResource
    */
   public static class PasswordUpdateRequestBuilder
   {
+    @Nullable
     private String currentPassword;
+
+    @Nullable
     private String newPassword;
+
+    @Nullable
     private String generatedPassword;
 
     /**
@@ -60,8 +70,9 @@ public final class PasswordUpdateRequest extends BaseScimResource
      * @param currentPassword  the current password.
      * @return this.
      */
+    @NotNull
     public PasswordUpdateRequestBuilder setCurrentPassword(
-        final String currentPassword)
+        @Nullable final String currentPassword)
     {
       this.currentPassword = currentPassword;
       return this;
@@ -73,8 +84,9 @@ public final class PasswordUpdateRequest extends BaseScimResource
      * @param newPassword  the new password.
      * @return this.
      */
+    @NotNull
     public PasswordUpdateRequestBuilder setNewPassword(
-        final String newPassword)
+        @Nullable final String newPassword)
     {
       this.newPassword = newPassword;
       return this;
@@ -86,8 +98,9 @@ public final class PasswordUpdateRequest extends BaseScimResource
      * @param generatedPassword the generated password.
      * @return this object.
      */
+    @NotNull
     public PasswordUpdateRequestBuilder setGeneratedPassword(
-        final String generatedPassword)
+        @Nullable final String generatedPassword)
     {
       this.generatedPassword = generatedPassword;
       return this;
@@ -100,6 +113,7 @@ public final class PasswordUpdateRequest extends BaseScimResource
      * @return a password reset token built from the parameters supplied
      * to the builder.
      */
+    @NotNull
     public PasswordUpdateRequest build()
     {
       PasswordUpdateRequest request = new PasswordUpdateRequest();
@@ -122,8 +136,8 @@ public final class PasswordUpdateRequest extends BaseScimResource
    * @param currentPassword  the current password.
    * @param newPassword  the new password.
    */
-  public PasswordUpdateRequest(final String currentPassword,
-                               final String newPassword)
+  public PasswordUpdateRequest(@Nullable final String currentPassword,
+                               @Nullable final String newPassword)
   {
     this.currentPassword = currentPassword;
     this.newPassword = newPassword;
@@ -135,8 +149,9 @@ public final class PasswordUpdateRequest extends BaseScimResource
    * @param currentPassword  the current password.
    * @return this object.
    */
+  @NotNull
   public PasswordUpdateRequest setCurrentPassword(
-      final String currentPassword)
+      @Nullable final String currentPassword)
   {
     this.currentPassword = currentPassword;
     return this;
@@ -148,8 +163,9 @@ public final class PasswordUpdateRequest extends BaseScimResource
    * @param newPassword  the new password.
    * @return this object.
    */
+  @NotNull
   public PasswordUpdateRequest setNewPassword(
-      final String newPassword)
+      @Nullable final String newPassword)
   {
     this.newPassword = newPassword;
     return this;
@@ -160,6 +176,7 @@ public final class PasswordUpdateRequest extends BaseScimResource
    *
    * @return the current password.
    */
+  @Nullable
   public String getCurrentPassword()
   {
     return currentPassword;
@@ -170,6 +187,7 @@ public final class PasswordUpdateRequest extends BaseScimResource
    *
    * @return the new password.
    */
+  @Nullable
   public String getNewPassword()
   {
     return newPassword;
@@ -180,6 +198,7 @@ public final class PasswordUpdateRequest extends BaseScimResource
    *
    * @return the generated password.
    */
+  @Nullable
   public String getGeneratedPassword()
   {
     return generatedPassword;
