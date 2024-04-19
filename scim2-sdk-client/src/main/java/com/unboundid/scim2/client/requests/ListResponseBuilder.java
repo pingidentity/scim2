@@ -19,6 +19,8 @@ package com.unboundid.scim2.client.requests;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.client.SearchResultHandler;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ListResponse;
 
 import java.util.LinkedHashMap;
@@ -33,9 +35,16 @@ import java.util.Map;
 public class ListResponseBuilder<T>
     implements SearchResultHandler<T>
 {
+  @Nullable
   private Integer totalResults;
+
+  @NotNull
   private List<T> resources = new LinkedList<T>();
+
+  @Nullable
   private Integer startIndex;
+
+  @Nullable
   private Integer itemsPerPage;
 
   /**
@@ -65,7 +74,7 @@ public class ListResponseBuilder<T>
   /**
    * {@inheritDoc}
    */
-  public boolean resource(final T scimResource)
+  public boolean resource(@NotNull final T scimResource)
   {
     this.resources.add(scimResource);
     return true;
@@ -76,8 +85,8 @@ public class ListResponseBuilder<T>
    * <p>
    * This method currently does not perform any action and should not be used.
    */
-  public void extension(final String urn,
-                        final ObjectNode extensionObjectNode)
+  public void extension(@NotNull final String urn,
+                        @NotNull final ObjectNode extensionObjectNode)
   {
     // TODO: do nothing for now
   }
@@ -87,6 +96,7 @@ public class ListResponseBuilder<T>
    *
    * @return generated ListResponse.
    */
+  @NotNull
   public ListResponse<T> build()
   {
     final Map<String,Object> properties = new LinkedHashMap<String,Object>();

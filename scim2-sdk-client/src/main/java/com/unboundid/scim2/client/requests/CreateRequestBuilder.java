@@ -18,6 +18,7 @@
 package com.unboundid.scim2.client.requests;
 
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 import jakarta.ws.rs.ProcessingException;
@@ -31,6 +32,7 @@ import jakarta.ws.rs.core.Response;
 public final class CreateRequestBuilder<T extends ScimResource>
     extends ResourceReturningRequestBuilder<CreateRequestBuilder<T>>
 {
+  @NotNull
   private final T resource;
 
   /**
@@ -40,7 +42,8 @@ public final class CreateRequestBuilder<T extends ScimResource>
    * @param target The WebTarget to POST to.
    * @param resource The SCIM resource to POST.
    */
-  public CreateRequestBuilder(final WebTarget target, final T resource)
+  public CreateRequestBuilder(@NotNull final WebTarget target,
+                              @NotNull final T resource)
   {
     super(target);
     this.resource = resource;
@@ -52,6 +55,7 @@ public final class CreateRequestBuilder<T extends ScimResource>
    * @return The successfully create SCIM resource.
    * @throws ScimException If an error occurred.
    */
+  @NotNull
   @SuppressWarnings("unchecked")
   public T invoke() throws ScimException
   {
@@ -67,7 +71,8 @@ public final class CreateRequestBuilder<T extends ScimResource>
    * @throws ProcessingException If a JAX-RS runtime exception occurred.
    * @throws ScimException If the SCIM service provider responded with an error.
    */
-  public <C> C invoke(final Class<C> cls) throws ScimException
+  @NotNull
+  public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
   {
     Response response = buildRequest().post(
         Entity.entity(resource, getContentType()));

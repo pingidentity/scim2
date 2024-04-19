@@ -18,6 +18,8 @@
 package com.unboundid.scim2.client.requests;
 
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 import jakarta.ws.rs.ProcessingException;
@@ -33,7 +35,10 @@ import jakarta.ws.rs.core.Response;
 public final class ReplaceRequestBuilder<T extends ScimResource>
     extends ResourceReturningRequestBuilder<ReplaceRequestBuilder<T>>
 {
+  @NotNull
   private final T resource;
+
+  @Nullable
   private String version;
 
   /**
@@ -42,7 +47,8 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
    * @param target The WebTarget to PUT.
    * @param resource The SCIM resource to replace.
    */
-  public ReplaceRequestBuilder(final WebTarget target, final T resource)
+  public ReplaceRequestBuilder(@NotNull final WebTarget target,
+                               @NotNull final T resource)
   {
     super(target);
     this.resource = resource;
@@ -54,6 +60,7 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
    *
    * @return This builder.
    */
+  @NotNull
   public ReplaceRequestBuilder<T> ifMatch()
   {
     version = getResourceVersion(resource);
@@ -64,6 +71,7 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();
@@ -80,6 +88,7 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
    * @return The successfully replaced SCIM resource.
    * @throws ScimException If an error occurred.
    */
+  @NotNull
   @SuppressWarnings("unchecked")
   public T invoke() throws ScimException
   {
@@ -95,7 +104,8 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
    * @throws ProcessingException If a JAX-RS runtime exception occurred.
    * @throws ScimException If the SCIM service provider responded with an error.
    */
-  public <C> C invoke(final Class<C> cls) throws ScimException
+  @NotNull
+  public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
   {
     Response response = buildRequest().put(
         Entity.entity(resource, getContentType()));

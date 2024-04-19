@@ -25,6 +25,8 @@ import com.unboundid.scim2.client.requests.ReplaceRequestBuilder;
 import com.unboundid.scim2.client.requests.RetrieveRequestBuilder;
 import com.unboundid.scim2.client.requests.SearchRequestBuilder;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.messages.PatchOperation;
@@ -54,15 +56,20 @@ public class ScimService implements ScimInterface
   /**
    * The authenticated subject alias.
    */
+  @NotNull
   public static final URI ME_URI = URI.create(ME_ENDPOINT);
 
   /**
    * The SCIM media type.
    */
+  @NotNull
   public static final MediaType MEDIA_TYPE_SCIM_TYPE =
       MediaType.valueOf(MEDIA_TYPE_SCIM);
 
+  @NotNull
   private final WebTarget baseTarget;
+
+  @Nullable
   private volatile ServiceProviderConfigResource serviceProviderConfig;
 
   /**
@@ -73,7 +80,7 @@ public class ScimService implements ScimInterface
    * @param baseTarget The web target for the base URI of the SCIM 2 service
    *                   provider.
    */
-  public ScimService(final WebTarget baseTarget)
+  public ScimService(@NotNull final WebTarget baseTarget)
   {
     this.baseTarget = baseTarget.register(
         new JacksonJsonProvider(JsonUtils.createObjectMapper(),
@@ -86,6 +93,7 @@ public class ScimService implements ScimInterface
    * @return the service provider configuration.
    * @throws ScimException if an error occurs.
    */
+  @NotNull
   public ServiceProviderConfigResource getServiceProviderConfig()
       throws ScimException
   {
@@ -104,6 +112,7 @@ public class ScimService implements ScimInterface
    * @return The list of resource types supported by the service provider.
    * @throws ScimException if an error occurs.
    */
+  @NotNull
   public ListResponse<ResourceTypeResource> getResourceTypes()
       throws ScimException
   {
@@ -118,7 +127,8 @@ public class ScimService implements ScimInterface
    * @return The resource type with the provided name.
    * @throws ScimException if an error occurs.
    */
-  public ResourceTypeResource getResourceType(final String name)
+  @NotNull
+  public ResourceTypeResource getResourceType(@NotNull final String name)
       throws ScimException
   {
     return retrieve(RESOURCE_TYPES_ENDPOINT, name, ResourceTypeResource.class);
@@ -130,6 +140,7 @@ public class ScimService implements ScimInterface
    * @return The list of schemas supported by the service provider.
    * @throws ScimException if an error occurs.
    */
+  @NotNull
   public ListResponse<SchemaResource> getSchemas()
       throws ScimException
   {
@@ -143,7 +154,8 @@ public class ScimService implements ScimInterface
    * @return The resource type with the provided URN.
    * @throws ScimException if an error occurs.
    */
-  public SchemaResource getSchema(final String id)
+  @NotNull
+  public SchemaResource getSchema(@NotNull final String id)
       throws ScimException
   {
     return retrieve(SCHEMAS_ENDPOINT, id, SchemaResource.class);
@@ -159,8 +171,10 @@ public class ScimService implements ScimInterface
    * @return The successfully create SCIM resource.
    * @throws ScimException if an error occurs.
    */
-  public <T extends ScimResource> T create(
-      final String endpoint, final T resource) throws ScimException
+  @NotNull
+  public <T extends ScimResource> T create(@NotNull final String endpoint,
+                                           @NotNull final T resource)
+      throws ScimException
   {
     return createRequest(endpoint, resource).invoke();
   }
@@ -177,8 +191,10 @@ public class ScimService implements ScimInterface
    * @return The successfully retrieved SCIM resource.
    * @throws ScimException if an error occurs.
    */
-  public <T extends ScimResource> T retrieve(
-      final String endpoint, final String id, final Class<T> cls)
+  @NotNull
+  public <T extends ScimResource> T retrieve(@NotNull final String endpoint,
+                                             @NotNull final String id,
+                                             @NotNull final Class<T> cls)
       throws ScimException
   {
     return retrieveRequest(endpoint, id).invoke(cls);
@@ -193,7 +209,9 @@ public class ScimService implements ScimInterface
    * @return The successfully retrieved SCIM resource.
    * @throws ScimException if an error occurs.
    */
-  public <T extends ScimResource> T retrieve(final URI url, final Class<T> cls)
+  @NotNull
+  public <T extends ScimResource> T retrieve(@NotNull final URI url,
+                                             @NotNull final Class<T> cls)
       throws ScimException
   {
     return retrieveRequest(url).invoke(cls);
@@ -209,7 +227,8 @@ public class ScimService implements ScimInterface
    * @return The successfully retrieved SCIM resource.
    * @throws ScimException if an error occurs.
    */
-  public <T extends ScimResource> T retrieve(final T resource)
+  @NotNull
+  public <T extends ScimResource> T retrieve(@NotNull final T resource)
       throws ScimException
   {
     RetrieveRequestBuilder.Generic<T> builder = retrieveRequest(resource);
@@ -227,8 +246,9 @@ public class ScimService implements ScimInterface
    * @return The successfully replaced SCIM resource.
    * @throws ScimException if an error occurs.
    */
-  public <T extends ScimResource> T replace(
-      final T resource) throws ScimException
+  @NotNull
+  public <T extends ScimResource> T replace(@NotNull final T resource)
+      throws ScimException
   {
     ReplaceRequestBuilder<T> builder = replaceRequest(resource);
     return builder.invoke();
@@ -243,7 +263,7 @@ public class ScimService implements ScimInterface
    *           attribute).
    * @throws ScimException if an error occurs.
    */
-  public void delete(final String endpoint, final String id)
+  public void delete(@NotNull final String endpoint, @NotNull final String id)
       throws ScimException
   {
     deleteRequest(endpoint, id).invoke();
@@ -255,7 +275,8 @@ public class ScimService implements ScimInterface
    * @param url The URL of the resource to delete.
    * @throws ScimException if an error occurs.
    */
-  public void delete(final URI url) throws ScimException
+  public void delete(@NotNull final URI url)
+      throws ScimException
   {
     deleteRequest(url).invoke();
   }
@@ -267,7 +288,7 @@ public class ScimService implements ScimInterface
    * @param <T> The Java type of the resource.
    * @throws ScimException if an error occurs.
    */
-  public <T extends ScimResource> void delete(final T resource)
+  public <T extends ScimResource> void delete(@NotNull final T resource)
       throws ScimException
   {
     DeleteRequestBuilder builder = deleteRequest(resource);
@@ -285,8 +306,10 @@ public class ScimService implements ScimInterface
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
    */
+  @NotNull
   public <T extends ScimResource> CreateRequestBuilder<T> createRequest(
-      final String endpoint, final T resource)
+      @NotNull final String endpoint,
+      @NotNull final T resource)
   {
     return new CreateRequestBuilder<T>(baseTarget.path(endpoint), resource);
   }
@@ -302,8 +325,10 @@ public class ScimService implements ScimInterface
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
    */
+  @NotNull
   public RetrieveRequestBuilder.Typed retrieveRequest(
-      final String endpoint, final String id)
+      @NotNull final String endpoint,
+      @NotNull final String id)
   {
     return new RetrieveRequestBuilder.Typed(baseTarget.path(endpoint).path(id));
   }
@@ -316,7 +341,8 @@ public class ScimService implements ScimInterface
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
    */
-  public RetrieveRequestBuilder.Typed retrieveRequest(final URI url)
+  @NotNull
+  public RetrieveRequestBuilder.Typed retrieveRequest(@NotNull final URI url)
   {
     return new RetrieveRequestBuilder.Typed(resolveWebTarget(url));
   }
@@ -330,8 +356,9 @@ public class ScimService implements ScimInterface
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
    */
+  @NotNull
   public <T extends ScimResource> RetrieveRequestBuilder.Generic<T>
-      retrieveRequest(final T resource)
+      retrieveRequest(@NotNull final T resource)
   {
     return new RetrieveRequestBuilder.Generic<T>(
         resolveWebTarget(checkAndGetLocation(resource)), resource);
@@ -346,7 +373,8 @@ public class ScimService implements ScimInterface
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
    */
-  public SearchRequestBuilder searchRequest(final String endpoint)
+  @NotNull
+  public SearchRequestBuilder searchRequest(@NotNull final String endpoint)
   {
     return new SearchRequestBuilder(baseTarget.path(endpoint));
   }
@@ -361,8 +389,10 @@ public class ScimService implements ScimInterface
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
    */
+  @NotNull
   public <T extends ScimResource> ReplaceRequestBuilder<T> replaceRequest(
-      final URI uri, final T resource)
+      @NotNull final URI uri,
+      @NotNull final T resource)
   {
     return new ReplaceRequestBuilder<T>(resolveWebTarget(uri), resource);
   }
@@ -376,8 +406,9 @@ public class ScimService implements ScimInterface
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
    */
+  @NotNull
   public <T extends ScimResource> ReplaceRequestBuilder<T> replaceRequest(
-      final T resource)
+      @NotNull final T resource)
   {
     return new ReplaceRequestBuilder<T>(
         resolveWebTarget(checkAndGetLocation(resource)), resource);
@@ -387,9 +418,13 @@ public class ScimService implements ScimInterface
    * {@inheritDoc}
    */
   @Override
-  public <T extends ScimResource> T modify(final String endpoint,
-      final String id, final PatchRequest patchRequest, final Class<T> clazz)
-      throws ScimException
+  @NotNull
+  public <T extends ScimResource> T modify(
+      @NotNull final String endpoint,
+      @NotNull final String id,
+      @NotNull final PatchRequest patchRequest,
+      @NotNull final Class<T> clazz)
+          throws ScimException
   {
     ModifyRequestBuilder.Typed requestBuilder = new ModifyRequestBuilder.Typed(
         baseTarget.path(endpoint).path(id));
@@ -414,8 +449,10 @@ public class ScimService implements ScimInterface
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
    */
+  @NotNull
   public ModifyRequestBuilder.Typed modifyRequest(
-      final String endpoint, final String id)
+      @NotNull final String endpoint,
+      @NotNull final String id)
   {
     return new ModifyRequestBuilder.Typed(
         baseTarget.path(endpoint).path(id));
@@ -432,8 +469,8 @@ public class ScimService implements ScimInterface
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
    */
-  public  ModifyRequestBuilder.Typed modifyRequest(
-      final URI url)
+  @NotNull
+  public  ModifyRequestBuilder.Typed modifyRequest(@NotNull final URI url)
   {
     return new ModifyRequestBuilder.Typed(resolveWebTarget(url));
   }
@@ -442,8 +479,11 @@ public class ScimService implements ScimInterface
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   public <T extends ScimResource> T modify(
-      final T resource, final PatchRequest patchRequest) throws ScimException
+      @NotNull final T resource,
+      @NotNull final PatchRequest patchRequest)
+          throws ScimException
   {
     ModifyRequestBuilder.Generic<T> requestBuilder =
         new ModifyRequestBuilder.Generic<T>(resolveWebTarget(
@@ -467,8 +507,9 @@ public class ScimService implements ScimInterface
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
    */
+  @NotNull
   public <T extends ScimResource> ModifyRequestBuilder.Generic<T> modifyRequest(
-      final T resource)
+      @NotNull final T resource)
   {
     return new ModifyRequestBuilder.Generic<T>(
         resolveWebTarget(checkAndGetLocation(resource)), resource);
@@ -486,8 +527,9 @@ public class ScimService implements ScimInterface
    * parameters and to invoke the request.
    * @throws ScimException if an error occurs.
    */
-  public DeleteRequestBuilder deleteRequest(
-      final String endpoint, final String id)
+  @NotNull
+  public DeleteRequestBuilder deleteRequest(@NotNull final String endpoint,
+                                            @NotNull final String id)
       throws ScimException
   {
     return new DeleteRequestBuilder(baseTarget.path(endpoint).path(id));
@@ -501,7 +543,9 @@ public class ScimService implements ScimInterface
    * parameters and to invoke the request.
    * @throws ScimException if an error occurs.
    */
-  public DeleteRequestBuilder deleteRequest(final URI url) throws ScimException
+  @NotNull
+  public DeleteRequestBuilder deleteRequest(@NotNull final URI url)
+      throws ScimException
   {
     return new DeleteRequestBuilder(resolveWebTarget(url));
   }
@@ -515,9 +559,10 @@ public class ScimService implements ScimInterface
    * parameters and to invoke the request.
    * @throws ScimException if an error occurs.
    */
+  @NotNull
   public <T extends ScimResource> DeleteRequestBuilder deleteRequest(
-      final T resource)
-      throws ScimException
+      @NotNull final T resource)
+          throws ScimException
   {
     return deleteRequest(checkAndGetLocation(resource));
   }
@@ -528,7 +573,8 @@ public class ScimService implements ScimInterface
    * @param url The URL to resolve.
    * @return The WebTarget.
    */
-  private WebTarget resolveWebTarget(final URI url)
+  @NotNull
+  private WebTarget resolveWebTarget(@NotNull final URI url)
   {
     URI relativePath;
     if(url.isAbsolute())
@@ -558,7 +604,8 @@ public class ScimService implements ScimInterface
    * @throws IllegalArgumentException if the resource does not contain the
    * meta.location attribute value.
    */
-  private URI checkAndGetLocation(final ScimResource resource)
+  @NotNull
+  private URI checkAndGetLocation(@NotNull final ScimResource resource)
       throws IllegalArgumentException
   {
     Meta meta = resource.getMeta();
@@ -573,8 +620,12 @@ public class ScimService implements ScimInterface
   /**
    * {@inheritDoc}
    */
-  public <T extends ScimResource> ListResponse<T> search(final String endpoint,
-      final String filter, final Class<T> clazz) throws ScimException
+  @NotNull
+  public <T extends ScimResource> ListResponse<T> search(
+      @NotNull final String endpoint,
+      @Nullable final String filter,
+      @NotNull final Class<T> clazz)
+          throws ScimException
   {
     return searchRequest(endpoint).filter(filter).invoke(clazz);
   }

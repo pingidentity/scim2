@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.client.requests;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.utils.ApiConstants;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
@@ -37,6 +39,7 @@ public abstract class ResourceReturningRequestBuilder
   /**
    * The attribute list of include or exclude.
    */
+  @Nullable
   protected Set<String> attributes;
 
   /**
@@ -44,7 +47,7 @@ public abstract class ResourceReturningRequestBuilder
    *
    * @param target The WebTarget to send the request.
    */
-  ResourceReturningRequestBuilder(final WebTarget target)
+  ResourceReturningRequestBuilder(@NotNull final WebTarget target)
   {
     super(target);
   }
@@ -54,6 +57,7 @@ public abstract class ResourceReturningRequestBuilder
    *
    * @return The WebTarget for the request.
    */
+  @NotNull
   WebTarget buildTarget()
   {
     if(attributes != null && attributes.size() > 0)
@@ -83,8 +87,9 @@ public abstract class ResourceReturningRequestBuilder
    * @param attributes the names of resource attributes to return
    * @return This builder.
    */
+  @NotNull
   @SuppressWarnings("unchecked")
-  public T attributes(final String... attributes)
+  public T attributes(@NotNull final String... attributes)
   {
     this.attributes = StaticUtils.arrayToSet(attributes);
     return (T) this;
@@ -99,12 +104,12 @@ public abstract class ResourceReturningRequestBuilder
    *                           the default set of attributes to return.
    * @return This builder.
    */
+  @NotNull
   @SuppressWarnings("unchecked")
-  public T excludedAttributes(final String... excludedAttributes)
+  public T excludedAttributes(@NotNull final String... excludedAttributes)
   {
     this.attributes = StaticUtils.arrayToSet(excludedAttributes);
     this.excluded = true;
     return (T) this;
   }
-
 }

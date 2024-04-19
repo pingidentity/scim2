@@ -18,6 +18,8 @@
 package com.unboundid.scim2.client.requests;
 
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 import jakarta.ws.rs.ProcessingException;
@@ -36,6 +38,7 @@ public abstract class RetrieveRequestBuilder
   /**
    * The version to match.
    */
+  @Nullable
   protected String version;
 
   /**
@@ -43,7 +46,7 @@ public abstract class RetrieveRequestBuilder
    *
    * @param target The WebTarget to GET.
    */
-  private RetrieveRequestBuilder(final WebTarget target)
+  private RetrieveRequestBuilder(@NotNull final WebTarget target)
   {
     super(target);
   }
@@ -52,6 +55,7 @@ public abstract class RetrieveRequestBuilder
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();
@@ -70,6 +74,7 @@ public abstract class RetrieveRequestBuilder
   public static final class Generic<T extends ScimResource>
       extends RetrieveRequestBuilder<Generic<T>>
   {
+    @NotNull
     private final T resource;
 
     /**
@@ -78,7 +83,7 @@ public abstract class RetrieveRequestBuilder
      * @param target The WebTarget to GET.
      * @param resource The SCIM resource to retrieve.
      */
-    public Generic(final WebTarget target, final T resource)
+    public Generic(@NotNull final WebTarget target, @NotNull final T resource)
     {
       super(target);
       this.resource = resource;
@@ -91,6 +96,7 @@ public abstract class RetrieveRequestBuilder
      *
      * @return This builder.
      */
+    @NotNull
     public Generic<T> ifNoneMatch()
     {
       version = getResourceVersion(resource);
@@ -105,6 +111,7 @@ public abstract class RetrieveRequestBuilder
      *         been modified.
      * @throws ScimException If an error occurred.
      */
+    @NotNull
     @SuppressWarnings("unchecked")
     public T invoke() throws ScimException
     {
@@ -120,7 +127,8 @@ public abstract class RetrieveRequestBuilder
      * @throws ProcessingException If a JAX-RS runtime exception occurred.
      * @throws ScimException If the SCIM service provider responded with an error.
      */
-    public <C> C invoke(final Class<C> cls) throws ScimException
+    @NotNull
+    public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
     {
       Response response = buildRequest().get();
       try
@@ -154,7 +162,7 @@ public abstract class RetrieveRequestBuilder
      *
      * @param target The WebTarget to GET.
      */
-    public Typed(final WebTarget target)
+    public Typed(@NotNull final WebTarget target)
     {
       super(target);
     }
@@ -167,7 +175,8 @@ public abstract class RetrieveRequestBuilder
      * @param version The version of the resource to compare.
      * @return This builder.
      */
-    public Typed ifNoneMatch(final String version)
+    @NotNull
+    public Typed ifNoneMatch(@Nullable final String version)
     {
       this.version = version;
       return this;
@@ -182,7 +191,8 @@ public abstract class RetrieveRequestBuilder
      * @throws ProcessingException If a JAX-RS runtime exception occurred.
      * @throws ScimException If the SCIM service provider responded with an error.
      */
-    public <T> T invoke(final Class<T> cls) throws ScimException
+    @NotNull
+    public <T> T invoke(@NotNull final Class<T> cls) throws ScimException
     {
       Response response = buildRequest().get();
       try
