@@ -29,15 +29,30 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.fail;
 
 
+/**
+ * This test is responsible for evaluating all of the methods
+ * of the SCIM SDK, regardless of visibility (e.g., {@code public},
+ * {@code private}). The {@link #testNullability} method
+ * provides the basis of this analysis. The bulk of this test was copied from
+ * the UnboundID LDAP SDK.
+ * <br><br>
+ * When this test class is invoked, it will analyze the methods within the
+ * {@code scim2-sdk-common} module.
+ */
 public class NullabilityAnnotationTest
 {
-  public static final String EOL =
-      System.getProperty("line.separator", "\n");
+  /**
+   * The end-of-line character for the operating system.
+   */
+  public static final String EOL = System.getProperty("line.separator", "\n");
 
   /**
    * Retrieves the fully-qualified names of all classes included in the SDK.
@@ -50,11 +65,18 @@ public class NullabilityAnnotationTest
   public Object[][] getSDKClasses()
          throws Exception
   {
-    File baseDir = new File(System.getProperty("basedir"));
-    File buildDir = new File(baseDir, "build");
+    var baseDirValue = System.getProperty("basedir");
+    if (baseDirValue == null)
+    {
+      throw new NullPointerException("Could not obtain the 'basedir' system"
+          + " property. Try running the test via Maven on the command line.");
+    }
+
+    File baseDir = new File(baseDirValue);
+    File buildDir = new File(baseDir, "target");
     File classesDir = new File(buildDir, "classes");
 
-    ArrayList<Class<?>> classList = new ArrayList<Class<?>>();
+    ArrayList<Class<?>> classList = new ArrayList<>();
     findClasses("", classesDir,  classList);
 
     Object[][] classes = new Object[classList.size()][1];
@@ -73,7 +95,7 @@ public class NullabilityAnnotationTest
    *
    * @param  p  The package name associated with the provided directory.
    * @param  d  The directory to be processed.
-   * @param  l  The to which the classes should be added.
+   * @param  l  The list that will contain the classes.
    *
    * @throws  Exception  If a problem occurs during processing.
    */
@@ -81,27 +103,54 @@ public class NullabilityAnnotationTest
                                   final ArrayList<Class<?>> l)
           throws Exception
   {
-    for (File f : d. listFiles())
+    if (d.listFiles() == null)
     {
-      if (f.isDirectory())
+      // TestNG skips tests with no output when data providers fail, so print
+      // the error message to stderr.
+      System.err.println("ERROR: Could not find any Java classes in the '"
+          + d + "' folder.");
+      fail("No classes found.");
+    }
+
+    try
+    {
+      for (File f : Objects.requireNonNull(d.listFiles()))
       {
-        if (p.length() == 0)
+        if (f.isDirectory())
         {
-          findClasses(f.getName(), f, l);
+          if (p.length() == 0)
+          {
+            findClasses(f.getName(), f, l);
+          }
+          else
+          {
+            findClasses(p + '.' + f.getName(), f, l);
+          }
         }
-        else
+        else if (f.getName().endsWith(".class") &&
+                 (! f.getName().contains("$")))
         {
-          findClasses(p + '.' + f.getName(), f, l);
+          int dotPos = f.getName().lastIndexOf('.');
+          String baseName = f.getName().substring(0, dotPos);
+          String className = p + '.' + baseName;
+
+          // Include the class, as well as any subclasses.
+          Class<?> baseClass = Class.forName(className);
+          l.add(baseClass);
+          var classes = Arrays.stream(baseClass.getClasses()).filter(c ->
+            c.getCanonicalName().contains("com.unboundid.scim2")
+          ).collect(Collectors.toList());
+          l.addAll(classes);
         }
       }
-      else if (f.getName().endsWith(".class") &&
-               (! f.getName().contains("$")))
-      {
-        int dotPos = f.getName().lastIndexOf('.');
-        String baseName = f.getName().substring(0, dotPos);
-        String className = p + '.' + baseName;
-        l.add(Class.forName(className));
-      }
+    }
+    catch (Exception e)
+    {
+      // TestNG skips tests with no output when data providers fail, so print
+      // the failure to stderr.
+      System.err.println("ERROR: Failed to retrieve the Java classes. The"
+          + " exception was: " + e);
+      throw e;
     }
   }
 
@@ -109,18 +158,15 @@ public class NullabilityAnnotationTest
 
   /**
    * Ensures that all non-primitive fields, constructor and method parameters,
-   * and method return values are marked with either the {@code NotNull} or
-   * {@code Nullable} annotation types.
+   * and method return values are marked with either the {@link NotNull} or
+   * {@link Nullable} annotation types.
    *
    * @param  c  The class to be examined.
-   *
-   * @throws  Exception  If an unexpected problem occurs.
    */
   @Test(dataProvider="sdkClasses")
   public void testNullability(final Class<?> c)
-         throws Exception
   {
-    // If the class is dynamically generated by something outside the LDAP SDK
+    // If the class is dynamically generated by something outside of the
     // codebase, then it won't be annotated.
     if (c.isSynthetic())
     {
@@ -205,7 +251,7 @@ public class NullabilityAnnotationTest
 
     // Make sure that all constructor parameters are annotated properly.
     // Note that enums can have dynamically generated constructors and there
-    // deosn't seem to be a good way to detect them, so we'll just skip this
+    // doesn't seem to be a good way to detect them, so we'll just skip this
     // validation entirely for enums.
     if (! c.isEnum())
     {
@@ -445,9 +491,30 @@ public class NullabilityAnnotationTest
 
     if (! errors.isEmpty())
     {
-      fail("Found nullability errors in class " + c.getName() + ":  " +
-           StaticUtils.concatenateStrings(null, StaticUtils.EOL, null, null,
-                null, errors));
+      StringBuilder stringBuilder = new StringBuilder();
+      stringBuilder.append("Found ");
+      stringBuilder.append(errors.size());
+      stringBuilder.append(" nullability error");
+      if (errors.size() > 1)
+      {
+        stringBuilder.append("s");
+      }
+      stringBuilder.append(" in the ");
+      stringBuilder.append(c.getName());
+      stringBuilder.append(" class:");
+      stringBuilder.append(EOL);
+
+      for (String error: errors)
+      {
+        stringBuilder.append(error);
+        stringBuilder.append(EOL);
+      }
+
+      stringBuilder.append(EOL);
+      stringBuilder.append(EOL);
+
+      String error = stringBuilder.toString();
+      fail(error);
     }
   }
 }
