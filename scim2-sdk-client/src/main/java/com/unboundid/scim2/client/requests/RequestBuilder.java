@@ -19,6 +19,8 @@ package com.unboundid.scim2.client.requests;
 
 import com.unboundid.scim2.client.ScimServiceException;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.utils.StaticUtils;
@@ -44,22 +46,27 @@ public class RequestBuilder<T extends RequestBuilder>
   /**
    * The web target to send the request.
    */
+  @NotNull
   private WebTarget target;
 
   /**
    * Arbitrary request headers.
    */
+  @NotNull
   protected final MultivaluedMap<String, Object> headers =
       new MultivaluedHashMap<String, Object>();
 
   /**
    * Arbitrary query parameters.
    */
+  @NotNull
   protected final MultivaluedMap<String, Object> queryParams =
       new MultivaluedHashMap<String, Object>();
 
+  @Nullable
   private String contentType = MEDIA_TYPE_SCIM;
 
+  @NotNull
   private List<String> accept = new ArrayList<String>();
 
   /**
@@ -67,7 +74,7 @@ public class RequestBuilder<T extends RequestBuilder>
    *
    * @param target The WebTarget to send the request.
    */
-  RequestBuilder(final WebTarget target)
+  RequestBuilder(@NotNull final WebTarget target)
   {
     this.target = target;
     accept(MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON);
@@ -80,8 +87,9 @@ public class RequestBuilder<T extends RequestBuilder>
    * @param value The header value(s).
    * @return This builder.
    */
+  @NotNull
   @SuppressWarnings("unchecked")
-  public T header(final String name, final Object... value)
+  public T header(@NotNull final String name, @NotNull final Object... value)
   {
     headers.addAll(name, value);
     return (T) this;
@@ -95,7 +103,8 @@ public class RequestBuilder<T extends RequestBuilder>
    *                    sent to the server.
    * @return This builder.
    */
-  public T contentType(final String contentType)
+  @NotNull
+  public T contentType(@Nullable final String contentType)
   {
     this.contentType = contentType;
     return (T) this;
@@ -112,7 +121,8 @@ public class RequestBuilder<T extends RequestBuilder>
    *                      not be null.
    * @return This builder.
    */
-  public T accept(final String ... acceptStrings)
+  @NotNull
+  public T accept(@NotNull final String... acceptStrings)
   {
     this.accept.clear();
     if((acceptStrings == null) || (acceptStrings.length == 0))
@@ -136,8 +146,10 @@ public class RequestBuilder<T extends RequestBuilder>
    * @param value The query parameter value(s).
    * @return This builder.
    */
+  @NotNull
   @SuppressWarnings("unchecked")
-  public T queryParam(final String name, final Object... value)
+  public T queryParam(@NotNull final String name,
+                      @NotNull final Object... value)
   {
     queryParams.addAll(name, value);
     return (T) this;
@@ -151,7 +163,8 @@ public class RequestBuilder<T extends RequestBuilder>
    * @throws IllegalArgumentException if the resource does not contain a the
    * meta.version attribute.
    */
-  static String getResourceVersion(final ScimResource resource)
+  @NotNull
+  static String getResourceVersion(@NotNull final ScimResource resource)
       throws IllegalArgumentException
   {
     if(resource == null || resource.getMeta() == null ||
@@ -169,7 +182,8 @@ public class RequestBuilder<T extends RequestBuilder>
    * @param response The JAX-RS response.
    * @return the converted ScimException.
    */
-  static ScimException toScimException(final Response response)
+  @NotNull
+  static ScimException toScimException(@NotNull final Response response)
   {
     try
     {
@@ -201,6 +215,7 @@ public class RequestBuilder<T extends RequestBuilder>
    *
    * @return The WebTarget for the request.
    */
+  @NotNull
   protected WebTarget target()
   {
     return target;
@@ -211,6 +226,7 @@ public class RequestBuilder<T extends RequestBuilder>
    *
    * @return The WebTarget for the request.
    */
+  @NotNull
   WebTarget buildTarget()
   {
     for(Map.Entry<String, List<Object>> queryParam : queryParams.entrySet())
@@ -226,6 +242,7 @@ public class RequestBuilder<T extends RequestBuilder>
    *
    * @return the media type for any content sent to the server.
    */
+  @Nullable
   protected String getContentType()
   {
     return contentType;
@@ -236,6 +253,7 @@ public class RequestBuilder<T extends RequestBuilder>
    *
    * @return the media type(s) that are acceptable as a return from the server.
    */
+  @NotNull
   protected List<String> getAccept()
   {
     return accept;
@@ -245,6 +263,7 @@ public class RequestBuilder<T extends RequestBuilder>
    *
    * @return The Invocation.Builder for the request.
    */
+  @NotNull
   Invocation.Builder buildRequest()
   {
     Invocation.Builder builder =

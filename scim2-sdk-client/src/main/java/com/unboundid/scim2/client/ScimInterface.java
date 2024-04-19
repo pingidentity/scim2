@@ -18,6 +18,8 @@
 package com.unboundid.scim2.client;
 
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.messages.PatchRequest;
@@ -37,6 +39,7 @@ public interface ScimInterface
    * @return the service provider configuration.
    * @throws ScimException if an error occurs.
    */
+  @NotNull
   ServiceProviderConfigResource getServiceProviderConfig()
       throws ScimException;
 
@@ -46,8 +49,9 @@ public interface ScimInterface
    * @return The list of resource types supported by the service provider.
    * @throws ScimException if an error occurs.
    */
+  @NotNull
   ListResponse<ResourceTypeResource> getResourceTypes()
-          throws ScimException;
+      throws ScimException;
 
   /**
    * Retrieve a known resource type supported by the service provider.
@@ -56,8 +60,9 @@ public interface ScimInterface
    * @return The resource type with the provided name.
    * @throws ScimException if an error occurs.
    */
-  ResourceTypeResource getResourceType(String name)
-              throws ScimException;
+  @NotNull
+  ResourceTypeResource getResourceType(@NotNull String name)
+      throws ScimException;
 
   /**
    * Retrieve the schemas supported by the service provider.
@@ -65,8 +70,9 @@ public interface ScimInterface
    * @return The list of schemas supported by the service provider.
    * @throws ScimException if an error occurs.
    */
+  @NotNull
   ListResponse<SchemaResource> getSchemas()
-                  throws ScimException;
+      throws ScimException;
 
   /**
    * Retrieve a known schema supported by the service provider.
@@ -75,27 +81,32 @@ public interface ScimInterface
    * @return The resource type with the provided URN.
    * @throws ScimException if an error occurs.
    */
-  SchemaResource getSchema(String id)
-                      throws ScimException;
+  @NotNull
+  SchemaResource getSchema(@NotNull String id)
+      throws ScimException;
 
   /**
    * Create the provided new SCIM resource at the service provider.
    *
-   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
-   *                 defined by the associated resource type.
+   * @param endpoint The resource endpoint such as: "{@code Users}" or
+   *                 "{@code Groups}" as defined by the associated resource
+   *                 type.
    * @param resource The new resource to create.
    * @param <T> The Java type of the resource.
    * @return The successfully create SCIM resource.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> T create(
-      String endpoint, T resource) throws ScimException;
+  @NotNull
+  <T extends ScimResource> T create(@NotNull String endpoint,
+                                    @NotNull T resource)
+      throws ScimException;
 
   /**
    * Retrieve a known SCIM resource from the service provider.
    *
-   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
-   *                 defined by the associated resource type.
+   * @param endpoint The resource endpoint such as: "{@code Users}" or
+   *                 "{@code Groups}" as defined by the associated resource
+   *                 type.
    * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
    * @param cls The Java class object used to determine the type to return.
@@ -103,9 +114,11 @@ public interface ScimInterface
    * @return The successfully retrieved SCIM resource.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> T retrieve(
-      String endpoint, String id, Class<T> cls)
-                              throws ScimException;
+  @NotNull
+  <T extends ScimResource> T retrieve(@NotNull String endpoint,
+                                      @NotNull String id,
+                                      @NotNull Class<T> cls)
+      throws ScimException;
 
   /**
    * Retrieve a known SCIM resource from the service provider. If the
@@ -117,8 +130,9 @@ public interface ScimInterface
    * @return The successfully retrieved SCIM resource.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> T retrieve(T resource)
-                                  throws ScimException;
+  @NotNull
+  <T extends ScimResource> T retrieve(@NotNull T resource)
+      throws ScimException;
 
   /**
    * Modify a SCIM resource by replacing the resource's attributes at the
@@ -131,8 +145,9 @@ public interface ScimInterface
    * @return The successfully replaced SCIM resource.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> T replace(
-      T resource) throws ScimException;
+  @NotNull
+  <T extends ScimResource> T replace(@NotNull T resource)
+      throws ScimException;
 
   /**
    * Modify a SCIM resource by updating one or more attributes using a sequence
@@ -140,18 +155,23 @@ public interface ScimInterface
    * values. The service provider configuration may be used to discover service
    * provider support for PATCH.
    *
-   * @param endpoint The resource endpoint such as: "{@code Users}" or "{@code Groups}" as
-   *                 defined by the associated resource type.
+   * @param endpoint The resource endpoint such as: "{@code Users}" or
+   *                 "{@code Groups}" as defined by the associated resource
+   *                 type.
    * @param id The resource identifier (for example the value of the "{@code id}"
    *           attribute).
-   * @param patchRequest the patch request to use for the update.
-   * @param clazz the class of the SCIM resource.
+   * @param patchRequest The patch request to use for the update.
+   * @param clazz The class of the SCIM resource.
    * @param <T> The Java type of the resource.
+   *
    * @return The modified resource.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> T modify(String endpoint,
-      String id, PatchRequest patchRequest, Class<T> clazz)
+  @NotNull
+  <T extends ScimResource> T modify(@NotNull String endpoint,
+                                    @NotNull String id,
+                                    @NotNull PatchRequest patchRequest,
+                                    @NotNull Class<T> clazz)
       throws ScimException;
 
   /**
@@ -166,8 +186,10 @@ public interface ScimInterface
    * @return The modified resource.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> T modify(
-      T resource, PatchRequest patchRequest) throws ScimException;
+  @NotNull
+  <T extends ScimResource> T modify(@NotNull T resource,
+                                    @NotNull PatchRequest patchRequest)
+      throws ScimException;
 
   /**
    * Delete a SCIM resource at the service provider.
@@ -179,7 +201,8 @@ public interface ScimInterface
    *           attribute).
    * @throws ScimException if an error occurs.
    */
-  void delete(String endpoint, String id) throws ScimException;
+  void delete(@NotNull String endpoint, @NotNull String id)
+      throws ScimException;
 
   /**
    * Delete a SCIM resource at the service provider.
@@ -188,7 +211,8 @@ public interface ScimInterface
    * @param <T> The Java type of the resource.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> void delete(T resource) throws ScimException;
+  <T extends ScimResource> void delete(@NotNull T resource)
+      throws ScimException;
 
   /**
    * Search for SCIM resources matching the SCIM filter provided.
@@ -200,6 +224,9 @@ public interface ScimInterface
    * @return a List of ScimResource objects matching the provided filter.
    * @throws ScimException if an error occurs.
    */
-  <T extends ScimResource> ListResponse<T> search(
-      String endpoint, String filter, Class<T> clazz) throws ScimException;
+  @NotNull
+  <T extends ScimResource> ListResponse<T> search(@NotNull String endpoint,
+                                                  @Nullable String filter,
+                                                  @NotNull Class<T> clazz)
+      throws ScimException;
 }

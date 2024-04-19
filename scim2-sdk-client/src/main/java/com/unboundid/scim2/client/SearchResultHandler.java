@@ -18,6 +18,7 @@
 package com.unboundid.scim2.client;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.annotations.NotNull;
 
 /**
  * An interface for handling the search result response. Methods will be called
@@ -53,7 +54,7 @@ public interface SearchResultHandler<T>
    * @return {@code true} to continue processing the search result response or
    *         {@code false} to immediate stop further processing of the response.
    */
-  boolean resource(final T scimResource);
+  boolean resource(@NotNull final T scimResource);
 
   /**
    * Handle a schema extension in the search response.
@@ -62,5 +63,6 @@ public interface SearchResultHandler<T>
    * @param extensionObjectNode The ObjectNode representing the extension
    *                            schema.
    */
-  void extension(final String urn, final ObjectNode extensionObjectNode);
+  void extension(@NotNull final String urn,
+                 @NotNull final ObjectNode extensionObjectNode);
 }

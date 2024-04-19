@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.client;
 
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 /**
@@ -38,8 +39,8 @@ public class ScimServiceException extends ScimException
    */
 
   public ScimServiceException(final int statusCode,
-                              final String errorMessage,
-                              final Throwable cause)
+                              @Nullable final String errorMessage,
+                              @Nullable final Throwable cause)
   {
     super(statusCode, null, errorMessage, cause);
   }

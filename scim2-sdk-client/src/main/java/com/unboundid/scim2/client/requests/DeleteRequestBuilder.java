@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.client.requests;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
 import jakarta.ws.rs.ProcessingException;
@@ -30,6 +32,7 @@ import jakarta.ws.rs.core.Response;
  */
 public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
 {
+  @Nullable
   private String version;
 
   /**
@@ -37,7 +40,7 @@ public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
    *
    * @param target The WebTarget to DELETE.
    */
-  public DeleteRequestBuilder(final WebTarget target)
+  public DeleteRequestBuilder(@NotNull final WebTarget target)
   {
     super(target);
   }
@@ -49,7 +52,8 @@ public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
    * @param version The version of the resource to compare.
    * @return This builder.
    */
-  public DeleteRequestBuilder ifMatch(final String version)
+  @NotNull
+  public DeleteRequestBuilder ifMatch(@Nullable final String version)
   {
     this.version = version;
     return this;
@@ -59,6 +63,7 @@ public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();

@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.client.SearchResultHandler;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.messages.SearchRequest;
@@ -57,18 +59,27 @@ import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_SORT
 public final class SearchRequestBuilder
     extends ResourceReturningRequestBuilder<SearchRequestBuilder>
 {
+  @Nullable
   private String filter;
+
+  @Nullable
   private String sortBy;
+
+  @Nullable
   private SortOrder sortOrder;
+
+  @Nullable
   private Integer startIndex;
+
+  @Nullable
   private Integer count;
 
   /**
-   * Create a new  search request builder.
+   * Create a new search request builder.
    *
    * @param target The WebTarget to search.
    */
-  public SearchRequestBuilder(final WebTarget target)
+  public SearchRequestBuilder(@NotNull final WebTarget target)
   {
     super(target);
   }
@@ -79,7 +90,8 @@ public final class SearchRequestBuilder
    * @param filter the filter string used to request a subset of resources.
    * @return This builder.
    */
-  public SearchRequestBuilder filter(final String filter)
+  @NotNull
+  public SearchRequestBuilder filter(@Nullable final String filter)
   {
     this.filter = filter;
     return this;
@@ -93,8 +105,9 @@ public final class SearchRequestBuilder
    * @param sortOrder the order in which the sortBy parameter is applied.
    * @return This builder.
    */
-  public SearchRequestBuilder sort(final String sortBy,
-                                   final SortOrder sortOrder)
+  @NotNull
+  public SearchRequestBuilder sort(@Nullable final String sortBy,
+                                   @Nullable final SortOrder sortOrder)
   {
     this.sortBy = sortBy;
     this.sortOrder = sortOrder;
@@ -108,6 +121,7 @@ public final class SearchRequestBuilder
    * @param count the desired maximum number of query results per page.
    * @return This builder.
    */
+  @NotNull
   public SearchRequestBuilder page(final int startIndex,
                                    final int count)
   {
@@ -120,6 +134,7 @@ public final class SearchRequestBuilder
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   WebTarget buildTarget()
   {
     WebTarget target = super.buildTarget();
@@ -149,7 +164,8 @@ public final class SearchRequestBuilder
    * @return The ListResponse containing the search results.
    * @throws ScimException If an error occurred.
    */
-  public <T> ListResponse<T> invoke(final Class<T> cls)
+  @NotNull
+  public <T> ListResponse<T> invoke(@NotNull final Class<T> cls)
       throws ScimException
   {
     ListResponseBuilder<T> listResponseBuilder = new ListResponseBuilder<T>();
@@ -166,9 +182,9 @@ public final class SearchRequestBuilder
    * @param cls The Java class object used to determine the type to return.
    * @throws ScimException If an error occurred.
    */
-  public <T> void invoke(
-      final SearchResultHandler<T> resultHandler,
-      final Class<T> cls) throws ScimException
+  public <T> void invoke(@NotNull final SearchResultHandler<T> resultHandler,
+                         @NotNull final Class<T> cls)
+      throws ScimException
   {
     invoke(false, resultHandler, cls);
   }
@@ -181,8 +197,10 @@ public final class SearchRequestBuilder
    * @return The ListResponse containing the search results.
    * @throws ScimException If an error occurred.
    */
-  public <T extends ScimResource> ListResponse<T> invokePost(final Class<T> cls)
-      throws ScimException
+  @NotNull
+  public <T extends ScimResource> ListResponse<T> invokePost(
+      @NotNull final Class<T> cls)
+          throws ScimException
   {
     ListResponseBuilder<T> listResponseBuilder = new ListResponseBuilder<T>();
     invoke(true, listResponseBuilder, cls);
@@ -198,8 +216,8 @@ public final class SearchRequestBuilder
    * @param cls The Java class object used to determine the type to return.
    * @throws ScimException If an error occurred.
    */
-  public <T> void invokePost(
-      final SearchResultHandler<T> resultHandler, final Class<T> cls)
+  public <T> void invokePost(@NotNull final SearchResultHandler<T> resultHandler,
+                             @NotNull final Class<T> cls)
       throws ScimException
   {
     invoke(true, resultHandler, cls);
@@ -217,9 +235,9 @@ public final class SearchRequestBuilder
    * @throws ProcessingException If a JAX-RS runtime exception occurred.
    * @throws ScimException If the SCIM service provider responded with an error.
    */
-  private <T> void invoke(
-      final boolean post, final SearchResultHandler<T> resultHandler,
-      final Class<T> cls)
+  private <T> void invoke(final boolean post,
+                          @NotNull final SearchResultHandler<T> resultHandler,
+                          @NotNull final Class<T> cls)
       throws ScimException
   {
     Response response;

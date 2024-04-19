@@ -20,6 +20,8 @@ package com.unboundid.scim2.client.requests;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
@@ -45,11 +47,13 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
   /**
    * The list of patch operations to include in the request.
    */
+  @NotNull
   protected final List<PatchOperation> operations;
 
   /**
    * The version to match.
    */
+  @Nullable
   protected String version;
 
   /**
@@ -57,7 +61,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    *
    * @param target The WebTarget to PATCH.
    */
-  private ModifyRequestBuilder(final WebTarget target)
+  private ModifyRequestBuilder(@NotNull final WebTarget target)
   {
     super(target);
     this.operations = new LinkedList<PatchOperation>();
@@ -67,6 +71,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * {@inheritDoc}
    */
   @Override
+  @NotNull
   Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();
@@ -84,6 +89,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
   public static final class Generic<T extends ScimResource>
       extends ModifyRequestBuilder<Generic<T>>
   {
+    @NotNull
     private final T resource;
 
     /**
@@ -92,7 +98,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      * @param target The WebTarget to PATCH.
      * @param resource The SCIM resource to retrieve.
      */
-    public Generic(final WebTarget target, final T resource)
+    public Generic(@NotNull final WebTarget target, @NotNull final T resource)
     {
       super(target);
       this.resource = resource;
@@ -105,6 +111,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      *
      * @return This builder.
      */
+    @NotNull
     public Generic<T> ifMatch()
     {
       this.version = getResourceVersion(resource);
@@ -118,6 +125,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      * @throws ProcessingException If a JAX-RS runtime exception occurred.
      * @throws ScimException If the SCIM service provider responded with an error.
      */
+    @NotNull
     @SuppressWarnings("unchecked")
     public T invoke() throws ScimException
     {
@@ -133,7 +141,8 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      * @throws ProcessingException If a JAX-RS runtime exception occurred.
      * @throws ScimException If the SCIM service provider responded with an error.
      */
-    public <C> C invoke(final Class<C> cls) throws ScimException
+    @NotNull
+    public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
     {
       PatchRequest patchRequest = new PatchRequest(operations);
       Response response = buildRequest().method("PATCH",
@@ -168,7 +177,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      *
      * @param target The WebTarget to PATCH.
      */
-    public Typed(final WebTarget target)
+    public Typed(@NotNull final WebTarget target)
     {
       super(target);
     }
@@ -180,7 +189,8 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      * @param version The version of the resource to compare.
      * @return This builder.
      */
-    public Typed ifMatch(final String version)
+    @NotNull
+    public Typed ifMatch(@Nullable final String version)
     {
       this.version = version;
       return this;
@@ -195,7 +205,8 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      * @throws ProcessingException If a JAX-RS runtime exception occurred.
      * @throws ScimException If the SCIM service provider responded with an error.
      */
-    public <T> T invoke(final Class<T> cls) throws ScimException
+    @NotNull
+    public <T> T invoke(@NotNull final Class<T> cls) throws ScimException
     {
       PatchRequest patchRequest = new PatchRequest(operations);
       Response response = buildRequest().method("PATCH",
@@ -229,7 +240,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @return This patch operation request.
    * @throws ScimException If the path is invalid.
    */
-  public T replaceValue(final String path, final Object object)
+  @NotNull
+  public T replaceValue(@NotNull final String path,
+                        @Nullable final Object object)
       throws ScimException
   {
     return replaceValue(Path.fromString(path), object);
@@ -244,7 +257,8 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    *
    * @return This patch operation request.
    */
-  public T replaceValue(final Path path, final Object object)
+  @NotNull
+  public T replaceValue(@NotNull final Path path, @Nullable final Object object)
   {
     JsonNode newObjectNode = JsonUtils.valueToNode(object);
     return addOperation(PatchOperation.replace(path, newObjectNode));
@@ -260,7 +274,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @return This patch operation request.
    * @throws ScimException If the path is invalid.
    */
-  public T replaceValues(final String path, final Collection<Object> objects)
+  @NotNull
+  public T replaceValues(@NotNull final String path,
+                         @Nullable final Collection<Object> objects)
       throws ScimException
   {
     return replaceValues(Path.fromString(path), objects);
@@ -275,7 +291,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    *
    * @return This patch operation request.
    */
-  public T replaceValues(final Path path, final Collection<Object> objects)
+  @NotNull
+  public T replaceValues(@NotNull final Path path,
+                         @Nullable final Collection<Object> objects)
   {
     JsonNode newObjectNode = JsonUtils.valueToNode(objects);
     return addOperation(PatchOperation.replace(path, newObjectNode));
@@ -291,7 +309,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @return This patch operation request.
    * @throws ScimException If the path is invalid.
    */
-  public T replaceValues(final String path, final Object... objects)
+  @NotNull
+  public T replaceValues(@NotNull final String path,
+                         @NotNull final Object... objects)
       throws ScimException
   {
     return replaceValues(Path.fromString(path), objects);
@@ -307,7 +327,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    *
    * @return This patch operation request.
    */
-  public T replaceValues(final Path path, final Object... objects)
+  @NotNull
+  public T replaceValues(@NotNull final Path path,
+                         @NotNull final Object... objects)
   {
     JsonNode newObjectNode = JsonUtils.valueToNode(objects);
     return addOperation(PatchOperation.replace(path, newObjectNode));
@@ -322,7 +344,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @return This patch operation request.
    * @throws ScimException If the path is invalid.
    */
-  public T addValues(final String path, final Collection<?> objects)
+  @NotNull
+  public T addValues(@NotNull final String path,
+                     @NotNull final Collection<?> objects)
       throws ScimException
   {
     return addValues(Path.fromString(path), objects);
@@ -336,7 +360,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    *
    * @return This patch operation request.
    */
-  public T addValues(final Path path, final Collection<?> objects)
+  @NotNull
+  public T addValues(@NotNull final Path path,
+                     @NotNull final Collection<?> objects)
   {
     JsonNode newObjectNode = JsonUtils.valueToNode(objects);
     return addOperation(PatchOperation.add(path, newObjectNode));
@@ -351,7 +377,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @return This patch operation request.
    * @throws ScimException If the path is invalid.
    */
-  public T addValues(final String path, final Object... objects)
+  @NotNull
+  public T addValues(@NotNull final String path,
+                     @NotNull final Object... objects)
       throws ScimException
   {
     return addValues(Path.fromString(path), objects);
@@ -367,7 +395,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    *
    * @return This patch operation request.
    */
-  public T addValues(final Path path, final Object... objects)
+  @NotNull
+  public T addValues(@NotNull final Path path,
+                     @NotNull final Object... objects)
   {
     JsonNode newObjectNode = JsonUtils.valueToNode(objects);
     return addOperation(PatchOperation.add(path, newObjectNode));
@@ -381,7 +411,8 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @return This patch operation request.
    * @throws ScimException If the path is invalid.
    */
-  public T removeValues(final String path)
+  @NotNull
+  public T removeValues(@NotNull final String path)
       throws ScimException
   {
     return removeValues(Path.fromString(path));
@@ -396,7 +427,8 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @return This patch operation request.
    * @throws ScimException If the path is invalid.
    */
-  public T removeValues(final Path path)
+  @NotNull
+  public T removeValues(@NotNull final Path path)
       throws ScimException
   {
     return addOperation(PatchOperation.remove(path));
@@ -409,8 +441,9 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    *
    * @return This patch operation request.
    */
+  @NotNull
   @SuppressWarnings("unchecked")
-  public T addOperation(final PatchOperation op)
+  public T addOperation(@NotNull final PatchOperation op)
   {
     operations.add(op);
     return (T) this;
