@@ -18,6 +18,7 @@
 package com.unboundid.scim2.extension.messages.pwdmgmt;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.utils.JsonRefBeanSerializer;
 import com.unboundid.scim2.common.types.JsonReference;
 import com.unboundid.scim2.common.types.AttributeDefinition;
@@ -45,109 +46,135 @@ import java.util.List;
         "account state.")
 public class AccountState extends BaseScimResource
 {
+  @Nullable
   @Attribute(description = "True if the account is disabled, or false if " +
       "not.  Set to null to clear.")
   private JsonReference<Boolean> accountDisabled;
 
+  @Nullable
   @Attribute(description = "Time of account expiration.  Set to null " +
       "to clear.")
   private JsonReference<Calendar> accountExpirationTime;
 
+  @Nullable
   @Attribute(description = "Seconds until account is expired.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Long> secondsUntilAccountExpiration;
 
+  @Nullable
   @Attribute(description = "Password changed time.  Set to null to clear.")
   private JsonReference<Calendar> passwordChangedTime;
 
+  @Nullable
   @Attribute(description = "Password expiration warned time.  Set to null " +
       "to clear.")
   private JsonReference<Calendar> passwordExpirationWarnedTime;
 
+  @Nullable
   @Attribute(description = "Seconds until password will expire.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Long> secondsUntilPasswordExpiration;
 
+  @Nullable
   @Attribute(description = "Seconds until password expiration warning.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Long> secondsUntilPasswordExpirationWarning;
 
+  @Nullable
   @Attribute(description = "Times of previous authenticationFailures.",
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       multiValueClass = Calendar.class)
   private JsonReference<List<Calendar>> authenticationFailureTimes;
 
+  @Nullable
   @Attribute(description = "Seconds until authentication failure unlock.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Long> secondsUntilAuthenticationFailureUnlock;
 
+  @Nullable
   @Attribute(description = "Remaining authentication failure count.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Integer> remainingAuthenticationFailureCount;
 
+  @Nullable
   @Attribute(description = "Last login time.  Set to null to clear.")
   private JsonReference<Calendar> lastLoginTime;
 
+  @Nullable
   @Attribute(description = "Seconds until idle lockout.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Long> secondsUntilIdleLockout;
 
+  @Nullable
   @Attribute(description = "Must change password.")
   private JsonReference<Boolean> mustChangePassword;
 
+  @Nullable
   @Attribute(description = "Seconds until password reset lockout.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Long> secondsUntilPasswordResetLockout;
 
+  @Nullable
   @Attribute(description = "Times of previous grace logins.",
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       multiValueClass = Calendar.class)
   private JsonReference<List<Calendar>> graceLoginTimes;
 
+  @Nullable
   @Attribute(description = "Remaining grace login count.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Integer> remainingGraceLoginCount;
 
+  @Nullable
   @Attribute(description = "Password change by required time.  Set to null " +
       "to clear.",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private JsonReference<Calendar> passwordChangedByRequiredTime;
 
+  @Nullable
   @Attribute(description = "Seconds until require change time.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Long> secondsUntilRequiredChangeTime;
 
+  @Nullable
   @Attribute(description = "Password history.  Set to null to clear.",
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       multiValueClass = String.class)
   private JsonReference<List<String>> passwordHistory;
 
+  @Nullable
   @Attribute(description = "Retired password information.",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private JsonReference<RetiredPassword> retiredPassword;
 
+  @Nullable
   @Attribute(description = "Time of account activation.  Set to null to clear.",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private JsonReference<Calendar> accountActivationTime;
 
+  @Nullable
   @Attribute(description = "Seconds until account is activated.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private JsonReference<Long> secondsUntilAccountActivation;
 
+  @Nullable
   @Attribute(description = "Last login IP address.  Set to null to clear.",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private JsonReference<String> lastLoginIpAddress;
 
+  @Nullable
   @Attribute(description = "Account usability notices.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       multiValueClass = AccountUsabilityIssue.class)
   private JsonReference<List<AccountUsabilityIssue>> accountUsabilityNotices;
 
+  @Nullable
   @Attribute(description = "Account usability warnings.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       multiValueClass = AccountUsabilityIssue.class)
   private JsonReference<List<AccountUsabilityIssue>> accountUsabilityWarnings;
 
+  @Nullable
   @Attribute(description = "Account usability errors.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       multiValueClass = AccountUsabilityIssue.class)
@@ -158,6 +185,7 @@ public class AccountState extends BaseScimResource
    *
    * @return a boolean indicating whether or not the account is disabled.
    */
+  @Nullable
    public Boolean isAccountDisabled()
   {
     return (accountDisabled == null) ? null : accountDisabled.getObj();
@@ -169,7 +197,7 @@ public class AccountState extends BaseScimResource
    * @param accountDisabled a boolean indicating whether or not the account
    *                        is disabled.
    */
-  public void setAccountDisabled(final Boolean accountDisabled)
+  public void setAccountDisabled(@Nullable final Boolean accountDisabled)
   {
     this.accountDisabled = new JsonReference<Boolean>(accountDisabled);
   }
@@ -179,6 +207,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the account expiration time.
    */
+  @Nullable
   public Calendar getAccountExpirationTime()
   {
     return (accountExpirationTime == null) ?
@@ -191,7 +220,7 @@ public class AccountState extends BaseScimResource
    * @param accountExpirationTime the account expiration time.
    */
   public void setAccountExpirationTime(
-      final Calendar accountExpirationTime)
+      @Nullable final Calendar accountExpirationTime)
   {
     this.accountExpirationTime =
         new JsonReference<Calendar>(accountExpirationTime);
@@ -202,6 +231,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the seconds until the account expires.
    */
+  @Nullable
   public Long getSecondsUntilAccountExpiration()
   {
     return (secondsUntilAccountExpiration == null) ?
@@ -214,7 +244,7 @@ public class AccountState extends BaseScimResource
    * @param secondsUntilAccountExpiration the seconds until the account expires.
    */
   private void setSecondsUntilAccountExpiration(
-      final Long secondsUntilAccountExpiration)
+      @Nullable final Long secondsUntilAccountExpiration)
   {
     this.secondsUntilAccountExpiration =
         new JsonReference<Long>(secondsUntilAccountExpiration);
@@ -225,6 +255,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the password changed time.
    */
+  @Nullable
   public Calendar getPasswordChangedTime()
   {
     return (passwordChangedTime == null) ? null : passwordChangedTime.getObj();
@@ -235,7 +266,8 @@ public class AccountState extends BaseScimResource
    *
    * @param passwordChangedTime the password changed time.
    */
-  public void setPasswordChangedTime(final Calendar passwordChangedTime)
+  public void setPasswordChangedTime(
+      @Nullable final Calendar passwordChangedTime)
   {
     this.passwordChangedTime = new JsonReference<Calendar>(passwordChangedTime);
   }
@@ -245,6 +277,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the password expiration warned time.
    */
+  @Nullable
   public Calendar getPasswordExpirationWarnedTime()
   {
     return (passwordExpirationWarnedTime == null) ?
@@ -257,7 +290,7 @@ public class AccountState extends BaseScimResource
    * @param passwordExpirationWarnedTime the passwordExpiration warned time.
    */
   public void setPasswordExpirationWarnedTime(
-      final Calendar passwordExpirationWarnedTime)
+      @Nullable final Calendar passwordExpirationWarnedTime)
   {
     this.passwordExpirationWarnedTime =
         new JsonReference<Calendar>(passwordExpirationWarnedTime);
@@ -268,6 +301,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the seconds until password expiration.
    */
+  @Nullable
   public Long getSecondsUntilPasswordExpiration()
   {
     return (secondsUntilPasswordExpiration == null) ?
@@ -281,7 +315,7 @@ public class AccountState extends BaseScimResource
    *                                       password expiration.
    */
   private void setSecondsUntilPasswordExpiration(
-      final Long secondsUntilPasswordExpiration)
+      @Nullable final Long secondsUntilPasswordExpiration)
   {
     this.secondsUntilPasswordExpiration =
         new JsonReference<Long>(secondsUntilPasswordExpiration);
@@ -292,6 +326,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the seconds until password expiration warning.
    */
+  @Nullable
   public Long getSecondsUntilPasswordExpirationWarning()
   {
     return (secondsUntilPasswordExpirationWarning == null) ?
@@ -305,7 +340,7 @@ public class AccountState extends BaseScimResource
    *                                              password expiration warning.
    */
   private void setSecondsUntilPasswordExpirationWarning(
-      final Long secondsUntilPasswordExpirationWarning)
+      @Nullable final Long secondsUntilPasswordExpirationWarning)
   {
     this.secondsUntilPasswordExpirationWarning =
         new JsonReference<Long>(secondsUntilPasswordExpirationWarning);
@@ -316,6 +351,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the seconds until authentication failure unlock.
    */
+  @Nullable
   public Long getSecondsUntilAuthenticationFailureUnlock()
   {
     return (secondsUntilAuthenticationFailureUnlock == null) ?
@@ -329,7 +365,7 @@ public class AccountState extends BaseScimResource
    *     authentication failure unlock.
    */
   private void setSecondsUntilAuthenticationFailureUnlock(
-      final Long secondsUntilAuthenticationFailureUnlock)
+      @Nullable final Long secondsUntilAuthenticationFailureUnlock)
   {
     this.secondsUntilAuthenticationFailureUnlock =
         new JsonReference<Long>(secondsUntilAuthenticationFailureUnlock);
@@ -340,6 +376,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the remaining authentication failure count.
    */
+  @Nullable
   public Integer getRemainingAuthenticationFailureCount()
   {
     return (remainingAuthenticationFailureCount == null) ?
@@ -353,7 +390,7 @@ public class AccountState extends BaseScimResource
    *                                            failure count.
    */
   private void setRemainingAuthenticationFailureCount(
-      final Integer remainingAuthenticationFailureCount)
+      @Nullable final Integer remainingAuthenticationFailureCount)
   {
     this.remainingAuthenticationFailureCount =
         new JsonReference<Integer>(remainingAuthenticationFailureCount);
@@ -364,6 +401,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the last login time.
    */
+  @Nullable
   public Calendar getLastLoginTime()
   {
     return (lastLoginTime == null) ? null : lastLoginTime.getObj();
@@ -374,7 +412,7 @@ public class AccountState extends BaseScimResource
    *
    * @param lastLoginTime the last login time.
    */
-  public void setLastLoginTime(final Calendar lastLoginTime)
+  public void setLastLoginTime(@Nullable final Calendar lastLoginTime)
   {
     this.lastLoginTime = new JsonReference<Calendar>(lastLoginTime);
   }
@@ -384,6 +422,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the seconds until idle lockout.
    */
+  @Nullable
   public Long getSecondsUntilIdleLockout()
   {
     return (secondsUntilIdleLockout == null) ?
@@ -396,7 +435,7 @@ public class AccountState extends BaseScimResource
    * @param secondsUntilIdleLockout the seconds until idle lockout.
    */
   private void setSecondsUntilIdleLockout(
-      final Long secondsUntilIdleLockout)
+      @Nullable final Long secondsUntilIdleLockout)
   {
     this.secondsUntilIdleLockout =
         new JsonReference<Long>(secondsUntilIdleLockout);
@@ -407,6 +446,7 @@ public class AccountState extends BaseScimResource
    *
    * @return a boolean indicating if a user must change his/her password.
    */
+  @Nullable
   public Boolean isMustChangePassword()
   {
     return (mustChangePassword == null) ? null : mustChangePassword.getObj();
@@ -418,7 +458,7 @@ public class AccountState extends BaseScimResource
    * @param mustChangePassword a boolean indicating if a user must
    *                           change his/her password.
    */
-  public void setMustChangePassword(final Boolean mustChangePassword)
+  public void setMustChangePassword(@Nullable final Boolean mustChangePassword)
   {
     this.mustChangePassword = new JsonReference<Boolean>(mustChangePassword);
   }
@@ -428,6 +468,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the seconds until password reset lockout.
    */
+  @Nullable
   public Long getSecondsUntilPasswordResetLockout()
   {
     return (secondsUntilPasswordResetLockout == null) ?
@@ -441,7 +482,7 @@ public class AccountState extends BaseScimResource
    *                                         reset lockout.
    */
   private void setSecondsUntilPasswordResetLockout(
-      final Long secondsUntilPasswordResetLockout)
+      @Nullable final Long secondsUntilPasswordResetLockout)
   {
     this.secondsUntilPasswordResetLockout =
         new JsonReference<Long>(secondsUntilPasswordResetLockout);
@@ -452,6 +493,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the remaining grace login count.
    */
+  @Nullable
   public Integer getRemainingGraceLoginCount()
   {
     return (remainingGraceLoginCount == null) ?
@@ -464,7 +506,7 @@ public class AccountState extends BaseScimResource
    * @param remainingGraceLoginCount the remaining grace login count.
    */
   private void setRemainingGraceLoginCount(
-      final Integer remainingGraceLoginCount)
+      @Nullable final Integer remainingGraceLoginCount)
   {
     this.remainingGraceLoginCount =
         new JsonReference<Integer>(remainingGraceLoginCount);
@@ -475,6 +517,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the password changed by required time.
    */
+  @Nullable
   public Calendar getPasswordChangedByRequiredTime()
   {
     return (passwordChangedByRequiredTime == null) ?
@@ -487,7 +530,7 @@ public class AccountState extends BaseScimResource
    * @param passwordChangedByRequiredTime the password changed by required time.
    */
   public void setPasswordChangedByRequiredTime(
-      final Calendar passwordChangedByRequiredTime)
+      @Nullable final Calendar passwordChangedByRequiredTime)
   {
     this.passwordChangedByRequiredTime =
         new JsonReference<Calendar>(passwordChangedByRequiredTime);
@@ -498,6 +541,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the seconds until required password change time.
    */
+  @Nullable
   public Long getSecondsUntilRequiredChangeTime()
   {
     return (secondsUntilRequiredChangeTime == null) ?
@@ -511,7 +555,7 @@ public class AccountState extends BaseScimResource
    *                                       password change time.
    */
   private void setSecondsUntilRequiredChangeTime(
-      final Long secondsUntilRequiredChangeTime)
+      @Nullable final Long secondsUntilRequiredChangeTime)
   {
     this.secondsUntilRequiredChangeTime =
         new JsonReference<Long>(secondsUntilRequiredChangeTime);
@@ -522,6 +566,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the authentication failure times.
    */
+  @Nullable
   public List<Calendar> getAuthenticationFailureTimes()
   {
     return (authenticationFailureTimes == null) ?
@@ -534,7 +579,7 @@ public class AccountState extends BaseScimResource
    * @param authenticationFailureTimes the authentication failure times.
    */
   public void setAuthenticationFailureTimes(
-      final List<Calendar> authenticationFailureTimes)
+      @Nullable final List<Calendar> authenticationFailureTimes)
   {
     this.authenticationFailureTimes =
         new JsonReference<List<Calendar>>(authenticationFailureTimes);
@@ -545,6 +590,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the grace login times.
    */
+  @Nullable
   public List<Calendar> getGraceLoginTimes()
   {
     return (graceLoginTimes == null) ? null : graceLoginTimes.getObj();
@@ -555,7 +601,7 @@ public class AccountState extends BaseScimResource
    *
    * @param graceLoginTimes the grace login times.
    */
-  public void setGraceLoginTimes(final List<Calendar> graceLoginTimes)
+  public void setGraceLoginTimes(@Nullable final List<Calendar> graceLoginTimes)
   {
     this.graceLoginTimes = new JsonReference<List<Calendar>>(graceLoginTimes);
   }
@@ -565,6 +611,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the password history.
    */
+  @Nullable
   public List<String> getPasswordHistory()
   {
     return (passwordHistory == null) ? null : passwordHistory.getObj();
@@ -575,7 +622,7 @@ public class AccountState extends BaseScimResource
    *
    * @param passwordHistory the password history.
    */
-  private void setPasswordHistory(final List<String> passwordHistory)
+  private void setPasswordHistory(@Nullable final List<String> passwordHistory)
   {
     this.passwordHistory = new JsonReference<List<String>>(passwordHistory);
   }
@@ -593,6 +640,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the retired password information.
    */
+  @Nullable
   public RetiredPassword getRetiredPassword()
   {
     return (retiredPassword == null) ? null : retiredPassword.getObj();
@@ -603,7 +651,8 @@ public class AccountState extends BaseScimResource
    *
    * @param retiredPassword the retired password information.
    */
-  private void setRetiredPassword(final RetiredPassword retiredPassword)
+  private void setRetiredPassword(
+      @Nullable final RetiredPassword retiredPassword)
   {
     this.retiredPassword = new JsonReference<RetiredPassword>(retiredPassword);
   }
@@ -621,6 +670,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the account activation time.
    */
+  @Nullable
   public Calendar getAccountActivationTime()
   {
     return (accountActivationTime == null) ?
@@ -633,7 +683,7 @@ public class AccountState extends BaseScimResource
    * @param accountActivationTime the account activation time.
    */
   public void setAccountActivationTime(
-      final Calendar accountActivationTime)
+      @Nullable final Calendar accountActivationTime)
   {
     this.accountActivationTime =
         new JsonReference<Calendar>(accountActivationTime);
@@ -644,6 +694,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the seconds until the account is activated.
    */
+  @Nullable
   public Long getSecondsUntilAccountActivation()
   {
     return (secondsUntilAccountActivation == null) ?
@@ -657,7 +708,7 @@ public class AccountState extends BaseScimResource
    *                                      activated.
    */
   private void setSecondsUntilAccountActivation(
-      final Long secondsUntilAccountActivation)
+      @Nullable final Long secondsUntilAccountActivation)
   {
     this.secondsUntilAccountActivation =
         new JsonReference<Long>(secondsUntilAccountActivation);
@@ -668,6 +719,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the account usability notices.
    */
+  @Nullable
   public List<AccountUsabilityIssue> getAccountUsabilityNotices()
   {
     return (accountUsabilityNotices == null) ?
@@ -680,7 +732,7 @@ public class AccountState extends BaseScimResource
    * @param accountUsabilityNotices the account usability notices.
    */
   private void setAccountUsabilityNotices(
-      final List<AccountUsabilityIssue> accountUsabilityNotices)
+      @Nullable final List<AccountUsabilityIssue> accountUsabilityNotices)
   {
     this.accountUsabilityNotices =
         new JsonReference<List<AccountUsabilityIssue>>(accountUsabilityNotices);
@@ -691,6 +743,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the account usability warnings.
    */
+  @Nullable
   public List<AccountUsabilityIssue> getAccountUsabilityWarnings()
   {
     return (accountUsabilityWarnings == null) ?
@@ -703,7 +756,7 @@ public class AccountState extends BaseScimResource
    * @param accountUsabilityWarnings the account usability warnings.
    */
   private void setAccountUsabilityWarnings(
-      final List<AccountUsabilityIssue> accountUsabilityWarnings)
+      @Nullable final List<AccountUsabilityIssue> accountUsabilityWarnings)
   {
     this.accountUsabilityWarnings =
         new JsonReference<List<AccountUsabilityIssue>>(
@@ -715,6 +768,7 @@ public class AccountState extends BaseScimResource
    *
    * @return the account usability errors.
    */
+  @Nullable
   public List<AccountUsabilityIssue> getAccountUsabilityErrors()
   {
     return (accountUsabilityErrors == null) ?
@@ -727,7 +781,7 @@ public class AccountState extends BaseScimResource
    * @param accountUsabilityErrors the account usability errors.
    */
   private void setAccountUsabilityErrors(
-      final List<AccountUsabilityIssue> accountUsabilityErrors)
+      @Nullable final List<AccountUsabilityIssue> accountUsabilityErrors)
   {
     this.accountUsabilityErrors =
         new JsonReference<List<AccountUsabilityIssue>>(accountUsabilityErrors);
@@ -741,7 +795,7 @@ public class AccountState extends BaseScimResource
    *            state, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

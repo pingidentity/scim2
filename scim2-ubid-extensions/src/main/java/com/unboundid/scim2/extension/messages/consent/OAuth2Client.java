@@ -18,6 +18,8 @@
 package com.unboundid.scim2.extension.messages.consent;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.util.Calendar;
@@ -27,10 +29,19 @@ public final class OAuth2Client
 
   public static class Builder
   {
+    @Nullable
     private String name;
+
+    @Nullable
     private String description;
+
+    @Nullable
     private String url;
+
+    @Nullable
     private String iconUrl;
+
+    @Nullable
     private String emailAddress;
 
     /**
@@ -39,7 +50,8 @@ public final class OAuth2Client
      * @param name the name of the client.
      * @return this.
      */
-    public Builder setName(final String name)
+    @NotNull
+    public Builder setName(@Nullable final String name)
     {
       this.name = name;
       return this;
@@ -51,7 +63,8 @@ public final class OAuth2Client
      * @param description the description of the client.
      * @return this.
      */
-    public Builder setDescription(final String description)
+    @NotNull
+    public Builder setDescription(@Nullable final String description)
     {
       this.description = description;
       return this;
@@ -63,7 +76,8 @@ public final class OAuth2Client
      * @param url the url of the client.
      * @return this.
      */
-    public Builder setUrl(final String url)
+    @NotNull
+    public Builder setUrl(@Nullable final String url)
     {
       this.url = url;
       return this;
@@ -75,7 +89,8 @@ public final class OAuth2Client
      * @param iconUrl the icon url of the client.
      * @return this.
      */
-    public Builder setIconUrl(final String iconUrl)
+    @NotNull
+    public Builder setIconUrl(@Nullable final String iconUrl)
     {
       this.iconUrl = iconUrl;
       return this;
@@ -87,7 +102,8 @@ public final class OAuth2Client
      * @param emailAddress the email address of the client.
      * @return this.
      */
-    public Builder setEmailAddress(final String emailAddress)
+    @NotNull
+    public Builder setEmailAddress(@Nullable final String emailAddress)
     {
       this.emailAddress = emailAddress;
       return this;
@@ -99,37 +115,44 @@ public final class OAuth2Client
      *
      * @return a newly created client.
      */
+    @NotNull
     public OAuth2Client build()
     {
       return new OAuth2Client(this);
     }
   }
 
+  @Nullable
   @Attribute(description = "The name of the client authorized " +
       "by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String name;
 
+  @Nullable
   @Attribute(description = "The description of the client authorized " +
       "by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
+  @Nullable
   @Attribute(description = "The reference to the page of the client " +
       "authorized by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String url;
 
+  @Nullable
   @Attribute(description = "The reference to icon of the client " +
       "authorized by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String iconUrl;
 
+  @Nullable
   @Attribute(description = "The name of the client authorized " +
       "by the consent.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String emailAddress;
 
+  @Nullable
   @Attribute(description = "The last time this client obtained a token using " +
       "this session.", mutability = AttributeDefinition.Mutability.READ_ONLY)
   private Calendar lastAuthorization;
@@ -140,7 +163,7 @@ public final class OAuth2Client
     this(new Builder());
   }
 
-  private OAuth2Client(final Builder builder)
+  private OAuth2Client(@NotNull final Builder builder)
   {
     this.name = builder.name;
     this.description = builder.description;
@@ -154,6 +177,7 @@ public final class OAuth2Client
    *
    * @return the name of the client.
    */
+  @Nullable
   public String getName()
   {
     return name;
@@ -164,6 +188,7 @@ public final class OAuth2Client
    *
    * @return the description of the client.
    */
+  @Nullable
   public String getDescription()
   {
     return description;
@@ -174,6 +199,7 @@ public final class OAuth2Client
    *
    * @return the url of the client.
    */
+  @Nullable
   public String getUrl()
   {
     return url;
@@ -184,6 +210,7 @@ public final class OAuth2Client
    *
    * @return the icon url of the client.
    */
+  @Nullable
   public String getIconUrl()
   {
     return iconUrl;
@@ -194,6 +221,7 @@ public final class OAuth2Client
    *
    * @return the email address for the client.
    */
+  @Nullable
   public String getEmailAddress()
   {
     return emailAddress;
@@ -204,6 +232,7 @@ public final class OAuth2Client
    *
    * @return the date of the last authorization.
    */
+  @Nullable
   public Calendar getLastAuthorization()
   {
     return lastAuthorization;
@@ -214,7 +243,7 @@ public final class OAuth2Client
    *
    * @param lastAuthorization the date of the last authorization.
    */
-  public void setLastAuthorization(final Calendar lastAuthorization)
+  public void setLastAuthorization(@Nullable final Calendar lastAuthorization)
   {
     this.lastAuthorization = lastAuthorization;
   }
@@ -227,7 +256,7 @@ public final class OAuth2Client
    *            client, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

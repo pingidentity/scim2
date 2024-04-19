@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.extension.messages.pwdmgmt;
 
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.annotations.Attribute;
 
@@ -27,10 +28,12 @@ import java.util.Date;
  */
 public class RetiredPassword
 {
+  @Nullable
   @Attribute(description = "The time that the password was retired",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private Date passwordRetiredTime;
 
+  @Nullable
   @Attribute(description = "The expiration time of the password.",
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private Date passwordExpirationTime;
@@ -40,6 +43,7 @@ public class RetiredPassword
    *
    * @return the retired password expiration.
    */
+  @Nullable
   public Date getPasswordExpirationTime()
   {
     return passwordExpirationTime;
@@ -50,7 +54,8 @@ public class RetiredPassword
    *
    * @param passwordExpirationTime the retired password expiration.
    */
-  public void setPasswordExpirationTime(final Date passwordExpirationTime)
+  public void setPasswordExpirationTime(
+      @Nullable final Date passwordExpirationTime)
   {
     this.passwordExpirationTime = passwordExpirationTime;
   }
@@ -60,6 +65,7 @@ public class RetiredPassword
    *
    * @return the retired time.
    */
+  @Nullable
   public Date getPasswordRetiredTime()
   {
     return passwordRetiredTime;
@@ -70,7 +76,7 @@ public class RetiredPassword
    *
    * @param passwordRetiredTime the retired time.
    */
-  public void setPasswordRetiredTime(final Date passwordRetiredTime)
+  public void setPasswordRetiredTime(@Nullable final Date passwordRetiredTime)
   {
     this.passwordRetiredTime = passwordRetiredTime;
   }
@@ -83,7 +89,7 @@ public class RetiredPassword
    *            password, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

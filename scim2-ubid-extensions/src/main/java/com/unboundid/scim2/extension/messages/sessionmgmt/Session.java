@@ -19,6 +19,8 @@ package com.unboundid.scim2.extension.messages.sessionmgmt;
 
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.extension.messages.consent.OAuth2Client;
@@ -32,36 +34,43 @@ import java.util.List;
     name = "Session")
 public class Session extends BaseScimResource
 {
+  @NotNull
   @Attribute(description = "Details about the authentication methods " +
       "successfully used during the last login event.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       multiValueClass = String.class)
   private List<String> lastLoginMethods;
 
+  @NotNull
   @Attribute(description = "Details about the authentication methods " +
       "successfully used during the last second factor event.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       multiValueClass = String.class)
   private List<String> lastSecondFactorMethods;
 
+  @Nullable
   @Attribute(description = "The last time of a successful login event.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private Calendar lastLogin;
 
+  @Nullable
   @Attribute(description = "The last time of a successful second factor event.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private Calendar lastSecondFactor;
 
+  @Nullable
   @Attribute(description = "The IP address of the user agent the was " +
       "used to perform the authentication.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String ipAddress;
 
+  @Nullable
   @Attribute(description = "The user agent string presented by the user " +
       "agent that was used to perform the authentication.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String userAgentString;
 
+  @NotNull
   @Attribute(description = "A list of all clients with access tokens or " +
       "offline tokens obtained using this session.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -86,6 +95,7 @@ public class Session extends BaseScimResource
    * @return details about the authentication methods successfully used
    * during the last login event.
    */
+  @NotNull
   public List<String> getLastLoginMethods()
   {
     return lastLoginMethods;
@@ -99,6 +109,7 @@ public class Session extends BaseScimResource
    * @return details about the authentication methods successfully used
    * during the last second factor event.
    */
+  @NotNull
   public List<String> getLastSecondFactorMethods()
   {
     return lastSecondFactorMethods;
@@ -109,6 +120,7 @@ public class Session extends BaseScimResource
    *
    * @return the last time of a successful login event.
    */
+  @Nullable
   public Calendar getLastLogin()
   {
     return lastLogin;
@@ -119,7 +131,7 @@ public class Session extends BaseScimResource
    *
    * @param lastLogin the last time of a successful login event.
    */
-  public void setLastLogin(final Calendar lastLogin)
+  public void setLastLogin(@Nullable final Calendar lastLogin)
   {
     this.lastLogin = lastLogin;
   }
@@ -129,6 +141,7 @@ public class Session extends BaseScimResource
    *
    * @return the last time of a successful second factor event.
    */
+  @Nullable
   public Calendar getLastSecondFactor()
   {
     return lastSecondFactor;
@@ -139,7 +152,7 @@ public class Session extends BaseScimResource
    *
    * @param lastSecondFactor the last time of a successful second factor event.
    */
-  public void setLastSecondFactor(final Calendar lastSecondFactor)
+  public void setLastSecondFactor(@Nullable final Calendar lastSecondFactor)
   {
     this.lastSecondFactor = lastSecondFactor;
   }
@@ -151,6 +164,7 @@ public class Session extends BaseScimResource
    * @return the IP address of the user agent the was used to perform
    * the authentication.
    */
+  @Nullable
   public String getIpAddress()
   {
     return ipAddress;
@@ -163,7 +177,7 @@ public class Session extends BaseScimResource
    * @param ipAddress the IP address of the user agent the was used to perform
    * the authentication.
    */
-  public void setIpAddress(final String ipAddress)
+  public void setIpAddress(@Nullable final String ipAddress)
   {
     this.ipAddress = ipAddress;
   }
@@ -175,6 +189,7 @@ public class Session extends BaseScimResource
    * @return the user agent string presented by the user agent that was used
    * to perform the authentication.
    */
+  @Nullable
   public String getUserAgentString()
   {
     return userAgentString;
@@ -187,7 +202,7 @@ public class Session extends BaseScimResource
    * @param userAgentString the user agent string presented by the user
    * agent that was used to perform the authentication.
    */
-  public void setUserAgentString(final String userAgentString)
+  public void setUserAgentString(@Nullable final String userAgentString)
   {
     this.userAgentString = userAgentString;
   }
@@ -200,6 +215,7 @@ public class Session extends BaseScimResource
    * @return a list of all clients with access tokens or offline tokens
    * obtained using this session.
    */
+  @NotNull
   public List<OAuth2Client> getClients()
   {
     return clients;
@@ -213,7 +229,7 @@ public class Session extends BaseScimResource
    *            {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

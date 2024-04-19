@@ -19,6 +19,7 @@ package com.unboundid.scim2.extension.messages.consent;
 
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.Meta;
@@ -31,10 +32,12 @@ import java.util.List;
     name = "Consent")
 public final class Consent extends BaseScimResource
 {
+  @Nullable
   @Attribute(description = "The client for this consent.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)
   private final OAuth2Client client;
 
+  @Nullable
   @Attribute(description = "The scopes for this consent.",
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       multiValueClass = Scope.class)
@@ -54,7 +57,8 @@ public final class Consent extends BaseScimResource
    * @param client client for this consent.
    * @param scopes scopes for this consent.
    */
-  public Consent(final OAuth2Client client, final List<Scope> scopes)
+  public Consent(@Nullable final OAuth2Client client,
+                 @Nullable final List<Scope> scopes)
   {
     this.setMeta(new Meta());
     this.client = client;
@@ -66,6 +70,7 @@ public final class Consent extends BaseScimResource
    *
    * @return the client for this consent.
    */
+  @Nullable
   public OAuth2Client getClient()
   {
     return client;
@@ -76,6 +81,7 @@ public final class Consent extends BaseScimResource
    *
    * @return the scopes for this consent.
    */
+  @Nullable
   public List<Scope> getScopes()
   {
     return scopes;
@@ -89,7 +95,7 @@ public final class Consent extends BaseScimResource
    *            object, or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

@@ -18,6 +18,8 @@
 package com.unboundid.scim2.extension.messages.externalidentity;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
@@ -33,10 +35,19 @@ public final class Provider
 
   public static class Builder
   {
+    @Nullable
     private String name;
+
+    @Nullable
     private String description;
+
+    @Nullable
     private String iconUrl;
+
+    @Nullable
     private String type;
+
+    @Nullable
     private String samlResponseBinding;
 
     /**
@@ -45,7 +56,8 @@ public final class Provider
      * @param name the name of this provider.
      * @return this
      */
-    public Builder setName(final String name)
+    @NotNull
+    public Builder setName(@Nullable final String name)
     {
       this.name = name;
       return this;
@@ -57,7 +69,8 @@ public final class Provider
      * @param description the description of this provider.
      * @return this
      */
-    public Builder setDescription(final String description)
+    @NotNull
+    public Builder setDescription(@Nullable final String description)
     {
       this.description = description;
       return this;
@@ -69,7 +82,8 @@ public final class Provider
      * @param iconUrl the icon url of this provider.
      * @return this
      */
-    public Builder setIconUrl(final String iconUrl)
+    @NotNull
+    public Builder setIconUrl(@Nullable final String iconUrl)
     {
       this.iconUrl = iconUrl;
       return this;
@@ -81,7 +95,8 @@ public final class Provider
      * @param type the type of this provider.
      * @return this
      */
-    public Builder setType(final String type)
+    @NotNull
+    public Builder setType(@Nullable final String type)
     {
       this.type = type;
       return this;
@@ -96,7 +111,9 @@ public final class Provider
      *
      * @return this
      */
-    public Builder setSamlResponseBinding(final String samlResponseBinding)
+    @NotNull
+    public Builder setSamlResponseBinding(
+        @Nullable final String samlResponseBinding)
     {
       this.samlResponseBinding = samlResponseBinding;
       return this;
@@ -109,29 +126,35 @@ public final class Provider
      *
      * @return a new provider object.
      */
+    @NotNull
     public Provider build()
     {
       return new Provider(this);
     }
   }
 
+  @Nullable
   @Attribute(description = "The name of the IDP.",
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       isRequired = true)
   private final String name;
 
+  @Nullable
   @Attribute(description = "The description of the IDP.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private final String description;
 
+  @Nullable
   @Attribute(description = "The reference to the icon of the IDP.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String iconUrl;
 
+  @Nullable
   @Attribute(description = "The IDP type.",
       mutability = AttributeDefinition.Mutability.READ_ONLY)
   private String type;
 
+  @Nullable
   @Attribute(description = "The SAML response binding, either 'artifact' " +
                            "or 'post'. Only applicable to providers of " +
                            "type 'saml'.",
@@ -145,7 +168,7 @@ public final class Provider
     this(new Builder());
   }
 
-  private Provider(final Builder builder)
+  private Provider(@NotNull final Builder builder)
   {
     this.name = builder.name;
     this.description = builder.description;
@@ -159,6 +182,7 @@ public final class Provider
    *
    * @return the name of this provider.
    */
+  @Nullable
   public String getName()
   {
     return name;
@@ -169,6 +193,7 @@ public final class Provider
    *
    * @return the description of this provider.
    */
+  @Nullable
   public String getDescription()
   {
     return description;
@@ -179,6 +204,7 @@ public final class Provider
    *
    * @return the type of this provider.
    */
+  @Nullable
   public String getType()
   {
     return type;
@@ -189,6 +215,7 @@ public final class Provider
    *
    * @return the icon url of this provider.
    */
+  @Nullable
   public String getIconUrl()
   {
     return iconUrl;
@@ -200,6 +227,7 @@ public final class Provider
    *
    * @return The SAML response binding, either "{@code artifact}" or "{@code post}".
    */
+  @Nullable
   public String getSamlResponseBinding()
   {
     return samlResponseBinding;
@@ -213,7 +241,7 @@ public final class Provider
    *            or {@code false} if not.
    */
   @Override
-  public boolean equals(final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {

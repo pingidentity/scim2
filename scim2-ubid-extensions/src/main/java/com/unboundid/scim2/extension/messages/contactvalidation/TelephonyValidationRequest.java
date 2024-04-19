@@ -19,6 +19,7 @@ package com.unboundid.scim2.extension.messages.contactvalidation;
 
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
@@ -32,6 +33,7 @@ import java.util.Calendar;
     name = "TelephonyValidationRequest")
 public class TelephonyValidationRequest extends BaseScimResource
 {
+  @Nullable
   @Attribute(description = "The attribute path containing the telephone " +
       "number.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE,
@@ -39,16 +41,19 @@ public class TelephonyValidationRequest extends BaseScimResource
       returned = AttributeDefinition.Returned.ALWAYS)
   private String attributePath;
 
+  @Nullable
   @Attribute(description = "The telephone number.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE,
       returned = AttributeDefinition.Returned.ALWAYS)
   private String attributeValue;
 
+  @Nullable
   @Attribute(description = "The language and locale of the message.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE,
       returned = AttributeDefinition.Returned.NEVER)
   private String language;
 
+  @Nullable
   @Attribute(description = "The messaging provider to use when sending the " +
       "verification code.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE,
@@ -56,23 +61,27 @@ public class TelephonyValidationRequest extends BaseScimResource
       returned = AttributeDefinition.Returned.ALWAYS)
   private String messagingProvider;
 
+  @Nullable
   @Attribute(description = "The code to verify.",
       mutability = AttributeDefinition.Mutability.WRITE_ONLY,
       returned = AttributeDefinition.Returned.NEVER)
   private String verifyCode;
 
+  @Nullable
   @Attribute(description = "Whether the current telephone number was " +
       "successfully validated.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.ALWAYS)
   private Boolean validated;
 
+  @Nullable
   @Attribute(description = "The last time the current telephone number was " +
       "successfully validated.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
       returned = AttributeDefinition.Returned.ALWAYS)
   private Calendar validatedAt;
 
+  @Nullable
   @Attribute(description = "Whether a verification code was sent and is " +
       "pending validation.",
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -90,7 +99,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    * @param attributePath The attribute path containing the email address to
    *                      verify.
    */
-  public TelephonyValidationRequest(final String attributePath)
+  public TelephonyValidationRequest(@Nullable final String attributePath)
   {
     this.attributePath = attributePath;
   }
@@ -100,6 +109,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @return  The attribute path.
    */
+  @Nullable
   public String getAttributePath()
   {
     return attributePath;
@@ -112,7 +122,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @param attributePath  The attribute path.
    */
-  public void setAttributePath(final String attributePath)
+  public void setAttributePath(@Nullable final String attributePath)
   {
     this.attributePath = attributePath;
   }
@@ -124,6 +134,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @return  The attribute value.
    */
+  @Nullable
   public String getAttributeValue()
   {
     return attributeValue;
@@ -136,7 +147,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @param attributeValue  The attribute value.
    */
-  public void setAttributeValue(final String attributeValue)
+  public void setAttributeValue(@Nullable final String attributeValue)
   {
     this.attributeValue = attributeValue;
   }
@@ -148,6 +159,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @return  {@code true} iff the attribute value is validated.
    */
+  @Nullable
   public Boolean getValidated()
   {
     return validated;
@@ -160,7 +172,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @param validated  {@code true} iff the attribute value is validated.
    */
-  public void setValidated(final Boolean validated)
+  public void setValidated(@Nullable final Boolean validated)
   {
     this.validated = validated;
   }
@@ -172,6 +184,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @return  The time at which the attribute value was validated.
    */
+  @Nullable
   public Calendar getValidatedAt()
   {
     return validatedAt;
@@ -184,7 +197,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @param validatedAt  The time at which the attribute value was validated.
    */
-  public void setValidatedAt(final Calendar validatedAt)
+  public void setValidatedAt(@Nullable final Calendar validatedAt)
   {
     this.validatedAt = validatedAt;
   }
@@ -197,6 +210,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @return  {@code true} iff a verification code has been sent.
    */
+  @Nullable
   public Boolean getCodeSent()
   {
     return codeSent;
@@ -210,7 +224,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @param codeSent  {@code true} iff a verification code has been sent.
    */
-  public void setCodeSent(final Boolean codeSent)
+  public void setCodeSent(@Nullable final Boolean codeSent)
   {
     this.codeSent = codeSent;
   }
@@ -221,6 +235,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @return  The language and locale of the message.
    */
+  @Nullable
   public String getLanguage()
   {
     return language;
@@ -232,7 +247,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @param language  The language and locale of the message.
    */
-  public void setLanguage(final String language)
+  public void setLanguage(@Nullable final String language)
   {
     this.language = language;
   }
@@ -243,6 +258,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @return  The selected messaging provider.
    */
+  @Nullable
   public String getMessagingProvider()
   {
     return messagingProvider;
@@ -253,8 +269,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @param  messagingProvider  The selected messaging provider.
    */
-  public void setMessagingProvider(
-      final String messagingProvider)
+  public void setMessagingProvider(@Nullable final String messagingProvider)
   {
     this.messagingProvider = messagingProvider;
   }
@@ -264,6 +279,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @return  The code to be verified against the delivered code.
    */
+  @Nullable
   public String getVerifyCode()
   {
     return verifyCode;
@@ -276,7 +292,7 @@ public class TelephonyValidationRequest extends BaseScimResource
    *
    * @param verifyCode  The code to be verified against the delivered code.
    */
-  public void setVerifyCode(final String verifyCode)
+  public void setVerifyCode(@Nullable final String verifyCode)
   {
     this.verifyCode = verifyCode;
   }
