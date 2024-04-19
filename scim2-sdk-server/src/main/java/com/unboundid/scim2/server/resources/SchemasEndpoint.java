@@ -19,6 +19,8 @@ package com.unboundid.scim2.server.resources;
 
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.SchemaResource;
@@ -59,10 +61,12 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
 @Path("Schemas")
 public class SchemasEndpoint
 {
+  @NotNull
   private static final ResourceTypeDefinition RESOURCE_TYPE_DEFINITION =
       ResourceTypeDefinition.fromJaxRsResource(
           SchemasEndpoint.class);
 
+  @Nullable
   @Context
   private Application application;
 
@@ -76,12 +80,13 @@ public class SchemasEndpoint
    * @return All schemas in a ListResponse container.
    * @throws ScimException If an error occurs.
    */
+  @NotNull
   @GET
   @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public ListResponse<GenericScimResource> search(
-      @QueryParam(QUERY_PARAMETER_FILTER) final String filterString,
-      @Context final UriInfo uriInfo)
-      throws ScimException
+      @Nullable @QueryParam(QUERY_PARAMETER_FILTER) final String filterString,
+      @NotNull @Context final UriInfo uriInfo)
+          throws ScimException
   {
     if(filterString != null)
     {
@@ -117,8 +122,9 @@ public class SchemasEndpoint
   @Path("{id}")
   @GET
   @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
-  public ScimResource get(@PathParam("id") final String id,
-                          @Context final UriInfo uriInfo)
+  @NotNull
+  public ScimResource get(@NotNull @PathParam("id") final String id,
+                          @NotNull @Context final UriInfo uriInfo)
       throws ScimException
   {
     Filter filter = Filter.or(Filter.eq("id", id), Filter.eq("name", id));
@@ -136,7 +142,8 @@ public class SchemasEndpoint
         return resource;
       }
     }
-      throw new ResourceNotFoundException("No schema defined with ID " + id);
+
+    throw new ResourceNotFoundException("No schema defined with ID " + id);
   }
 
   /**
@@ -147,6 +154,7 @@ public class SchemasEndpoint
    * @return All schemas defined at the service provider.
    * @throws ScimException If an error occurs.
    */
+  @NotNull
   public Collection<SchemaResource> getSchemas() throws ScimException
   {
     Set<SchemaResource> schemas =

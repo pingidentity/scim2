@@ -18,6 +18,7 @@
 package com.unboundid.scim2.server.resources;
 
 import com.unboundid.scim2.common.GenericScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.server.annotations.ResourceType;
@@ -45,6 +46,7 @@ import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 @Path("ServiceProviderConfig")
 public abstract class AbstractServiceProviderConfigEndpoint
 {
+  @NotNull
   private static final ResourceTypeDefinition RESOURCE_TYPE_DEFINITION =
       ResourceTypeDefinition.fromJaxRsResource(
           AbstractServiceProviderConfigEndpoint.class);
@@ -58,7 +60,8 @@ public abstract class AbstractServiceProviderConfigEndpoint
    */
   @GET
   @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
-  public GenericScimResource get(@Context final UriInfo uriInfo)
+  @NotNull
+  public GenericScimResource get(@NotNull @Context final UriInfo uriInfo)
       throws ScimException
   {
     ServiceProviderConfigResource serviceProviderConfig =
@@ -78,6 +81,7 @@ public abstract class AbstractServiceProviderConfigEndpoint
    * @return The current service provider config.
    * @throws ScimException if an error occurs.
    */
+  @NotNull
   public abstract ServiceProviderConfigResource getServiceProviderConfig()
       throws ScimException;
 }

@@ -20,6 +20,7 @@ package com.unboundid.scim2.server.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.utils.JsonDiff;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
@@ -31,7 +32,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
  */
 public class ResourceDiff extends JsonDiff
 {
-
+  @NotNull
   private ResourceTypeDefinition resourceTypeDefinition;
 
   /**
@@ -40,7 +41,8 @@ public class ResourceDiff extends JsonDiff
    * @param resourceTypeDefinition the ResourceTypeDefinition of the
    *                               resources to be compared.
    */
-  public ResourceDiff(final ResourceTypeDefinition resourceTypeDefinition)
+  public ResourceDiff(
+      @NotNull final ResourceTypeDefinition resourceTypeDefinition)
   {
     super();
     this.resourceTypeDefinition = resourceTypeDefinition;
@@ -50,10 +52,9 @@ public class ResourceDiff extends JsonDiff
    * {@inheritDoc}
    */
   @Override
-  protected int compareTo(
-      final Path path,
-      final JsonNode sourceNode,
-      final JsonNode targetNode)
+  protected int compareTo(@NotNull final Path path,
+                          @NotNull final JsonNode sourceNode,
+                          @NotNull final JsonNode targetNode)
   {
     return JsonUtils.compareTo(sourceNode, targetNode,
         resourceTypeDefinition.getAttributeDefinition(path));

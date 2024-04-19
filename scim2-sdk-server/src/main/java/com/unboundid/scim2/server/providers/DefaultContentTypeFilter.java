@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.server.providers;
 
+import com.unboundid.scim2.common.annotations.NotNull;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.Priorities;
@@ -43,7 +44,7 @@ public class DefaultContentTypeFilter implements ContainerRequestFilter
   /**
    * {@inheritDoc}
    */
-  public void filter(final ContainerRequestContext requestContext)
+  public void filter(@NotNull final ContainerRequestContext requestContext)
       throws IOException
   {
     if((requestContext.getMethod().equals(HttpMethod.POST) ||

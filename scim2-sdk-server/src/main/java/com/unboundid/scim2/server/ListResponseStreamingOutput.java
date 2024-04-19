@@ -19,6 +19,7 @@ package com.unboundid.scim2.server;
 
 import com.unboundid.scim2.common.ScimResource;
 
+import com.unboundid.scim2.common.annotations.NotNull;
 import jakarta.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,16 +38,17 @@ public abstract class ListResponseStreamingOutput<T extends ScimResource>
    *           the list response.
    * @throws IOException if an error occurs while writing.
    */
-  public abstract void write(ListResponseWriter<T> os) throws IOException;
+  public abstract void write(@NotNull ListResponseWriter<T> os)
+      throws IOException;
 
 
   /**
    * {@inheritDoc}
    */
-  public final void write(final OutputStream os) throws IOException
+  public final void write(@NotNull final OutputStream os)
+      throws IOException
   {
-    ListResponseWriter<T> handler =
-        new ListResponseWriter<T>(os);
+    ListResponseWriter<T> handler = new ListResponseWriter<>(os);
     handler.startResponse();
     write(handler);
     handler.endResponse();

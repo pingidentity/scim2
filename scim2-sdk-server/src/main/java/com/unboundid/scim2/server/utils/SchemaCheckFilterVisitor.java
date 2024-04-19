@@ -17,6 +17,8 @@
 package com.unboundid.scim2.server.utils;
 
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.AndFilter;
 import com.unboundid.scim2.common.filters.ComparisonFilter;
@@ -52,17 +54,24 @@ import static com.unboundid.scim2.server.utils.SchemaChecker.Option.ALLOW_UNDEFI
 public final class SchemaCheckFilterVisitor
     implements FilterVisitor<Filter, Object>
 {
+  @Nullable
   private final Path parentPath;
+
+  @NotNull
   private final ResourceTypeDefinition resourceType;
+
+  @NotNull
   private final SchemaChecker schemaChecker;
+
+  @NotNull
   private final SchemaChecker.Results results;
 
 
   private SchemaCheckFilterVisitor(
-      final Path parentPath,
-      final ResourceTypeDefinition resourceType,
-      final SchemaChecker schemaChecker,
-      final SchemaChecker.Results results)
+      @Nullable final Path parentPath,
+      @NotNull final ResourceTypeDefinition resourceType,
+      @NotNull final SchemaChecker schemaChecker,
+      @NotNull final SchemaChecker.Results results)
   {
     this.parentPath = parentPath;
     this.resourceType = resourceType;
@@ -83,12 +92,12 @@ public final class SchemaCheckFilterVisitor
    * @throws ScimException If an exception occurs during the operation.
    */
   static void checkFilter(
-      final Filter filter,
-      final ResourceTypeDefinition resourceTypeDefinition,
-      final SchemaChecker schemaChecker,
-      final Set<SchemaChecker.Option> enabledOptions,
-      final SchemaChecker.Results results)
-      throws ScimException
+      @NotNull final Filter filter,
+      @NotNull final ResourceTypeDefinition resourceTypeDefinition,
+      @NotNull final SchemaChecker schemaChecker,
+      @NotNull final Set<SchemaChecker.Option> enabledOptions,
+      @NotNull final SchemaChecker.Results results)
+          throws ScimException
   {
     if (enabledOptions.contains(ALLOW_UNDEFINED_ATTRIBUTES) &&
         enabledOptions.contains(ALLOW_UNDEFINED_SUB_ATTRIBUTES))
@@ -117,13 +126,13 @@ public final class SchemaCheckFilterVisitor
    * @throws ScimException If an exception occurs during the operation.
    */
   static void checkValueFilter(
-      final Path parentPath,
-      final Filter filter,
-      final ResourceTypeDefinition resourceTypeDefinition,
-      final SchemaChecker schemaChecker,
-      final Set<SchemaChecker.Option> enabledOptions,
-      final SchemaChecker.Results results)
-      throws ScimException
+      @Nullable final Path parentPath,
+      @NotNull final Filter filter,
+      @NotNull final ResourceTypeDefinition resourceTypeDefinition,
+      @NotNull final SchemaChecker schemaChecker,
+      @NotNull final Set<SchemaChecker.Option> enabledOptions,
+      @NotNull final SchemaChecker.Results results)
+          throws ScimException
   {
     if (enabledOptions.contains(ALLOW_UNDEFINED_SUB_ATTRIBUTES))
     {
@@ -142,7 +151,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final EqualFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final EqualFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     return visitComparisonFilter(filter, param);
@@ -153,7 +164,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final NotEqualFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final NotEqualFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     return visitComparisonFilter(filter, param);
@@ -164,7 +177,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final ContainsFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final ContainsFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     return visitComparisonFilter(filter, param);
@@ -175,7 +190,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final StartsWithFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final StartsWithFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     return visitComparisonFilter(filter, param);
@@ -186,7 +203,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final EndsWithFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final EndsWithFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     return visitComparisonFilter(filter, param);
@@ -197,7 +216,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final PresentFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final PresentFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     checkAttributePath(filter.getAttributePath());
@@ -209,7 +230,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final GreaterThanFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final GreaterThanFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     return visitComparisonFilter(filter, param);
@@ -220,7 +243,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final GreaterThanOrEqualFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final GreaterThanOrEqualFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     return visitComparisonFilter(filter, param);
@@ -231,7 +256,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final LessThanFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final LessThanFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     return visitComparisonFilter(filter, param);
@@ -242,7 +269,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final LessThanOrEqualFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final LessThanOrEqualFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     return visitComparisonFilter(filter, param);
@@ -253,7 +282,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final AndFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final AndFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     for (Filter f : filter.getCombinedFilters())
@@ -268,7 +299,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final OrFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final OrFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     for (Filter f : filter.getCombinedFilters())
@@ -283,7 +316,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final NotFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final NotFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     filter.getInvertedFilter().visit(this, param);
@@ -295,7 +330,9 @@ public final class SchemaCheckFilterVisitor
   /**
    * {@inheritDoc}
    */
-  public Filter visit(final ComplexValueFilter filter, final Object param)
+  @NotNull
+  public Filter visit(@NotNull final ComplexValueFilter filter,
+                      @Nullable final Object param)
       throws ScimException
   {
     checkAttributePath(filter.getAttributePath());
@@ -304,8 +341,9 @@ public final class SchemaCheckFilterVisitor
 
 
 
-  private Filter visitComparisonFilter(final ComparisonFilter filter,
-                                       final Object param)
+  @NotNull
+  private Filter visitComparisonFilter(@NotNull final ComparisonFilter filter,
+                                       @Nullable final Object param)
   {
     checkAttributePath(filter.getAttributePath());
     return filter;
@@ -313,7 +351,7 @@ public final class SchemaCheckFilterVisitor
 
 
 
-  private void checkAttributePath(final Path path)
+  private void checkAttributePath(@NotNull final Path path)
   {
     if (this.parentPath != null)
     {

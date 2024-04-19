@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.server.providers;
 
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.NotImplementedException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.ApiConstants;
@@ -52,7 +53,7 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
   /**
    * {@inheritDoc}
    */
-  public void filter(final ContainerRequestContext requestContext)
+  public void filter(@NotNull final ContainerRequestContext requestContext)
       throws IOException
   {
     String requestPath = requestContext.getUriInfo().getPath();
@@ -105,9 +106,10 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
    * @return The path relative to the base URI.
    * @throws ScimException if an error occurs while resolving the path.
    */
+  @NotNull
   protected String getAuthenticatedSubjectPath(
-      final SecurityContext securityContext)
-      throws ScimException
+      @NotNull final SecurityContext securityContext)
+          throws ScimException
   {
     if(securityContext == null || securityContext.getUserPrincipal() == null)
     {
@@ -122,6 +124,7 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
    *
    * @return The aliases for the authenticated subject.
    */
+  @NotNull
   protected Collection<String> getAliases()
   {
     return Collections.singleton(ApiConstants.ME_ENDPOINT);

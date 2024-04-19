@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.Meta;
@@ -61,9 +63,15 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
  */
 public class ResourcePreparer<T extends ScimResource>
 {
+  @NotNull
   private final ResourceTypeDefinition resourceType;
+
+  @NotNull
   private final URI baseUri;
+
+  @NotNull
   private final Set<Path> queryAttributes;
+
   private final boolean excluded;
 
   /**
@@ -75,8 +83,8 @@ public class ResourcePreparer<T extends ScimResource>
    * @throws BadRequestException If an attribute path specified by attributes
    * and excludedAttributes is invalid.
    */
-  public ResourcePreparer(final ResourceTypeDefinition resourceType,
-                          final UriInfo requestUriInfo)
+  public ResourcePreparer(@NotNull final ResourceTypeDefinition resourceType,
+                          @NotNull final UriInfo requestUriInfo)
       throws BadRequestException
   {
     this(resourceType,
@@ -90,9 +98,9 @@ public class ResourcePreparer<T extends ScimResource>
                 requestUriInfo.getPathParameters())));
   }
 
+  @NotNull
   private static Map<String, String> singleValuedMapFromMultivaluedMap(
-      final MultivaluedMap<String, String> multivaluedMap
-  )
+      @NotNull final MultivaluedMap<String, String> multivaluedMap)
   {
     final Map<String, String> returnMap = new LinkedHashMap<String, String>();
     for (String k : multivaluedMap.keySet())
@@ -111,10 +119,11 @@ public class ResourcePreparer<T extends ScimResource>
    * @param excludedAttributesString The excludedAttributes query param.
    * @param baseUri The resource type base URI.
    */
-  ResourcePreparer(final ResourceTypeDefinition resourceType,
-                   final String attributesString,
-                   final String excludedAttributesString,
-                   final URI baseUri) throws BadRequestException
+  ResourcePreparer(@NotNull final ResourceTypeDefinition resourceType,
+                   @NotNull final String attributesString,
+                   @Nullable final String excludedAttributesString,
+                   @NotNull final URI baseUri)
+      throws BadRequestException
   {
     if(attributesString != null && !attributesString.isEmpty())
     {
@@ -180,7 +189,9 @@ public class ResourcePreparer<T extends ScimResource>
    * @param returnedResource The resource to return.
    * @return The trimmed resource ready to return to the client.
    */
-  public GenericScimResource trimRetrievedResource(final T returnedResource)
+  @NotNull
+  public GenericScimResource trimRetrievedResource(
+      @NotNull final T returnedResource)
   {
     return trimReturned(returnedResource, null, null);
   }
@@ -194,8 +205,10 @@ public class ResourcePreparer<T extends ScimResource>
    *                        {@code null} if not available.
    * @return The trimmed resource ready to return to the client.
    */
-  public GenericScimResource trimCreatedResource(final T returnedResource,
-                                                 final T requestResource)
+  @NotNull
+  public GenericScimResource trimCreatedResource(
+      @NotNull final T returnedResource,
+      @Nullable final T requestResource)
   {
     return trimReturned(returnedResource, requestResource, null);
   }
@@ -209,8 +222,10 @@ public class ResourcePreparer<T extends ScimResource>
    *                        {@code null} if not available.
    * @return The trimmed resource ready to return to the client.
    */
-  public GenericScimResource trimReplacedResource(final T returnedResource,
-                                                  final T requestResource)
+  @NotNull
+  public GenericScimResource trimReplacedResource(
+      @NotNull final T returnedResource,
+      @Nullable final T requestResource)
   {
     return trimReturned(returnedResource, requestResource, null);
   }
@@ -224,8 +239,10 @@ public class ResourcePreparer<T extends ScimResource>
    *                        {@code null} if not available.
    * @return The trimmed resource ready to return to the client.
    */
+  @NotNull
   public GenericScimResource trimModifiedResource(
-      final T returnedResource, final Iterable<PatchOperation> patchOperations)
+      @NotNull final T returnedResource,
+      @Nullable final Iterable<PatchOperation> patchOperations)
   {
     return trimReturned(returnedResource, null, patchOperations);
   }
@@ -235,7 +252,7 @@ public class ResourcePreparer<T extends ScimResource>
    *
    * @param returnedResource The resource to set the attributes.
    */
-  public void setResourceTypeAndLocation(final T returnedResource)
+  public void setResourceTypeAndLocation(@NotNull final T returnedResource)
   {
     Meta meta = returnedResource.getMeta();
 
@@ -284,10 +301,11 @@ public class ResourcePreparer<T extends ScimResource>
    *                        {@code null} for other requests.
    * @return The trimmed resource ready to return to the client.
    */
-  @SuppressWarnings("unchecked")
+  @NotNull
   private GenericScimResource trimReturned(
-      final T returnedResource, final T requestResource,
-      final Iterable<PatchOperation> patchOperations)
+      @NotNull final T returnedResource,
+      @Nullable final T requestResource,
+      @Nullable final Iterable<PatchOperation> patchOperations)
   {
     Set<Path> requestAttributes = Collections.emptySet();
     if(requestResource != null)
@@ -323,9 +341,9 @@ public class ResourcePreparer<T extends ScimResource>
    * @param paths The set of paths to add to.
    * @param objectNode The object node to collect from.
    */
-  private void collectAttributes(final Path parentPath,
-                                 final Set<Path> paths,
-                                 final ObjectNode objectNode)
+  private void collectAttributes(@NotNull final Path parentPath,
+                                 @NotNull final Set<Path> paths,
+                                 @NotNull final ObjectNode objectNode)
   {
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
     while(i.hasNext())
@@ -355,9 +373,9 @@ public class ResourcePreparer<T extends ScimResource>
    * @param paths The set of paths to add to.
    * @param arrayNode The array node to collect from.
    */
-  private void collectAttributes(final Path parentPath,
-                                 final Set<Path> paths,
-                                 final ArrayNode arrayNode)
+  private void collectAttributes(@NotNull final Path parentPath,
+                                 @NotNull final Set<Path> paths,
+                                 @NotNull final ArrayNode arrayNode)
   {
     for(JsonNode value : arrayNode)
     {
@@ -379,7 +397,8 @@ public class ResourcePreparer<T extends ScimResource>
    * @param patchOperations The patch operation to collect attributes from.
    */
   private void collectAttributes(
-      final Set<Path> paths, final Iterable<PatchOperation> patchOperations)
+      @NotNull final Set<Path> paths,
+      @NotNull final Iterable<PatchOperation> patchOperations)
 
   {
     for(PatchOperation patchOperation : patchOperations)

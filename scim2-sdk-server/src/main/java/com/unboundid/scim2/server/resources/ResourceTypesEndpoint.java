@@ -19,6 +19,8 @@ package com.unboundid.scim2.server.resources;
 
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
@@ -58,10 +60,12 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
 @Path("ResourceTypes")
 public class ResourceTypesEndpoint
 {
+  @NotNull
   private static final ResourceTypeDefinition RESOURCE_TYPE_DEFINITION =
       ResourceTypeDefinition.fromJaxRsResource(
           ResourceTypesEndpoint.class);
 
+  @NotNull
   @Context
   private Application application;
 
@@ -77,10 +81,11 @@ public class ResourceTypesEndpoint
    */
   @GET
   @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
+  @NotNull
   public ListResponse<GenericScimResource> search(
-      @QueryParam(QUERY_PARAMETER_FILTER) final String filterString,
-      @Context final UriInfo uriInfo)
-      throws ScimException
+      @Nullable @QueryParam(QUERY_PARAMETER_FILTER) final String filterString,
+      @NotNull @Context final UriInfo uriInfo)
+          throws ScimException
   {
     if(filterString != null)
     {
@@ -117,8 +122,9 @@ public class ResourceTypesEndpoint
   @Path("{id}")
   @GET
   @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
-  public ScimResource get(@PathParam("id") final String id,
-                          @Context final UriInfo uriInfo)
+  @NotNull
+  public ScimResource get(@NotNull @PathParam("id") final String id,
+                          @NotNull @Context final UriInfo uriInfo)
       throws ScimException
   {
     Filter filter = Filter.or(Filter.eq("id", id), Filter.eq("name", id));
@@ -149,6 +155,7 @@ public class ResourceTypesEndpoint
    * @return All resource types defined at the service provider.
    * @throws ScimException If an error occurs.
    */
+  @NotNull
   public Collection<ResourceTypeResource> getResourceTypes()
       throws ScimException
   {

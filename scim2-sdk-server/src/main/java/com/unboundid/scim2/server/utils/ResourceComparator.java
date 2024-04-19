@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.AttributeDefinition;
@@ -38,8 +40,13 @@ import java.util.List;
 public class ResourceComparator<T extends ScimResource>
     implements Comparator<T>
 {
+  @NotNull
   private final Path sortBy;
+
+  @NotNull
   private final SortOrder sortOrder;
+
+  @Nullable
   private final ResourceTypeDefinition resourceType;
 
   /**
@@ -50,8 +57,8 @@ public class ResourceComparator<T extends ScimResource>
    *                     {@code null} to compare using case insensitive matching
    *                     for string values.
    */
-  public ResourceComparator(final Path sortBy,
-                            final ResourceTypeDefinition resourceType)
+  public ResourceComparator(@NotNull final Path sortBy,
+                            @Nullable final ResourceTypeDefinition resourceType)
   {
     this(sortBy, SortOrder.ASCENDING, resourceType);
   }
@@ -65,8 +72,9 @@ public class ResourceComparator<T extends ScimResource>
    *                     {@code null} to compare using case insensitive matching
    *                     for string values.
    */
-  public ResourceComparator(final Path sortBy, final SortOrder sortOrder,
-                            final ResourceTypeDefinition resourceType)
+  public ResourceComparator(@NotNull final Path sortBy,
+                            @Nullable final SortOrder sortOrder,
+                            @Nullable final ResourceTypeDefinition resourceType)
   {
     this.sortBy = sortBy;
     this.sortOrder = sortOrder == null ? SortOrder.ASCENDING : sortOrder;
@@ -76,7 +84,7 @@ public class ResourceComparator<T extends ScimResource>
   /**
    * {@inheritDoc}
    */
-  public int compare(final T o1, final T o2)
+  public int compare(@NotNull final T o1, @NotNull final T o2)
   {
     ObjectNode n1 = o1.asGenericScimResource().getObjectNode();
     ObjectNode n2 = o2.asGenericScimResource().getObjectNode();
@@ -147,7 +155,8 @@ public class ResourceComparator<T extends ScimResource>
    * @return The primary or first value or {@code null} if the provided array
    * node is empty.
    */
-  private JsonNode getPrimaryOrFirst(final JsonNode node)
+  @Nullable
+  private JsonNode getPrimaryOrFirst(@NotNull final JsonNode node)
   {
     // if it's a multi-valued attribute (see Section 2.4
     // [I-D.ietf - scim - core - schema]), if any, or else the first value in
@@ -175,5 +184,4 @@ public class ResourceComparator<T extends ScimResource>
     }
     return node.get(0);
   }
-
 }

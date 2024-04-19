@@ -21,6 +21,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
 import java.io.IOException;
@@ -36,12 +38,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ListResponseWriter<T extends ScimResource>
 {
+  @NotNull
   private final JsonGenerator jsonGenerator;
 
+  @NotNull
   private final AtomicBoolean startedResourcesArray = new AtomicBoolean();
+
+  @NotNull
   private final AtomicBoolean sentTotalResults = new AtomicBoolean();
+
+  @NotNull
   private final AtomicInteger resultsSent = new AtomicInteger();
 
+  @NotNull
   private ObjectNode deferredFields;
 
   /**
@@ -52,7 +61,7 @@ public class ListResponseWriter<T extends ScimResource>
    * @throws IOException If an exception occurs while writing to the output
    * stream.
    */
-  public ListResponseWriter(final OutputStream outputStream)
+  public ListResponseWriter(@NotNull final OutputStream outputStream)
       throws IOException
   {
     jsonGenerator =
@@ -173,7 +182,7 @@ public class ListResponseWriter<T extends ScimResource>
    * @throws IOException If an exception occurs while writing to the output
    * stream.
    */
-  public void resource(final T scimResource) throws IOException
+  public void resource(@Nullable final T scimResource) throws IOException
   {
     if(startedResourcesArray.compareAndSet(false, true))
     {

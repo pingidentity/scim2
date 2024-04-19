@@ -17,6 +17,8 @@
 
 package com.unboundid.scim2.server.annotations;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,6 +36,7 @@ public @interface ResourceType
    *
    * @return The object's description.
    */
+  @NotNull
   String description();
 
   /**
@@ -42,6 +45,7 @@ public @interface ResourceType
    *
    * @return The object's human-readable name.
    */
+  @NotNull
   String name();
 
   /**
@@ -49,6 +53,7 @@ public @interface ResourceType
    *
    * @return The primary/base resource class.
    */
+  @NotNull
   Class<?> schema();
 
   /**
@@ -56,6 +61,7 @@ public @interface ResourceType
    *
    * @return The required schema extension resource classes.
    */
+  @NotNull
   Class<?>[] requiredSchemaExtensions() default {};
 
   /**
@@ -63,6 +69,7 @@ public @interface ResourceType
    *
    * @return The optional schema extension resource classes.
    */
+  @NotNull
   Class<?>[] optionalSchemaExtensions() default {};
 
   /**

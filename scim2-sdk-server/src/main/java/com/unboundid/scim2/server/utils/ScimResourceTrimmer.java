@@ -18,6 +18,7 @@
 package com.unboundid.scim2.server.utils;
 
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.util.Set;
@@ -29,9 +30,15 @@ import java.util.Set;
  */
 public class ScimResourceTrimmer extends ResourceTrimmer
 {
+  @NotNull
   private final ResourceTypeDefinition resourceType;
+
+  @NotNull
   private final Set<Path> requestAttributes;
+
+  @NotNull
   private final Set<Path> queryAttributes;
+
   private final boolean excluded;
 
 
@@ -49,9 +56,9 @@ public class ScimResourceTrimmer extends ResourceTrimmer
    * @param excluded           {@code true} if the queryAttributes came from
    *                           the excludedAttributes query parameter.
    */
-  public ScimResourceTrimmer(final ResourceTypeDefinition resourceType,
-                             final Set<Path> requestAttributes,
-                             final Set<Path> queryAttributes,
+  public ScimResourceTrimmer(@NotNull final ResourceTypeDefinition resourceType,
+                             @NotNull final Set<Path> requestAttributes,
+                             @NotNull final Set<Path> queryAttributes,
                              final boolean excluded)
   {
     this.resourceType      = resourceType;
@@ -66,7 +73,7 @@ public class ScimResourceTrimmer extends ResourceTrimmer
    * {@inheritDoc}
    */
   @Override
-  public boolean shouldReturn(final Path path)
+  public boolean shouldReturn(@NotNull final Path path)
   {
     AttributeDefinition attributeDefinition =
         resourceType.getAttributeDefinition(path);
@@ -103,7 +110,8 @@ public class ScimResourceTrimmer extends ResourceTrimmer
     }
   }
 
-  private boolean pathContains(final Set<Path> paths, final Path path)
+  private boolean pathContains(@NotNull final Set<Path> paths,
+                               @NotNull final Path path)
   {
     // Exact path match
     if (paths.contains(path))

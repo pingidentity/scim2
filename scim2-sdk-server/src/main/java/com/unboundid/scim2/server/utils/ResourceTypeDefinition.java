@@ -18,6 +18,8 @@
 package com.unboundid.scim2.server.utils;
 
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.types.SchemaResource;
@@ -40,13 +42,28 @@ import java.util.Set;
  */
 public final class ResourceTypeDefinition
 {
+
+  @Nullable
   private final String id;
+
+  @NotNull
   private final String name;
+
+  @Nullable
   private final String description;
+
+  @NotNull
   private final String endpoint;
+
+  @Nullable
   private final SchemaResource coreSchema;
+
+  @NotNull
   private final Map<SchemaResource, Boolean> schemaExtensions;
+
+  @NotNull
   private final Map<Path, AttributeDefinition> attributeNotationMap;
+
   private final boolean discoverable;
 
   /**
@@ -54,15 +71,29 @@ public final class ResourceTypeDefinition
    */
   public static class Builder
   {
+    @NotNull
     private final String name;
+
+    @NotNull
     private final String endpoint;
+
+    @Nullable
     private String id;
+
+    @Nullable
     private String description;
+
+    @Nullable
     private SchemaResource coreSchema;
+
+    @NotNull
     private Set<SchemaResource> requiredSchemaExtensions =
         new HashSet<SchemaResource>();
+
+    @NotNull
     private Set<SchemaResource> optionalSchemaExtensions =
         new HashSet<SchemaResource>();
+
     private boolean discoverable = true;
 
     /**
@@ -71,7 +102,7 @@ public final class ResourceTypeDefinition
      * @param name The name of the resource type.
      * @param endpoint The endpoint of the resource type.
      */
-    public Builder(final String name, final String endpoint)
+    public Builder(@NotNull final String name, @NotNull final String endpoint)
     {
       if(name == null)
       {
@@ -91,7 +122,8 @@ public final class ResourceTypeDefinition
      * @param id the ID of the resource type.
      * @return this builder.
      */
-    public Builder setId(final String id)
+    @NotNull
+    public Builder setId(@Nullable final String id)
     {
       this.id = id;
       return this;
@@ -103,7 +135,8 @@ public final class ResourceTypeDefinition
      * @param description the description of the resource type.
      * @return this builder.
      */
-    public Builder setDescription(final String description)
+    @NotNull
+    public Builder setDescription(@Nullable final String description)
     {
       this.description = description;
       return this;
@@ -115,7 +148,8 @@ public final class ResourceTypeDefinition
      * @param coreSchema the core schema of the resource type.
      * @return this builder.
      */
-    public Builder setCoreSchema(final SchemaResource coreSchema)
+    @NotNull
+    public Builder setCoreSchema(@Nullable final SchemaResource coreSchema)
     {
       this.coreSchema = coreSchema;
       return this;
@@ -128,8 +162,9 @@ public final class ResourceTypeDefinition
      *                        type.
      * @return this builder.
      */
+    @NotNull
     public Builder addRequiredSchemaExtension(
-        final SchemaResource schemaExtension)
+        @NotNull final SchemaResource schemaExtension)
     {
       this.requiredSchemaExtensions.add(schemaExtension);
       return this;
@@ -142,8 +177,9 @@ public final class ResourceTypeDefinition
      *                        type.
      * @return this builder.
      */
+    @NotNull
     public Builder addOptionalSchemaExtension(
-        final SchemaResource schemaExtension)
+        @NotNull final SchemaResource schemaExtension)
     {
       this.optionalSchemaExtensions.add(schemaExtension);
       return this;
@@ -158,8 +194,8 @@ public final class ResourceTypeDefinition
      *                     otherwise.
      * @return this builder.
      */
-    public Builder setDiscoverable(
-        final boolean discoverable)
+    @NotNull
+    public Builder setDiscoverable(final boolean discoverable)
     {
       this.discoverable = discoverable;
       return this;
@@ -170,6 +206,7 @@ public final class ResourceTypeDefinition
      *
      * @return The newly created ResourceTypeDefinition.
      */
+    @NotNull
     public ResourceTypeDefinition build()
     {
       Map<SchemaResource, Boolean> schemaExtensions =
@@ -196,10 +233,12 @@ public final class ResourceTypeDefinition
    *                         required for the resource type.
    */
   private ResourceTypeDefinition(
-      final String id, final String name, final String description,
-      final String endpoint,
-      final SchemaResource coreSchema,
-      final Map<SchemaResource, Boolean> schemaExtensions,
+      @Nullable final String id,
+      @NotNull final String name,
+      @Nullable final String description,
+      @NotNull final String endpoint,
+      @Nullable final SchemaResource coreSchema,
+      @NotNull final Map<SchemaResource, Boolean> schemaExtensions,
       final boolean discoverable)
   {
     this.id = id;
@@ -230,8 +269,8 @@ public final class ResourceTypeDefinition
   }
 
   private void buildAttributeNotationMap(
-      final Path parentPath,
-      final Collection<AttributeDefinition> attributes)
+      @NotNull final Path parentPath,
+      @NotNull final Collection<AttributeDefinition> attributes)
   {
     for(AttributeDefinition attribute : attributes)
     {
@@ -249,6 +288,7 @@ public final class ResourceTypeDefinition
    *
    * @return the name of the resource type.
    */
+  @NotNull
   public String getName()
   {
     return name;
@@ -259,6 +299,7 @@ public final class ResourceTypeDefinition
    *
    * @return the description of the resource type.
    */
+  @Nullable
   public String getDescription()
   {
     return description;
@@ -269,6 +310,7 @@ public final class ResourceTypeDefinition
    *
    * @return the endpoint for the resource type.
    */
+  @NotNull
   public String getEndpoint()
   {
     return endpoint;
@@ -279,6 +321,7 @@ public final class ResourceTypeDefinition
    *
    * @return the schema for the resource type.
    */
+  @Nullable
   public SchemaResource getCoreSchema()
   {
     return coreSchema;
@@ -289,6 +332,7 @@ public final class ResourceTypeDefinition
    *
    * @return the schema extensions for the resource type.
    */
+  @NotNull
   public Map<SchemaResource, Boolean> getSchemaExtensions()
   {
     return schemaExtensions;
@@ -313,7 +357,8 @@ public final class ResourceTypeDefinition
    * @return The attribute definition or {@code null} if there is no attribute
    * defined for the path.
    */
-  public AttributeDefinition getAttributeDefinition(final Path path)
+  @Nullable
+  public AttributeDefinition getAttributeDefinition(@NotNull final Path path)
   {
     return attributeNotationMap.get(normalizePath(path).withoutFilters());
   }
@@ -324,7 +369,8 @@ public final class ResourceTypeDefinition
    * @param path The path to normalize.
    * @return The normalized path.
    */
-  public Path normalizePath(final Path path)
+  @NotNull
+  public Path normalizePath(@NotNull final Path path)
   {
     if(path.getSchemaUrn() != null && coreSchema != null &&
         path.getSchemaUrn().equalsIgnoreCase(coreSchema.getId()))
@@ -339,6 +385,7 @@ public final class ResourceTypeDefinition
    *
    * @return The ResourceType SCIM resource that represents this definition.
    */
+  @NotNull
   public ResourceTypeResource toScimResource()
   {
     try
@@ -385,8 +432,9 @@ public final class ResourceTypeDefinition
    * annotated with {@link com.unboundid.scim2.server.annotations.ResourceType}
    * and {@link jakarta.ws.rs.Path}.
    */
+  @Nullable
   public static ResourceTypeDefinition fromJaxRsResource(
-      final Class<?> resource)
+      @NotNull final Class<?> resource)
   {
     Class<?> c = resource;
     ResourceType resourceType;

@@ -20,6 +20,7 @@ package com.unboundid.scim2.server.providers;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.exceptions.ServerErrorException;
@@ -41,15 +42,19 @@ import jakarta.ws.rs.ext.Provider;
 public class JsonProcessingExceptionMapper implements
     ExceptionMapper<JsonProcessingException>
 {
+  @NotNull
   @Context
   private Request request;
+
+  @NotNull
   @Context
   private HttpHeaders headers;
 
   /**
    * {@inheritDoc}
    */
-  public Response toResponse(final JsonProcessingException exception)
+  @NotNull
+  public Response toResponse(@NotNull final JsonProcessingException exception)
   {
     ErrorResponse errorResponse;
     if((exception instanceof JsonParseException) ||

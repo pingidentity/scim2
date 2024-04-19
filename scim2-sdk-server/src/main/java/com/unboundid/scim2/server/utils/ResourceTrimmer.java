@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
@@ -41,7 +42,8 @@ public abstract class ResourceTrimmer
    * @param objectNode The object node to return.
    * @return The trimmed object node ready to return to the client.
    */
-  public ObjectNode trimObjectNode(final ObjectNode objectNode)
+  @NotNull
+  public ObjectNode trimObjectNode(@NotNull final ObjectNode objectNode)
   {
     return trimObjectNode(objectNode, Path.root());
   }
@@ -53,8 +55,9 @@ public abstract class ResourceTrimmer
    * @param parentPath  The parent path of attributes in the object.
    * @return The trimmed object node ready to return to the client.
    */
-  private ObjectNode trimObjectNode(final ObjectNode objectNode,
-                                    final Path parentPath)
+  @NotNull
+  private ObjectNode trimObjectNode(@NotNull final ObjectNode objectNode,
+                                    @NotNull final Path parentPath)
   {
     ObjectNode objectToReturn = JsonUtils.getJsonNodeFactory().objectNode();
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
@@ -108,8 +111,9 @@ public abstract class ResourceTrimmer
    * @param parentPath  The parent path of attributes in the array.
    * @return The trimmed object node ready to return to the client.
    */
-  protected ArrayNode trimArrayNode(final ArrayNode arrayNode,
-                                    final Path parentPath)
+  @NotNull
+  protected ArrayNode trimArrayNode(@NotNull final ArrayNode arrayNode,
+                                    @NotNull final Path parentPath)
   {
     ArrayNode arrayToReturn = JsonUtils.getJsonNodeFactory().arrayNode();
     for(JsonNode value : arrayNode)
@@ -144,7 +148,7 @@ public abstract class ResourceTrimmer
    *
    * @param path The path for the attribute.
    * @return {@code true} to return the attribute or {@code false} to remove the
-   * attribute from the returned resource..
+   * attribute from the returned resource.
    */
-  public abstract boolean shouldReturn(final Path path);
+  public abstract boolean shouldReturn(@NotNull final Path path);
 }

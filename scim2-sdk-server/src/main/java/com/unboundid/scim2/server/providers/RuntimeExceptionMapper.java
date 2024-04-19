@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.server.providers;
 
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.server.utils.ServerUtils;
@@ -38,15 +39,19 @@ import jakarta.ws.rs.ext.Provider;
 public class RuntimeExceptionMapper implements
     ExceptionMapper<RuntimeException>
 {
+  @NotNull
   @Context
   private Request request;
+
+  @NotNull
   @Context
   private HttpHeaders headers;
 
   /**
    * {@inheritDoc}
    */
-  public Response toResponse(final RuntimeException exception)
+  @NotNull
+  public Response toResponse(@NotNull final RuntimeException exception)
   {
     ErrorResponse errorResponse;
 
