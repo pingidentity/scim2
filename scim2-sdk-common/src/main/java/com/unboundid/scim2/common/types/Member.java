@@ -38,7 +38,7 @@ public class Member
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private String value;
 
-  @NotNull
+  @Nullable
   @Attribute(description = "A label indicating the type of resource, e.g.,"
           + " 'User' or 'Group'",
       canonicalValues = { "User", "Group" },
@@ -98,7 +98,7 @@ public class Member
    *
    * @return The type of the group member.
    */
-  @NotNull
+  @Nullable
   public String getType()
   {
     return type;

@@ -97,7 +97,7 @@ public final class ComplexValueFilter extends Filter
    * {@inheritDoc}
    */
   @Override
-  @Nullable
+  @NotNull
   public Filter getValueFilter()
   {
     return valueFilter;

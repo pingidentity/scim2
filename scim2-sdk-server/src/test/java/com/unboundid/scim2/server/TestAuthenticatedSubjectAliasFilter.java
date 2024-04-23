@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.server;
 
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.server.providers.AuthenticatedSubjectAliasFilter;
 
 import jakarta.ws.rs.container.PreMatching;
@@ -32,6 +33,7 @@ public class TestAuthenticatedSubjectAliasFilter
     extends AuthenticatedSubjectAliasFilter
 {
   @Override
+  @NotNull
   protected String getAuthenticatedSubjectPath(
       final SecurityContext securityContext)
   {

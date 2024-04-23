@@ -612,7 +612,7 @@ public class SchemaUtils
    * @param fieldName the name of the field to find.
    * @return the Java field.
    */
-  @NotNull
+  @Nullable
   public static Field findField(@Nullable final Class<?> cls,
                                 @NotNull final String fieldName)
   {

@@ -48,6 +48,7 @@ public class Parser
 
   private static final class StringReader extends Reader
   {
+    @NotNull
     private final String string;
     private int pos;
     private int mark;
@@ -134,7 +135,7 @@ public class Parser
      * {@inheritDoc}
      */
     @Override
-    public int read(final char[] cbuf, final int off, final int len)
+    public int read(@NotNull final char[] cbuf, final int off, final int len)
     {
       if(pos  >= string.length())
       {
