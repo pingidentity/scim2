@@ -20,6 +20,7 @@ package com.unboundid.scim2.server;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.common.GenericScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.NotModifiedException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchOperation;
@@ -93,6 +94,7 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
     config.register(new AbstractServiceProviderConfigEndpoint()
     {
       @Override
+      @NotNull
       public ServiceProviderConfigResource getServiceProviderConfig()
           throws ScimException
       {

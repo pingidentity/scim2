@@ -855,7 +855,7 @@ public class AttributeDefinition
       final Mutability mutability,
       @NotNull @JsonProperty(value = "returned", required = true)
       final Returned returned,
-      @NotNull @JsonProperty(value = "uniqueness")
+      @Nullable @JsonProperty(value = "uniqueness")
       final Uniqueness uniqueness,
       @Nullable @JsonProperty(value = "referenceTypes")
       final Collection<String> referenceTypes)

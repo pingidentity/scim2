@@ -18,6 +18,7 @@
 package com.unboundid.scim2.server.providers;
 
 import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.NotImplementedException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.ApiConstants;
@@ -108,7 +109,7 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
    */
   @NotNull
   protected String getAuthenticatedSubjectPath(
-      @NotNull final SecurityContext securityContext)
+      @Nullable final SecurityContext securityContext)
           throws ScimException
   {
     if(securityContext == null || securityContext.getUserPrincipal() == null)

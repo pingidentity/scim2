@@ -1511,7 +1511,8 @@ public final class GenericScimResource implements ScimResource
    * if the path or value is "{@code null}" or invalid).
    */
   @NotNull
-  public GenericScimResource addIntegerValues(@NotNull final String path,
+  public GenericScimResource addIntegerValues(
+      @NotNull final String path,
       @NotNull final List<Integer> values)
           throws ScimException
   {
@@ -1571,7 +1572,8 @@ public final class GenericScimResource implements ScimResource
    * if the path or value is "{@code null}" or invalid).
    */
   @NotNull
-  public GenericScimResource addIntegerValues(@NotNull final Path path,
+  public GenericScimResource addIntegerValues(
+      @NotNull final Path path,
       @NotNull final List<Integer> values)
           throws ScimException
   {
@@ -3021,8 +3023,8 @@ public final class GenericScimResource implements ScimResource
    *   <p>
    * For example:
    * In a GenericScimResource (gsr) representing the following resource:
-   * {
    * <pre><code>
+   * {
    *   "path1":
    *   [
    *       "http://localhost:8080/uri/One", "http://localhost:8080/uri/Two"
