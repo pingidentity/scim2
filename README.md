@@ -114,6 +114,19 @@ ListResponse<UserResource> searchResponse =
 
 For detailed information about using the SCIM 2 SDK, including more examples, please see the [wiki](https://github.com/pingidentity/scim2/wiki).
 
+# Nullability Annotations
+As of version 3.1.0 (not released yet), the SCIM 2 SDK provides the `com.unboundid.scim2.common.annotations.Nullable`
+and `com.unboundid.scim2.common.annotations.NotNull` annotations for all input parameters, member
+variables, and method return values. This is designed to provide insight when invoking SCIM SDK
+library methods, help interface with languages like Kotlin (which has built-in null types for
+variables), and to help applications become less prone to nullability problems. These annotations
+can be leveraged by IDE tools to help validate objects that are given to and received from the SCIM
+SDK library. To configure/integrate this into your environment, view the documentation of your IDE
+of choice. Some popular choices are linked below:
+* [IntelliJ IDEA](https://www.jetbrains.com/help/idea/annotating-source-code.html#configure-nullability-annotations)
+* [Eclipse](https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftask-using_null_annotations.htm)
+
+
 # Reporting issues
 
 Please report bug reports and enhancement requests through this project's [issue tracker](https://github.com/pingidentity/scim2/issues). See the [contribution guidelines](CONTRIBUTING.md) for more information.
