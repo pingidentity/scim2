@@ -48,6 +48,8 @@ You may also download SCIM 2 SDK builds from the [Releases](https://github.com/p
 # How to use it
 The UnboundID SCIM 2 SDK requires Java 11 or greater.
 
+### SCIM Client
+
 The primary point of entry for a client is the `ScimService` class, which represents a SCIM service provider, such as the PingDirectory Server. This class acts as a wrapper for a [JAX-RS](https://github.com/jax-rs) client instance, providing methods for building and making requests.
 
 Other classes provide facilities for selecting attributes by path, building query filters, and working with JSON documents. SCIM resources returned from a service provider can either be represented as POJOs or using an API based on the [Jackson](https://github.com/FasterXML/jackson-docs) tree model.
@@ -110,6 +112,42 @@ ListResponse<UserResource> searchResponse =
         .page(1, 5)
         .attributes("name")
         .invoke(UserResource.class);
+```
+
+## SCIM Server
+We provide some helper classes to implement SCIM service provider, such as the `BaseScimResource` class, which allows you to work with your SCIM resources using familiar Java constructs such as Strings and Collections without having to understand the JSON structure of the resources.
+
+```java
+
+@Schema(id="urn:ietf:params:scim:schemas:core:2.0:User", description = "User Account")
+public class MyUserResource extends BaseScimResource
+{
+  // The @Attribute annotation is used to describe each attribute.
+  @Attribute(description = "Unique identifier for the User typically " +
+      "used by the user to directly authenticate to the service provider.",
+      isRequired = true,
+      isCaseExact = false,
+      mutability = AttributeDefinition.Mutability.READ_WRITE,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.SERVER)
+  private String userName;
+  ...
+```
+
+## Request validation
+
+We provides a request validation functionality that can be used to validate incoming requests against a Schema.
+
+```java
+
+final var resourceType = new ResourceTypeDefinition.Builder("Users", "/Users")
+          .setCoreSchema(SchemaUtils.getSchema(MyUserResource.class))
+          .addRequiredSchemaExtension(SchemaUtils.getSchema(MyCustomExtension.class))
+          .build();
+
+final var schemaChecker = new SchemaChecker(resourceType);
+final var res = userRequest.asGenericScimResource();
+final var result = schemaChecker.checkCreate(userRequest.asGenericScimResource());
 ```
 
 For detailed information about using the SCIM 2 SDK, including more examples, please see the [wiki](https://github.com/pingidentity/scim2/wiki).
