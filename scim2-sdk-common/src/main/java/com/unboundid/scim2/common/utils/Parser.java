@@ -50,6 +50,7 @@ public class Parser
   {
     @NotNull
     private final String string;
+
     private int pos;
     private int mark;
 
@@ -122,12 +123,23 @@ public class Parser
 
     /**
      * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException   If {@code n} is negative.
      */
     @Override
-    public long skip(final long n)
+    public long skip(final long n) throws IllegalArgumentException
     {
+      if (n < 0L)
+      {
+        throw new IllegalArgumentException(
+            "Attempted to skip a negative number of characters.");
+      }
       long chars = Math.min(string.length() - pos, n);
-      pos += chars;
+
+      // The left side of Math.min() is an integer, and 'chars' will always be
+      // non-negative, so 'chars' can always be represented as an int.
+      pos += (int) chars;
+
       return chars;
     }
 

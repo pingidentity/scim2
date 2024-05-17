@@ -28,16 +28,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * This class provides a number of static utility functions.
  */
 public final class StaticUtils
 {
-  @NotNull
-  private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
-
   /**
    * Prevent this class from being instantiated.
    */
@@ -240,7 +236,13 @@ public final class StaticUtils
   @NotNull
   public static String[] splitCommaSeparatedString(@NotNull final String str)
   {
-    return SEPARATOR.split(str.trim());
+    String[] separatedArray = str.split(",");
+    for (int i = 0; i < separatedArray.length; i++)
+    {
+      separatedArray[i] = separatedArray[i].trim();
+    }
+
+    return separatedArray;
   }
 
 
