@@ -31,7 +31,7 @@ public class StaticUtilsTest
   @Test
   public void testSplitCommaSeparatedString()
   {
-    // Ensure that the @NotNull parameter is not permitted.
+    // Ensure the validity of the @NotNull parameter.
     assertThatThrownBy(() -> splitCommaSeparatedString(null))
         .isInstanceOf(NullPointerException.class);
 
