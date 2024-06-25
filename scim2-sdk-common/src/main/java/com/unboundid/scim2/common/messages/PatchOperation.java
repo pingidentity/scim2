@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -47,9 +48,11 @@ import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
@@ -220,7 +223,7 @@ public abstract class PatchOperation
       }
       else
       {
-        JsonUtils.addValue(path, node, value);
+        applyAdd(node);
       }
 
       addMissingSchemaUrns(node);
@@ -412,6 +415,90 @@ public abstract class PatchOperation
 
       attribute.add(newValue);
       existingResource.replace(attributeName, attribute);
+    }
+
+    private void applyAdd(final ObjectNode node) throws ScimException
+    {
+      Path path = null;
+      if (getPath() == null)
+      {
+        if (value.getNodeType() == JsonNodeType.OBJECT)
+        {
+          boolean containsDot = false;
+
+          final List<String> keys = new ArrayList<>();
+          final Iterator<String> iterator = value.fieldNames();
+          iterator.forEachRemaining(e -> keys.add(e));
+
+          for (final String key : keys)
+          {
+            if (key.contains("."))
+            {
+              containsDot = true;
+              break;
+            }
+          }
+
+          if (containsDot)
+          {
+            final ObjectNode removedValues = (ObjectNode) value.deepCopy();
+            final List<Path> dotPaths = keys.stream().filter(key -> key.contains("."))
+                .map(key -> {
+                  try
+                  {
+                    return Path.fromString(key);
+                  }
+                  catch (final BadRequestException e)
+                  {
+                    return Path.root();
+                  }
+                }).collect(Collectors.toList());
+
+            for (final Path dotPath : dotPaths)
+            {
+              JsonNode dotPathJsonNode = value.get(dotPath.toString());
+              if (SchemaUtils.isUrn(dotPath.toString()))
+              {
+                if (dotPathJsonNode.getNodeType() != JsonNodeType.OBJECT &&
+                      dotPathJsonNode.getNodeType() != JsonNodeType.ARRAY)
+                {
+                  JsonUtils.addValue(dotPath, node, dotPathJsonNode);
+
+                  removedValues.remove(dotPath.toString());
+                }
+              }
+              else
+              {
+
+                JsonUtils.addValue(dotPath, node, dotPathJsonNode);
+
+                removedValues.remove(dotPath.toString());
+              }
+            }
+
+            path = Path.root();
+            JsonUtils.addValue(path, node, removedValues);
+          }
+          else
+          {
+            path = Path.root();
+
+            JsonUtils.addValue(path, node, value);
+          }
+        }
+        else
+        {
+          path = Path.root();
+
+          JsonUtils.addValue(path, node, value);
+        }
+      }
+      else
+      {
+        path = getPath();
+
+        JsonUtils.addValue(path, node, value);
+      }
     }
 
     /**
@@ -627,9 +714,128 @@ public abstract class PatchOperation
     @Override
     public void apply(@NotNull final ObjectNode node) throws ScimException
     {
-      Path path = (getPath() == null) ? Path.root() : getPath();
-      JsonUtils.replaceValue(path, node, value);
+      applyReplace(node);
       addMissingSchemaUrns(node);
+    }
+
+    private void applyReplace(final ObjectNode node) throws ScimException
+    {
+      Path path = null;
+      List<Path> existingPaths = Collections.emptyList();
+      List<Path> nonExistingPaths = Collections.emptyList();
+      if (getPath() == null)
+      {
+        if (value.getNodeType() == JsonNodeType.OBJECT)
+        {
+          boolean containsDot = false;
+
+          final List<String> keys = new ArrayList<>();
+          final Iterator<String> iterator = value.fieldNames();
+          iterator.forEachRemaining(e -> keys.add(e));
+
+          for (final String key : keys)
+          {
+            if (key.contains("."))
+            {
+              containsDot = true;
+              break;
+            }
+          }
+
+          if (containsDot)
+          {
+            existingPaths = keys.stream().filter(key ->
+            {
+              try
+              {
+                return JsonUtils.pathExists(Path.fromString(key), node);
+              }
+              catch (final BadRequestException e)
+              {
+                return false;
+              }
+              catch (final ScimException e)
+              {
+                return false;
+              }
+            }).map(key ->
+            {
+              try
+              {
+                return Path.fromString(key);
+              }
+              catch (final BadRequestException e)
+              {
+                return Path.root();
+              }
+            }).collect(Collectors.toList());
+
+            nonExistingPaths = keys.stream().filter(key ->
+            {
+              try
+              {
+                return !JsonUtils.pathExists(Path.fromString(key), node);
+              }
+              catch (final BadRequestException e)
+              {
+                return false;
+              }
+              catch (final ScimException e)
+              {
+                return false;
+              }
+            }).map(key ->
+            {
+              try
+              {
+                return Path.fromString(key);
+              }
+              catch (final BadRequestException e)
+              {
+                return Path.root();
+              }
+            }).collect(Collectors.toList());
+
+            if (existingPaths.size() <= 0)
+            {
+              path = Path.root();
+
+              JsonUtils.replaceValue(path, node, value);
+            }
+            else
+            {
+              for (final Path existingPath : existingPaths)
+              {
+                JsonUtils.replaceValue(existingPath, node, value.get(existingPath.toString()));
+              }
+
+              for (final Path nonExistingPath : nonExistingPaths)
+              {
+                JsonUtils.replaceValue(nonExistingPath, node,
+                    value.get(nonExistingPath.toString()));
+              }
+            }
+          }
+          else
+          {
+            path = Path.root();
+
+            JsonUtils.replaceValue(path, node, value);
+          }
+        }
+        else
+        {
+          path = Path.root();
+
+          JsonUtils.replaceValue(path, node, value);
+        }
+      }
+      else
+      {
+        path = getPath();
+
+        JsonUtils.replaceValue(path, node, value);
+      }
     }
 
     /**
@@ -855,15 +1061,26 @@ public abstract class PatchOperation
   private void addSchemaUrnIfMissing(@NotNull final ArrayNode schemas,
                                      @NotNull final String schemaUrn)
   {
-    for(JsonNode node : schemas)
+    final String enterpriseUserUri = "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User";
+    for (final JsonNode node : schemas)
     {
-      if(node.isTextual() && node.textValue().equalsIgnoreCase(schemaUrn))
+      if (node.isTextual()
+          && (node.textValue().equalsIgnoreCase(schemaUrn)
+              || node.textValue().toUpperCase().contains(enterpriseUserUri.toUpperCase())))
       {
         return;
       }
     }
 
-    schemas.add(schemaUrn);
+    if (schemaUrn.toUpperCase().contains(enterpriseUserUri.toUpperCase())
+        && schemaUrn.length() > enterpriseUserUri.length())
+    {
+      schemas.add(enterpriseUserUri);
+    }
+    else
+    {
+      schemas.add(schemaUrn);
+    }
   }
 
   /**
