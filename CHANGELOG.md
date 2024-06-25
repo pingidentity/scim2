@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## v3.1.0 - TBD
+## v3.1.0 - 2024-Jun-25
 Updated all classes within the UnboundID SCIM 2 SDK to utilize `@Nullable` and `@NotNull`
 annotations for all non-primitive input parameters, member variables, and return values. These
 annotations provide additional context on the nullability of certain values when working with the
