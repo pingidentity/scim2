@@ -44,7 +44,7 @@ import java.util.Date;
  * @see CalendarSerializer
  * @see CalendarDeserializer
  */
-@Deprecated // since 2.2.2
+@Deprecated(since = "2.2.2")
 public class ScimDateFormat extends ISO8601DateFormat
 {
   /**
