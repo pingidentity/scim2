@@ -21,6 +21,7 @@ package com.unboundid.scim2.common.utils;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.core.io.ContentReference;
 import com.fasterxml.jackson.core.io.IOContext;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -68,7 +69,8 @@ public class ScimJsonFactory extends JsonFactory
   JsonParser createScimFilterParser(@NotNull final Reader r)
       throws IOException
   {
-    IOContext ctxt = _createContext(r, false);
+    ContentReference reference = ContentReference.construct(true, r);
+    IOContext ctxt = _createContext(reference, false);
     return new ScimFilterJsonParser(ctxt, _parserFeatures, r, _objectCodec,
         _rootCharSymbols.makeChild(_factoryFeatures));
   }
