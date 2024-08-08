@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -334,6 +335,70 @@ public class FilterEvaluatorTestCase
         FilterType.GREATER_OR_EQUAL);
     assertEquals(goodFilter_equal.getFilterType(), FilterType.GREATER_OR_EQUAL);
     assertEquals(badFilter_less.getFilterType(), FilterType.GREATER_OR_EQUAL);
+  }
+
+
+  /**
+   * Validates the {@link com.unboundid.scim2.common.filters.AndFilter#equals}
+   * and {@link com.unboundid.scim2.common.filters.OrFilter#equals} methods.
+   */
+  @Test
+  @SuppressWarnings({"EqualsWithItself", "ConstantValue"})
+  public void testCombiningFilterEquals() throws Exception
+  {
+    Filter andFilter = Filter.and(
+        Filter.eq("userName", "Ganon"),
+        Filter.eq("nickName", "Ganon")
+    );
+    Filter orFilter = Filter.or(
+        Filter.eq("userName", "Ganon"),
+        Filter.eq("nickName", "Ganon")
+    );
+
+    // A filter instance should always be equivalent to itself.
+    assertThat(andFilter.equals(andFilter)).isTrue();
+    assertThat(orFilter.equals(orFilter)).isTrue();
+
+    // An initialized AND filter should never be equivalent to 'null'.
+    assertThat(andFilter.equals(null)).isFalse();
+    assertThat(orFilter.equals(null)).isFalse();
+
+    // An AND filter should not be equivalent to an OR filter, even if it has
+    // the same subordinate filters.
+    assertThat(andFilter.equals(orFilter)).isFalse();
+    assertThat(orFilter.equals(andFilter)).isFalse();
+
+    // When the one filter is a superset of the other filter, the filters should
+    // not be considered equivalent.
+    Filter andFilterSuperset = Filter.and(
+        Filter.eq("userName", "Ganon"),
+        Filter.eq("nickName", "Ganon"),
+        Filter.sw("title", "Mr")
+    );
+    assertThat(andFilter.equals(andFilterSuperset)).isFalse();
+    assertThat(andFilterSuperset.equals(andFilter)).isFalse();
+
+    Filter orFilterSuperset = Filter.or(
+        Filter.eq("userName", "Ganon"),
+        Filter.eq("nickName", "Ganon"),
+        Filter.sw("title", "Mr")
+    );
+    assertThat(orFilter.equals(orFilterSuperset)).isFalse();
+    assertThat(orFilterSuperset.equals(orFilter)).isFalse();
+
+    // The order of the subordinate filters should not affect equivalency.
+    Filter andFilterDifferentOrder = Filter.and(
+        Filter.eq("nickName", "Ganon"),
+        Filter.eq("userName", "Ganon")
+    );
+    assertThat(andFilter.equals(andFilterDifferentOrder)).isTrue();
+    assertThat(andFilterDifferentOrder.equals(andFilter)).isTrue();
+    Filter orFilterDifferentOrder = Filter.or(
+        Filter.eq("nickName", "Ganon"),
+        Filter.eq("userName", "Ganon")
+    );
+    assertThat(orFilter.equals(orFilterDifferentOrder)).isTrue();
+    assertThat(orFilterDifferentOrder.equals(orFilter)).isTrue();
   }
 
 
