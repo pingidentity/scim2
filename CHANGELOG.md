@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v3.1.1 - TBD
+Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
+true.
 
 ## v3.1.0 - 2024-Jun-25
 Updated all classes within the UnboundID SCIM 2 SDK to utilize `@Nullable` and `@NotNull`

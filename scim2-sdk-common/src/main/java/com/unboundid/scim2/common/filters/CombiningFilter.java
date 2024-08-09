@@ -18,7 +18,6 @@
 package com.unboundid.scim2.common.filters;
 
 import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +65,7 @@ public abstract class CombiningFilter extends Filter
    * {@inheritDoc}
    */
   @Override
-  @Nullable
+  @NotNull
   public List<Filter> getCombinedFilters()
   {
     return filterComponents;
