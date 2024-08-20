@@ -355,4 +355,49 @@ public final class StaticUtils
 
     return list;
   }
+
+
+  /**
+   * Fetches a JVM system property by name.
+   *
+   * @param name  The name of the system property.
+   * @return  The value of the system property, or {@code null} if there was
+   *          a problem when retrieving the value.
+   */
+  @Nullable
+  public static String getSystemProperty(@Nullable final String name)
+  {
+    if (name == null)
+    {
+      return null;
+    }
+
+    String property;
+    try
+    {
+      property = System.getProperty(name);
+    }
+    catch (Throwable t)
+    {
+      property = null;
+    }
+
+    return property;
+  }
+
+
+  /**
+   * Checks whether the provided JVM system property is set to a value of
+   * {@code "true"}. The comparison is case-insensitive.
+   *
+   * @param name  The name of the system property.
+   * @return  {@code true} if the system property is set to "true". If there was
+   *          an error when retrieving the system property, this method will
+   *          return {@code false}.
+   */
+  public static boolean isSystemPropertyEnabled(@Nullable final String name)
+  {
+    String property = getSystemProperty(name);
+    return "true".equalsIgnoreCase(property);
+  }
 }

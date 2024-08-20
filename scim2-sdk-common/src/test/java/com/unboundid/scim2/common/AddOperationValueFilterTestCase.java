@@ -30,6 +30,7 @@ import com.unboundid.scim2.common.types.Email;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -51,6 +52,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 public class AddOperationValueFilterTestCase
 {
+  /**
+   * Reset the system property to the default value.
+   */
+  @AfterMethod
+  public void tearDown() throws Exception
+  {
+    System.clearProperty(
+        "com.unboundid.scim2.common.messages.PatchOperation.noAppendingNewPatchValues"
+    );
+    refreshSystemProperty();
+  }
+
   /**
    * Ensure that patch ADD operations with a value selection filter are not
    * permitted for filter types other than equality filters.
@@ -97,6 +110,12 @@ public class AddOperationValueFilterTestCase
     PatchRequest request;
     UserResource resource = new UserResource();
 
+    System.setProperty(
+        "com.unboundid.scim2.common.messages.PatchOperation.noAppendingNewPatchValues",
+        "true"
+    );
+    refreshSystemProperty();
+
     // Add a work email to a list of existing emails.
     resource.setEmails(
         new Email().setValue("existing@example.com").setType("home"),
@@ -121,33 +140,6 @@ public class AddOperationValueFilterTestCase
         .hasSize(1)
         .containsOnly(
             new Address().setStreetAddress("The Batcave").setType("secret"));
-
-    // Add a 'mobile' phone number to a user when an existing 'mobile' phone
-    // number already exists. This should not be rejected.
-    resource = new UserResource();
-    resource.setPhoneNumbers(
-        new PhoneNumber().setValue("+1 314-159-2653").setType("mobile")
-    );
-    path = Path.fromString("phoneNumbers[type eq \"mobile\"].value");
-    request = createAddRequest(path, "+1 271-828-1828");
-    resource = applyPatchRequest(request, resource);
-    assertThat(resource.getPhoneNumbers())
-        .hasSize(2)
-        .containsExactly(
-            new PhoneNumber().setValue("+1 314-159-2653").setType("mobile"),
-            new PhoneNumber().setValue("+1 271-828-1828").setType("mobile"));
-
-    // Add two photos with the same 'type' value within a single patch request.
-    resource = new UserResource();
-    path = Path.fromString("photos[type eq \"thumbnail\"].value");
-    request = new PatchRequest(
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/1.png")),
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/2.png"))
-    );
-    resource = applyPatchRequest(request, resource);
-    assertThat(resource.getPhotos())
-        .filteredOn(photo -> photo.getType().equals("thumbnail"))
-        .hasSize(2);
 
     // Only a single value selection filter should be permitted.
     Path multipleFilter = Path.fromString(
@@ -176,6 +168,46 @@ public class AddOperationValueFilterTestCase
     assertThatThrownBy(() -> applyPatchRequest(singleElementRequest, new UserResource()))
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("needs to be 'attribute[filter].subAttribute'");
+
+    // Add a 'mobile' phone number to a user when an existing 'mobile' phone
+    // number already exists. This should not be permitted.
+    UserResource userWithExistingValue = new UserResource().setPhoneNumbers(
+        new PhoneNumber().setValue("+1 314-159-2653").setType("mobile")
+    );
+    path = Path.fromString("phoneNumbers[type eq \"mobile\"].value");
+    PatchRequest conflictingRequest = createAddRequest(path, "+1 271-828-1828");
+    assertThatThrownBy(() -> applyPatchRequest(conflictingRequest, userWithExistingValue))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("attempted to add a new value to the 'phoneNumbers' attribute")
+        .hasMessageContaining("field was already present in an existing value");
+
+    // Adding two photos with the same 'type' value within a single patch
+    // request should also be forbidden.
+    path = Path.fromString("photos[type eq \"thumbnail\"].value");
+    PatchRequest requestWithConflict = new PatchRequest(
+        PatchOperation.add(path, TextNode.valueOf("https://example.com/1.png")),
+        PatchOperation.add(path, TextNode.valueOf("https://example.com/2.png"))
+    );
+    assertThatThrownBy(() -> applyPatchRequest(requestWithConflict, new UserResource()))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("attempted to add a new value to the 'photos' attribute")
+        .hasMessageContaining("field was already present in an existing value");
+
+    // Attempt to apply an operation when the existing resource already has
+    // multiple matching elements.
+    UserResource existingUser = new UserResource().setAddresses(
+        new Address().setStreetAddress("street1").setType("home"),
+        new Address().setStreetAddress("street2").setType("home")
+    );
+    path = Path.fromString("addresses[type eq \"home\"].streetAddress");
+    PatchRequest requestOnInvalidResource = new PatchRequest(
+        PatchOperation.add(path, TextNode.valueOf("aThirdStreet"))
+    );
+    assertThatThrownBy(() -> applyPatchRequest(requestOnInvalidResource, existingUser))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("The operation could not be applied on the resource because")
+        .hasMessageContaining("the value filter matched more than one element in")
+        .hasMessageContaining("the 'addresses' array");
 
     // Assemble an invalid patch request by placing the value in an array, as
     // opposed to providing it as a single string value.
@@ -265,6 +297,45 @@ public class AddOperationValueFilterTestCase
   }
 
   /**
+   * Tests the behavior of adding multiple values with the same
+   * {@code type} field on a multi-valued attribute.
+   */
+  @Test
+  public void testSystemPropertyNotSet() throws Exception
+  {
+    UserResource resource;
+    Path path;
+    PatchRequest request;
+
+    // Add a 'mobile' phone number to a user when an existing 'mobile' phone
+    // number already exists. This should not be rejected.
+    resource = new UserResource();
+    resource.setPhoneNumbers(
+        new PhoneNumber().setValue("+1 314-159-2653").setType("mobile")
+    );
+    path = Path.fromString("phoneNumbers[type eq \"mobile\"].value");
+    request = createAddRequest(path, "+1 271-828-1828");
+    resource = applyPatchRequest(request, resource);
+    assertThat(resource.getPhoneNumbers())
+        .hasSize(2)
+        .containsExactly(
+            new PhoneNumber().setValue("+1 314-159-2653").setType("mobile"),
+            new PhoneNumber().setValue("+1 271-828-1828").setType("mobile"));
+
+    // Add two photos with the same 'type' value within a single patch request.
+    resource = new UserResource();
+    path = Path.fromString("photos[type eq \"thumbnail\"].value");
+    request = new PatchRequest(
+        PatchOperation.add(path, TextNode.valueOf("https://example.com/1.png")),
+        PatchOperation.add(path, TextNode.valueOf("https://example.com/2.png"))
+    );
+    resource = applyPatchRequest(request, resource);
+    assertThat(resource.getPhotos())
+        .filteredOn(photo -> "thumbnail".equals(photo.getType()))
+        .hasSize(2);
+  }
+
+  /**
    * This helper method is shorthand for a new patch request that contains a
    * single add operation with a string value.
    */
@@ -284,5 +355,19 @@ public class AddOperationValueFilterTestCase
     GenericScimResource user = userResource.asGenericScimResource();
     request.apply(user);
     return JsonUtils.nodeToValue(user.getObjectNode(), UserResource.class);
+  }
+
+  /**
+   * Utility method to refresh the value of the system property. This is
+   * normally cached since it is unlikely to change.
+   *
+   * @throws Exception  If an unexpected error occurs.
+   */
+  private void refreshSystemProperty() throws Exception
+  {
+    var method = PatchOperation.class
+        .getDeclaredMethod("refreshAppendSystemPropertyValue");
+    method.setAccessible(true);
+    method.invoke(null);
   }
 }

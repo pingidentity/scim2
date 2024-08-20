@@ -42,6 +42,7 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.EqualFilter;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.filters.FilterType;
+import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
@@ -51,6 +52,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.unboundid.scim2.common.utils.StaticUtils.isSystemPropertyEnabled;
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
 /**
@@ -126,6 +128,34 @@ public abstract class PatchOperation
   @Nullable
   private final Path path;
 
+  /**
+   * This string represents a JVM system property allowing for all patch
+   * operations with a value filter to target an existing value on the resource
+   * (as opposed to always creating a new multi-valued attribute value). For
+   * example, for the following patch request:
+   * <pre>
+   *   {
+   *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+   *     "Operations": [
+   *       {
+   *         "op": "replace",
+   *         "path": "emails[type eq \"work\"]",
+   *         "value": "newEmail@example.com"
+   *       }
+   *     ]
+   *   }
+   * </pre>
+   *
+   * If this system property is enabled and the targeted resource already has an
+   * email with a {@code type} field of {@code "work"}, then applying this
+   * patch operation will update that email with the new email value.
+   */
+  @NotNull
+  public static final String PROPERTY_DO_NOT_APPEND_NEW_PATCH_VALUES =
+      PatchOperation.class.getName() + ".noAppendingNewPatchValues";
+
+  private static boolean NO_APPEND_NEW_PATCH_VALUES_PROPERTY =
+      isSystemPropertyEnabled(PROPERTY_DO_NOT_APPEND_NEW_PATCH_VALUES);
 
   static final class AddOperation extends PatchOperation
   {
@@ -377,7 +407,7 @@ public abstract class PatchOperation
         @NotNull final Path path,
         @NotNull final ObjectNode existingResource,
         @NotNull final JsonNode value)
-            throws BadRequestException
+            throws ScimException
     {
       Filter valueFilter = path.getElement(0).getValueFilter();
       String filterAttributeName = valueFilter.getAttributePath().toString();
@@ -405,13 +435,97 @@ public abstract class PatchOperation
       }
       ArrayNode attribute = (ArrayNode) jsonAttribute;
 
-      // Construct the new attribute value that should be added to the resource.
-      ObjectNode newValue = JsonUtils.getJsonNodeFactory().objectNode();
-      newValue.set(subAttributeName, value);
-      newValue.set(filterAttributeName, filterValue);
+      // If the relevant system property is enabled, any new values should
+      // be evaluated to ensure there are no conflicts. For example, if the
+      // patch request attempts to add a "locality" value to the work email and
+      // the resource already has a work email, then the new value should be
+      // added to the existing attribute value.
+      //
+      // If the system property is not enabled, the value should be added as a
+      // new email field regardless of the existing resource's state.
+      ObjectNode matchedValue = null;
+      if (NO_APPEND_NEW_PATCH_VALUES_PROPERTY)
+      {
+        matchedValue = fetchExistingValue(attribute, valueFilter, attributeName);
+      }
 
-      attribute.add(newValue);
-      existingResource.replace(attributeName, attribute);
+      // If there are no matched values, then we should add the two attribute
+      // values to the array.
+      if (matchedValue == null)
+      {
+        ObjectNode newValue = JsonUtils.getJsonNodeFactory().objectNode();
+        newValue.set(subAttributeName, value);
+        newValue.set(filterAttributeName, filterValue);
+
+        attribute.add(newValue);
+        existingResource.replace(attributeName, attribute);
+        return;
+      }
+
+      // Ensure that the add does not conflict with an existing value.
+      if (FilterEvaluator.evaluate(Filter.pr(subAttributeName), matchedValue))
+      {
+        final String filterValueString =
+            (filterValue == null) ? "null" : filterValue.textValue();
+
+        throw BadRequestException.invalidValue(String.format(
+            "The add operation attempted to add a new value to the '%s'"
+                + " attribute, but the {\"%s\": \"%s\"} field was already"
+                + " present in an existing value.",
+            attributeName,
+            filterAttributeName,
+            filterValueString));
+      }
+
+      matchedValue.set(subAttributeName, value);
+    }
+
+    /**
+     * Checks a multi-valued attribute for an existing value and returns a value
+     * based on the following conditions:
+     * <ul>
+     *   <li> If a single existing value is present, it will be returned.
+     *   <li> If no existing values are present, {@code null} will be returned.
+     *   <li> If multiple existing values are present, a
+     *        {@link BadRequestException} will be thrown.
+     * </ul>
+     *
+     * @param attribute     The multi-valued attribute.
+     * @param valueFilter   The value selection filter provided with the patch
+     *                      add operation.
+     * @param attributeName   The name of {@code attribute}.
+     *
+     * @return  An ObjectNode representing the single value that matched the
+     *          criteria of the {@code valueFilter}, or {@code null} if no
+     *          attributes matched the filter.
+     *
+     * @throws ScimException  If there was an error processing the filter, or
+     *                        if multiple values were matched.
+     */
+    @Nullable
+    private static ObjectNode fetchExistingValue(@NotNull final ArrayNode attribute,
+                                                 @NotNull final Filter valueFilter,
+                                                 @NotNull final String attributeName)
+        throws ScimException
+    {
+      ObjectNode matchedValue = null;
+
+      for (var arrayVal : attribute)
+      {
+        if (FilterEvaluator.evaluate(valueFilter, arrayVal))
+        {
+          if (matchedValue != null)
+          {
+            throw BadRequestException.noTarget(
+                "The operation could not be applied on the resource because the"
+                    + " value filter matched more than one element in the '"
+                    + attributeName + "' array of the resource.");
+          }
+          matchedValue = (ObjectNode) arrayVal;
+        }
+      }
+
+      return matchedValue;
     }
 
     /**
@@ -1960,5 +2074,14 @@ public abstract class PatchOperation
           "value field must be a JSON object containing the"
                   + " attributes to " + type);
     }
+  }
+
+
+  // Used by the SCIM SDK's unit tests.
+  @SuppressWarnings("unused")
+  private static void refreshAppendSystemPropertyValue()
+  {
+    NO_APPEND_NEW_PATCH_VALUES_PROPERTY =
+        isSystemPropertyEnabled(PROPERTY_DO_NOT_APPEND_NEW_PATCH_VALUES);
   }
 }

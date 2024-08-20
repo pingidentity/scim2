@@ -19,6 +19,8 @@ package com.unboundid.scim2.common;
 
 import org.testng.annotations.Test;
 
+import static com.unboundid.scim2.common.utils.StaticUtils.getSystemProperty;
+import static com.unboundid.scim2.common.utils.StaticUtils.isSystemPropertyEnabled;
 import static com.unboundid.scim2.common.utils.StaticUtils.splitCommaSeparatedString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -85,5 +87,48 @@ public class StaticUtilsTest
 
     assertThat(splitCommaSeparatedString("   value1 ,    , value3  "))
         .containsExactly("value1", "", "value3");
+  }
+
+
+  /**
+   * Tests the behavior of the system property helper methods.
+   */
+  @Test
+  public void testGetSystemProperties()
+  {
+    // An empty property value should return null.
+    assertThat(getSystemProperty(null)).isNull();
+    assertThat(getSystemProperty("")).isNull();
+
+    // A system property that does not have a value should be null.
+    String uninitializedProp = "StaticUtilsTest_" + System.currentTimeMillis();
+    assertThat(getSystemProperty(uninitializedProp)).isNull();
+
+    // Fetch a well-defined property.
+    assertThat(getSystemProperty("java.vm.vendor"))
+        .isNotNull()
+        .isNotEmpty();
+  }
+
+
+  @Test
+  public void testBooleanSystemPropertyEnabled()
+  {
+    assertThat(isSystemPropertyEnabled(null)).isFalse();
+    assertThat(isSystemPropertyEnabled("")).isFalse();
+
+    // A well-defined value that is not set to "true" should evaluate to false.
+    assertThat(isSystemPropertyEnabled("java.vm.vendor")).isFalse();
+
+    // Set a system property to true.
+    String propertyName = "StaticUtilsTest_" + System.currentTimeMillis();
+    System.setProperty(propertyName, "TRUE");
+    assertThat(isSystemPropertyEnabled(propertyName)).isTrue();
+    System.setProperty(propertyName, "true");
+    assertThat(isSystemPropertyEnabled(propertyName)).isTrue();
+
+    // Clear the value and ensure it now evaluates to false.
+    System.clearProperty(propertyName);
+    assertThat(isSystemPropertyEnabled(propertyName)).isFalse();
   }
 }
