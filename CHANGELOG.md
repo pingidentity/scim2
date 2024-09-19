@@ -2,11 +2,39 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## v3.1.1 - TBD
+## v3.2.0 - TBD
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
 true.
 
 Updated Jackson dependencies to 2.17.2.
+
+Added a property that allows ADD patch operations with value filters to target an existing value.
+For example, consider the following patch request. This request aims to add a `display` field on a
+user's work email.
+```json
+{
+  "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+  "Operations": [
+    {
+      "op": "add",
+      "path": "emails[type eq \"work\"].display",
+      "value": "apollo.j@example.com"
+    }
+  ]
+}
+```
+When the new behavior is configured, this operation will search the resource for an existing "work"
+email and add a `"display": "apollo.j@example.com"` field to that email. This behavior allows for
+better integration with SCIM provisioners that send individual requests such as
+`emails[type eq "work"].display` followed by `emails[type eq "work"].value`, which are intended to
+target the same email. To use this behavior, toggle the property by adding the following Java code
+in your application:
+```
+PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY = false;
+```
+The default value of `APPEND_NEW_PATCH_VALUES_PROPERTY` is `true`, which will always add a new
+value (i.e., email) on the multi-valued attribute instead of updating an existing value/email.
+This matches the behavior of the SDK since the 3.0.0 release.
 
 ## v3.1.0 - 2024-Jun-25
 Updated all classes within the UnboundID SCIM 2 SDK to utilize `@Nullable` and `@NotNull`
