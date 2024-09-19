@@ -42,6 +42,7 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.EqualFilter;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.filters.FilterType;
+import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
@@ -215,7 +216,6 @@ public abstract class PatchOperation
       Path path = (getPath() == null) ? Path.root() : getPath();
       if (hasValueFilter(path))
       {
-        validateAddOpWithFilter(path, value);
         applyAddWithValueFilter(path, node, value);
       }
       else
@@ -377,8 +377,10 @@ public abstract class PatchOperation
         @NotNull final Path path,
         @NotNull final ObjectNode existingResource,
         @NotNull final JsonNode value)
-            throws BadRequestException
+            throws ScimException
     {
+      validateAddOpWithFilter(path, value);
+
       Filter valueFilter = path.getElement(0).getValueFilter();
       String filterAttributeName = valueFilter.getAttributePath().toString();
       ValueNode filterValue = valueFilter.getComparisonValue();
@@ -391,8 +393,8 @@ public abstract class PatchOperation
       JsonNode jsonAttribute = existingResource.get(attributeName);
       if (jsonAttribute == null)
       {
-        // There are no existing values for the attribute, so we should add this
-        // value ourselves.
+        // There are no existing values for the attribute, so we should
+        // prepare to add this value ourselves.
         jsonAttribute = JsonUtils.getJsonNodeFactory().arrayNode(1);
       }
       if (!jsonAttribute.isArray())
@@ -405,13 +407,101 @@ public abstract class PatchOperation
       }
       ArrayNode attribute = (ArrayNode) jsonAttribute;
 
-      // Construct the new attribute value that should be added to the resource.
-      ObjectNode newValue = JsonUtils.getJsonNodeFactory().objectNode();
-      newValue.set(subAttributeName, value);
-      newValue.set(filterAttributeName, filterValue);
+      // When operations with a value filter add data, we can either append
+      // the data to a new value in the multi-valued attribute, or we can update
+      // an existing value.
+      //
+      // If the APPEND_NEW_PATCH_VALUES_PROPERTY property is enabled, the
+      // provided data should be added as a new value regardless of the existing
+      // resource's state (so we pretend that there are no matched values).
+      // Otherwise, any new data should update the existing value, if it is
+      // present.
+      ObjectNode matchedValue = null;
+      if (!APPEND_NEW_PATCH_VALUES_PROPERTY)
+      {
+        matchedValue = fetchExistingValue(attribute, valueFilter, attributeName);
+      }
 
-      attribute.add(newValue);
-      existingResource.replace(attributeName, attribute);
+      // If there are no existing values that match the filter, or if no values
+      // were fetched, then we should add the two attribute values to the array.
+      // In the former case, this indicates that something like a home address
+      // does not yet exist on the resource, so a new one should be added.
+      if (matchedValue == null)
+      {
+        ObjectNode newValue = JsonUtils.getJsonNodeFactory().objectNode();
+        newValue.set(subAttributeName, value);
+        newValue.set(filterAttributeName, filterValue);
+
+        attribute.add(newValue);
+        existingResource.replace(attributeName, attribute);
+        return;
+      }
+
+      // Ensure that the data to be added is not already populated on the
+      // resource. For example, adding the "locality" sub-attribute to a home
+      // address should not be allowed if the home address already has a
+      // locality defined.
+      if (FilterEvaluator.evaluate(Filter.pr(subAttributeName), matchedValue))
+      {
+        throw BadRequestException.invalidValue(String.format(
+            "The add operation attempted to add a new '%s' field, but the"
+                + " specified path already has a '%s' defined.",
+            subAttributeName,
+            subAttributeName
+        ));
+      }
+
+      matchedValue.set(subAttributeName, value);
+    }
+
+    /**
+     * Checks a multi-valued attribute for an existing value and returns a value
+     * based on the following conditions:
+     * <ul>
+     *   <li> If a single existing value is present, it will be returned.
+     *   <li> If no existing values are present, {@code null} will be returned.
+     *   <li> If multiple existing values are present, a
+     *        {@link BadRequestException} will be thrown, since it is unclear
+     *        which value should be targeted.
+     * </ul>
+     *
+     * @param attribute      The multi-valued attribute.
+     * @param valueFilter    The value selection filter provided with the patch
+     *                       add operation.
+     * @param attributeName  The name of {@code attribute}.
+     *
+     * @return  An ObjectNode representing the single value that matched the
+     *          criteria of the {@code valueFilter}, or {@code null} if no
+     *          attributes matched the filter.
+     *
+     * @throws ScimException  If there was an error processing the filter, or
+     *                        if multiple values were matched.
+     */
+    @Nullable
+    private static ObjectNode fetchExistingValue(
+        @NotNull final ArrayNode attribute,
+        @NotNull final Filter valueFilter,
+        @NotNull final String attributeName)
+          throws ScimException
+    {
+      ObjectNode matchedValue = null;
+
+      for (var arrayVal : attribute)
+      {
+        if (FilterEvaluator.evaluate(valueFilter, arrayVal))
+        {
+          if (matchedValue != null)
+          {
+            throw BadRequestException.noTarget(
+                "The operation could not be applied on the resource because the"
+                    + " value filter matched more than one element in the '"
+                    + attributeName + "' array of the resource.");
+          }
+          matchedValue = (ObjectNode) arrayVal;
+        }
+      }
+
+      return matchedValue;
     }
 
     /**
@@ -459,6 +549,7 @@ public abstract class PatchOperation
       result = 31 * result + value.hashCode();
       return result;
     }
+
   }
 
   static final class RemoveOperation extends PatchOperation
@@ -1948,7 +2039,7 @@ public abstract class PatchOperation
       throws ScimException
   {
     if (value == null || value.isNull() ||
-            (value.isObject() && value.size() == 0))
+            (value.isObject() && value.isEmpty()))
     {
       throw BadRequestException.invalidSyntax(
           "The patch operation value must not be null or an empty object");
@@ -1961,4 +2052,47 @@ public abstract class PatchOperation
                   + " attributes to " + type);
     }
   }
+
+  /**
+   * This field represents a property that can customize behavior when
+   * processing ADD PATCH operations with a value filter. This is used for
+   * multi-valued attributes such as {@code emails}, and is not used for
+   * {@code remove} or {@code replace} operations. For example, consider the
+   * following patch request:
+   * <pre>
+   *   {
+   *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+   *     "Operations": [
+   *       {
+   *         "op": "add",
+   *         "path": "emails[type eq \"work\"].display",
+   *         "value": "apollo.j@example.com"
+   *       }
+   *     ]
+   *   }
+   * </pre>
+   *
+   * When this property is enabled and the above patch request is applied, the
+   * following JSON will be appended to the {@code emails} of the user
+   * resource:
+   * <pre>
+   *   {
+   *     "type": "work",
+   *     "display": "apollo.j@example.com"
+   *   }
+   * </pre>
+   * Note that this value is added regardless of the current state of the
+   * resource, so enabling this property for PATCH requests has the potential
+   * to result in multiple emails containing a {@code type} of {@code work}.
+   * <br><br>
+   *
+   * If this property is <em>disabled</em>, then in the above example, the
+   * {@code display} field will be added to the resource's existing work email,
+   * if it exists. If the work email does not exist, then a new value will be
+   * appended. If there is already more than one existing work email on the
+   * resource, a {@link BadRequestException} will be thrown.
+   *
+   * @since 3.2.0
+   */
+  public static boolean APPEND_NEW_PATCH_VALUES_PROPERTY = true;
 }

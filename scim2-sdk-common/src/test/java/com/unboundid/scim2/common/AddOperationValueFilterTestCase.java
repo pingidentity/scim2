@@ -30,6 +30,7 @@ import com.unboundid.scim2.common.types.Email;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -51,6 +52,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 public class AddOperationValueFilterTestCase
 {
+  /**
+   * Reset the configurable "append" property to the default value.
+   */
+  @AfterMethod
+  public void tearDown()
+  {
+    PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY = true;
+  }
+
   /**
    * Ensure that patch ADD operations with a value selection filter are not
    * permitted for filter types other than equality filters.
@@ -97,6 +107,9 @@ public class AddOperationValueFilterTestCase
     PatchRequest request;
     UserResource resource = new UserResource();
 
+    // Unset the property to use the new behavior.
+    PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY = false;
+
     // Add a work email to a list of existing emails.
     resource.setEmails(
         new Email().setValue("existing@example.com").setType("home"),
@@ -122,32 +135,20 @@ public class AddOperationValueFilterTestCase
         .containsOnly(
             new Address().setStreetAddress("The Batcave").setType("secret"));
 
-    // Add a 'mobile' phone number to a user when an existing 'mobile' phone
-    // number already exists. This should not be rejected.
-    resource = new UserResource();
-    resource.setPhoneNumbers(
-        new PhoneNumber().setValue("+1 314-159-2653").setType("mobile")
+    // An operation should be able to append data to another field. This
+    // resource begins with the street address populated, and the patch request
+    // should be able to update the "formatted" field when using a filter.
+    resource = new UserResource().setAddresses(
+        new Address().setType("home").setStreetAddress("8 Mile Rd.")
     );
-    path = Path.fromString("phoneNumbers[type eq \"mobile\"].value");
-    request = createAddRequest(path, "+1 271-828-1828");
+    path = Path.fromString("addresses[type eq \"home\"].country");
+    request = createAddRequest(path, "US");
     resource = applyPatchRequest(request, resource);
-    assertThat(resource.getPhoneNumbers())
-        .hasSize(2)
-        .containsExactly(
-            new PhoneNumber().setValue("+1 314-159-2653").setType("mobile"),
-            new PhoneNumber().setValue("+1 271-828-1828").setType("mobile"));
-
-    // Add two photos with the same 'type' value within a single patch request.
-    resource = new UserResource();
-    path = Path.fromString("photos[type eq \"thumbnail\"].value");
-    request = new PatchRequest(
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/1.png")),
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/2.png"))
-    );
-    resource = applyPatchRequest(request, resource);
-    assertThat(resource.getPhotos())
-        .filteredOn(photo -> photo.getType().equals("thumbnail"))
-        .hasSize(2);
+    assertThat(resource.getAddresses()).hasSize(1);
+    var address = resource.getAddresses().get(0);
+    assertThat(address.getCountry()).isEqualTo("US");
+    assertThat(address.getType()).isEqualTo("home");
+    assertThat(address.getStreetAddress()).isEqualTo("8 Mile Rd.");
 
     // Only a single value selection filter should be permitted.
     Path multipleFilter = Path.fromString(
@@ -176,6 +177,47 @@ public class AddOperationValueFilterTestCase
     assertThatThrownBy(() -> applyPatchRequest(singleElementRequest, new UserResource()))
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("needs to be 'attribute[filter].subAttribute'");
+
+    // Attempt adding a 'streetAddress' field to a home address in the case
+    // where the streetAddress is already populated. This should be rejected,
+    // since the add operation should not act as a replace operation.
+    UserResource userWithStreet = new UserResource().setAddresses(
+        new Address().setType("home").setStreetAddress("8 Mile Rd.")
+    );
+    path = Path.fromString("addresses[type eq \"home\"].streetAddress");
+    PatchRequest existingSubAttrRequest = createAddRequest(path, "7 Mile Rd.");
+    assertThatThrownBy(() -> applyPatchRequest(existingSubAttrRequest, userWithStreet))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("The add operation attempted to add a new 'streetAddress' field")
+        .hasMessageContaining("already has a 'streetAddress' defined");
+
+    // Adding two photos with the same 'type' value within a single patch
+    // request should also be forbidden.
+    path = Path.fromString("photos[type eq \"thumbnail\"].value");
+    PatchRequest requestWithConflict = new PatchRequest(
+        PatchOperation.add(path, TextNode.valueOf("https://example.com/1.png")),
+        PatchOperation.add(path, TextNode.valueOf("https://example.com/2.png"))
+    );
+    assertThatThrownBy(() -> applyPatchRequest(requestWithConflict, new UserResource()))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("The add operation attempted to add a new 'value' field")
+        .hasMessageContaining("already has a 'value' defined");
+
+    // Attempt to apply an operation when the existing resource already has
+    // multiple matching elements.
+    UserResource existingUser = new UserResource().setAddresses(
+        new Address().setStreetAddress("street1").setType("home"),
+        new Address().setStreetAddress("street2").setType("home")
+    );
+    path = Path.fromString("addresses[type eq \"home\"].streetAddress");
+    PatchRequest requestOnInvalidResource = new PatchRequest(
+        PatchOperation.add(path, TextNode.valueOf("aThirdStreet"))
+    );
+    assertThatThrownBy(() -> applyPatchRequest(requestOnInvalidResource, existingUser))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("The operation could not be applied on the resource because")
+        .hasMessageContaining("the value filter matched more than one element in")
+        .hasMessageContaining("the 'addresses' array");
 
     // Assemble an invalid patch request by placing the value in an array, as
     // opposed to providing it as a single string value.
@@ -262,6 +304,50 @@ public class AddOperationValueFilterTestCase
     // Deserialize the new resource into JSON.
     String resourceString = JsonUtils.valueToNode(resource).toString();
     assertThat(resourceString).isEqualTo(expected);
+  }
+
+  /**
+   * Tests the behavior of the
+   * {@link PatchOperation#APPEND_NEW_PATCH_VALUES_PROPERTY} when it is
+   * configured to always append data targeted with a value filter.
+   */
+  @Test
+  public void testUseAppendMode() throws Exception
+  {
+    UserResource resource;
+    Path path;
+    PatchRequest request;
+
+    // Set the property so that the patch operation logic will always append new
+    // values for add operations with a filtered path.
+    PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY = true;
+
+    // Add a 'mobile' phone number to a user when an existing 'mobile' phone
+    // number already exists. This should not be rejected.
+    resource = new UserResource();
+    resource.setPhoneNumbers(
+        new PhoneNumber().setValue("+1 314-159-2653").setType("mobile")
+    );
+    path = Path.fromString("phoneNumbers[type eq \"mobile\"].value");
+    request = createAddRequest(path, "+1 271-828-1828");
+    resource = applyPatchRequest(request, resource);
+    assertThat(resource.getPhoneNumbers())
+        .hasSize(2)
+        .containsExactly(
+            new PhoneNumber().setValue("+1 314-159-2653").setType("mobile"),
+            new PhoneNumber().setValue("+1 271-828-1828").setType("mobile"));
+
+    // Add two photos with the same 'type' value within a single patch request.
+    resource = new UserResource();
+    path = Path.fromString("photos[type eq \"thumbnail\"].value");
+    request = new PatchRequest(
+        PatchOperation.add(path, TextNode.valueOf("https://example.com/1.png")),
+        PatchOperation.add(path, TextNode.valueOf("https://example.com/2.png"))
+    );
+    resource = applyPatchRequest(request, resource);
+    assertThat(resource.getPhotos())
+        .filteredOn(photo -> "thumbnail".equals(photo.getType()))
+        .hasSize(2);
   }
 
   /**
