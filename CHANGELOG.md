@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
 true.
 
+Updated Jackson dependencies to 2.17.2.
+
 ## v3.1.0 - 2024-Jun-25
 Updated all classes within the UnboundID SCIM 2 SDK to utilize `@Nullable` and `@NotNull`
 annotations for all non-primitive input parameters, member variables, and return values. These
