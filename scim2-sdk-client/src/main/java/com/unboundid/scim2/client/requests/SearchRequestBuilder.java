@@ -138,17 +138,17 @@ public final class SearchRequestBuilder
   WebTarget buildTarget()
   {
     WebTarget target = super.buildTarget();
-    if(filter != null)
+    if (filter != null)
     {
       target = target.queryParam(QUERY_PARAMETER_FILTER, filter);
     }
-    if(sortBy != null && sortOrder != null)
+    if (sortBy != null && sortOrder != null)
     {
       target = target.queryParam(QUERY_PARAMETER_SORT_BY, sortBy);
       target = target.queryParam(QUERY_PARAMETER_SORT_ORDER,
           sortOrder.getName());
     }
-    if(startIndex != null && count != null)
+    if (startIndex != null && count != null)
     {
       target = target.queryParam(QUERY_PARAMETER_PAGE_START_INDEX, startIndex);
       target = target.queryParam(QUERY_PARAMETER_PAGE_SIZE, count);
@@ -241,13 +241,13 @@ public final class SearchRequestBuilder
       throws ScimException
   {
     Response response;
-    if(post)
+    if (post)
     {
       Set<String> attributeSet = null;
       Set<String> excludedAttributeSet = null;
-      if(attributes != null && attributes.size() > 0)
+      if (attributes != null && attributes.size() > 0)
       {
-        if(!excluded)
+        if (!excluded)
         {
           attributeSet = attributes;
         }
@@ -331,7 +331,7 @@ public final class SearchRequestBuilder
           }
           finally
           {
-            if(inputStream != null)
+            if (inputStream != null)
             {
               inputStream.close();
             }

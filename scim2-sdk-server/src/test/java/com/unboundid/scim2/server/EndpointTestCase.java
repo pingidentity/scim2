@@ -235,7 +235,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       new ScimService(target()).retrieve("badPath", "id", UserResource.class);
       fail();
     }
-    catch(ScimException e)
+    catch (ScimException e)
     {
       assertTrue(e instanceof ResourceNotFoundException);
     }
@@ -488,7 +488,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       scimService.retrieve(subResourceUri.build(), UserResource.class);
       fail("Sub-resource should not exist");
     }
-    catch(ScimException e)
+    catch (ScimException e)
     {
       // Expected.
     }
@@ -520,7 +520,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertNull(user.getNickName());
 
     user = scimService.retrieveRequest(ScimService.ME_URI).
-        attributes("nickName","Meta").invoke(UserResource.class);
+        attributes("nickName", "Meta").invoke(UserResource.class);
     assertEquals(user.getId(), "123");
     assertEquals(user.getMeta().getResourceType(), "User");
     assertNull(user.getDisplayName());
@@ -593,7 +593,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       scimService.retrieve(createdUser);
       fail("Resource should have been deleted");
     }
-    catch(ResourceNotFoundException e)
+    catch (ResourceNotFoundException e)
     {
       // expected
     }
@@ -945,7 +945,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
             invoke(UserResource.class);
         fail("Expected BadRequestException");
       }
-      catch(BadRequestException e)
+      catch (BadRequestException e)
       {
         // Expected.
       }
@@ -1033,7 +1033,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
             invoke(UserResource.class);
         fail("Expected BadRequestException");
       }
-      catch(BadRequestException e)
+      catch (BadRequestException e)
       {
         // Expected.
       }
@@ -1139,7 +1139,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
           new GenericScimResource());
       Assert.fail("Expecting a ScimServiceException");
     }
-    catch(ScimServiceException ex)
+    catch (ScimServiceException ex)
     {
       ErrorResponse response = ex.getScimError();
       Assert.assertNotNull(response);
@@ -1157,7 +1157,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
           .invoke(GenericScimResource.class);
       Assert.fail("Expecting a ScimServiceException");
     }
-    catch(ScimServiceException ex)
+    catch (ScimServiceException ex)
     {
       ErrorResponse response = ex.getScimError();
       Assert.assertNotNull(response);
@@ -1184,7 +1184,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       service.create("Users/schema", new GenericScimResource());
       Assert.fail("Expecting a MethodNotFoundException");
     }
-    catch(MethodNotAllowedException ex)
+    catch (MethodNotAllowedException ex)
     {
       ErrorResponse response = ex.getScimError();
       Assert.assertEquals(response.getStatus(), Integer.valueOf(405));
@@ -1243,7 +1243,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
           invoke(byte[].class));
       Assert.fail("Expected illegal argument exception");
     }
-    catch(IllegalArgumentException ex)
+    catch (IllegalArgumentException ex)
     {
       // Expected.  Ignore.
     }
@@ -1254,7 +1254,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
           invoke(byte[].class));
       Assert.fail("Expected illegal argument exception");
     }
-    catch(IllegalArgumentException ex)
+    catch (IllegalArgumentException ex)
     {
       // Expected.  Ignore.
     }
@@ -1269,13 +1269,13 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     UriBuilder locationBuilder =
         UriBuilder.fromUri(getBaseUri()).path(
             resourceType.getEndpoint().getPath());
-    if(scimResource.getId() != null)
+    if (scimResource.getId() != null)
     {
       locationBuilder.path(scimResource.getId());
     }
 
     Meta meta = scimResource.getMeta();
-    if(meta == null)
+    if (meta == null)
     {
       meta = new Meta();
       scimResource.setMeta(meta);
@@ -1286,9 +1286,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
   private <T> boolean contains(Iterable<T> list, T resource)
   {
-    for(T r : list)
+    for (T r : list)
     {
-      if(r.equals(resource))
+      if (r.equals(resource))
       {
         return true;
       }

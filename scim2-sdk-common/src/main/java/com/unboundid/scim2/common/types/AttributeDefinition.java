@@ -120,9 +120,9 @@ public class AttributeDefinition
     @JsonCreator
     public static Type fromName(@Nullable final String name)
     {
-      for(Type type : Type.values())
+      for (Type type : Type.values())
       {
-        if(type.getName().equalsIgnoreCase(name))
+        if (type.getName().equalsIgnoreCase(name))
         {
           return type;
         }
@@ -200,9 +200,9 @@ public class AttributeDefinition
     public static Mutability fromName(@Nullable final String name)
         throws BadRequestException
     {
-      for(Mutability mutability : Mutability.values())
+      for (Mutability mutability : Mutability.values())
       {
-        if(mutability.getName().equalsIgnoreCase(name))
+        if (mutability.getName().equalsIgnoreCase(name))
         {
           return mutability;
         }
@@ -281,9 +281,9 @@ public class AttributeDefinition
     public static Returned fromName(@Nullable final String name)
         throws BadRequestException
     {
-      for(Returned returned : Returned.values())
+      for (Returned returned : Returned.values())
       {
-        if(returned.getName().equalsIgnoreCase(name))
+        if (returned.getName().equalsIgnoreCase(name))
         {
           return returned;
         }
@@ -351,9 +351,9 @@ public class AttributeDefinition
     public static Uniqueness fromName(@Nullable final String name)
         throws BadRequestException
     {
-      for(Uniqueness uniqueness : Uniqueness.values())
+      for (Uniqueness uniqueness : Uniqueness.values())
       {
-        if(uniqueness.getName().equalsIgnoreCase(name))
+        if (uniqueness.getName().equalsIgnoreCase(name))
         {
           return uniqueness;
         }
@@ -618,7 +618,7 @@ public class AttributeDefinition
     public Builder addSubAttributes(
         @Nullable final AttributeDefinition... subAttributes)
     {
-      if(subAttributes != null && subAttributes.length > 0)
+      if (subAttributes != null && subAttributes.length > 0)
       {
         if (this.subAttributes == null)
         {
@@ -678,7 +678,7 @@ public class AttributeDefinition
     @NotNull
     public Builder addCanonicalValues(@Nullable final String... canonicalValues)
     {
-      if(canonicalValues != null && canonicalValues.length > 0)
+      if (canonicalValues != null && canonicalValues.length > 0)
       {
         if (this.canonicalValues == null)
         {
@@ -753,7 +753,7 @@ public class AttributeDefinition
     @NotNull
     public Builder addReferenceTypes(@Nullable final String... referenceTypes)
     {
-      if(referenceTypes != null && referenceTypes.length > 0)
+      if (referenceTypes != null && referenceTypes.length > 0)
       {
         if (this.referenceTypes == null)
         {

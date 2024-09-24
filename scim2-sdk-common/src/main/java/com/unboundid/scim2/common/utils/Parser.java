@@ -70,7 +70,7 @@ public class Parser
     @Override
     public int read()
     {
-      if(pos >= string.length())
+      if (pos >= string.length())
       {
         return -1;
       }
@@ -149,7 +149,7 @@ public class Parser
     @Override
     public int read(@NotNull final char[] cbuf, final int off, final int len)
     {
-      if(pos  >= string.length())
+      if (pos  >= string.length())
       {
         return -1;
       }
@@ -239,20 +239,20 @@ public class Parser
   public static Path parsePath(@Nullable final String pathString)
       throws BadRequestException
   {
-    if(pathString == null)
+    if (pathString == null)
     {
       return Path.root();
     }
 
     final String trimmedPathString = pathString.trim();
-    if(trimmedPathString.isEmpty())
+    if (trimmedPathString.isEmpty())
     {
       return Path.root();
     }
 
     Path path = Path.root();
     StringReader reader = new StringReader(trimmedPathString);
-    if(SchemaUtils.isUrn(trimmedPathString))
+    if (SchemaUtils.isUrn(trimmedPathString))
     {
       // The attribute name is prefixed with the schema URN.
 
@@ -261,7 +261,7 @@ public class Parser
       // potential value filter.
       int j = trimmedPathString.indexOf('[');
       int i;
-      if(j >= 0)
+      if (j >= 0)
       {
         i = trimmedPathString.substring(0, j).lastIndexOf(':');
       }
@@ -276,11 +276,11 @@ public class Parser
       {
         path = Path.root(schemaUrn);
       }
-      catch(IllegalArgumentException e)
+      catch (IllegalArgumentException e)
       {
         throw BadRequestException.invalidPath(e.getMessage());
       }
-      if(attributeName.isEmpty())
+      if (attributeName.isEmpty())
       {
         // The trailing colon signifies that this is an extension root.
         return path;
@@ -296,7 +296,7 @@ public class Parser
       {
         // the only time this is allowed to occur is if the previous attribute
         // had a value filter, in which case, consume the token and move on.
-        if(path.isRoot() ||
+        if (path.isRoot() ||
             path.getElement(path.size()-1).getValueFilter() == null)
         {
           final String msg = String.format(
@@ -320,14 +320,14 @@ public class Parser
 
           path = path.attribute(attributeName, valueFilter);
         }
-        catch(BadRequestException be)
+        catch (BadRequestException be)
         {
           Debug.debugException(be);
           final String msg = String.format(
               "Invalid value filter: %s", be.getMessage());
           throw BadRequestException.invalidPath(msg);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
           Debug.debugException(e);
           final String msg = String.format(
@@ -368,11 +368,11 @@ public class Parser
     int c = reader.read();
 
     StringBuilder b = new StringBuilder();
-    while(c > 0)
+    while (c > 0)
     {
       if (c == '.')
       {
-        if(reader.pos >= reader.string.length())
+        if (reader.pos >= reader.string.length())
         {
           // There is nothing after the period.
           throw BadRequestException.invalidPath(
@@ -384,7 +384,7 @@ public class Parser
       if (c == '[')
       {
         // Terminating opening brace. Consume it and return token.
-        b.append((char)c);
+        b.append((char) c);
         return b.toString();
       }
       if (c == '-' || c == '_' || c == '$' || Character.isLetterOrDigit(c)
@@ -396,13 +396,13 @@ public class Parser
       {
         final String msg = String.format(
             "Unexpected character '%s' at position %d for token starting at %d",
-            (char)c, reader.pos - 1, reader.mark);
+            (char) c, reader.pos - 1, reader.mark);
         throw BadRequestException.invalidPath(msg);
       }
       c = reader.read();
     }
 
-    if(b.length() > 0)
+    if (b.length() > 0)
     {
       return b.toString();
     }
@@ -453,10 +453,10 @@ public class Parser
       reader.mark(0);
       c = reader.read();
     }
-    while(c == ' ');
+    while (c == ' ');
 
     StringBuilder b = new StringBuilder();
-    while(c > 0)
+    while (c > 0)
     {
       if (c == ' ')
       {
@@ -465,33 +465,33 @@ public class Parser
       }
       if (c == '(' || c == ')')
       {
-        if(b.length() > 0)
+        if (b.length() > 0)
         {
           // Do not consume the parenthesis.
           reader.unread();
         }
         else
         {
-          b.append((char)c);
+          b.append((char) c);
         }
         return b.toString();
       }
       if (!isValueFilter && c == '[')
       {
         // Terminating opening brace. Consume it and return token.
-        b.append((char)c);
+        b.append((char) c);
         return b.toString();
       }
       if (isValueFilter && c == ']')
       {
-        if(b.length() > 0)
+        if (b.length() > 0)
         {
           // Do not consume the closing brace.
           reader.unread();
         }
         else
         {
-          b.append((char)c);
+          b.append((char) c);
         }
         return b.toString();
       }
@@ -499,19 +499,19 @@ public class Parser
           || Character.isLetterOrDigit(c)
           || options.isExtendedAttributeNameCharacter((char) c))
       {
-        b.append((char)c);
+        b.append((char) c);
       }
       else
       {
         final String msg = String.format(
             "Unexpected character '%s' at position %d for token starting at %d",
-            (char)c, reader.pos - 1, reader.mark);
+            (char) c, reader.pos - 1, reader.mark);
         throw BadRequestException.invalidFilter(msg);
       }
       c = reader.read();
     }
 
-    if(b.length() > 0)
+    if (b.length() > 0)
     {
       return b.toString();
     }
@@ -537,23 +537,23 @@ public class Parser
     String token;
     String previousToken = null;
 
-    while((token = readFilterToken(reader, isValueFilter)) != null)
+    while ((token = readFilterToken(reader, isValueFilter)) != null)
     {
-      if(token.equals("(") && expectsNewFilter(previousToken))
+      if (token.equals("(") && expectsNewFilter(previousToken))
       {
         precedenceStack.push(token);
       }
-      else if(token.equalsIgnoreCase(FilterType.NOT.getStringValue()) &&
+      else if (token.equalsIgnoreCase(FilterType.NOT.getStringValue()) &&
           expectsNewFilter(previousToken))
       {
         // "not" should be followed by an (
         String nextToken = readFilterToken(reader, isValueFilter);
-        if(nextToken == null)
+        if (nextToken == null)
         {
           throw BadRequestException.invalidFilter(
               "Unexpected end of filter string");
         }
-        if(!nextToken.equals("("))
+        if (!nextToken.equals("("))
         {
           final String msg = String.format(
               "Expected '(' at position %d", reader.mark);
@@ -561,10 +561,10 @@ public class Parser
         }
         precedenceStack.push(token);
       }
-      else if(token.equals(")") && !expectsNewFilter(previousToken))
+      else if (token.equals(")") && !expectsNewFilter(previousToken))
       {
         String operator = closeGrouping(precedenceStack, outputStack, false);
-        if(operator == null)
+        if (operator == null)
         {
           final String msg =
               String.format("No opening parenthesis matching closing " +
@@ -577,13 +577,13 @@ public class Parser
           outputStack.push(Filter.not(outputStack.pop()));
         }
       }
-      else if(token.equalsIgnoreCase(FilterType.AND.getStringValue()) &&
+      else if (token.equalsIgnoreCase(FilterType.AND.getStringValue()) &&
           !expectsNewFilter(previousToken))
       {
         // and has higher precedence than or.
         precedenceStack.push(token);
       }
-      else if(token.equalsIgnoreCase(FilterType.OR.getStringValue()) &&
+      else if (token.equalsIgnoreCase(FilterType.OR.getStringValue()) &&
           !expectsNewFilter(previousToken))
       {
         // pop all the pending ands first before pushing or.
@@ -600,7 +600,7 @@ public class Parser
           {
             break;
           }
-          if(!andComponents.isEmpty())
+          if (!andComponents.isEmpty())
           {
             andComponents.addFirst(outputStack.pop());
             outputStack.push(Filter.and(andComponents));
@@ -609,7 +609,7 @@ public class Parser
 
         precedenceStack.push(token);
       }
-      else if(token.endsWith("[") && expectsNewFilter(previousToken))
+      else if (token.endsWith("[") && expectsNewFilter(previousToken))
       {
         // This is a complex value filter.
         final Path filterAttribute;
@@ -627,7 +627,7 @@ public class Parser
           throw BadRequestException.invalidFilter(msg);
         }
 
-        if(filterAttribute.isRoot())
+        if (filterAttribute.isRoot())
         {
           final String msg = String.format(
               "Attribute path expected at position %d", reader.mark);
@@ -637,12 +637,12 @@ public class Parser
         outputStack.push(Filter.hasComplexValue(
             filterAttribute, readFilter(reader, true)));
       }
-      else if(isValueFilter && token.equals("]") &&
+      else if (isValueFilter && token.equals("]") &&
           !expectsNewFilter(previousToken))
       {
         break;
       }
-      else if(expectsNewFilter(previousToken))
+      else if (expectsNewFilter(previousToken))
       {
         // This must be an attribute path followed by operator and maybe value.
         final Path filterAttribute;
@@ -659,7 +659,7 @@ public class Parser
           throw BadRequestException.invalidFilter(msg);
         }
 
-        if(filterAttribute.isRoot())
+        if (filterAttribute.isRoot())
         {
           final String msg = String.format(
               "Attribute path expected at position %d", reader.mark);
@@ -668,7 +668,7 @@ public class Parser
 
         String op = readFilterToken(reader, isValueFilter);
 
-        if(op == null)
+        if (op == null)
         {
           throw BadRequestException.invalidFilter(
               "Unexpected end of filter string");
@@ -704,7 +704,7 @@ public class Parser
               valueNode = parser.readValueAsTree();
 
               // This is actually a JSON null. Use NullNode.
-              if(valueNode == null)
+              if (valueNode == null)
               {
                 valueNode = JsonUtils.getJsonNodeFactory().nullNode();
               }
@@ -784,7 +784,7 @@ public class Parser
 
     closeGrouping(precedenceStack, outputStack, true);
 
-    if(outputStack.isEmpty())
+    if (outputStack.isEmpty())
     {
       throw BadRequestException.invalidFilter(
           "Unexpected end of filter string");
@@ -816,29 +816,29 @@ public class Parser
     while (!operators.isEmpty())
     {
       operator = operators.pop();
-      if(operator.equals("(") ||
+      if (operator.equals("(") ||
           operator.equalsIgnoreCase(FilterType.NOT.getStringValue()))
       {
-        if(isAtTheEnd)
+        if (isAtTheEnd)
         {
           throw BadRequestException.invalidFilter(
               "Unexpected end of filter string");
         }
         break;
       }
-      if(repeatingOperator == null)
+      if (repeatingOperator == null)
       {
         repeatingOperator = operator;
       }
-      if(!operator.equals(repeatingOperator))
+      if (!operator.equals(repeatingOperator))
       {
-        if(output.isEmpty())
+        if (output.isEmpty())
         {
           throw BadRequestException.invalidFilter(
               "Unexpected end of filter string");
         }
         components.addFirst(output.pop());
-        if(repeatingOperator.equalsIgnoreCase(FilterType.AND.getStringValue()))
+        if (repeatingOperator.equalsIgnoreCase(FilterType.AND.getStringValue()))
         {
           output.push(Filter.and(components));
         }
@@ -849,7 +849,7 @@ public class Parser
         components.clear();
         repeatingOperator = operator;
       }
-      if(output.isEmpty())
+      if (output.isEmpty())
       {
         throw BadRequestException.invalidFilter(
             "Unexpected end of filter string");
@@ -857,15 +857,15 @@ public class Parser
       components.addFirst(output.pop());
     }
 
-    if(repeatingOperator != null && !components.isEmpty())
+    if (repeatingOperator != null && !components.isEmpty())
     {
-      if(output.isEmpty())
+      if (output.isEmpty())
       {
         throw BadRequestException.invalidFilter(
             "Unexpected end of filter string");
       }
       components.addFirst(output.pop());
-      if(repeatingOperator.equalsIgnoreCase(FilterType.AND.getStringValue()))
+      if (repeatingOperator.equalsIgnoreCase(FilterType.AND.getStringValue()))
       {
         output.push(Filter.and(components));
       }

@@ -93,7 +93,7 @@ public class SimpleSearchResults<T extends ScimResource>
     String sortByString = queryParams.getFirst(QUERY_PARAMETER_SORT_BY);
     String  sortOrderString = queryParams.getFirst(QUERY_PARAMETER_SORT_ORDER);
 
-    if(filterString != null)
+    if (filterString != null)
     {
       this.filter = Filter.fromString(filterString);
     }
@@ -102,7 +102,7 @@ public class SimpleSearchResults<T extends ScimResource>
       this.filter = null;
     }
 
-    if(startIndexString != null)
+    if (startIndexString != null)
     {
       int i = Integer.valueOf(startIndexString);
       // 3.4.2.4: A value less than 1 SHALL be interpreted as 1.
@@ -113,7 +113,7 @@ public class SimpleSearchResults<T extends ScimResource>
       startIndex = null;
     }
 
-    if(countString != null)
+    if (countString != null)
     {
       int i = Integer.valueOf(countString);
       // 3.4.2.4: A negative value SHALL be interpreted as 0.
@@ -137,7 +137,7 @@ public class SimpleSearchResults<T extends ScimResource>
     }
     SortOrder sortOrder = sortOrderString == null ?
         SortOrder.ASCENDING : SortOrder.fromName(sortOrderString);
-    if(sortBy != null)
+    if (sortBy != null)
     {
       this.resourceComparator = new ResourceComparator<ScimResource>(
           sortBy, sortOrder, resourceType);
@@ -161,7 +161,7 @@ public class SimpleSearchResults<T extends ScimResource>
   {
     // Convert to GenericScimResource
     GenericScimResource genericResource;
-    if(resource instanceof GenericScimResource)
+    if (resource instanceof GenericScimResource)
     {
       // Make a copy
       genericResource = new GenericScimResource(
@@ -175,7 +175,7 @@ public class SimpleSearchResults<T extends ScimResource>
     // Set meta attributes so they can be used in the following filter eval
     responsePreparer.setResourceTypeAndLocation(genericResource);
 
-    if(filter == null || filter.visit(filterEvaluator,
+    if (filter == null || filter.visit(filterEvaluator,
         genericResource.getObjectNode()))
     {
       resources.add(genericResource);
@@ -196,7 +196,7 @@ public class SimpleSearchResults<T extends ScimResource>
   public SimpleSearchResults addAll(@NotNull final Collection<T> resources)
       throws ScimException
   {
-    for(T resource : resources)
+    for (T resource : resources)
     {
       add(resource);
     }
@@ -211,14 +211,14 @@ public class SimpleSearchResults<T extends ScimResource>
   public void write(@NotNull final ListResponseWriter<T> os)
       throws IOException
   {
-    if(resourceComparator != null)
+    if (resourceComparator != null)
     {
       Collections.sort(resources, resourceComparator);
     }
     List<ScimResource> resultsToReturn = resources;
-    if(startIndex != null)
+    if (startIndex != null)
     {
-      if(startIndex > resources.size())
+      if (startIndex > resources.size())
       {
         resultsToReturn = Collections.emptyList();
       }
@@ -227,18 +227,18 @@ public class SimpleSearchResults<T extends ScimResource>
         resultsToReturn = resources.subList(startIndex - 1, resources.size());
       }
     }
-    if(count != null && !resultsToReturn.isEmpty())
+    if (count != null && !resultsToReturn.isEmpty())
     {
       resultsToReturn = resultsToReturn.subList(
           0, Math.min(count, resultsToReturn.size()));
     }
     os.totalResults(resources.size());
-    if(startIndex != null || count != null)
+    if (startIndex != null || count != null)
     {
       os.startIndex(startIndex == null ? 1 : startIndex);
       os.itemsPerPage(resultsToReturn.size());
     }
-    for(ScimResource resource : resultsToReturn)
+    for (ScimResource resource : resultsToReturn)
     {
       os.resource((T) responsePreparer.trimRetrievedResource(resource));
     }

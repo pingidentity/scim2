@@ -74,7 +74,7 @@ public class JsonReference<T>
   @Nullable
   public T getObjIfSet()
   {
-    if(set)
+    if (set)
     {
       return obj;
     }

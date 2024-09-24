@@ -80,9 +80,9 @@ public enum SortOrder
   public static SortOrder fromName(@NotNull final String name)
       throws BadRequestException
   {
-    for(SortOrder sortOrder : SortOrder.values())
+    for (SortOrder sortOrder : SortOrder.values())
     {
-      if(sortOrder.getName().equals(name))
+      if (sortOrder.getName().equals(name))
       {
         return sortOrder;
       }

@@ -92,19 +92,19 @@ public class ListResponseWriter<T extends ScimResource>
    */
   void endResponse() throws IOException
   {
-    if(!sentTotalResults.get() && !deferredFields.has("totalResults"))
+    if (!sentTotalResults.get() && !deferredFields.has("totalResults"))
     {
       // The total results was never set. Set it to the calculated one.
       totalResults(resultsSent.get());
     }
-    if(startedResourcesArray.get())
+    if (startedResourcesArray.get())
     {
       // Close the resources array if currently writing it.
       jsonGenerator.writeEndArray();
     }
 
     Iterator<Map.Entry<String, JsonNode>> i = deferredFields.fields();
-    while(i.hasNext())
+    while (i.hasNext())
     {
       Map.Entry<String, JsonNode> field = i.next();
       jsonGenerator.writeObjectField(field.getKey(), field.getValue());
@@ -124,7 +124,7 @@ public class ListResponseWriter<T extends ScimResource>
    */
   public void startIndex(final int startIndex) throws IOException
   {
-    if(startedResourcesArray.get())
+    if (startedResourcesArray.get())
     {
       deferredFields.put("startIndex", startIndex);
     }
@@ -144,7 +144,7 @@ public class ListResponseWriter<T extends ScimResource>
    */
   public void itemsPerPage(final int itemsPerPage) throws IOException
   {
-    if(startedResourcesArray.get())
+    if (startedResourcesArray.get())
     {
       deferredFields.put("itemsPerPage", itemsPerPage);
     }
@@ -164,7 +164,7 @@ public class ListResponseWriter<T extends ScimResource>
    */
   public void totalResults(final int totalResults) throws IOException
   {
-    if(startedResourcesArray.get())
+    if (startedResourcesArray.get())
     {
       deferredFields.put("totalResults", totalResults);
     }
@@ -184,7 +184,7 @@ public class ListResponseWriter<T extends ScimResource>
    */
   public void resource(@Nullable final T scimResource) throws IOException
   {
-    if(startedResourcesArray.compareAndSet(false, true))
+    if (startedResourcesArray.compareAndSet(false, true))
     {
       jsonGenerator.writeArrayFieldStart("Resources");
     }

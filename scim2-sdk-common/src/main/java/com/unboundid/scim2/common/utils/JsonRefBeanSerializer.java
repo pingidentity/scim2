@@ -53,20 +53,20 @@ public class JsonRefBeanSerializer extends JsonSerializer<Object>
       gen.writeStartObject();
       Collection<PropertyDescriptor> propertyDescriptors =
           SchemaUtils.getPropertyDescriptors(clazz);
-      for(PropertyDescriptor propertyDescriptor : propertyDescriptors)
+      for (PropertyDescriptor propertyDescriptor : propertyDescriptors)
       {
         Field field = SchemaUtils.findField(
             clazz, propertyDescriptor.getName());
-        if(field == null)
+        if (field == null)
         {
           continue;
         }
         field.setAccessible(true);
         Object obj = field.get(value);
-        if(obj instanceof JsonReference)
+        if (obj instanceof JsonReference)
         {
-          JsonReference<?> reference = (JsonReference<?>)obj;
-          if(reference.isSet())
+          JsonReference<?> reference = (JsonReference<?>) obj;
+          if (reference.isSet())
           {
             gen.writeFieldName(field.getName());
             serializers.defaultSerializeValue(reference.getObj(), gen);

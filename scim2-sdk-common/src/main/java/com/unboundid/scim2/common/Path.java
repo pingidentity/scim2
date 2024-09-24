@@ -167,7 +167,7 @@ public final class Path implements Iterable<Path.Element>
     public void toString(@NotNull final StringBuilder builder)
     {
       builder.append(attribute);
-      if(valueFilter != null)
+      if (valueFilter != null)
       {
         builder.append("[");
         builder.append(valueFilter);
@@ -367,7 +367,7 @@ public final class Path implements Iterable<Path.Element>
   public Path withoutFilters()
   {
     ArrayList<Element> newElements = new ArrayList<Element>(elements.size());
-    for(Element element : elements)
+    for (Element element : elements)
     {
       newElements.add(new Element(element.getAttribute(), null));
     }
@@ -414,7 +414,7 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public static Path root(@Nullable final String schemaUrn)
   {
-    if(schemaUrn != null && !SchemaUtils.isUrn(schemaUrn))
+    if (schemaUrn != null && !SchemaUtils.isUrn(schemaUrn))
     {
       throw new IllegalArgumentException(
           String.format("Invalid extension schema URN: %s",
@@ -521,16 +521,16 @@ public final class Path implements Iterable<Path.Element>
    */
   public void toString(@NotNull final StringBuilder builder)
   {
-    if(schemaUrn != null)
+    if (schemaUrn != null)
     {
       builder.append(schemaUrn);
       builder.append(":");
     }
     Iterator<Element> i = elements.iterator();
-    while(i.hasNext())
+    while (i.hasNext())
     {
       i.next().toString(builder);
-      if(i.hasNext())
+      if (i.hasNext())
       {
         builder.append(".");
       }

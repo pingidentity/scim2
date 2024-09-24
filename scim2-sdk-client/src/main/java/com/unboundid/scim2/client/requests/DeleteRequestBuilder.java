@@ -67,7 +67,7 @@ public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
   Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();
-    if(version != null)
+    if (version != null)
     {
       request.header(HttpHeaders.IF_MATCH, version);
     }
@@ -85,7 +85,7 @@ public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
     Response response = buildRequest().delete();
     try
     {
-      if(response.getStatusInfo().getFamily() !=
+      if (response.getStatusInfo().getFamily() !=
           Response.Status.Family.SUCCESSFUL)
       {
         throw toScimException(response);

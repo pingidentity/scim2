@@ -99,7 +99,7 @@ public class ListResponseBuilder<T>
   @NotNull
   public ListResponse<T> build()
   {
-    final Map<String,Object> properties = new LinkedHashMap<String,Object>();
+    final Map<String, Object> properties = new LinkedHashMap<String, Object>();
     properties.put("totalResults", totalResults == null ?
       resources.size() : totalResults);
     properties.put("resources", resources);

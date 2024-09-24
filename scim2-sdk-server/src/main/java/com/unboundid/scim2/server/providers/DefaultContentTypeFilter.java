@@ -47,7 +47,7 @@ public class DefaultContentTypeFilter implements ContainerRequestFilter
   public void filter(@NotNull final ContainerRequestContext requestContext)
       throws IOException
   {
-    if((requestContext.getMethod().equals(HttpMethod.POST) ||
+    if ((requestContext.getMethod().equals(HttpMethod.POST) ||
         requestContext.getMethod().equals(HttpMethod.PUT) ||
         requestContext.getMethod().equals("PATCH")) &&
         requestContext.getMediaType() == null)

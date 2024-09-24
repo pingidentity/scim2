@@ -200,13 +200,13 @@ public class ETagTestEndpoint
       throws ScimException
   {
     GenericScimResource gsr = new GenericScimResource();
-    if(headers.getRequestHeaders().containsKey(HttpHeaders.IF_NONE_MATCH))
+    if (headers.getRequestHeaders().containsKey(HttpHeaders.IF_NONE_MATCH))
     {
       gsr.addStringValues(HttpHeaders.IF_NONE_MATCH,
           headers.getRequestHeader(HttpHeaders.IF_NONE_MATCH));
     }
 
-    if(headers.getRequestHeaders().containsKey(HttpHeaders.IF_MATCH))
+    if (headers.getRequestHeaders().containsKey(HttpHeaders.IF_MATCH))
     {
       gsr.addStringValues(HttpHeaders.IF_MATCH,
           headers.getRequestHeader(HttpHeaders.IF_MATCH));

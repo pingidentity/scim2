@@ -81,23 +81,23 @@ public final class ListResponse<T> extends BaseScimResource
    */
   @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
   @SuppressWarnings("unchecked")
-  public ListResponse(@NotNull final Map<String,Object> props)
+  public ListResponse(@NotNull final Map<String, Object> props)
   {
-    final Map<String,Object> properties =
+    final Map<String, Object> properties =
       new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
     properties.putAll(props);
 
     checkRequiredProperties(properties, "totalResults", "resources");
 
-    this.totalResults = (Integer)properties.get("totalResults");
-    this.resources =  (List<T>)properties.get("resources");
+    this.totalResults = (Integer) properties.get("totalResults");
+    this.resources = (List<T>) properties.get("resources");
     this.startIndex = properties.containsKey("startIndex") ?
-      (Integer)properties.get("startIndex") : null;
-    this.itemsPerPage =  properties.containsKey("itemsPerPage") ?
-      (Integer)properties.get("itemsPerPage") : null;
+      (Integer) properties.get("startIndex") : null;
+    this.itemsPerPage = properties.containsKey("itemsPerPage") ?
+      (Integer) properties.get("itemsPerPage") : null;
     if (properties.containsKey("schemas"))
     {
-      this.setSchemaUrns((Collection<String>)properties.get("schemas"));
+      this.setSchemaUrns((Collection<String>) properties.get("schemas"));
     }
   }
 
@@ -272,7 +272,7 @@ public final class ListResponse<T> extends BaseScimResource
   }
 
   private void checkRequiredProperties(
-      @NotNull final Map<String,Object> properties,
+      @NotNull final Map<String, Object> properties,
       @NotNull final String... requiredProperties)
   {
     for (final String property : requiredProperties)

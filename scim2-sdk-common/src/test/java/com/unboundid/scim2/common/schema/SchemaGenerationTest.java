@@ -93,9 +93,9 @@ public class SchemaGenerationTest
         "integerField", "mutabilityReadWrite", "mutabilityReadOnly",
         "mutabilityWriteOnly", "mutabilityImmutable", "bigDecimal");
 
-    for(AttributeDefinition attribute : schemaDefinition.getAttributes())
+    for (AttributeDefinition attribute : schemaDefinition.getAttributes())
     {
-      if(attribute.getName().equals("stringField" ))
+      if (attribute.getName().equals("stringField" ))
       {
         //    @SchemaProperty(description = "description:stringField",
         //        isCaseExact = true, isRequired = true)
@@ -104,7 +104,7 @@ public class SchemaGenerationTest
             AttributeDefinition.Type.STRING, null,
             null, null, null, null);
       }
-      else if(attribute.getName().equals("booleanObjectField" ))
+      else if (attribute.getName().equals("booleanObjectField" ))
       {
         //    @SchemaProperty(description = "description:booleanObjectField",
         //        isCaseExact = true, isRequired = false,
@@ -115,7 +115,7 @@ public class SchemaGenerationTest
             AttributeDefinition.Returned.REQUEST,
             null, null, null, null);
       }
-      else if(attribute.getName().equals("booleanField" ))
+      else if (attribute.getName().equals("booleanField" ))
       {
         //    @SchemaProperty(description = "description:booleanField",
         //        isCaseExact = false, isRequired = false,
@@ -127,7 +127,7 @@ public class SchemaGenerationTest
             AttributeDefinition.Returned.NEVER,
             null, null, null, null);
       }
-      else if(attribute.getName().equals("integerObjectField" ))
+      else if (attribute.getName().equals("integerObjectField" ))
       {
         //    @SchemaProperty(description = "description:integerObjectField",
         //        isCaseExact = false, isRequired = true,
@@ -139,7 +139,7 @@ public class SchemaGenerationTest
             AttributeDefinition.Returned.DEFAULT,
             null, null, null, null);
       }
-      else if(attribute.getName().equals("integerField" ))
+      else if (attribute.getName().equals("integerField" ))
       {
         //    @SchemaProperty(description = "description:integerField",
         //        isCaseExact = true, isRequired = true,
@@ -150,7 +150,7 @@ public class SchemaGenerationTest
             AttributeDefinition.Returned.ALWAYS,
             null, null, null, null);
       }
-      else if(attribute.getName().equals("mutabilityReadWrite" ))
+      else if (attribute.getName().equals("mutabilityReadWrite" ))
       {
         //    @SchemaProperty(description = "description:mutabilityReadWrite",
         //        mutability = SCIM2Attribute.Mutability.READ_WRITE)
@@ -159,7 +159,7 @@ public class SchemaGenerationTest
             Multivalued.DEFAULT, AttributeDefinition.Type.STRING,
             null, AttributeDefinition.Mutability.READ_WRITE, null, null, null);
       }
-      else if(attribute.getName().equals("mutabilityReadOnly" ))
+      else if (attribute.getName().equals("mutabilityReadOnly" ))
       {
         //    @SchemaProperty(description = "description:mutabilityReadOnly",
         //        mutability = SCIM2Attribute.Mutability.READ_ONLY)
@@ -168,7 +168,7 @@ public class SchemaGenerationTest
             Multivalued.DEFAULT, AttributeDefinition.Type.STRING,
             null, AttributeDefinition.Mutability.READ_ONLY, null, null, null);
       }
-      else if(attribute.getName().equals("mutabilityWriteOnly" ))
+      else if (attribute.getName().equals("mutabilityWriteOnly" ))
       {
         //    @SchemaProperty(description = "description:mutabilityWriteOnly",
         //        mutability = SCIM2Attribute.Mutability.WRITE_ONLY)
@@ -178,7 +178,7 @@ public class SchemaGenerationTest
             AttributeDefinition.Mutability.WRITE_ONLY,
             null, null, null);
       }
-      else if(attribute.getName().equals("mutabilityImmutable" ))
+      else if (attribute.getName().equals("mutabilityImmutable" ))
       {
         //    @SchemaProperty(description = "description:mutabilityImmutable",
         //        mutability = SCIM2Attribute.Mutability.IMMUTABLE)
@@ -188,7 +188,7 @@ public class SchemaGenerationTest
             AttributeDefinition.Mutability.IMMUTABLE,
             null, null, null);
       }
-      else if(attribute.getName().equals("bigDecimal"))
+      else if (attribute.getName().equals("bigDecimal"))
       {
         //  @Attribute(description = "description:bigDecimal",
         //      mutability = AttributeDefinition.Mutability.READ_ONLY)
@@ -226,7 +226,7 @@ public class SchemaGenerationTest
       {
         tc3_checkComplexObject(attribute);
       }
-      else if(attribute.getName().equals("multiValuedString"))
+      else if (attribute.getName().equals("multiValuedString"))
       {
         tc3_checkMultiValuedString(attribute);
       }
@@ -260,9 +260,9 @@ public class SchemaGenerationTest
     Assert.assertTrue(subAttributes.size() > 0);
     List<String> expectedAttributes = makeModifiableList("stringField_3a");
 
-    for(AttributeDefinition subAttribute : subAttributes)
+    for (AttributeDefinition subAttribute : subAttributes)
     {
-      if(subAttribute.getName().equals("stringField_3a"))
+      if (subAttribute.getName().equals("stringField_3a"))
       {
         //   @SchemaProperty(description = "description:stringField_3a")
         checkAttribute(subAttribute, "description:stringField_3a",
@@ -295,7 +295,7 @@ public class SchemaGenerationTest
     List<String> expectedAttributes = new LinkedList<String>();
     addSubAttributeFields(expectedAttributes);
 
-    for(AttributeDefinition subAttribute : subAttributes)
+    for (AttributeDefinition subAttribute : subAttributes)
     {
       markAttributeFound(expectedAttributes, subAttribute);
     }
@@ -316,12 +316,12 @@ public class SchemaGenerationTest
       mutability = AttributeDefinition.Mutability.READ_WRITE;
     }
 
-    if(returned  == null)
+    if (returned  == null)
     {
       returned = AttributeDefinition.Returned.DEFAULT;
     }
 
-    if(uniqueness == null)
+    if (uniqueness == null)
     {
       uniqueness = AttributeDefinition.Uniqueness.NONE;
     }
@@ -331,7 +331,7 @@ public class SchemaGenerationTest
     Assert.assertEquals(attribute.getReturned(), returned);
     Assert.assertEquals(attribute.getUniqueness(), uniqueness);
 
-    switch(multivalued)
+    switch (multivalued)
     {
       case MULTIVALUED:
         Assert.assertTrue(attribute.isMultiValued());
@@ -343,7 +343,7 @@ public class SchemaGenerationTest
         break;
     }
 
-    switch(required)
+    switch (required)
     {
       case REQUIRED:
         Assert.assertTrue(attribute.isRequired());
@@ -355,7 +355,7 @@ public class SchemaGenerationTest
         break;
     }
 
-    switch(caseExact)
+    switch (caseExact)
     {
       case NOT_CASE_EXACT:
         Assert.assertFalse(attribute.isCaseExact());
@@ -374,7 +374,7 @@ public class SchemaGenerationTest
 
   private void checkAllAttributesFound(List<String> expectedAttributes)
   {
-    if(expectedAttributes.size() > 0)
+    if (expectedAttributes.size() > 0)
     {
       Assert.fail("Did not find all attributes : " + expectedAttributes);
     }
@@ -383,7 +383,7 @@ public class SchemaGenerationTest
   private void markAttributeFound(List<String> expectedAttributes,
                                   AttributeDefinition attribute)
   {
-    if(expectedAttributes.contains(attribute.getName()))
+    if (expectedAttributes.contains(attribute.getName()))
     {
       expectedAttributes.remove(attribute.getName());
     }

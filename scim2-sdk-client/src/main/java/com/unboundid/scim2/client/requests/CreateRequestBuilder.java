@@ -78,7 +78,7 @@ public final class CreateRequestBuilder<T extends ScimResource>
         Entity.entity(resource, getContentType()));
     try
     {
-      if(response.getStatusInfo().getFamily() ==
+      if (response.getStatusInfo().getFamily() ==
           Response.Status.Family.SUCCESSFUL)
       {
         return response.readEntity(cls);

@@ -55,9 +55,9 @@ public class RuntimeExceptionMapper implements
   {
     ErrorResponse errorResponse;
 
-    if(exception instanceof WebApplicationException)
+    if (exception instanceof WebApplicationException)
     {
-      if(exception.getCause() != null && exception.getCause()
+      if (exception.getCause() != null && exception.getCause()
           instanceof NoContentException)
       {
         errorResponse = new ErrorResponse(400);

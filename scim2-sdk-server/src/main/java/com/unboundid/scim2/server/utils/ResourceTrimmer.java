@@ -61,7 +61,7 @@ public abstract class ResourceTrimmer
   {
     ObjectNode objectToReturn = JsonUtils.getJsonNodeFactory().objectNode();
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while(i.hasNext())
+    while (i.hasNext())
     {
       Map.Entry<String, JsonNode> field = i.next();
       final Path path;
@@ -75,13 +75,13 @@ public abstract class ResourceTrimmer
         path = parentPath.attribute(field.getKey());
       }
 
-      if(path.isRoot() || shouldReturn(path))
+      if (path.isRoot() || shouldReturn(path))
       {
         if (field.getValue().isArray())
         {
           ArrayNode trimmedNode = trimArrayNode(
               (ArrayNode) field.getValue(), path);
-          if(trimmedNode.size() > 0)
+          if (trimmedNode.size() > 0)
           {
             objectToReturn.set(field.getKey(), trimmedNode);
           }
@@ -90,7 +90,7 @@ public abstract class ResourceTrimmer
         {
           ObjectNode trimmedNode = trimObjectNode(
               (ObjectNode) field.getValue(), path);
-          if(trimmedNode.size() > 0)
+          if (trimmedNode.size() > 0)
           {
             objectToReturn.set(field.getKey(), trimmedNode);
           }
@@ -116,21 +116,21 @@ public abstract class ResourceTrimmer
                                     @NotNull final Path parentPath)
   {
     ArrayNode arrayToReturn = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(JsonNode value : arrayNode)
+    for (JsonNode value : arrayNode)
     {
-      if(value.isArray())
+      if (value.isArray())
       {
         ArrayNode trimmedNode = trimArrayNode((ArrayNode) value, parentPath);
-        if(trimmedNode.size() > 0)
+        if (trimmedNode.size() > 0)
         {
           arrayToReturn.add(trimmedNode);
         }
       }
-      else if(value.isObject())
+      else if (value.isObject())
       {
         ObjectNode trimmedNode = trimObjectNode(
             (ObjectNode) value, parentPath);
-        if(trimmedNode.size() > 0)
+        if (trimmedNode.size() > 0)
         {
           arrayToReturn.add(trimmedNode);
         }

@@ -359,7 +359,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
       if (node.isArray())
       {
         // filter each element of the array individually
-        for(JsonNode value : node)
+        for (JsonNode value : node)
         {
           if (filter.getValueFilter().visit(this, value))
           {
@@ -402,21 +402,21 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
                                                @NotNull final JsonNode jsonNode)
       throws ScimException
   {
-    if(jsonNode.isArray())
+    if (jsonNode.isArray())
     {
       return jsonNode;
     }
-    if(jsonNode.isObject())
+    if (jsonNode.isObject())
     {
       List<JsonNode> nodes =
           JsonUtils.findMatchingPaths(path, (ObjectNode) jsonNode);
       ArrayList<JsonNode> flattenedNodes =
           new ArrayList<JsonNode>(nodes.size());
-      for(JsonNode node : nodes)
+      for (JsonNode node : nodes)
       {
         if (node.isArray())
         {
-          for(JsonNode child : node)
+          for (JsonNode child : node)
           {
             flattenedNodes.add(child);
           }
@@ -428,7 +428,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
       }
       return flattenedNodes;
     }
-    if(jsonNode.isValueNode() && path.equals(VALUE_PATH))
+    if (jsonNode.isValueNode() && path.equals(VALUE_PATH))
     {
       // Special case for the "value" path to reference the value itself.
       // Used for referencing the value nodes of an array when the filter is
@@ -504,34 +504,34 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
             getAttributeDefinition(filter.getAttributePath());
         String nodeValue = node.textValue();
         String comparisonValue = filter.getComparisonValue().textValue();
-        if(attributeDefinition == null || !attributeDefinition.isCaseExact())
+        if (attributeDefinition == null || !attributeDefinition.isCaseExact())
         {
           nodeValue = StaticUtils.toLowerCase(nodeValue);
           comparisonValue = StaticUtils.toLowerCase(comparisonValue);
         }
-        switch(filter.getFilterType())
+        switch (filter.getFilterType())
         {
           case CONTAINS:
-            if(nodeValue.contains(comparisonValue))
+            if (nodeValue.contains(comparisonValue))
             {
               return true;
             }
             break;
           case STARTS_WITH:
-            if(nodeValue.startsWith(comparisonValue))
+            if (nodeValue.startsWith(comparisonValue))
             {
               return true;
             }
             break;
           case ENDS_WITH:
-            if(nodeValue.endsWith(comparisonValue))
+            if (nodeValue.endsWith(comparisonValue))
             {
               return true;
             }
             break;
         }
       }
-      else if(node.equals(filter.getComparisonValue()))
+      else if (node.equals(filter.getComparisonValue()))
       {
         return true;
       }

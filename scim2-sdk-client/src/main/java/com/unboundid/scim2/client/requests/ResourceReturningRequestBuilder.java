@@ -60,9 +60,9 @@ public abstract class ResourceReturningRequestBuilder
   @NotNull
   WebTarget buildTarget()
   {
-    if(attributes != null && attributes.size() > 0)
+    if (attributes != null && attributes.size() > 0)
     {
-      if(!excluded)
+      if (!excluded)
       {
         return super.buildTarget().queryParam(
             ApiConstants.QUERY_PARAMETER_ATTRIBUTES,

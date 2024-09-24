@@ -101,7 +101,7 @@ public class TestSingletonResourceEndpoint
       throws ScimException
   {
     UserResource found = users.get(id);
-    if(found == null)
+    if (found == null)
     {
       throw new ResourceNotFoundException("No resource with ID " + id);
     }
@@ -145,7 +145,7 @@ public class TestSingletonResourceEndpoint
   public void delete(@PathParam("id") final String id) throws ScimException
   {
     UserResource found = users.remove(id);
-    if(found == null)
+    if (found == null)
     {
       throw new ResourceNotFoundException("No resource with ID " + id);
     }
@@ -169,7 +169,7 @@ public class TestSingletonResourceEndpoint
                               @Context final UriInfo uriInfo)
       throws ScimException
   {
-    if(!users.containsKey(id))
+    if (!users.containsKey(id))
     {
       throw new ResourceNotFoundException("No resource with ID " + id);
     }
@@ -198,12 +198,12 @@ public class TestSingletonResourceEndpoint
       throws ScimException
   {
     UserResource found = users.get(id);
-    if(found == null)
+    if (found == null)
     {
       throw new ResourceNotFoundException("No resource with ID " + id);
     }
     ObjectNode node = JsonUtils.valueToNode(found);
-    for(PatchOperation operation : patchRequest)
+    for (PatchOperation operation : patchRequest)
     {
       operation.apply(node);
     }

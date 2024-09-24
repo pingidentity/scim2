@@ -132,22 +132,22 @@ public class SchemaChecker
     public void throwSchemaExceptions()
         throws BadRequestException
     {
-      if(syntaxIssues.size() > 0)
+      if (syntaxIssues.size() > 0)
       {
         throw BadRequestException.invalidSyntax(getErrorString(syntaxIssues));
       }
 
-      if(mutabilityIssues.size() > 0)
+      if (mutabilityIssues.size() > 0)
       {
         throw BadRequestException.mutability(getErrorString(mutabilityIssues));
       }
 
-      if(pathIssues.size() > 0)
+      if (pathIssues.size() > 0)
       {
         throw BadRequestException.invalidPath(getErrorString(pathIssues));
       }
 
-      if(filterIssues.size() > 0)
+      if (filterIssues.size() > 0)
       {
         throw BadRequestException.invalidFilter(getErrorString(filterIssues));
       }
@@ -342,7 +342,7 @@ public class SchemaChecker
 
     int i = 0;
     String prefix;
-    for(PatchOperation patchOp : patchOperations)
+    for (PatchOperation patchOp : patchOperations)
     {
       prefix = "Patch op[" + i + "]: ";
       Path path = patchOp.getPath();
@@ -352,20 +352,20 @@ public class SchemaChecker
               path.getElement(path.size() - 1).getValueFilter();
       AttributeDefinition attribute = path == null ? null :
           resourceType.getAttributeDefinition(path);
-      if(path != null && attribute == null)
+      if (path != null && attribute == null)
       {
         // Can't find the attribute definition for attribute in path.
         addMessageForUndefinedAttr(path, prefix, results.pathIssues);
         continue;
       }
-      if(valueFilter != null && attribute != null && !attribute.isMultiValued())
+      if (valueFilter != null && attribute != null && !attribute.isMultiValued())
       {
         results.pathIssues.add(prefix +
             "Attribute " + path.getElement(0)+ " in path " +
             path.toString() + " must not have a value selection filter " +
             "because it is not multi-valued");
       }
-      if(valueFilter != null && attribute != null)
+      if (valueFilter != null && attribute != null)
       {
         SchemaCheckFilterVisitor.checkValueFilter(
             path.withoutFilters(), valueFilter, resourceType, this,
@@ -374,19 +374,19 @@ public class SchemaChecker
       switch (patchOp.getOpType())
       {
         case REMOVE:
-          if(attribute == null)
+          if (attribute == null)
           {
             continue;
           }
           checkAttributeMutability(prefix, null, path, attribute, results,
               currentObjectNode, false, false, false);
-          if(valueFilter == null)
+          if (valueFilter == null)
           {
             checkAttributeRequired(prefix, path, attribute, results);
           }
           break;
         case REPLACE:
-          if(attribute == null)
+          if (attribute == null)
           {
             checkPartialResource(prefix, (ObjectNode) value, results,
                 copyCurrentNode, true, false);
@@ -395,7 +395,7 @@ public class SchemaChecker
           {
             checkAttributeMutability(prefix, value, path, attribute, results,
                 currentObjectNode, true, false, false);
-            if(valueFilter != null)
+            if (valueFilter != null)
             {
               checkAttributeValue(prefix, value, path, attribute, results,
                   currentObjectNode, true, false);
@@ -408,7 +408,7 @@ public class SchemaChecker
           }
           break;
         case ADD:
-          if(attribute == null)
+          if (attribute == null)
           {
             checkPartialResource(prefix, (ObjectNode) value, results,
                 copyCurrentNode, false, true);
@@ -417,7 +417,7 @@ public class SchemaChecker
           {
             checkAttributeMutability(prefix, value, path, attribute, results,
                 currentObjectNode, false, true, false);
-            if(valueFilter != null)
+            if (valueFilter != null)
             {
               checkAttributeValue(prefix, value, path, attribute, results,
                   currentObjectNode, false, true);
@@ -431,7 +431,7 @@ public class SchemaChecker
           break;
       }
 
-      if(appliedNode != null)
+      if (appliedNode != null)
       {
         // Apply the patch so we can later ensure these set of operations
         // wont' be removing the all the values from a
@@ -440,11 +440,11 @@ public class SchemaChecker
         {
           patchOp.apply(appliedNode);
         }
-        catch(BadRequestException e)
+        catch (BadRequestException e)
         {
           // No target exceptions are operational errors and not related
           // to the schema. Just ignore.
-          if(!e.getScimError().getScimType().equals(
+          if (!e.getScimError().getScimType().equals(
               BadRequestException.NO_TARGET))
           {
             throw e;
@@ -455,7 +455,7 @@ public class SchemaChecker
       i++;
     }
 
-    if(appliedNode != null)
+    if (appliedNode != null)
     {
       checkResource("Applying patch ops results in an invalid resource: ",
           appliedNode, results, copyCurrentNode, false);
@@ -536,11 +536,11 @@ public class SchemaChecker
       @NotNull final ObjectNode objectNode)
   {
     ObjectNode copyNode = objectNode.deepCopy();
-    for(SchemaResource schemaExtension :
+    for (SchemaResource schemaExtension :
         resourceType.getSchemaExtensions().keySet())
     {
       JsonNode extension = copyNode.get(schemaExtension.getId());
-      if(extension != null && extension.isObject())
+      if (extension != null && extension.isObject())
       {
         removeReadOnlyAttributes(schemaExtension.getAttributes(),
             (ObjectNode) extension);
@@ -584,14 +584,14 @@ public class SchemaChecker
                                   @NotNull final String messagePrefix,
                                   @NotNull final List<String> messages)
   {
-    if(path.size() > 1)
+    if (path.size() > 1)
     {
       // This is a path to a sub-attribute. See if the parent attribute is
       // defined.
-      if(resourceType.getAttributeDefinition(path.subPath(1)) == null)
+      if (resourceType.getAttributeDefinition(path.subPath(1)) == null)
       {
         // The parent attribute is also undefined.
-        if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+        if (!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
         {
           messages.add(messagePrefix +
               "Attribute " + path.getElement(0)+ " in path " +
@@ -602,7 +602,7 @@ public class SchemaChecker
       {
         // The parent attribute is defined but the sub-attribute is
         // undefined.
-        if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_SUB_ATTRIBUTES))
+        if (!enabledOptions.contains(Option.ALLOW_UNDEFINED_SUB_ATTRIBUTES))
         {
           messages.add(messagePrefix +
               "Sub-attribute " + path.getElement(1)+ " in path " +
@@ -610,7 +610,7 @@ public class SchemaChecker
         }
       }
     }
-    else if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+    else if (!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
     {
       messages.add(messagePrefix +
           "Attribute " + path.getElement(0)+ " in path " +
@@ -630,14 +630,14 @@ public class SchemaChecker
       @NotNull final Collection<AttributeDefinition> attributes,
       @NotNull final ObjectNode objectNode)
   {
-    for(AttributeDefinition attribute : attributes)
+    for (AttributeDefinition attribute : attributes)
     {
-      if(attribute.getMutability() == AttributeDefinition.Mutability.READ_ONLY)
+      if (attribute.getMutability() == AttributeDefinition.Mutability.READ_ONLY)
       {
         objectNode.remove(attribute.getName());
         continue;
       }
-      if(attribute.getSubAttributes() != null)
+      if (attribute.getSubAttributes() != null)
       {
         JsonNode node = objectNode.path(attribute.getName());
         if (node.isObject())
@@ -682,12 +682,12 @@ public class SchemaChecker
   {
 
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while(i.hasNext())
+    while (i.hasNext())
     {
       Map.Entry<String, JsonNode> field = i.next();
-      if(SchemaUtils.isUrn(field.getKey()))
+      if (SchemaUtils.isUrn(field.getKey()))
       {
-        if(!field.getValue().isObject())
+        if (!field.getValue().isObject())
         {
           // Bail if the extension namespace is not valid
           results.syntaxIssues.add(prefix + "Extended attributes namespace " +
@@ -709,7 +709,7 @@ public class SchemaChecker
               break;
             }
           }
-          if(!found &&
+          if (!found &&
               !enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
           {
             results.syntaxIssues.add(prefix + "Undefined extended attributes " +
@@ -746,7 +746,7 @@ public class SchemaChecker
     // Iterate through the schemas
     JsonNode schemas = objectNode.get(
         SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION.getName());
-    if(schemas != null && schemas.isArray())
+    if (schemas != null && schemas.isArray())
     {
       boolean coreFound = false;
       for (JsonNode schema : schemas)
@@ -846,10 +846,10 @@ public class SchemaChecker
     // Remove any additional extended attribute namespaces not included in
     // the schemas attribute.
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while(i.hasNext())
+    while (i.hasNext())
     {
       String fieldName = i.next().getKey();
-      if(SchemaUtils.isUrn(fieldName))
+      if (SchemaUtils.isUrn(fieldName))
       {
         results.syntaxIssues.add(prefix + "Extended attributes namespace "
             + fieldName + " must be included in the schemas attribute");
@@ -888,36 +888,36 @@ public class SchemaChecker
                                         final boolean isReplace)
       throws ScimException
   {
-    if(attribute.getMutability() ==
+    if (attribute.getMutability() ==
         AttributeDefinition.Mutability.READ_ONLY)
     {
       results.mutabilityIssues.add(prefix + "Attribute " + path +
           " is read-only");
     }
-    if(attribute.getMutability() ==
+    if (attribute.getMutability() ==
         AttributeDefinition.Mutability.IMMUTABLE )
     {
-      if(node == null)
+      if (node == null)
       {
         results.mutabilityIssues.add(prefix + "Attribute " + path +
             " is immutable and value(s) may not be removed");
       }
-      if(isPartialReplace && !isReplace)
+      if (isPartialReplace && !isReplace)
       {
         results.mutabilityIssues.add(prefix + "Attribute " + path +
             " is immutable and value(s) may not be replaced");
       }
-      else if(isPartialAdd && currentObjectNode != null &&
+      else if (isPartialAdd && currentObjectNode != null &&
           JsonUtils.pathExists(path, currentObjectNode))
       {
         results.mutabilityIssues.add(prefix + "Attribute " + path +
             " is immutable and value(s) may not be added");
       }
-      else if(currentObjectNode != null)
+      else if (currentObjectNode != null)
       {
         List<JsonNode> currentValues =
             JsonUtils.findMatchingPaths(path, currentObjectNode);
-        if(currentValues.size() > 1 ||
+        if (currentValues.size() > 1 ||
             (currentValues.size() == 1 && !currentValues.get(0).equals(node)))
         {
           results.mutabilityIssues.add(prefix + "Attribute " + path +
@@ -927,7 +927,7 @@ public class SchemaChecker
     }
 
     Filter valueFilter = path.getElement(path.size() - 1).getValueFilter();
-    if(attribute.equals(SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION) &&
+    if (attribute.equals(SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION) &&
         valueFilter != null)
     {
       // Make sure the core schema and/or required schemas extensions are
@@ -971,7 +971,7 @@ public class SchemaChecker
       @NotNull final Results results)
   {
     // Check required attributes are all present.
-    if(attribute.isRequired())
+    if (attribute.isRequired())
     {
       results.syntaxIssues.add(prefix + "Attribute " + path +
           " is required and must have a value");
@@ -1002,27 +1002,27 @@ public class SchemaChecker
       final boolean isPartialAdd)
           throws ScimException
   {
-    if(attribute.isMultiValued() && !node.isArray())
+    if (attribute.isMultiValued() && !node.isArray())
     {
       results.syntaxIssues.add(prefix + "Value for multi-valued attribute " +
           path + " must be a JSON array");
       return;
     }
-    if(!attribute.isMultiValued() && node.isArray())
+    if (!attribute.isMultiValued() && node.isArray())
     {
       results.syntaxIssues.add(prefix + "Value for single-valued attribute " +
           path + " must not be a JSON array");
       return;
     }
 
-    if(node.isArray())
+    if (node.isArray())
     {
       int i = 0;
       for (JsonNode value : node)
       {
         // Use a special notation attr[index] to refer to a value of an JSON
         // array.
-        if(path.isRoot())
+        if (path.isRoot())
         {
           throw new NullPointerException(
               "Path should always point to an attribute");
@@ -1066,13 +1066,13 @@ public class SchemaChecker
       final boolean isPartialAdd)
           throws ScimException
   {
-    if(node.isNull())
+    if (node.isNull())
     {
       return;
     }
 
     // Check the node type.
-    switch(attribute.getType())
+    switch (attribute.getType())
     {
       case STRING:
       case DATETIME:
@@ -1123,7 +1123,7 @@ public class SchemaChecker
     }
 
     // If the node type checks out, check the actual value.
-    switch(attribute.getType())
+    switch (attribute.getType())
     {
       case DATETIME:
         try
@@ -1165,7 +1165,7 @@ public class SchemaChecker
         }
         break;
       case INTEGER:
-        if(!node.isIntegralNumber())
+        if (!node.isIntegralNumber())
         {
           results.syntaxIssues.add(prefix + "Value for attribute " + path +
               " is not an integral number");
@@ -1218,11 +1218,11 @@ public class SchemaChecker
           break;
         }
       }
-      if(!found)
+      if (!found)
       {
         found = node.textValue().equals(resourceType.getCoreSchema().getId());
       }
-      if(!found && !enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+      if (!found && !enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
       {
         results.syntaxIssues.add(prefix + "Schema URI " + node.textValue() +
             " is not a valid value for attribute " + path + " because it is " +
@@ -1256,17 +1256,17 @@ public class SchemaChecker
       final boolean isPartialAdd,
       final boolean isReplace) throws ScimException
   {
-    if(attributes == null)
+    if (attributes == null)
     {
       return;
     }
 
-    for(AttributeDefinition attribute : attributes)
+    for (AttributeDefinition attribute : attributes)
     {
       JsonNode node = objectNode.remove(attribute.getName());
       Path path = parentPath.attribute((attribute.getName()));
 
-      if(node == null || node.isNull() || (node.isArray() && node.size() == 0))
+      if (node == null || node.isNull() || (node.isArray() && node.size() == 0))
       {
         // From SCIM's perspective, these are the same thing.
         if (!isPartialAdd && !isPartialReplace)
@@ -1274,7 +1274,7 @@ public class SchemaChecker
           checkAttributeRequired(prefix, path, attribute, results);
         }
       }
-      if(node != null)
+      if (node != null)
       {
         // Additional checks for when the field is present
         checkAttributeMutability(prefix, node, path, attribute, results,
@@ -1287,22 +1287,22 @@ public class SchemaChecker
     // All defined attributes should be removed. Remove any additional
     // undefined attributes.
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while(i.hasNext())
+    while (i.hasNext())
     {
       String undefinedAttribute = i.next().getKey();
-      if(parentPath.size() == 0)
+      if (parentPath.size() == 0)
       {
-        if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+        if (!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
         {
           results.syntaxIssues.add(prefix + "Core attribute " +
               undefinedAttribute + " is undefined for schema " +
               resourceType.getCoreSchema().getId());
         }
       }
-      else if(parentPath.isRoot() &&
+      else if (parentPath.isRoot() &&
           parentPath.getSchemaUrn() != null)
       {
-        if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
+        if (!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
         {
           results.syntaxIssues.add(prefix + "Extended attribute " +
               undefinedAttribute + " is undefined for schema " +
@@ -1311,7 +1311,7 @@ public class SchemaChecker
       }
       else
       {
-        if(!enabledOptions.contains(Option.ALLOW_UNDEFINED_SUB_ATTRIBUTES))
+        if (!enabledOptions.contains(Option.ALLOW_UNDEFINED_SUB_ATTRIBUTES))
         {
           results.syntaxIssues.add(prefix + "Sub-attribute " +
               undefinedAttribute + " is undefined for attribute " + parentPath);

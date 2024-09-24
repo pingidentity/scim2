@@ -59,7 +59,7 @@ public abstract class RetrieveRequestBuilder
   Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();
-    if(version != null)
+    if (version != null)
     {
       request.header(HttpHeaders.IF_NONE_MATCH, version);
     }
@@ -133,7 +133,7 @@ public abstract class RetrieveRequestBuilder
       Response response = buildRequest().get();
       try
       {
-        if(response.getStatusInfo().getFamily() ==
+        if (response.getStatusInfo().getFamily() ==
             Response.Status.Family.SUCCESSFUL)
         {
           return response.readEntity(cls);
@@ -197,7 +197,7 @@ public abstract class RetrieveRequestBuilder
       Response response = buildRequest().get();
       try
       {
-        if(response.getStatusInfo().getFamily() ==
+        if (response.getStatusInfo().getFamily() ==
             Response.Status.Family.SUCCESSFUL)
         {
           return response.readEntity(cls);

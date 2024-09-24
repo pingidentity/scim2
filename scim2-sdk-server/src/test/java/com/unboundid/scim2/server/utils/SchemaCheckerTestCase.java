@@ -988,7 +988,7 @@ public class SchemaCheckerTestCase
         results.getSyntaxIssues().toString());
 
     // Can't remove required attributes in patch
-    if(attributeDefinition.isRequired())
+    if (attributeDefinition.isRequired())
     {
       // Check for case insensitive behavior
       results = checker.checkModify(Collections.singleton(
@@ -996,7 +996,7 @@ public class SchemaCheckerTestCase
       assertEquals(results.getSyntaxIssues().size(), 1,
           results.getSyntaxIssues().toString());
     }
-    if(attributeDefinition.getSubAttributes() != null &&
+    if (attributeDefinition.getSubAttributes() != null &&
         attributeDefinition.getSubAttributes().iterator().next().isRequired())
     {
       results = checker.checkModify(Collections.singleton(
@@ -1044,7 +1044,7 @@ public class SchemaCheckerTestCase
                             PatchOperation.replace(
                                     Path.root().attribute(
                                             "mvstring",
-                                            Filter.eq("value","value3")
+                                            Filter.eq("value", "value3")
                                     ),
                                     "replacedValue4"
                             )
@@ -1058,7 +1058,7 @@ public class SchemaCheckerTestCase
     results = checker.checkModify(
             Collections.singleton(PatchOperation.remove(
                     Path.root().attribute("mvstring",
-                            Filter.eq("value","value1")))),
+                            Filter.eq("value", "value1")))),
             null);
     assertEquals(results.getFilterIssues().size(), 0,
                  Arrays.toString(results.getFilterIssues().toArray(
@@ -1806,7 +1806,7 @@ public class SchemaCheckerTestCase
         results.getSyntaxIssues().toString());
     assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
-    if(!((node.isArray() || node.isObject()) && node.size() == 0))
+    if (!((node.isArray() || node.isObject()) && node.size() == 0))
     {
       // Partial patch
       results = checker.checkModify(Collections.singleton(
@@ -1844,7 +1844,7 @@ public class SchemaCheckerTestCase
     }
 
     // Then test a an sub-attribute
-    if(!field.equals("complex"))
+    if (!field.equals("complex"))
     {
       o = JsonUtils.getJsonNodeFactory().objectNode();
       o.putArray("schemas").add("urn:id:test");
@@ -1854,7 +1854,7 @@ public class SchemaCheckerTestCase
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
-      if(!((node.isArray() || node.isObject()) && node.size() == 0))
+      if (!((node.isArray() || node.isObject()) && node.size() == 0))
       {
         // Partial patch
         results = checker.checkModify(Collections.singleton(
@@ -1887,7 +1887,7 @@ public class SchemaCheckerTestCase
     }
 
     // Then test as a single-value for multi-valued attributes
-    if(!node.isArray())
+    if (!node.isArray())
     {
       o = JsonUtils.getJsonNodeFactory().objectNode();
       o.putArray("schemas").add("urn:id:test");
@@ -1897,7 +1897,7 @@ public class SchemaCheckerTestCase
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
-      if(!((node.isArray() || node.isObject()) && node.size() == 0))
+      if (!((node.isArray() || node.isObject()) && node.size() == 0))
       {
         // Partial patch
         results = checker.checkModify(Collections.singleton(
@@ -1937,7 +1937,7 @@ public class SchemaCheckerTestCase
         results.getSyntaxIssues().toString());
     assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
-    if(!((node.isArray() || node.isObject()) && node.size() == 0))
+    if (!((node.isArray() || node.isObject()) && node.size() == 0))
     {
       // Partial patch
       results = checker.checkModify(Collections.singleton(
@@ -1970,7 +1970,7 @@ public class SchemaCheckerTestCase
     }
 
     // Finally test as a sub-attribute of a multi-valued attribute
-    if(!field.equals("complex"))
+    if (!field.equals("complex"))
     {
       o = JsonUtils.getJsonNodeFactory().objectNode();
       o.putArray("schemas").add("urn:id:test");
@@ -1980,7 +1980,7 @@ public class SchemaCheckerTestCase
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
-      if(!((node.isArray() || node.isObject()) && node.size() == 0))
+      if (!((node.isArray() || node.isObject()) && node.size() == 0))
       {
         // Partial patch
         results = checker.checkModify(Collections.singleton(
@@ -2235,7 +2235,7 @@ public class SchemaCheckerTestCase
     {
       results.throwSchemaExceptions();
     }
-    catch(BadRequestException ex)
+    catch (BadRequestException ex)
     {
       caughtException = ex;
       Assert.assertEquals(caughtException.getMessage(), expectedMsg);
@@ -2317,9 +2317,9 @@ public class SchemaCheckerTestCase
 
   private boolean containsIssueWith(Collection<String> issues, String issueText)
   {
-    for(String issue: issues)
+    for (String issue: issues)
     {
-      if(issue.contains(issueText))
+      if (issue.contains(issueText))
       {
         return true;
       }

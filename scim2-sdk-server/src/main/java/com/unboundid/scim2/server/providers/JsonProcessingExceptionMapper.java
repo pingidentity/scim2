@@ -57,13 +57,13 @@ public class JsonProcessingExceptionMapper implements
   public Response toResponse(@NotNull final JsonProcessingException exception)
   {
     ErrorResponse errorResponse;
-    if((exception instanceof JsonParseException) ||
+    if ((exception instanceof JsonParseException) ||
         (exception instanceof JsonMappingException))
     {
       StringBuilder builder = new StringBuilder();
       builder.append("Unable to parse request: ");
       builder.append(exception.getOriginalMessage());
-      if(exception.getLocation() != null)
+      if (exception.getLocation() != null)
       {
         builder.append(" at line: ");
         builder.append(exception.getLocation().getLineNr());
@@ -75,7 +75,7 @@ public class JsonProcessingExceptionMapper implements
     }
     else
     {
-      if(exception.getCause() != null &&
+      if (exception.getCause() != null &&
           exception.getCause() instanceof ScimException)
       {
         errorResponse = ((ScimException) exception.getCause()).getScimError();

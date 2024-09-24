@@ -95,7 +95,7 @@ public class ResourceComparator<T extends ScimResource>
     try
     {
       List<JsonNode> v1s = JsonUtils.findMatchingPaths(sortBy, n1);
-      if(!v1s.isEmpty())
+      if (!v1s.isEmpty())
       {
         // Always just use the primary or first value of the first found node.
         v1 = getPrimaryOrFirst(v1s.get(0));
@@ -109,7 +109,7 @@ public class ResourceComparator<T extends ScimResource>
     try
     {
       List<JsonNode> v2s = JsonUtils.findMatchingPaths(sortBy, n2);
-      if(!v2s.isEmpty())
+      if (!v2s.isEmpty())
       {
         // Always just use the primary or first value of the first found node.
         v2 = getPrimaryOrFirst(v2s.get(0));
@@ -120,18 +120,18 @@ public class ResourceComparator<T extends ScimResource>
       Debug.debugException(e);
     }
 
-    if(v1 == null && v2 == null)
+    if (v1 == null && v2 == null)
     {
       return 0;
     }
     // or all attribute types, if there is no data for the specified "sortBy"
     // value they are sorted via the "sortOrder" parameter; i.e., they are
     // ordered last if ascending and first if descending.
-    else if(v1 == null)
+    else if (v1 == null)
     {
       return sortOrder == SortOrder.ASCENDING ? 1 : -1;
     }
-    else if(v2 == null)
+    else if (v2 == null)
     {
       return sortOrder == SortOrder.ASCENDING ? -1 : 1;
     }
@@ -162,22 +162,22 @@ public class ResourceComparator<T extends ScimResource>
     // [I-D.ietf - scim - core - schema]), if any, or else the first value in
     // the list, if any.
 
-    if(!node.isArray())
+    if (!node.isArray())
     {
       return node;
     }
 
-    if(node.size() == 0)
+    if (node.size() == 0)
     {
       return null;
     }
 
     Iterator<JsonNode> i = node.elements();
-    while(i.hasNext())
+    while (i.hasNext())
     {
       JsonNode value = i.next();
       JsonNode primary = value.get("primary");
-      if(primary != null && primary.booleanValue())
+      if (primary != null && primary.booleanValue())
       {
         return value;
       }

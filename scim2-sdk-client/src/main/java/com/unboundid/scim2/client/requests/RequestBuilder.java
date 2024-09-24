@@ -125,13 +125,13 @@ public class RequestBuilder<T extends RequestBuilder>
   public T accept(@NotNull final String... acceptStrings)
   {
     this.accept.clear();
-    if((acceptStrings == null) || (acceptStrings.length == 0))
+    if ((acceptStrings == null) || (acceptStrings.length == 0))
     {
       throw new IllegalArgumentException(
           "Accepted media types must not be null or empty");
     }
 
-    for(String acceptString : acceptStrings)
+    for (String acceptString : acceptStrings)
     {
       accept.add(acceptString);
     }
@@ -167,7 +167,7 @@ public class RequestBuilder<T extends RequestBuilder>
   static String getResourceVersion(@NotNull final ScimResource resource)
       throws IllegalArgumentException
   {
-    if(resource == null || resource.getMeta() == null ||
+    if (resource == null || resource.getMeta() == null ||
         resource.getMeta().getVersion() == null)
     {
       throw new IllegalArgumentException(
@@ -197,7 +197,7 @@ public class RequestBuilder<T extends RequestBuilder>
 
       return exception;
     }
-    catch(ProcessingException ex)
+    catch (ProcessingException ex)
     {
       // The exception message likely contains unwanted details about why the
       // server failed to process the response, instead of the actual SCIM
@@ -229,7 +229,7 @@ public class RequestBuilder<T extends RequestBuilder>
   @NotNull
   WebTarget buildTarget()
   {
-    for(Map.Entry<String, List<Object>> queryParam : queryParams.entrySet())
+    for (Map.Entry<String, List<Object>> queryParam : queryParams.entrySet())
     {
       target = target.queryParam(queryParam.getKey(),
                                  queryParam.getValue().toArray());
@@ -268,7 +268,7 @@ public class RequestBuilder<T extends RequestBuilder>
   {
     Invocation.Builder builder =
         buildTarget().request(accept.toArray(new String[accept.size()]));
-    for(Map.Entry<String, List<Object>> header : headers.entrySet())
+    for (Map.Entry<String, List<Object>> header : headers.entrySet())
     {
       builder = builder.header(header.getKey(),
                                StaticUtils.listToString(header.getValue(),

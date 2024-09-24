@@ -216,7 +216,7 @@ public abstract class BaseScimResource
                         @NotNull final JsonNode value)
       throws ScimException
   {
-    if(SchemaUtils.isUrn(key) && value.isObject())
+    if (SchemaUtils.isUrn(key) && value.isObject())
     {
       extensionObjectNode.set(key, value);
     }
@@ -224,7 +224,7 @@ public abstract class BaseScimResource
     {
       String message = "Core attribute " + key +  " is undefined";
       Schema schemaAnnotation = this.getClass().getAnnotation(Schema.class);
-      if(schemaAnnotation != null)
+      if (schemaAnnotation != null)
       {
         message += " for schema " + schemaAnnotation.id();
       }
@@ -245,7 +245,7 @@ public abstract class BaseScimResource
     HashMap<String, Object> map =
         new HashMap<String, Object>(extensionObjectNode.size());
     Iterator<Map.Entry<String, JsonNode>> i = extensionObjectNode.fields();
-    while(i.hasNext())
+    while (i.hasNext())
     {
       Map.Entry<String, JsonNode> field = i.next();
       map.put(field.getKey(), field.getValue());
@@ -262,7 +262,7 @@ public abstract class BaseScimResource
   private void addMyUrn()
   {
     String mySchema = SchemaUtils.getSchemaUrn(this.getClass());
-    if((mySchema != null) && (!mySchema.isEmpty()))
+    if ((mySchema != null) && (!mySchema.isEmpty()))
     {
       getSchemaUrns().add(mySchema);
     }
@@ -371,7 +371,7 @@ public abstract class BaseScimResource
     {
       JsonNode extensionNode =
           extensionObjectNode.path(getSchemaUrnOrThrowException(clazz));
-      if(extensionNode.isMissingNode())
+      if (extensionNode.isMissingNode())
       {
         return null;
       }
@@ -380,7 +380,7 @@ public abstract class BaseScimResource
         return JsonUtils.nodeToValue(extensionNode, clazz);
       }
     }
-    catch(JsonProcessingException ex)
+    catch (JsonProcessingException ex)
     {
       throw new RuntimeException(ex);
     }
@@ -416,7 +416,7 @@ public abstract class BaseScimResource
   public <T> boolean removeExtension(@NotNull final Class<T> clazz)
   {
     String schemaUrn = getSchemaUrnOrThrowException(clazz);
-    if(extensionObjectNode.remove(schemaUrn) == null)
+    if (extensionObjectNode.remove(schemaUrn) == null)
     {
       return false;
     }
@@ -431,7 +431,7 @@ public abstract class BaseScimResource
   private <T> String getSchemaUrnOrThrowException(@NotNull final Class<T> clazz)
   {
     String schemaUrn = SchemaUtils.getSchemaUrn(clazz);
-    if(schemaUrn == null)
+    if (schemaUrn == null)
     {
       throw new IllegalArgumentException(
           "Unable to determine the extension class schema.");
