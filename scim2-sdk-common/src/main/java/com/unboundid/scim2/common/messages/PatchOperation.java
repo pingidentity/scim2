@@ -182,7 +182,7 @@ public abstract class PatchOperation
     public <T> T getValue(@NotNull final Class<T> cls)
         throws JsonProcessingException, ScimException, IllegalArgumentException
     {
-      if(value.isArray())
+      if (value.isArray())
       {
         throw new IllegalArgumentException("Patch operation contains " +
             "multiple values");
@@ -200,7 +200,7 @@ public abstract class PatchOperation
         throws JsonProcessingException, ScimException
     {
       ArrayList<T> objects = new ArrayList<T>(value.size());
-      for(JsonNode node : value)
+      for (JsonNode node : value)
       {
         objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
       }
@@ -566,7 +566,7 @@ public abstract class PatchOperation
             throws ScimException
     {
       super(path);
-      if(path == null)
+      if (path == null)
       {
         throw BadRequestException.noTarget(
             "path field must not be null for remove operations");
@@ -688,7 +688,7 @@ public abstract class PatchOperation
     public <T> T getValue(@NotNull final Class<T> cls)
         throws JsonProcessingException, ScimException, IllegalArgumentException
     {
-      if(value.isArray())
+      if (value.isArray())
       {
         throw new IllegalArgumentException("Patch operation contains " +
             "multiple values");
@@ -705,7 +705,7 @@ public abstract class PatchOperation
         throws JsonProcessingException, ScimException
     {
       ArrayList<T> objects = new ArrayList<T>(value.size());
-      for(JsonNode node : value)
+      for (JsonNode node : value)
       {
         objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
       }
@@ -781,15 +781,15 @@ public abstract class PatchOperation
    */
   PatchOperation(@Nullable final Path path) throws ScimException
   {
-    if(path != null)
+    if (path != null)
     {
-      if(path.size() > 2)
+      if (path.size() > 2)
       {
         throw BadRequestException.invalidPath(
             "Path cannot target sub-attributes more than one level deep");
       }
 
-      if(path.size() == 2)
+      if (path.size() == 2)
       {
         Filter valueFilter = path.getElement(1).getValueFilter();
         // Allow use of the special case "value" path to reference the value itself.
@@ -921,7 +921,7 @@ public abstract class PatchOperation
     // schemas attribute.
     JsonNode schemasNode =
         node.path(SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION.getName());
-    if(schemasNode.isArray())
+    if (schemasNode.isArray())
     {
       ArrayNode schemas = (ArrayNode) schemasNode;
       if (getPath() == null)
@@ -936,7 +936,7 @@ public abstract class PatchOperation
           }
         }
       }
-      else if(getPath().getSchemaUrn() != null)
+      else if (getPath().getSchemaUrn() != null)
       {
         addSchemaUrnIfMissing(schemas, getPath().getSchemaUrn());
       }
@@ -946,9 +946,9 @@ public abstract class PatchOperation
   private void addSchemaUrnIfMissing(@NotNull final ArrayNode schemas,
                                      @NotNull final String schemaUrn)
   {
-    for(JsonNode node : schemas)
+    for (JsonNode node : schemas)
     {
-      if(node.isTextual() && node.textValue().equalsIgnoreCase(schemaUrn))
+      if (node.isTextual() && node.textValue().equalsIgnoreCase(schemaUrn))
       {
         return;
       }
@@ -1065,7 +1065,7 @@ public abstract class PatchOperation
       @NotNull final List<String> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(String value : values)
+    for (String value : values)
     {
       arrayNode.add(value);
     }
@@ -1220,7 +1220,7 @@ public abstract class PatchOperation
       @NotNull final List<Double> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(Double value : values)
+    for (Double value : values)
     {
       arrayNode.add(value);
     }
@@ -1337,7 +1337,7 @@ public abstract class PatchOperation
       @NotNull final List<Integer> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(Integer value : values)
+    for (Integer value : values)
     {
       arrayNode.add(value);
     }
@@ -1452,7 +1452,7 @@ public abstract class PatchOperation
                                              @NotNull final List<Long> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(Long value : values)
+    for (Long value : values)
     {
       arrayNode.add(value);
     }
@@ -1569,7 +1569,7 @@ public abstract class PatchOperation
       throws ScimException
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(Date value : values)
+    for (Date value : values)
     {
       arrayNode.add(GenericScimResource.getDateJsonNode(value).textValue());
     }
@@ -1696,7 +1696,7 @@ public abstract class PatchOperation
       @NotNull final List<byte[]> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(byte[] value : values)
+    for (byte[] value : values)
     {
       arrayNode.add(Base64Variants.getDefaultVariant().encode(value));
     }
@@ -1814,7 +1814,7 @@ public abstract class PatchOperation
                                             @NotNull final List<URI> values)
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(URI value : values)
+    for (URI value : values)
     {
       arrayNode.add(value.toString());
     }

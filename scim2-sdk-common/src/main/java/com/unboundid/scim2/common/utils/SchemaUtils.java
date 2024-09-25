@@ -183,7 +183,7 @@ public class SchemaUtils
           throws IntrospectionException
   {
     String className = cls.getCanonicalName();
-    if(!cls.isAssignableFrom(AttributeDefinition.class) &&
+    if (!cls.isAssignableFrom(AttributeDefinition.class) &&
         classesProcessed.contains(className))
     {
       throw new RuntimeException("Cycles detected in Schema");
@@ -194,9 +194,9 @@ public class SchemaUtils
     Collection<AttributeDefinition> attributes =
         new ArrayList<AttributeDefinition>();
 
-    for(PropertyDescriptor propertyDescriptor : propertyDescriptors)
+    for (PropertyDescriptor propertyDescriptor : propertyDescriptors)
     {
-      if(propertyDescriptor.getName().equals("subAttributes") &&
+      if (propertyDescriptor.getName().equals("subAttributes") &&
           cls.isAssignableFrom(AttributeDefinition.class) &&
           classesProcessed.contains(className))
       {
@@ -209,23 +209,23 @@ public class SchemaUtils
 
       Field field = findField(cls, propertyDescriptor.getName());
 
-      if(field == null)
+      if (field == null)
       {
         continue;
       }
       Attribute schemaProperty = null;
       JsonProperty jsonProperty = null;
-      if(field.isAnnotationPresent(Attribute.class))
+      if (field.isAnnotationPresent(Attribute.class))
       {
         schemaProperty = field.getAnnotation(Attribute.class);
       }
-      if(field.isAnnotationPresent(JsonProperty.class))
+      if (field.isAnnotationPresent(JsonProperty.class))
       {
         jsonProperty = field.getAnnotation(JsonProperty.class);
       }
 
       // Only generate schema for annotated fields.
-      if(schemaProperty == null)
+      if (schemaProperty == null)
       {
         continue;
       }
@@ -245,7 +245,7 @@ public class SchemaUtils
 
       // if this is a multivalued attribute the real sub attribute class is the
       // the one specified in the annotation, not the list, set, array, etc.
-      if((schemaProperty.multiValueClass() != NullType.class))
+      if ((schemaProperty.multiValueClass() != NullType.class))
       {
         propertyCls = schemaProperty.multiValueClass();
       }
@@ -253,7 +253,7 @@ public class SchemaUtils
       AttributeDefinition.Type type = getAttributeType(propertyCls);
       attributeBuilder.setType(type);
 
-      if(type == AttributeDefinition.Type.COMPLEX)
+      if (type == AttributeDefinition.Type.COMPLEX)
       {
         // Add this class to the list to allow cycle detection
         classesProcessed.push(cls.getCanonicalName());
@@ -286,7 +286,7 @@ public class SchemaUtils
       @NotNull final PropertyDescriptor propertyDescriptor,
       @Nullable final JsonProperty jsonProperty)
   {
-    if(jsonProperty != null &&
+    if (jsonProperty != null &&
         !jsonProperty.value().equals(JsonProperty.USE_DEFAULT_NAME))
     {
       attributeBuilder.setName(jsonProperty.value());
@@ -323,7 +323,7 @@ public class SchemaUtils
 
     // if the multiValuedClass attribute is present in the annotation,
     // make sure this is a collection or array.
-    if(multiValued && !collectionOrArray)
+    if (multiValued && !collectionOrArray)
     {
       throw new RuntimeException("Property named " +
           propertyDescriptor.getName() +
@@ -331,7 +331,7 @@ public class SchemaUtils
           "but is not a Collection or an array");
     }
 
-    if(!multiValued && collectionOrArray)
+    if (!multiValued && collectionOrArray)
     {
       throw new RuntimeException("Property named " +
           propertyDescriptor.getName() +
@@ -358,7 +358,7 @@ public class SchemaUtils
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
-    if(schemaProperty != null)
+    if (schemaProperty != null)
     {
       attributeBuilder.setDescription(schemaProperty.description());
     }
@@ -380,7 +380,7 @@ public class SchemaUtils
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
-    if(schemaProperty != null)
+    if (schemaProperty != null)
     {
       attributeBuilder.setCaseExact(schemaProperty.isCaseExact());
     }
@@ -402,7 +402,7 @@ public class SchemaUtils
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
-    if(schemaProperty != null)
+    if (schemaProperty != null)
     {
       attributeBuilder.setRequired(schemaProperty.isRequired());
     }
@@ -424,7 +424,7 @@ public class SchemaUtils
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
-    if(schemaProperty != null)
+    if (schemaProperty != null)
     {
       attributeBuilder.addCanonicalValues(schemaProperty.canonicalValues());
     }
@@ -446,7 +446,7 @@ public class SchemaUtils
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
-    if(schemaProperty != null)
+    if (schemaProperty != null)
     {
       attributeBuilder.setReturned(schemaProperty.returned());
     }
@@ -468,7 +468,7 @@ public class SchemaUtils
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
-    if(schemaProperty != null)
+    if (schemaProperty != null)
     {
       attributeBuilder.setUniqueness(schemaProperty.uniqueness());
     }
@@ -490,7 +490,7 @@ public class SchemaUtils
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
-    if(schemaProperty != null)
+    if (schemaProperty != null)
     {
       attributeBuilder.addReferenceTypes(schemaProperty.referenceTypes());
     }
@@ -513,7 +513,7 @@ public class SchemaUtils
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
-    if(schemaProperty != null)
+    if (schemaProperty != null)
     {
       attributeBuilder.setMutability(schemaProperty.mutability());
     }
@@ -537,7 +537,7 @@ public class SchemaUtils
   private static AttributeDefinition.Type getAttributeType(
       @NotNull final Class<?> cls)
   {
-    if((cls == Integer.class) ||
+    if ((cls == Integer.class) ||
         (cls == int.class))
     {
       return AttributeDefinition.Type.INTEGER;
@@ -559,15 +559,15 @@ public class SchemaUtils
     {
       return AttributeDefinition.Type.STRING;
     }
-    else if((cls == URI.class) || (cls == URL.class))
+    else if ((cls == URI.class) || (cls == URL.class))
     {
       return AttributeDefinition.Type.REFERENCE;
     }
-    else if((cls == Date.class) || (cls == Calendar.class))
+    else if ((cls == Date.class) || (cls == Calendar.class))
     {
       return AttributeDefinition.Type.DATETIME;
     }
-    else if((cls == byte[].class))
+    else if ((cls == byte[].class))
     {
       return AttributeDefinition.Type.BINARY;
     }
@@ -593,7 +593,7 @@ public class SchemaUtils
     Schema schemaAnnotation = cls.getAnnotation(Schema.class);
 
     // Only generate schema for annotated classes.
-    if(schemaAnnotation == null)
+    if (schemaAnnotation == null)
     {
       return null;
     }
@@ -617,12 +617,12 @@ public class SchemaUtils
                                 @NotNull final String fieldName)
   {
     Class<?> currentClass = cls;
-    while(currentClass != null)
+    while (currentClass != null)
     {
       Field [] fields = currentClass.getDeclaredFields();
-      for(Field field : fields)
+      for (Field field : fields)
       {
-        if(field.getName().equals(fieldName))
+        if (field.getName().equals(fieldName))
         {
           return field;
         }
@@ -644,7 +644,6 @@ public class SchemaUtils
   {
     return (cls.isArray() && byte[].class != cls) ||
         Collection.class.isAssignableFrom(cls);
-
   }
 
   /**
@@ -672,7 +671,7 @@ public class SchemaUtils
   private static String getSchemaIdFromAnnotation(
       @Nullable final Schema schemaAnnotation)
   {
-    if(schemaAnnotation != null)
+    if (schemaAnnotation != null)
     {
       return schemaAnnotation.id();
     }
@@ -690,7 +689,7 @@ public class SchemaUtils
   @Nullable
   public static String getNameFromSchemaAnnotation(@NotNull final Class<?> cls)
   {
-    Schema schema = (Schema)cls.getAnnotation(Schema.class);
+    Schema schema = (Schema) cls.getAnnotation(Schema.class);
     return SchemaUtils.getNameFromSchemaAnnotation(schema);
   }
 
@@ -704,7 +703,7 @@ public class SchemaUtils
   private static String getNameFromSchemaAnnotation(
       @Nullable final Schema schemaAnnotation)
   {
-    if(schemaAnnotation != null)
+    if (schemaAnnotation != null)
     {
       return schemaAnnotation.name();
     }
@@ -766,7 +765,7 @@ public class SchemaUtils
   @NotNull
   public static String forceToBeUrn(@NotNull final String string)
   {
-    if(isUrn(string))
+    if (isUrn(string))
     {
       return string;
     }

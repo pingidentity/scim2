@@ -123,7 +123,7 @@ public final class GenericScimResource implements ScimResource
     try
     {
       List<JsonNode> values = JsonUtils.findMatchingPaths(META, objectNode);
-      if(values.isEmpty())
+      if (values.isEmpty())
       {
         return null;
       }
@@ -163,7 +163,7 @@ public final class GenericScimResource implements ScimResource
     try
     {
       JsonNode value = JsonUtils.getValue(ID, objectNode);
-      if(value.isNull())
+      if (value.isNull())
       {
         return null;
       }
@@ -202,7 +202,7 @@ public final class GenericScimResource implements ScimResource
     try
     {
       JsonNode value = JsonUtils.getValue(SCHEMAS, objectNode);
-      if(value.isNull() || !value.isArray())
+      if (value.isNull() || !value.isArray())
       {
         return Collections.emptyList();
       }
@@ -251,7 +251,7 @@ public final class GenericScimResource implements ScimResource
     try
     {
       JsonNode value = JsonUtils.getValue(EXTERNAL_ID, objectNode);
-      if(value.isNull())
+      if (value.isNull())
       {
         return null;
       }
@@ -725,7 +725,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(String value : values)
+    for (String value : values)
     {
       valuesArrayNode.add(value);
     }
@@ -1226,7 +1226,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(Double value : values)
+    for (Double value : values)
     {
       valuesArrayNode.add(value);
     }
@@ -1578,7 +1578,7 @@ public final class GenericScimResource implements ScimResource
           throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(Integer value : values)
+    for (Integer value : values)
     {
       valuesArrayNode.add(value);
     }
@@ -1928,7 +1928,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(Long value : values)
+    for (Long value : values)
     {
       valuesArrayNode.add(value);
     }
@@ -2370,7 +2370,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     JsonNode jsonNode = getValue(path);
-    if(jsonNode.isNull())
+    if (jsonNode.isNull())
     {
       return null;
     }
@@ -2482,11 +2482,11 @@ public final class GenericScimResource implements ScimResource
     {
       return JsonUtils.getObjectReader().forType(Date.class).readValue(node);
     }
-    catch(JsonProcessingException ex)
+    catch (JsonProcessingException ex)
     {
       throw new ServerErrorException(ex.getMessage());
     }
-    catch(IOException ex)
+    catch (IOException ex)
     {
       throw new ServerErrorException(ex.getMessage());
     }
@@ -2766,7 +2766,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     JsonNode jsonNode = getValue(path);
-    if(jsonNode.isNull())
+    if (jsonNode.isNull())
     {
       return null;
     }
@@ -2855,7 +2855,7 @@ public final class GenericScimResource implements ScimResource
       try
       {
         byte[] value = iterator.next().binaryValue();
-        if(value == null)
+        if (value == null)
         {
           // this is not a binary or text node.
           throw new ServerErrorException("Value at path " + path +
@@ -3058,7 +3058,7 @@ public final class GenericScimResource implements ScimResource
       throws ScimException
   {
     ArrayNode valuesArrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
-    for(URI value : values)
+    for (URI value : values)
     {
       valuesArrayNode.add(value.toString());
     }
@@ -3154,7 +3154,7 @@ public final class GenericScimResource implements ScimResource
       JsonNode jsonNode = getValue(path);
       return jsonNode.isNull() ? null : new URI(jsonNode.textValue());
     }
-    catch(URISyntaxException ex)
+    catch (URISyntaxException ex)
     {
       throw new ServerErrorException(ex.getMessage());
     }

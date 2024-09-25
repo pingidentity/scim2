@@ -97,7 +97,7 @@ public class ScimService implements ScimInterface
   public ServiceProviderConfigResource getServiceProviderConfig()
       throws ScimException
   {
-    if(serviceProviderConfig == null)
+    if (serviceProviderConfig == null)
     {
       serviceProviderConfig = retrieve(
           baseTarget.path(SERVICE_PROVIDER_CONFIG_ENDPOINT).getUri(),
@@ -428,7 +428,7 @@ public class ScimService implements ScimInterface
   {
     ModifyRequestBuilder.Typed requestBuilder = new ModifyRequestBuilder.Typed(
         baseTarget.path(endpoint).path(id));
-    for(PatchOperation op : patchRequest.getOperations())
+    for (PatchOperation op : patchRequest.getOperations())
     {
       requestBuilder.addOperation(op);
     }
@@ -489,7 +489,7 @@ public class ScimService implements ScimInterface
         new ModifyRequestBuilder.Generic<T>(resolveWebTarget(
             checkAndGetLocation(resource)), resource);
 
-    for(PatchOperation op : patchRequest.getOperations())
+    for (PatchOperation op : patchRequest.getOperations())
     {
       requestBuilder.addOperation(op);
     }
@@ -577,7 +577,7 @@ public class ScimService implements ScimInterface
   private WebTarget resolveWebTarget(@NotNull final URI url)
   {
     URI relativePath;
-    if(url.isAbsolute())
+    if (url.isAbsolute())
     {
       relativePath = baseTarget.getUri().relativize(url);
       if (relativePath.equals(url))
@@ -609,7 +609,7 @@ public class ScimService implements ScimInterface
       throws IllegalArgumentException
   {
     Meta meta = resource.getMeta();
-    if(meta == null || meta.getLocation() == null)
+    if (meta == null || meta.getLocation() == null)
     {
       throw new IllegalArgumentException(
           "Resource URI must be specified by meta.location");

@@ -82,11 +82,11 @@ public class DiffTestCase
         Path.root().attribute("title"))));
     ObjectNode replaceValue = JsonUtils.getJsonNodeFactory().objectNode();
     replaceValue.put("userType", "manager");
-    replaceValue.put("nickName","bjj3");
+    replaceValue.put("nickName", "bjj3");
     assertTrue(d.contains(PatchOperation.replace(replaceValue)));
 
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
-    for(PatchOperation op : d2)
+    for (PatchOperation op : d2)
     {
       op.apply(source);
     }
@@ -122,7 +122,7 @@ public class DiffTestCase
     assertEquals(d.size(), 0);
 
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
-    for(PatchOperation op : d2)
+    for (PatchOperation op : d2)
     {
       op.apply(source);
     }
@@ -138,10 +138,10 @@ public class DiffTestCase
     d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 1);
     assertTrue(d.contains(PatchOperation.replace((ObjectNode)
-        JsonUtils.getJsonNodeFactory().objectNode().set("name",name))));
+        JsonUtils.getJsonNodeFactory().objectNode().set("name", name))));
 
     d2 = JsonUtils.diff(source, target, true);
-    for(PatchOperation op : d2)
+    for (PatchOperation op : d2)
     {
       op.apply(source);
     }
@@ -161,7 +161,7 @@ public class DiffTestCase
         Path.root().attribute("name"))));
 
     d2 = JsonUtils.diff(source, target, true);
-    for(PatchOperation op : d2)
+    for (PatchOperation op : d2)
     {
       op.apply(source);
     }
@@ -181,7 +181,7 @@ public class DiffTestCase
         Path.root().attribute("name").attribute("honorificSuffix"))));
 
     d2 = JsonUtils.diff(source, target, true);
-    for(PatchOperation op : d2)
+    for (PatchOperation op : d2)
     {
       op.apply(source);
     }
@@ -202,7 +202,7 @@ public class DiffTestCase
     assertTrue(d.contains(PatchOperation.replace(replaceValue)));
 
     d2 = JsonUtils.diff(source, target, true);
-    for(PatchOperation op : d2)
+    for (PatchOperation op : d2)
     {
       op.apply(source);
     }
@@ -222,7 +222,7 @@ public class DiffTestCase
     assertEquals(d.size(), 0);
 
     d2 = JsonUtils.diff(source, target, true);
-    for(PatchOperation op : d2)
+    for (PatchOperation op : d2)
     {
       op.apply(source);
     }
@@ -297,7 +297,7 @@ public class DiffTestCase
     assertTrue(d.contains(PatchOperation.add(addValue)));
 
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
-    for(PatchOperation op : d2)
+    for (PatchOperation op : d2)
     {
       op.apply(source);
     }
@@ -308,18 +308,18 @@ public class DiffTestCase
     JsonNode sourcePhotos = source.remove("photos");
     JsonNode targetPhotos = target.remove("photos");
     assertEquals(sourcePhotos.size(), targetPhotos.size());
-    for(JsonNode sourceValue : sourcePhotos)
+    for (JsonNode sourceValue : sourcePhotos)
     {
       boolean found = false;
-      for(JsonNode targetValue : targetPhotos)
+      for (JsonNode targetValue : targetPhotos)
       {
-        if(sourceValue.equals(targetValue))
+        if (sourceValue.equals(targetValue))
         {
           found = true;
           break;
         }
       }
-      if(!found)
+      if (!found)
       {
         fail("Source photo value " + sourceValue +
             " not in target photo array " + targetPhotos);
@@ -492,7 +492,7 @@ public class DiffTestCase
     assertTrue(d.contains(PatchOperation.add(addValue)));
 
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
-    for(PatchOperation op : d2)
+    for (PatchOperation op : d2)
     {
       op.apply(source);
     }
@@ -694,7 +694,7 @@ public class DiffTestCase
 
     target = JsonUtils.getJsonNodeFactory().objectNode();
     List<PatchOperation> d2 = JsonUtils.diff(source, target, true);
-    for(PatchOperation op : d2)
+    for (PatchOperation op : d2)
     {
       op.apply(source);
     }
@@ -1096,10 +1096,10 @@ public class DiffTestCase
   private void removeNullNodes(JsonNode object)
   {
     Iterator<JsonNode> i = object.elements();
-    while(i.hasNext())
+    while (i.hasNext())
     {
       JsonNode field = i.next();
-      if(field.isNull() ||
+      if (field.isNull() ||
           (field.isArray() && field.size() == 0))
       {
         i.remove();

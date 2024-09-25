@@ -117,7 +117,7 @@ public class GenericScimResourceObjectTest
         dateFormat.format(meta.getLastModified().getTime()),
         "2015-02-27T11:29:39.042Z");
 
-    ObjectNode metaNode = (ObjectNode)JsonUtils.getObjectReader().readTree(
+    ObjectNode metaNode = (ObjectNode) JsonUtils.getObjectReader().readTree(
         JsonUtils.getObjectWriter().writeValueAsString(gso.getMeta()));
     Assert.assertEquals(
         metaNode.get("created").asText(),
@@ -132,7 +132,7 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals(meta.getVersion(), "1.0");
 
     Assert.assertEquals(
-        ((GenericScimResource)cso).getObjectNode().path("shoeSize").asText(),
+        ((GenericScimResource) cso).getObjectNode().path("shoeSize").asText(),
         "12W");
   }
 
@@ -621,9 +621,9 @@ public class GenericScimResourceObjectTest
       List<byte[]> byteArrayList, byte[] bytes)
   {
     boolean found = false;
-    for(byte[] bytesFromList : byteArrayList)
+    for (byte[] bytesFromList : byteArrayList)
     {
-      if(Arrays.equals(bytesFromList, bytes))
+      if (Arrays.equals(bytesFromList, bytes))
       {
         found = true;
         break;

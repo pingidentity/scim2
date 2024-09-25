@@ -137,7 +137,7 @@ public final class PatchRequest
   public void apply(@NotNull final GenericScimResource object)
       throws ScimException
   {
-    for(PatchOperation operation : this)
+    for (PatchOperation operation : this)
     {
       operation.apply(object.getObjectNode());
     }

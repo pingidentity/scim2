@@ -164,6 +164,14 @@
     </module>
 
 
+    <!-- Ensure that there are spaces after fields such as 'if'. -->
+    <module name="WhitespaceAfter">
+      <property name="tokens"
+                value="COMMA, SEMI, TYPECAST, LITERAL_IF, LITERAL_ELSE,
+                    LITERAL_WHILE, LITERAL_DO, LITERAL_FOR, DO_WHILE"/>
+    </module>
+
+
     <!-- Ensure that all long constants are followed by a capital L. -->
     <module name="UpperEll" />
   </module>

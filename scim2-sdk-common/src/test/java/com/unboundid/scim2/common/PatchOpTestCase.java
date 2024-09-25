@@ -347,7 +347,7 @@ public class PatchOpTestCase
             "}");
 
     GenericScimResource scimResource =
-        new GenericScimResource((ObjectNode)prePatchResource);
+        new GenericScimResource((ObjectNode) prePatchResource);
     patchOp.apply(scimResource);
     assertEquals(scimResource.getObjectNode(), postPatchResource);
 
@@ -387,7 +387,7 @@ public class PatchOpTestCase
               "  ]\n" +
               "}");
     }
-    catch(JsonMappingException e)
+    catch (JsonMappingException e)
     {
       assertEquals(
           ((BadRequestException) e.getCause()).getScimError().getScimType(),
@@ -411,7 +411,7 @@ public class PatchOpTestCase
             "  ]\n" +
             "}");
     }
-    catch(JsonMappingException e)
+    catch (JsonMappingException e)
     {
       assertEquals(
           ((BadRequestException) e.getCause()).getScimError().getScimType(),
@@ -436,7 +436,7 @@ public class PatchOpTestCase
             "  ]\n" +
             "}");
     }
-    catch(JsonMappingException e)
+    catch (JsonMappingException e)
     {
       assertEquals(
           ((BadRequestException) e.getCause()).getScimError().getScimType(),

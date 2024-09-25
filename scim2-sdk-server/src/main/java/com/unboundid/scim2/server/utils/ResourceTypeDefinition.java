@@ -104,11 +104,11 @@ public final class ResourceTypeDefinition
      */
     public Builder(@NotNull final String name, @NotNull final String endpoint)
     {
-      if(name == null)
+      if (name == null)
       {
         throw new IllegalArgumentException("name must not be null");
       }
-      if(endpoint == null)
+      if (endpoint == null)
       {
         throw new IllegalArgumentException("endpoint must not be null");
       }
@@ -212,11 +212,11 @@ public final class ResourceTypeDefinition
       Map<SchemaResource, Boolean> schemaExtensions =
           new HashMap<SchemaResource, Boolean>(requiredSchemaExtensions.size() +
               optionalSchemaExtensions.size());
-      for(SchemaResource schema : requiredSchemaExtensions)
+      for (SchemaResource schema : requiredSchemaExtensions)
       {
         schemaExtensions.put(schema, true);
       }
-      for(SchemaResource schema : optionalSchemaExtensions)
+      for (SchemaResource schema : optionalSchemaExtensions)
       {
         schemaExtensions.put(schema, false);
       }
@@ -255,13 +255,13 @@ public final class ResourceTypeDefinition
         SchemaUtils.COMMON_ATTRIBUTE_DEFINITIONS);
 
     // Add the core attributes
-    if(coreSchema != null)
+    if (coreSchema != null)
     {
       buildAttributeNotationMap(Path.root(), coreSchema.getAttributes());
     }
 
     // Add the extension attributes
-    for(SchemaResource schemaExtension : schemaExtensions.keySet())
+    for (SchemaResource schemaExtension : schemaExtensions.keySet())
     {
       buildAttributeNotationMap(Path.root(schemaExtension.getId()),
           schemaExtension.getAttributes());
@@ -272,11 +272,11 @@ public final class ResourceTypeDefinition
       @NotNull final Path parentPath,
       @NotNull final Collection<AttributeDefinition> attributes)
   {
-    for(AttributeDefinition attribute : attributes)
+    for (AttributeDefinition attribute : attributes)
     {
       Path path = parentPath.attribute(attribute.getName());
       attributeNotationMap.put(path, attribute);
-      if(attribute.getSubAttributes() != null)
+      if (attribute.getSubAttributes() != null)
       {
         buildAttributeNotationMap(path, attribute.getSubAttributes());
       }
@@ -372,7 +372,7 @@ public final class ResourceTypeDefinition
   @NotNull
   public Path normalizePath(@NotNull final Path path)
   {
-    if(path.getSchemaUrn() != null && coreSchema != null &&
+    if (path.getSchemaUrn() != null && coreSchema != null &&
         path.getSchemaUrn().equalsIgnoreCase(coreSchema.getId()))
     {
       return Path.root().attribute(path);
@@ -391,7 +391,7 @@ public final class ResourceTypeDefinition
     try
     {
       URI coreSchemaUri = null;
-      if(coreSchema != null)
+      if (coreSchema != null)
       {
         coreSchemaUri = new URI(coreSchema.getId());
       }
@@ -402,7 +402,7 @@ public final class ResourceTypeDefinition
             new ArrayList<ResourceTypeResource.SchemaExtension>(
                 schemaExtensions.size());
 
-        for(Map.Entry<SchemaResource, Boolean> schemaExtension :
+        for (Map.Entry<SchemaResource, Boolean> schemaExtension :
             schemaExtensions.entrySet())
         {
           schemaExtensionList.add(new ResourceTypeResource.SchemaExtension(
@@ -414,7 +414,7 @@ public final class ResourceTypeDefinition
       return new ResourceTypeResource(id == null ? name : id, name, description,
           URI.create(endpoint), coreSchemaUri, schemaExtensionList);
     }
-    catch(URISyntaxException e)
+    catch (URISyntaxException e)
     {
       throw new RuntimeException(e);
     }

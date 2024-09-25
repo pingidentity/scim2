@@ -104,13 +104,13 @@ public class JsonUtils
     {
       ArrayNode matchingArray = getJsonNodeFactory().arrayNode();
       Iterator<JsonNode> i = array.elements();
-      while(i.hasNext())
+      while (i.hasNext())
       {
         JsonNode node = i.next();
-        if(FilterEvaluator.evaluate(valueFilter, node))
+        if (FilterEvaluator.evaluate(valueFilter, node))
         {
           matchingArray.add(node);
-          if(removeMatching)
+          if (removeMatching)
           {
             i.remove();
           }
@@ -149,7 +149,7 @@ public class JsonUtils
         throws ScimException
     {
       JsonNode node = parent.path(field);
-      if(node.isArray() && valueFilter != null)
+      if (node.isArray() && valueFilter != null)
       {
         return filterArray((ArrayNode) node, valueFilter, false);
       }
@@ -165,11 +165,11 @@ public class JsonUtils
         throws ScimException
     {
       JsonNode node = parent.path(field);
-      if(node.isArray())
+      if (node.isArray())
       {
         ArrayNode arrayNode = (ArrayNode) node;
 
-        if(valueFilter != null)
+        if (valueFilter != null)
         {
           arrayNode = filterArray((ArrayNode) node, valueFilter,
               removeValues);
@@ -179,17 +179,17 @@ public class JsonUtils
           values.add(arrayNode);
         }
 
-        if(removeValues && (valueFilter == null || node.size() == 0))
+        if (removeValues && (valueFilter == null || node.size() == 0))
         {
           // There are no more values left after removing the matching values.
           // Just remove the field.
           parent.remove(field);
         }
       }
-      else if(node.isObject() || node.isValueNode())
+      else if (node.isObject() || node.isValueNode())
       {
         values.add(node);
-        if(removeValues)
+        if (removeValues)
         {
           parent.remove(field);
         }
@@ -235,27 +235,27 @@ public class JsonUtils
         throws ScimException
     {
       JsonNode node = parent.path(field);
-      if(node.isValueNode() || ((node.isMissingNode() || node.isNull()) &&
+      if (node.isValueNode() || ((node.isMissingNode() || node.isNull()) &&
           valueFilter != null))
       {
         throw BadRequestException.noTarget("Attribute " +
             field + " does not have a multi-valued or " +
             "complex value");
       }
-      if(node.isMissingNode() || node.isNull())
+      if (node.isMissingNode() || node.isNull())
       {
         // Create the missing node as an JSON object node.
         ObjectNode newObjectNode = getJsonNodeFactory().objectNode();
         parent.set(field, newObjectNode);
         return newObjectNode;
       }
-      else if(node.isArray())
+      else if (node.isArray())
       {
         ArrayNode arrayNode = (ArrayNode) node;
-        if(valueFilter != null)
+        if (valueFilter != null)
         {
           arrayNode = filterArray(arrayNode, valueFilter, false);
-          if(arrayNode.size() == 0)
+          if (arrayNode.size() == 0)
           {
             throw BadRequestException.noTarget("Attribute " +
                 field + " does not have a value matching the " +
@@ -428,9 +428,9 @@ public class JsonUtils
 
       // When key is null, the node to update is the parent itself.
       JsonNode node = key == null ? parent : parent.path(key);
-      if(node.isObject())
+      if (node.isObject())
       {
-        if(value.isObject())
+        if (value.isObject())
         {
           // Go through the fields of both objects and merge them.
           ObjectNode targetObject = (ObjectNode) node;
@@ -448,25 +448,25 @@ public class JsonUtils
           parent.set(key, value);
         }
       }
-      else if(node.isArray())
+      else if (node.isArray())
       {
-        if(value.isArray() && appendValues)
+        if (value.isArray() && appendValues)
         {
           // Append the new values to the existing ones.
           ArrayNode targetArray = (ArrayNode) node;
           ArrayNode valueArray = (ArrayNode) value;
-          for(JsonNode valueNode : valueArray)
+          for (JsonNode valueNode : valueArray)
           {
             boolean valueFound = false;
-            for(JsonNode targetNode : targetArray)
+            for (JsonNode targetNode : targetArray)
             {
-              if(valueNode.equals(targetNode))
+              if (valueNode.equals(targetNode))
               {
                 valueFound = true;
                 break;
               }
             }
-            if(!valueFound)
+            if (!valueFound)
             {
               targetArray.add(valueNode);
             }
@@ -498,7 +498,7 @@ public class JsonUtils
         throws ScimException
     {
       JsonNode node = parent.path(field);
-      if(node.isArray() && valueFilter != null)
+      if (node.isArray() && valueFilter != null)
       {
         return filterArray((ArrayNode) node, valueFilter, false);
       }
@@ -512,18 +512,18 @@ public class JsonUtils
         throws ScimException
     {
       JsonNode node = parent.path(field);
-      if(node.isArray() && valueFilter != null)
+      if (node.isArray() && valueFilter != null)
       {
         node = filterArray((ArrayNode) node, valueFilter, false);
       }
 
-      if(node.isArray())
+      if (node.isArray())
       {
-        if(node.size() > 0)
+        if (node.size() > 0)
         {
           setPathPresent(true);
         }
-      } else if(! node.isMissingNode())
+      } else if (! node.isMissingNode())
       {
         setPathPresent(true);
       }
@@ -583,7 +583,7 @@ public class JsonUtils
   {
     GatheringNodeVisitor visitor = new GatheringNodeVisitor(false);
     traverseValues(visitor, node, path);
-    if(visitor.values.isEmpty())
+    if (visitor.values.isEmpty())
     {
       return NullNode.getInstance();
     }
@@ -862,7 +862,7 @@ public class JsonUtils
       }
       else
       {
-        if(attributeDefinition != null &&
+        if (attributeDefinition != null &&
             attributeDefinition.getType() == AttributeDefinition.Type.STRING &&
             attributeDefinition.isCaseExact())
         {
@@ -880,7 +880,7 @@ public class JsonUtils
         return n1.decimalValue().compareTo(n2.decimalValue());
       }
 
-      if(n1.isFloatingPointNumber() || n2.isFloatingPointNumber())
+      if (n1.isFloatingPointNumber() || n2.isFloatingPointNumber())
       {
         return Double.compare(n1.doubleValue(), n2.doubleValue());
       }
@@ -978,9 +978,9 @@ public class JsonUtils
     String field = null;
     Filter valueFilter = null;
     int pathDepth = path.size();
-    if(path.getSchemaUrn() != null)
+    if (path.getSchemaUrn() != null)
     {
-      if(index > 0)
+      if (index > 0)
       {
         Path.Element element = path.getElement(index - 1);
         field = element.getAttribute();
@@ -992,29 +992,29 @@ public class JsonUtils
       }
       pathDepth += 1;
     }
-    else if(path.size() > 0)
+    else if (path.size() > 0)
     {
       Path.Element element = path.getElement(index);
       field = element.getAttribute();
       valueFilter = element.getValueFilter();
     }
 
-    if(index < pathDepth - 1)
+    if (index < pathDepth - 1)
     {
       JsonNode child = nodeVisitor.visitInnerNode(node, field, valueFilter);
-      if(child.isArray())
+      if (child.isArray())
       {
-        for(JsonNode value : child)
+        for (JsonNode value : child)
         {
-          if(value.isObject())
+          if (value.isObject())
           {
-            traverseValues(nodeVisitor, (ObjectNode)value, index + 1, path);
+            traverseValues(nodeVisitor, (ObjectNode) value, index + 1, path);
           }
         }
       }
-      else if(child.isObject())
+      else if (child.isObject())
       {
-        traverseValues(nodeVisitor, (ObjectNode)child, index + 1, path);
+        traverseValues(nodeVisitor, (ObjectNode) child, index + 1, path);
       }
     }
     else
@@ -1140,7 +1140,7 @@ public class JsonUtils
   public static Date nodeToDateValue(@NotNull final JsonNode node)
       throws IllegalArgumentException
   {
-    if(!node.isTextual())
+    if (!node.isTextual())
     {
       throw new IllegalArgumentException(
           "non-textual node cannot be parsed as DateTime type");

@@ -58,9 +58,9 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
       throws IOException
   {
     String requestPath = requestContext.getUriInfo().getPath();
-    for(String alias : getAliases())
+    for (String alias : getAliases())
     {
-      if(requestPath.startsWith(alias + "/") || requestPath.equals(alias))
+      if (requestPath.startsWith(alias + "/") || requestPath.equals(alias))
       {
         String authSubjectPath;
         try
@@ -112,7 +112,7 @@ public class AuthenticatedSubjectAliasFilter implements ContainerRequestFilter
       @Nullable final SecurityContext securityContext)
           throws ScimException
   {
-    if(securityContext == null || securityContext.getUserPrincipal() == null)
+    if (securityContext == null || securityContext.getUserPrincipal() == null)
     {
       throw new NotImplementedException("/Me not supported");
     }

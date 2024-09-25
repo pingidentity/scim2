@@ -102,16 +102,16 @@ class TestRequestFilter implements ContainerRequestFilter
                                MultivaluedMap<String, String> expected,
                                boolean isCommaDelimited)
   {
-    if(!expected.isEmpty())
+    if (!expected.isEmpty())
     {
-      for(Map.Entry<String, List<String>> expectedEntry : expected.entrySet())
+      for (Map.Entry<String, List<String>> expectedEntry : expected.entrySet())
       {
         List<String> actualEntry = actual.get(expectedEntry.getKey());
-        if(actualEntry != null && !actualEntry.isEmpty())
+        if (actualEntry != null && !actualEntry.isEmpty())
         {
           List<String> actualValues;
           // Checking a header.
-          if(isCommaDelimited)
+          if (isCommaDelimited)
           {
             actualValues =
                 Arrays.asList(StaticUtils.splitCommaSeparatedString(
@@ -122,7 +122,7 @@ class TestRequestFilter implements ContainerRequestFilter
           {
             actualValues = actual.get(expectedEntry.getKey());
           }
-          if(actualValues.containsAll(expectedEntry.getValue()))
+          if (actualValues.containsAll(expectedEntry.getValue()))
           {
             continue;
           }

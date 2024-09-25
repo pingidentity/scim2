@@ -81,7 +81,7 @@ public class ScimResourceTrimmer extends ResourceTrimmer
         AttributeDefinition.Returned.DEFAULT :
         attributeDefinition.getReturned();
 
-    switch(returned)
+    switch (returned)
     {
       case ALWAYS:
         return true;
@@ -98,7 +98,7 @@ public class ScimResourceTrimmer extends ResourceTrimmer
         // Return if it is not one of the excluded query attributes and no
         // override query attributes are provided. If override query attributes
         // are provided, only return if it is one of them.
-        if(excluded)
+        if (excluded)
         {
           return !pathContains(queryAttributes, path);
         }

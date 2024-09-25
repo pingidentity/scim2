@@ -59,12 +59,12 @@ public class DotSearchFilter implements ContainerRequestFilter
   public void filter(@NotNull final ContainerRequestContext requestContext)
       throws IOException
   {
-    if(requestContext.getMethod().equals(HttpMethod.POST) &&
+    if (requestContext.getMethod().equals(HttpMethod.POST) &&
         requestContext.getUriInfo().getPath().endsWith(
             SEARCH_WITH_POST_PATH_EXTENSION))
 
     {
-      if(requestContext.getMediaType() == null ||
+      if (requestContext.getMediaType() == null ||
           !(requestContext.getMediaType().isCompatible(
               ServerUtils.MEDIA_TYPE_SCIM_TYPE) ||
               requestContext.getMediaType().isCompatible(
@@ -77,7 +77,7 @@ public class DotSearchFilter implements ContainerRequestFilter
           JsonUtils.getObjectReader().forType(SearchRequest.class);
       JsonParser p = reader.getFactory().createParser(
           requestContext.getEntityStream());
-      if(p.nextToken() == null)
+      if (p.nextToken() == null)
       {
         throw new BadRequestException(
             new NoContentException("Empty Entity"));
@@ -86,46 +86,46 @@ public class DotSearchFilter implements ContainerRequestFilter
       UriBuilder builder = requestContext.getUriInfo().getBaseUriBuilder();
       List<PathSegment> pathSegments =
           requestContext.getUriInfo().getPathSegments();
-      for(int i = 0; i < pathSegments.size() - 1; i ++)
+      for (int i = 0; i < pathSegments.size() - 1; i++)
       {
         builder.path(pathSegments.get(i).getPath());
       }
-      if(searchRequest.getAttributes() != null)
+      if (searchRequest.getAttributes() != null)
       {
         builder.queryParam(QUERY_PARAMETER_ATTRIBUTES,
             ServerUtils.encodeTemplateNames(
                 StaticUtils.collectionToString(
                     searchRequest.getAttributes(), ",")));
       }
-      if(searchRequest.getExcludedAttributes() != null)
+      if (searchRequest.getExcludedAttributes() != null)
       {
         builder.queryParam(QUERY_PARAMETER_EXCLUDED_ATTRIBUTES,
             ServerUtils.encodeTemplateNames(
                     StaticUtils.collectionToString(
                     searchRequest.getExcludedAttributes(), ",")));
       }
-      if(searchRequest.getFilter() != null)
+      if (searchRequest.getFilter() != null)
       {
         builder.queryParam(QUERY_PARAMETER_FILTER,
             ServerUtils.encodeTemplateNames(searchRequest.getFilter()));
       }
-      if(searchRequest.getSortBy() != null)
+      if (searchRequest.getSortBy() != null)
       {
         builder.queryParam(QUERY_PARAMETER_SORT_BY,
             ServerUtils.encodeTemplateNames(searchRequest.getSortBy()));
       }
-      if(searchRequest.getSortOrder() != null)
+      if (searchRequest.getSortOrder() != null)
       {
         builder.queryParam(QUERY_PARAMETER_SORT_ORDER,
             ServerUtils.encodeTemplateNames(
                 searchRequest.getSortOrder().getName()));
       }
-      if(searchRequest.getStartIndex() != null)
+      if (searchRequest.getStartIndex() != null)
       {
         builder.queryParam(QUERY_PARAMETER_PAGE_START_INDEX,
             searchRequest.getStartIndex());
       }
-      if(searchRequest.getCount() != null)
+      if (searchRequest.getCount() != null)
       {
         builder.queryParam(QUERY_PARAMETER_PAGE_SIZE,
             searchRequest.getCount());

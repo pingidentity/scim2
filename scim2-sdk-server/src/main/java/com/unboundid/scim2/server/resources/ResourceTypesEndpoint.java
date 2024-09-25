@@ -87,7 +87,7 @@ public class ResourceTypesEndpoint
       @NotNull @Context final UriInfo uriInfo)
           throws ScimException
   {
-    if(filterString != null)
+    if (filterString != null)
     {
       throw new ForbiddenException("Filtering not allowed");
     }
@@ -101,7 +101,7 @@ public class ResourceTypesEndpoint
     Collection<ResourceTypeResource> resourceTypes = getResourceTypes();
     Collection<GenericScimResource> preparedResources =
         new ArrayList<GenericScimResource>(resourceTypes.size());
-    for(ResourceTypeResource resourceType : resourceTypes)
+    for (ResourceTypeResource resourceType : resourceTypes)
     {
       GenericScimResource preparedResource =
           resourceType.asGenericScimResource();
@@ -133,10 +133,10 @@ public class ResourceTypesEndpoint
     ResourcePreparer<GenericScimResource> resourcePreparer =
         new ResourcePreparer<GenericScimResource>(
             RESOURCE_TYPE_DEFINITION, uriInfo);
-    for(ResourceTypeResource resourceType : getResourceTypes())
+    for (ResourceTypeResource resourceType : getResourceTypes())
     {
       GenericScimResource resource = resourceType.asGenericScimResource();
-      if(filter.visit(filterEvaluator, resource.getObjectNode()))
+      if (filter.visit(filterEvaluator, resource.getObjectNode()))
       {
         resourcePreparer.setResourceTypeAndLocation(resource);
         return resource;
@@ -161,22 +161,22 @@ public class ResourceTypesEndpoint
   {
     Set<ResourceTypeResource> resourceTypes =
         new HashSet<ResourceTypeResource>();
-    for(Class<?> resourceClass : application.getClasses())
+    for (Class<?> resourceClass : application.getClasses())
     {
       ResourceTypeDefinition resourceTypeDefinition =
           ResourceTypeDefinition.fromJaxRsResource(resourceClass);
-      if(resourceTypeDefinition != null &&
+      if (resourceTypeDefinition != null &&
           resourceTypeDefinition.isDiscoverable())
       {
         resourceTypes.add(resourceTypeDefinition.toScimResource());
       }
     }
 
-    for(Object resourceInstance : application.getSingletons())
+    for (Object resourceInstance : application.getSingletons())
     {
       ResourceTypeDefinition resourceTypeDefinition =
           ResourceTypeDefinition.fromJaxRsResource(resourceInstance.getClass());
-      if(resourceTypeDefinition != null &&
+      if (resourceTypeDefinition != null &&
           resourceTypeDefinition.isDiscoverable())
       {
         resourceTypes.add(resourceTypeDefinition.toScimResource());

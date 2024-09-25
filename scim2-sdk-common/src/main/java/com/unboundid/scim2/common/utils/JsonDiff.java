@@ -64,11 +64,11 @@ public class JsonDiff
     ObjectNode targetToAdd = target.deepCopy();
     ObjectNode targetToReplace = target.deepCopy();
     diff(Path.root(), source, targetToAdd, targetToReplace, ops, removeMissing);
-    if(targetToReplace.size() > 0)
+    if (targetToReplace.size() > 0)
     {
       ops.add(PatchOperation.replace(targetToReplace));
     }
-    if(targetToAdd.size() > 0)
+    if (targetToAdd.size() > 0)
     {
       ops.add(PatchOperation.add(targetToAdd));
     }
@@ -105,7 +105,7 @@ public class JsonDiff
           operations, removeMissing, si.next());
     }
 
-    if(targetToAdd != targetToReplace)
+    if (targetToAdd != targetToReplace)
     {
       // Now iterate through the fields in targetToAdd and remove any that
       // are not in the source. These new fields should only be in
@@ -144,7 +144,7 @@ public class JsonDiff
 
     if (targetValueToAdd == null)
     {
-      if(removeMissing)
+      if (removeMissing)
       {
         operations.add(PatchOperation.remove(path));
       }
@@ -242,7 +242,7 @@ public class JsonDiff
   {
     if (targetValueToAdd.size() == 0)
     {
-      if((sourceNode != null) &&
+      if ((sourceNode != null) &&
           (sourceNode.isArray()) &&
           (sourceNode.size() == 0))
       {
@@ -380,7 +380,7 @@ public class JsonDiff
   private JsonNode removeMatchingValue(@NotNull final JsonNode sourceValue,
                                        @NotNull final ArrayNode targetValues)
   {
-    if(sourceValue.isObject())
+    if (sourceValue.isObject())
     {
       // Find a target value that has the most fields in common with the source
       // and have identical values. Common fields that are also one of the
@@ -388,29 +388,29 @@ public class JsonDiff
       // a higher weight when determining the best matching value.
       TreeMap<Integer, Integer> matchScoreToIndex =
           new TreeMap<Integer, Integer>();
-      for(int i = 0; i < targetValues.size(); i++)
+      for (int i = 0; i < targetValues.size(); i++)
       {
         JsonNode targetValue = targetValues.get(i);
-        if(targetValue.isObject())
+        if (targetValue.isObject())
         {
           int matchScore = 0;
           Iterator<String> si = sourceValue.fieldNames();
-          while(si.hasNext())
+          while (si.hasNext())
           {
             String field = si.next();
-            if(sourceValue.get(field).equals(targetValue.path(field)))
+            if (sourceValue.get(field).equals(targetValue.path(field)))
             {
-              if(field.equals("value") || field.equals("$ref"))
+              if (field.equals("value") || field.equals("$ref"))
               {
                 // These fields have the highest chance of having unique values.
                 matchScore += 3;
               }
-              else if(field.equals("type") || field.equals("display"))
+              else if (field.equals("type") || field.equals("display"))
               {
                 // These fields should mostly be unique.
                 matchScore += 2;
               }
-              else if(field.equals("primary"))
+              else if (field.equals("primary"))
               {
                 // This field will definitely not be unique.
                 matchScore += 0;
@@ -424,13 +424,13 @@ public class JsonDiff
           }
           // Only consider the match if there is not already match with the same
           // score. This will prefer matches at the same index in the array.
-          if(matchScore > 0 && !matchScoreToIndex.containsKey(matchScore))
+          if (matchScore > 0 && !matchScoreToIndex.containsKey(matchScore))
           {
             matchScoreToIndex.put(matchScore, i);
           }
         }
       }
-      if(!matchScoreToIndex.isEmpty())
+      if (!matchScoreToIndex.isEmpty())
       {
         return targetValues.remove(matchScoreToIndex.lastEntry().getValue());
       }
@@ -438,7 +438,7 @@ public class JsonDiff
     else
     {
       // Find an exact match
-      for(int i = 0; i < targetValues.size(); i++)
+      for (int i = 0; i < targetValues.size(); i++)
       {
         if (JsonUtils.compareTo(sourceValue, targetValues.get(i), null) == 0)
         {
@@ -513,11 +513,11 @@ public class JsonDiff
     while (si.hasNext())
     {
       JsonNode field = si.next();
-      if(field.isNull() || field.isArray() && field.size() == 0)
+      if (field.isNull() || field.isArray() && field.size() == 0)
       {
         si.remove();
       }
-      else if(field.isContainerNode())
+      else if (field.isContainerNode())
       {
         removeNullAndEmptyValues(field);
       }

@@ -75,7 +75,7 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
   Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();
-    if(version != null)
+    if (version != null)
     {
       request.header(HttpHeaders.IF_MATCH, version);
     }
@@ -111,7 +111,7 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
         Entity.entity(resource, getContentType()));
     try
     {
-      if(response.getStatusInfo().getFamily() ==
+      if (response.getStatusInfo().getFamily() ==
           Response.Status.Family.SUCCESSFUL)
       {
         return response.readEntity(cls);

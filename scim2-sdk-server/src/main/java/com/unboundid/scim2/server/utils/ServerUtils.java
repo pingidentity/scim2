@@ -52,14 +52,14 @@ public class ServerUtils
       @NotNull final List<MediaType> acceptableTypes)
   {
     MediaType responseType = null;
-    for(MediaType mediaType : acceptableTypes)
+    for (MediaType mediaType : acceptableTypes)
     {
-      if(mediaType.isCompatible(MEDIA_TYPE_SCIM_TYPE))
+      if (mediaType.isCompatible(MEDIA_TYPE_SCIM_TYPE))
       {
         responseType = MEDIA_TYPE_SCIM_TYPE;
         break;
       }
-      else if(mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE))
+      else if (mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE))
       {
         responseType = MediaType.APPLICATION_JSON_TYPE;
         break;

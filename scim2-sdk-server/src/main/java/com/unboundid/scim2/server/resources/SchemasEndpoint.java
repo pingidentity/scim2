@@ -88,7 +88,7 @@ public class SchemasEndpoint
       @NotNull @Context final UriInfo uriInfo)
           throws ScimException
   {
-    if(filterString != null)
+    if (filterString != null)
     {
       throw new ForbiddenException("Filtering not allowed");
     }
@@ -102,7 +102,7 @@ public class SchemasEndpoint
     Collection<SchemaResource> schemas = getSchemas();
     Collection<GenericScimResource> preparedResources =
         new ArrayList<GenericScimResource>(schemas.size());
-    for(SchemaResource schema : schemas)
+    for (SchemaResource schema : schemas)
     {
       GenericScimResource preparedResource = schema.asGenericScimResource();
       preparer.setResourceTypeAndLocation(preparedResource);
@@ -159,36 +159,36 @@ public class SchemasEndpoint
   {
     Set<SchemaResource> schemas =
         new HashSet<SchemaResource>();
-    for(Class<?> resourceClass : application.getClasses())
+    for (Class<?> resourceClass : application.getClasses())
     {
       ResourceTypeDefinition resourceTypeDefinition =
           ResourceTypeDefinition.fromJaxRsResource(resourceClass);
-      if(resourceTypeDefinition != null &&
+      if (resourceTypeDefinition != null &&
           resourceTypeDefinition.isDiscoverable())
       {
-        if(resourceTypeDefinition.getCoreSchema() != null)
+        if (resourceTypeDefinition.getCoreSchema() != null)
         {
           schemas.add(resourceTypeDefinition.getCoreSchema());
         }
-        for(SchemaResource schemaExtension :
+        for (SchemaResource schemaExtension :
             resourceTypeDefinition.getSchemaExtensions().keySet())
         {
           schemas.add(schemaExtension);
         }
       }
     }
-    for(Object resourceInstance : application.getSingletons())
+    for (Object resourceInstance : application.getSingletons())
     {
       ResourceTypeDefinition resourceTypeDefinition =
           ResourceTypeDefinition.fromJaxRsResource(resourceInstance.getClass());
-      if(resourceTypeDefinition != null &&
+      if (resourceTypeDefinition != null &&
           resourceTypeDefinition.isDiscoverable())
       {
-        if(resourceTypeDefinition.getCoreSchema() != null)
+        if (resourceTypeDefinition.getCoreSchema() != null)
         {
           schemas.add(resourceTypeDefinition.getCoreSchema());
         }
-        for(SchemaResource schemaExtension :
+        for (SchemaResource schemaExtension :
             resourceTypeDefinition.getSchemaExtensions().keySet())
         {
           schemas.add(schemaExtension);

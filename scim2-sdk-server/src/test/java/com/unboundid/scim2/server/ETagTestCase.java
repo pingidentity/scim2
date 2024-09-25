@@ -330,7 +330,7 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
       boolean shouldContainIfMatch, boolean shouldContainIfNoneMatch)
       throws ScimException
   {
-    if(shouldContainIfMatch)
+    if (shouldContainIfMatch)
     {
       List<String> ifMatchValues =
           resource.getStringValueList(HttpHeaders.IF_MATCH);
@@ -343,7 +343,7 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
           path(HttpHeaders.IF_MATCH).isMissingNode());
     }
 
-    if(shouldContainIfNoneMatch)
+    if (shouldContainIfNoneMatch)
     {
       List<String> ifNoneMatchValues =
           resource.getStringValueList(HttpHeaders.IF_NONE_MATCH);

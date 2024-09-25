@@ -136,7 +136,7 @@ public class TestResourceEndpoint
       @PathParam("id") final String id, @Context final UriInfo uriInfo)
       throws ScimException
   {
-    if(id.equals("123"))
+    if (id.equals("123"))
     {
       UserResource resource = new UserResource().setUserName("test");
       resource.setId("123");

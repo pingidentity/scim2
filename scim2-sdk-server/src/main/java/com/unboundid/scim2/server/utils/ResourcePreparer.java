@@ -125,12 +125,12 @@ public class ResourcePreparer<T extends ScimResource>
                    @NotNull final URI baseUri)
       throws BadRequestException
   {
-    if(attributesString != null && !attributesString.isEmpty())
+    if (attributesString != null && !attributesString.isEmpty())
     {
       Set<String> attributeSet = StaticUtils.arrayToSet(
           StaticUtils.splitCommaSeparatedString(attributesString));
       this.queryAttributes = new LinkedHashSet<Path>(attributeSet.size());
-      for(String attribute : attributeSet)
+      for (String attribute : attributeSet)
       {
         Path normalizedPath;
         try
@@ -149,13 +149,13 @@ public class ResourcePreparer<T extends ScimResource>
       }
       this.excluded = false;
     }
-    else if(excludedAttributesString != null &&
+    else if (excludedAttributesString != null &&
         !excludedAttributesString.isEmpty())
     {
       Set<String> attributeSet = StaticUtils.arrayToSet(
           StaticUtils.splitCommaSeparatedString(excludedAttributesString));
       this.queryAttributes = new LinkedHashSet<Path>(attributeSet.size());
-      for(String attribute : attributeSet)
+      for (String attribute : attributeSet)
       {
         Path normalizedPath;
         try
@@ -257,18 +257,18 @@ public class ResourcePreparer<T extends ScimResource>
     Meta meta = returnedResource.getMeta();
 
     boolean metaUpdated = false;
-    if(meta == null)
+    if (meta == null)
     {
       meta = new Meta();
     }
 
-    if(meta.getResourceType() == null)
+    if (meta.getResourceType() == null)
     {
       meta.setResourceType(resourceType.getName());
       metaUpdated = true;
     }
 
-    if(meta.getLocation() == null)
+    if (meta.getLocation() == null)
     {
       String id = returnedResource.getId();
       if (id != null)
@@ -284,7 +284,7 @@ public class ResourcePreparer<T extends ScimResource>
       metaUpdated = true;
     }
 
-    if(metaUpdated)
+    if (metaUpdated)
     {
       returnedResource.setMeta(meta);
     }
@@ -308,7 +308,7 @@ public class ResourcePreparer<T extends ScimResource>
       @Nullable final Iterable<PatchOperation> patchOperations)
   {
     Set<Path> requestAttributes = Collections.emptySet();
-    if(requestResource != null)
+    if (requestResource != null)
     {
       ObjectNode requestObject =
           requestResource.asGenericScimResource().getObjectNode();
@@ -316,7 +316,7 @@ public class ResourcePreparer<T extends ScimResource>
       collectAttributes(Path.root(), requestAttributes, requestObject);
     }
 
-    if(patchOperations != null)
+    if (patchOperations != null)
     {
       requestAttributes = new LinkedHashSet<Path>();
       collectAttributes(requestAttributes, patchOperations);
@@ -346,11 +346,11 @@ public class ResourcePreparer<T extends ScimResource>
                                  @NotNull final ObjectNode objectNode)
   {
     Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while(i.hasNext())
+    while (i.hasNext())
     {
       Map.Entry<String, JsonNode> field = i.next();
       Path path = parentPath.attribute(field.getKey());
-      if(path.size() > 1 || path.getSchemaUrn() == null)
+      if (path.size() > 1 || path.getSchemaUrn() == null)
       {
         // Don't add a path for the extension schema object itself.
         paths.add(path);
@@ -377,13 +377,13 @@ public class ResourcePreparer<T extends ScimResource>
                                  @NotNull final Set<Path> paths,
                                  @NotNull final ArrayNode arrayNode)
   {
-    for(JsonNode value : arrayNode)
+    for (JsonNode value : arrayNode)
     {
-      if(value.isArray())
+      if (value.isArray())
       {
         collectAttributes(parentPath, paths, (ArrayNode) value);
       }
-      else if(value.isObject())
+      else if (value.isObject())
       {
         collectAttributes(parentPath, paths, (ObjectNode) value);
       }
@@ -401,23 +401,23 @@ public class ResourcePreparer<T extends ScimResource>
       @NotNull final Iterable<PatchOperation> patchOperations)
 
   {
-    for(PatchOperation patchOperation : patchOperations)
+    for (PatchOperation patchOperation : patchOperations)
     {
       Path path = Path.root();
-      if(patchOperation.getPath() != null)
+      if (patchOperation.getPath() != null)
       {
         path = resourceType.normalizePath(patchOperation.getPath()).
             withoutFilters();
         paths.add(path);
       }
-      if(patchOperation.getJsonNode() != null)
+      if (patchOperation.getJsonNode() != null)
       {
-        if(patchOperation.getJsonNode().isArray())
+        if (patchOperation.getJsonNode().isArray())
         {
           collectAttributes(
               path, paths, (ArrayNode) patchOperation.getJsonNode());
         }
-        else if(patchOperation.getJsonNode().isObject())
+        else if (patchOperation.getJsonNode().isObject())
         {
           collectAttributes(
               path, paths, (ObjectNode) patchOperation.getJsonNode());
