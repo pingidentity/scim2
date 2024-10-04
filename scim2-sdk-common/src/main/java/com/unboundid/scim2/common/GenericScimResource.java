@@ -46,22 +46,48 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * <p>A generic SCIM object.  This object can be used if you have no
- * Java object representing the SCIM object being returned.</p>
+ * A generic SCIM object.  This object can be used if you have no Java object
+ * representing the SCIM object being returned.
+ * <br><br>
+ * This object can be used when the exact structure of the SCIM object that will
+ * be received as JSON text is not known.  This will provide methods that can
+ * read attributes from those objects without needing to know the schema ahead
+ * of time.  If, however, the SCIM object you are working with is clearly
+ * defined and has an established structure, you could still use this object,
+ * but the {@link BaseScimResource} superclass is likely a better choice.
+ * <br><br>
  *
- * <p>This object can be used when the exact structure of the SCIM object
- * that will be received as JSON text is not known.  This will provide
- * methods that can read attributes from those objects without needing
- * to know the schema ahead of time.  Another way to work with SCIM
- * objects is when you know ahead of time what the schema will be.  In
- * that case you could still use this object, but {@link BaseScimResource}
- * might be a better choice.</p>
+ * This class contains a Jackson {@link ObjectNode} that contains a JSON
+ * representation of the SCIM resource, which may be fetched at any time with
+ * {@link #getObjectNode()}.  Individual fields may be fetched, added, or
+ * updated with methods such as:
+ * <ul>
+ *   <li> {@link #getBooleanValue(String)}
+ *   <li> {@link #addStringValues(Path, String, String...)}
+ *   <li> {@link #replaceValue(Path, String)}
+ * </ul>
+ * Note that the "add" methods are used to append values to an array, such as
+ * for the {@code emails} attribute on a
+ * {@link com.unboundid.scim2.common.types.UserResource}. To set a new value for
+ * a single-valued string {e.g., {@code userName}}, use the "replace" methods.
+ * <br><br>
  *
- * <p>If you have a BaseScimResource derived object, you can always get a
+ * If you have a BaseScimResource derived object, you can always get a
  * {@link GenericScimResource} by calling {@link #asGenericScimResource()}.
- * You could also go the other way by calling
- * {@link GenericScimResource#getObjectNode()}, followed by
- * {@link JsonUtils#nodeToValue(JsonNode, Class)}.</p>
+ * For example:
+ * <pre><code>
+ *   UserResource user = new UserResource().setUserName("PhoenixW");
+ *   GenericScimResource genericUser = user.asGenericScimResource();
+ * </code></pre>
+ *
+ * It is also possible to convert a GenericScimResource object into an
+ * object that inherits from BaseScimResource, provided that the ObjectNode is
+ * properly formatted.  This requires calling {@link JsonUtils#nodeToValue}:
+ * <pre><code>
+ *   GenericScimResource genericUser = getUserFromClient();
+ *   UserResource user =
+ *       JsonUtils.nodeToValue(genericUser.getObjectNode(), UserResource.class);
+ * </code></pre>
  *
  * @see BaseScimResource
  */
@@ -283,30 +309,12 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a single JsonNode from a generic SCIM resource.  This value may
-   * be an ArrayNode.
-   *   <p>
-   *
-   * For example:
-   * With a generic SCIM resource representing the folowing JSON:
-   * <pre><code>
-   *   {
-   *     "name" : "Bob",
-   *     "friends" : [ "Amy", "Beth", "Carol" ]
-   *   }
-   * </code></pre>
-   * <p>
-   * gsr.getValue("name");
-   * would return a TextNode containing "Bob"
-   *   <p>
-   *
-   * gsr.getValue("friends");
-   * would return an ArrayNode containing 3 TextNodes with the values
-   * "Amy", "Beth", and "Carol"
+   * Alternate version of {@link #getValue(Path)} that accepts a string.
    *
    * @param path the String path of the object.
    * @return the JsonNode at the path, or a NullNode if nothing is found
-   * @throws ScimException thrown if an error occurs.
+   *
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public JsonNode getValue(@NotNull final String path)
@@ -316,31 +324,31 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a single JsonNode from a generic SCIM resource.  This value may
-   * be an ArrayNode.
-   *   <p>
-   *
-   * For example:
-   * With a generic SCIM resource representing the folowing JSON:
-   * <pre><code>
+   * Fetches a JsonNode representing an attribute's data from a generic SCIM
+   * resource. This value may be an ArrayNode. For example, for a generic SCIM
+   * resource representing the following JSON:
+   * <pre>
    *   {
    *     "name" : "Bob",
    *     "friends" : [ "Amy", "Beth", "Carol" ]
    *   }
+   * </pre>
+   *
+   * To fetch the values of the {@code name} and {@code friends} fields, use
+   * the following Java code:
+   * <pre><code>
+   *   JsonNode nameNode = gsr.getValue("name");
+   *   JsonNode friendsNode = gsr.getValue("friends");
    * </code></pre>
-   *   <p>
    *
-   * gsr.getValue("name");
-   * would return a TextNode containing "Bob"
-   *   <p>
+   * In the above example, {@code nameNode} would be a TextNode containing the
+   * value "Bob", and {@code friendsNode} would be an ArrayNode containing
+   * 3 TextNodes with the values "Amy", "Beth", and "Carol".
    *
-   * gsr.getValue("friends");
-   * would return an ArrayNode containing 3 TextNodes with the values
-   * "Amy", "Beth", and "Carol"
+   * @param path The path of the object.
+   * @return     The JsonNode at the path, or a NullNode if nothing was found.
    *
-   * @param path the path of the object.
-   * @return the JsonNode at the path, or a NullNode if nothing is found
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public JsonNode getValue(@NotNull final Path path)
@@ -350,20 +358,15 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Update the value at the provided path. Equivalent to using the
-   * {@link JsonUtils#replaceValue(Path, ObjectNode, JsonNode)} method:
-   * JsonUtils.replaceValues(Path.fromString(path), getObjectNode(), value).
-   *   <p>
+   * Alternate method for {@link #replaceValue(Path, JsonNode)} that accepts a
+   * path as a string.
    *
-   * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
-   * the given value instance to a JSON node.
-   *   <p>
-   *
-   * @param path The path to the attribute whose value to set.
+   * @param path The path to the attribute whose value will be set/replaced.
    * @param value The value(s) to set.
-   * @return This object.
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @return      The updated generic SCIM resource (this object).
+   *
+   * @throws ScimException If an error occurs when parsing the resource, such as
+   *                       the use of an invalid path or value.
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final String path,
@@ -376,19 +379,18 @@ public final class GenericScimResource implements ScimResource
 
   /**
    * Update the value at the provided path. Equivalent to using the
-   * {@link JsonUtils#replaceValue(Path, ObjectNode, JsonNode)} method:
-   * JsonUtils.replaceValues(path, getObjectNode(), value).
-   *   <p>
+   * {@link JsonUtils#replaceValue(Path, ObjectNode, JsonNode)} method.
+   * <br><br>
    *
-   * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
-   * the given value instance to a JSON node.
-   *   <p>
+   * The {@link JsonUtils#valueToNode} method may be used to convert the given
+   * value instance to a {@link JsonNode}.
    *
-   * @param path The path to the attribute whose value to set.
+   * @param path The path to the attribute whose value will be set/replaced.
    * @param value The value(s) to set.
-   * @return This object.
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @return     The updated generic SCIM resource (this object).
+   *
+   * @throws ScimException If an error occurs when parsing the resource, such as
+   *                       the use of an invalid path or value.
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final Path path,
@@ -400,18 +402,13 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Add new values at the provided path. Equivalent to using the
-   * {@link JsonUtils#addValue(Path, ObjectNode, JsonNode)} method:
-   * JsonUtils.addValue(Path.fromString(path), getObjectNode(), values).
-   *   <p>
+   * Alternate version of {@link #addValues(Path, ArrayNode)} that accepts a
+   * path as a string.
    *
-   * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
-   * the given value instance to a JSON node.
-   *   <p>
-   *
-   * @param path The path to the attribute whose values to add.
+   * @param path   The path to the attribute that will be updated.
    * @param values The value(s) to add.
-   * @return This object.
+   * @return       The updated generic SCIM resource (this object).
+   *
    * @throws ScimException If the path is invalid.
    */
   @NotNull
@@ -424,18 +421,21 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Add new values at the provided path. Equivalent to using the
-   * {@link JsonUtils#addValue(Path, ObjectNode, JsonNode)} method:
-   * JsonUtils.addValue(path, getObjectNode(), values).
-   *   <p>
+   * Add new values to a multi-valued attribute at the provided path. Equivalent
+   * to using the {@link JsonUtils#addValue(Path, ObjectNode, JsonNode)} method.
+   * <br><br>
    *
-   * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
-   * the given value instance to a JSON node.
-   *   <p>
+   * To "add" a single-valued attribute, use the
+   * {@link #replaceValue(String, String)} method instead.
+   * <br><br>
    *
-   * @param path The path to the attribute whose values to add.
+   * The {@link JsonUtils#valueToNode} method may be used to convert the given
+   * value instance to a {@link JsonNode}.
+   *
+   * @param path   The path to the attribute that will be updated.
    * @param values The value(s) to add.
-   * @return This object.
+   * @return       The updated generic SCIM resource (this object).
+   *
    * @throws ScimException If the path is invalid.
    */
   @NotNull
@@ -448,12 +448,12 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Removes values at the provided path. Equivalent
-   * to using the {@link JsonUtils#removeValues(Path, ObjectNode)} method:
-   * JsonUtils.removeValue(Path.fromString(path), getObjectNode(), values).
+   * Alternate version of {@link #removeValues(Path)} that accepts a path as
+   * a string.
    *
-   * @param path The path to the attribute whose values to remove.
+   * @param path The path to the attribute whose values will be removed.
    * @return Whether one or more values were removed.
+   *
    * @throws ScimException If the path is invalid.
    */
   public boolean removeValues(@NotNull final String path)
@@ -464,11 +464,11 @@ public final class GenericScimResource implements ScimResource
 
   /**
    * Removes values at the provided path. Equivalent
-   * to using the {@link JsonUtils#removeValues(Path, ObjectNode)} method:
-   * JsonUtils.removeValue(Path.fromString(path), getObjectNode(), values).
+   * to using the {@link JsonUtils#removeValues(Path, ObjectNode)} method.
    *
-   * @param path The path to the attribute whose values to remove.
+   * @param path The path to the attribute whose values will be removed.
    * @return Whether one or more values were removed.
+   *
    * @throws ScimException If the path is invalid.
    */
   public boolean removeValues(@NotNull final Path path)
@@ -550,35 +550,15 @@ public final class GenericScimResource implements ScimResource
   // SCIM String methods
   /////////////////////////////////////
   /**
-   * Adds or replaces a String value in a generic SCIM resource.
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":"stringValue"
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.replaceValue("path1", path1value)
-   *   where path1value is a String
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
+   * Alternate version of {@link #replaceValue(Path, String)} that accepts a
+   * path as a string.
    *
-   *   gsr.replaceValue("path2", path2value)
-   *   where path2value is a String
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path The path indicating the attribute(s) to update.
+   * @param value The new value.
+   * @return        The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is {@code null} or invalid).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final String path,
@@ -589,36 +569,61 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds or replaces a String value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Sets a string value in a generic SCIM resource. This is generally used for
+   * single-valued attributes. For example, consider the following
+   * GenericScimResource:
    * <pre><code>
    * {
-   *   "path1":"stringValue"
+   *   "path1": "stringValue"
    * }
    * </code></pre>
-   *   <p>
-   *   gsr.replaceValue(Path.fromString("path1"), path1value)
-   *   where path1value is a String
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
    *
-   *   gsr.replaceValue(Path.fromString("path2"), path2value)
-   *   where path2value is a String
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * To change the value of the {@code path1} attribute, use:
+   * <pre><code>
+   *   gsr.replaceValue("path1", "newValue");
+   * </code></pre>
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
+   * The same method can be used to set an attribute that does not yet have
+   * a value:
+   * <pre><code>
+   *   gsr.replaceValue("path2", "brandNewValue");
+   * </code></pre>
    *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
+   * If the provided path matches multiple attributes (e.g., if the path
+   * contains a filter for a multi-valued attribute), then all matching paths
+   * will be updated by the request. For example, consider the following
+   * GenericScimResource:
+   * <pre><code>
+   *   {
+   *     "emails": [
+   *       {
+   *         "type": "work",
+   *         "value": "email1@example.com"
+   *       },
+   *       {
+   *         "type": "home",
+   *         "value": "email2@example.com",
+   *         "primary": true
+   *       },
+   *       {
+   *         "value": "emailWithNoType@example.com"
+   *       }
+   *     ]
+   *   }
+   * </code></pre>
+   *
+   * To set a new value for both emails that have a {@code type} field, the
+   * following method call may be used:
+   * <pre><code>
+   *   gsr.replaceValue("emails[type pr].value, "newEmail@example.com");
+   * </code></pre>
+   *
+   * @param path The path indicating the attribute(s) to update.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
+   *
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is {@code null} or invalid).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final Path path,
@@ -629,35 +634,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds String values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":[ "stringValue1", "stringValue2" ]
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.addStringValues("path1", path1values)
-   *   where path1Value is a List of String.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
+   * Alternate version of {@link #addStringValues(Path, List)} that accepts a
+   * path as a string.
    *
-   *   gsr.addStringValues("path2", path2values)
-   *   where path2values is a List of String.
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path    The path to the attribute that should be updated.
+   * @param values  A list containing the new values.
+   * @return        The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException   If the path is invalid.
    */
   @NotNull
   public GenericScimResource addStringValues(@NotNull final String path,
@@ -668,13 +652,13 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addStringValues(String, List)}.
+   * Alternate version of {@link #addStringValues(Path, List)}.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -688,37 +672,38 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds String values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * Adds a new string value to a multi-valued attribute. If no array node
+   * exists at the specified path, a new array node will be created. As an
+   * example, consider the following GenericScimResource:
+   * <pre>
    * {
-   *   "path1":[ "stringValue1", "stringValue2" ]
+   *   "path1": [ "stringValue1", "stringValue2" ]
    * }
-   * </code></pre>
-   *   <p>
-   *   gsr.addStringValues(Path.fromString("path1"), path1values)
-   *   where path1Value is a List of String.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
+   * </pre>
    *
-   *   gsr.addStringValues(Path.fromString("path2"), path2values)
-   *   where path2values is a List of String.
-   *   Would create a new array called "path2"
-   *   <p>
+   * To append new values to {@code path1}, use one of the following methods:
+   * <pre>
+   *   gsr.addStringValues("path1", listOfNewValues);
+   *   gsr.addStringValues("path1", "newValue");
+   *   gsr.addStringValues("path1", "newValue1", "newValue2");
+   * </pre>
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
+   * To add a new string array to the GenericScimResource, invoke this method
+   * with the new attribute path, e.g.:
+   * <pre>
+   *   gsr.addStringValues("newPath", "newValue");
+   * </pre>
    *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * If the path matches multiple values (i.e., if the {@link Path} contains a
+   * filter), all paths that match will be updated.
+   *
+   * @param path    The path to the attribute that should be updated.
+   * @param values  A list containing the new values.
+   * @return        The updated generic SCIM resource (this object).
+   *
+   * @throws ScimException  If the path is invalid.
    */
+  // TODO: Add tests for multiple path case
   @NotNull
   public GenericScimResource addStringValues(@NotNull final Path path,
                                              @NotNull final List<String> values)
@@ -740,7 +725,7 @@ public final class GenericScimResource implements ScimResource
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -754,30 +739,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a String value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a String.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Alternate version of {@link #getStringValue(Path)} that fetches a
+   * single-valued attribute from a resource.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":"stringValue1"
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return The value at the path, or {@code null} if the path does not exist
+   *         on the resource.
    *
-   *   getStringValue("path1")
-   *   returns "stringValue1"
-   *   <p>
-   *
-   *   getStringValue("bogusPath")
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public String getStringValue(@NotNull final String path)
@@ -787,30 +756,30 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a String value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a String.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
-   *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * Fetches a single-valued string from a generic SCIM resource. If the path
+   * exists, the JSON node at the path must be a String.  If the path does not
+   * exist, {@code null} will be returned. Consider a GenericScimResource of the
+   * form:
+   * <pre>
    *   {
-   *     "path1":"stringValue1"
+   *     "path1": "stringValue1"
    *   }
+   * </pre>
+   *
+   * To fetch a value from the resource, use the following Java code:
+   * <pre><code>
+   *   // Returns a JsonNode that contains "stringValue1".
+   *   JsonNode newValue = gsr.getStringValue("path1");
+   *
+   *   // Returns null.
+   *   JsonNode nullValue = gsr.getStringValue("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getStringValue(Path.fromString("path1"))
-   *   returns Stringexample
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return The value at the path, or {@code null} if the path does not exist
+   *         on the resource.
    *
-   *   getStringValue(Path.fromString("bogusPath"))
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public String getStringValue(@NotNull final Path path)
@@ -821,30 +790,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of String from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of String.  If the path does
-   * not exist, an empty list will be returned.
-   *   <p>
+   * Alternate version of {@link #getStringValueList(Path)} that accepts a path
+   * as a string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1": ["stringValue1", "stringValue2"]
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return The value at the path, or an empty list if the path does not exist
+   *         on the resource.
    *
-   *   getStringValueList("path1")
-   *   returns a list containing "stringValue1", "stringValue2"
-   *   <p>
-   *
-   *   getStringValueList("bogusPath")
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<String> getStringValueList(@NotNull final String path)
@@ -854,30 +807,31 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of String from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of String.  If the path
-   * does not exist, an empty list will be returned.
-   *   <p>
-   *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * Fetches a multi-valued string from a generic SCIM resource as a list. If
+   * the path exists, the JSON node at the path must be a list of strings. If
+   * the path does not exist, an empty list will be returned. For example,
+   * consider the following generic SCIM resource:
+   * <pre>
    *   {
-   *     "path1":["stringValue1", "stringValue2"]
+   *     "path1": ["stringValue1", "stringValue2"]
    *   }
+   * </pre>
+   *
+   * To fetch the value of {@code path1} from this resource, use the following
+   * Java code:
+   * <pre><code>
+   *   // Returns the list.
+   *   List&lt;String&gt; stringValues = gsr.getStringValue("path1");
+   *
+   *   // Returns an empty list.
+   *   gsr.getStringValue("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getStringValueList(Path.fromString("path1"))
-   *   returns a list containing "stringValue1", "stringValue2"
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return The value at the path, or an empty list if the path does not exist
+   *         on the resource.
    *
-   *   getStringValueList(Path.fromString("bogusPath"))
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<String> getStringValueList(@NotNull final Path path)
@@ -894,40 +848,15 @@ public final class GenericScimResource implements ScimResource
     return values;
   }
 
-  /////////////////////////////////////
-  // SCIM Boolean methods
-  /////////////////////////////////////
   /**
-   * Adds or replaces a Boolean value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":true
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.replaceValue("path1", path1value)
-   *   where path1value is a Boolean
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
+   * Alternate version of {@link #replaceValue(Path, Boolean)} that accepts a
+   * path as a string.
    *
-   *   gsr.replaceValue("path2", path2value)
-   *   where path2value is a Boolean
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the boolean attribute whose value will be updated.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If the path is invalid.
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final String path,
@@ -938,37 +867,24 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds or replaces a Boolean value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Updates a boolean value in a generic SCIM resource. For example,
+   * in the following generic SCIM resource:
+   * <pre>
+   *   {
+   *     "mfaEnabled": true
+   *   }
+   * </pre>
+   *
+   * To update this value, use the following Java code:
    * <pre><code>
-   * {
-   *   "path1":true
-   * }
+   *   gsr.replaceValue("mfaEnabled", false);
    * </code></pre>
-   *   <p>
-   *   gsr.replaceValue(Path.fromString("path1"), path1value)
-   *   where path1value is a Boolean
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
    *
-   *   gsr.replaceValue(Path.fromString("path2"), path2value)
-   *   where path2value is a Boolean
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the boolean attribute whose value will be updated.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *   <p>
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If the path is invalid.
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final Path path,
@@ -979,31 +895,13 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a Boolean value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a Boolean.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Alternate version of {@link #getBooleanValue(Path)} that accepts a path as
+   * a string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":true
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path  The path to the boolean attribute to obtain.
+   * @return      The attribute value.
    *
-   *   getBooleanValue("path1")
-   *   returns true
-   *   <p>
-   *
-   *   getBooleanValue("bogusPath")
-   *   returns null
-   *   <p>
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException If the path is invalid.
    */
   @Nullable
   public Boolean getBooleanValue(@NotNull final String path)
@@ -1013,30 +911,24 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a Boolean value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a Boolean.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
-   *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * Fetches the value of a boolean attribute on a generic SCIM resource. If the
+   * path does not exist, {@code null} will be returned. For example, for the
+   * following generic SCIM resource:
+   * <pre>
    *   {
-   *     "path1":true
+   *     "mfaEnabled": true
    *   }
+   * </pre>
+   *
+   * To fetch this value, use the following Java code:
+   * <pre><code>
+   *   Boolean isEnabled = gsr.getBooleanValue("mfaEnabled");
    * </code></pre>
-   *   <p>
    *
-   *   getBooleanValue(Path.fromString("path1"))
-   *   returns true
-   *   <p>
+   * @param path  The path to the boolean attribute to obtain.
+   * @return      The attribute value.
    *
-   *   getBooleanValue(Path.fromString("bogusPath"))
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException If the path is invalid.
    */
   @Nullable
   public Boolean getBooleanValue(@NotNull final Path path)
@@ -1046,39 +938,16 @@ public final class GenericScimResource implements ScimResource
     return jsonNode.isNull() ? null : jsonNode.booleanValue();
   }
 
-  /////////////////////////////////////
-  // SCIM Decimal methods
-  /////////////////////////////////////
   /**
-   * Adds or replaces a Double value in a generic SCIM resource.
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":2.0
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.replaceValue("path1", path1value)
-   *   where path1value is a Double
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
+   * Alternate version of {@link #replaceValue(Path, Double)} that accepts a
+   * path as a string.
    *
-   *   gsr.replaceValue("path2", path2value)
-   *   where path2value is a Double
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the floating-point attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final String path,
@@ -1089,36 +958,25 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds or replaces a Double value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Updates a single-valued floating-point attribute in a generic SCIM
+   * resource. Consider a GenericScimResource of the following form:
+   * <pre>
+   *   {
+   *     "weightKgs": 145.2
+   *   }
+   * </pre>
+   *
+   * To update this value, use the following Java code:
    * <pre><code>
-   * {
-   *   "path1":2.0
-   * }
+   *   gsr.replaceValue("weightKgs", 144.9);
    * </code></pre>
-   *   <p>
-   *   gsr.replaceValue(Path.fromString("path1"), path1value)
-   *   where path1value is a Double
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
    *
-   *   gsr.replaceValue(Path.fromString("path2"), path2value)
-   *   where path2value is a Double
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the floating-point attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final Path path,
@@ -1129,37 +987,19 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds Double values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":[ 2.1, 2.2 ]
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.addDoubleValues("path1", path1values)
-   *   where path1Value is a List of Double.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
+   * Alternate version of {@link #addDoubleValues(Path, List)} that accepts
+   * a path as a string.
    *
-   *   gsr.addDoubleValues("path2", path2values)
-   *   where path2values is a List of Double.
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path   The path to a multi-valued attribute of floating-point
+   *               numbers. If the path does not exist, a new attribute will be
+   *               added.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is {@code null} or invalid).
    */
+  //TODO: Test creating new arrays, or find an existing test.
   @NotNull
   public GenericScimResource addDoubleValues(@NotNull final String path,
                                              @NotNull final List<Double> values)
@@ -1169,13 +1009,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addDoubleValues(String, List)}.
+   * Alternate version of {@link #addDoubleValues(Path, List)} that accepts
+   * individual values instead of a list, and accepts a path as a string.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -1189,36 +1030,37 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds Double values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Adds new values to a multi-valued attribute of floating-point numbers
+   * (i.e., an array of decimal values) in a generic SCIM resource. If no
+   * ArrayNode exists at the specified path, a new ArrayNode will be created.
+   * <br><br>
+   *
+   * For example, consider the following GenericScimResource:
+   * <pre>
+   *   {
+   *     "niceNumbers": [ 3.141, 2.718 ]
+   *   }
+   * </pre>
+   *
+   * To add new values, use one of the following methods in Java code:
    * <pre><code>
-   * {
-   *   "path1":[ 2.1, 2.2 ]
-   * }
+   *   gsr.addDoubleValues("niceNumbers", 1.414);
+   *
+   *   // This method is useful when the new values are already in a list.
+   *   gsr.addDoubleValues("niceNumbers", List.of(1.414));
+   *
+   *   // Creates a new array of values on the resource.
+   *   gsr.addDoubleValues("newAttribute", 200.0);
    * </code></pre>
-   *   <p>
-   *   gsr.addDoubleValues(Path.fromString("path1"), path1values)
-   *   where path1Value is a List of Double.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
    *
-   *   gsr.addDoubleValues(Path.fromString("path2"), path2values)
-   *   where path2values is a List of Double.
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path   The path to a multi-valued attribute of floating-point
+   *               numbers. If the path does not exist, a new attribute will be
+   *               added to the resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is invalid).
    */
   @NotNull
   public GenericScimResource addDoubleValues(@NotNull final Path path,
@@ -1235,13 +1077,15 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addDoubleValues(Path, List)}.
+   * Alternate version of {@link #addDoubleValues(Path, List)} that accepts
+   * individual values instead of a list.
    *
-   * @param path    The path to the attribute that should be updated.
+   * @param path    The path to a multi-valued attribute of floating-point
+   *                numbers.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -1255,30 +1099,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a Double value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a Double.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Alternate version of {@link #getDoubleValue(Path)} that accepts a path as
+   * a string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":2.0
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getDoubleValue("path1")
-   *   returns 2.0
-   *   <p>
-   *
-   *   getDoubleValue("bogusPath")
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public Double getDoubleValue(@NotNull final String path)
@@ -1288,30 +1116,31 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a Double value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a Double.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Fetches the value of a single-valued floating-point attribute in a generic
+   * SCIM resource. If the path exists, the JSON node at the path must be a
+   * {@link Double}. If the path does not exist, {@code null} will be returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":2.0
+   *     "weightKgs": 145.2
    *   }
+   * </pre>
+   *
+   * To fetch this value, use the following Java code:
+   * <pre><code>
+   *   Double weightKilos = gsr.getDoubleValue("weightKgs");
+   *
+   *   // Non-existent paths will return null.
+   *   gsr.getDoubleValue("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getDoubleValue(Path.fromString("path1"))
-   *   returns 2.0
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getDoubleValue(Path.fromString("bogusPath"))
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public Double getDoubleValue(@NotNull final Path path)
@@ -1322,30 +1151,13 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of Double from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of Double.  If the path does
-   * not exist, an empty list will be returned.
-   *   <p>
+   * Alternate version of {@link #getDoubleValueList(Path)} that accepts a path
+   * as a string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":[2.1, 2.2]
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getDoubleValueList("path1")
-   *   returns a list containing 2.1, 2.2
-   *   <p>
-   *
-   *   getDoubleValueList("bogusPath")
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<Double> getDoubleValueList(@NotNull final String path)
@@ -1355,30 +1167,31 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of Double from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of Double.  If the path
-   * does not exist, an empty list will be returned.
-   *   <p>
+   * Fetches the values of a multi-valued floating-point attribute in a generic
+   * SCIM resource. If the path exists, the JSON node at the path must be a list
+   * of {@link Double} values. If the path does not exist, {@code null} will be
+   * returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":[2.1, 2.2]
+   *     "niceNumbers": [ 3.141, 2.718 ]
    *   }
+   * </pre>
+   *
+   * To fetch all of this attribute's values, use the following Java code:
+   * <pre><code>
+   *   List&lt;Double&gt; niceNumbers = gsr.getDoubleValueList("niceNumbers");
+   *
+   *   // Non-existent paths will return an empty list.
+   *   List&lt;Double&gt; emptyList = gsr.getDoubleValueList("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getDoubleValueList(Path.fromString("path1"))
-   *   returns a list containing 2.1, 2.2
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getDoubleValueList(Path.fromString("bogusPath"))
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<Double> getDoubleValueList(@NotNull final Path path)
@@ -1395,40 +1208,16 @@ public final class GenericScimResource implements ScimResource
     return values;
   }
 
-  /////////////////////////////////////
-  // SCIM Integer methods
-  /////////////////////////////////////
   /**
-   * Adds or replaces an Integer value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":7
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.replaceValue("path1", path1value)
-   *   where path1value is an Integer
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
+   * Alternate version of {@link #replaceValue(Path, Integer)} that accepts a
+   * path as a string.
    *
-   *   gsr.replaceValue("path2", path2value)
-   *   where path2value is an Integer
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the integer attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final String path,
@@ -1439,36 +1228,25 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds or replaces an Integer value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Updates a single-valued integer attribute in a generic SCIM resource.
+   * Consider a GenericScimResource of the following form:
+   * <pre>
+   *   {
+   *     "numGroups": 14
+   *   }
+   * </pre>
+   *
+   * To update this value, use the following Java code:
    * <pre><code>
-   * {
-   *   "path1":7
-   * }
+   *   gsr.replaceValue("numGroups", 13);
    * </code></pre>
-   *   <p>
-   *   gsr.replaceValue(Path.fromString("path1"), path1value)
-   *   where path1value is an Integer
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
    *
-   *   gsr.replaceValue(Path.fromString("path2"), path2value)
-   *   where path2value is an Integer
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the integer attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final Path path,
@@ -1479,36 +1257,17 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds Integer values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":[ 11, 13 ]
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.addIntegerValues("path1", path1values)
-   *   where path1Value is a List of Integer.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
+   * Alternate version of {@link #addIntegerValues(Path, List)} that accepts a
+   * path as a string.
    *
-   *   gsr.addIntegerValues("path2", path2values)
-   *   where path2values is a List of Integer.
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path   The path to a multi-valued attribute of integers. If the path
+   *               does not exist, a new attribute will be added to the
+   *               resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is invalid).
    */
   @NotNull
   public GenericScimResource addIntegerValues(
@@ -1520,13 +1279,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addIntegerValues(String, List)}.
+   * Alternate version of {@link #addIntegerValues(Path, List)} that accepts
+   * individual values instead of a list, and accepts a path as a string.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -1540,36 +1300,37 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds Integer values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Adds new values to a multi-valued attribute of integers (i.e., an array of
+   * integer values) in a generic SCIM resource. If no ArrayNode exists at the
+   * specified path, a new ArrayNode will be created.
+   * <br><br>
+   *
+   * For example, consider the following GenericScimResource:
+   * <pre>
+   *   {
+   *     "fibonacciNumbers": [ 2, 3, 5, 8, 13 ]
+   *   }
+   * </pre>
+   *
+   * To add new values, use one of the following methods in Java code:
    * <pre><code>
-   * {
-   *   "path1":[ 11, 13 ]
-   * }
+   *   gsr.addIntegerValues("fibonacciNumbers", 21);
+   *
+   *   // This method is useful when the new values are already in a list.
+   *   gsr.addIntegerValues("fibonacciNumbers", List.of(21, 34));
+   *
+   *   // Creates a new array of values on the resource.
+   *   gsr.addIntegerValues("perfectSquares", 1, 4, 9);
    * </code></pre>
-   *   <p>
-   *   gsr.addIntegerValues(Path.fromString("path1"), path1values)
-   *   where path1Value is a List of Integer.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
    *
-   *   gsr.addIntegerValues(Path.fromString("path2"), path2values)
-   *   where path2values is a List of Integer.
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path   The path to a multi-valued attribute of integers. If the path
+   *               does not exist, a new attribute will be added to the
+   *               resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is invalid).
    */
   @NotNull
   public GenericScimResource addIntegerValues(
@@ -1587,13 +1348,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addIntegerValues(Path, List)}.
+   * Alternate version of {@link #addIntegerValues(Path, List)} that accepts
+   * individual values instead of a list.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -1607,30 +1369,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets an Integer value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be an Integer.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Alternate version of {@link #getIntegerValue(Path)} that accepts a path as
+   * a string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":7
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getIntegerValue("path1")
-   *   returns 7
-   *   <p>
-   *
-   *   getIntegerValue("bogusPath")
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public Integer getIntegerValue(@NotNull final String path)
@@ -1640,30 +1386,31 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets an Integer value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be an Integer.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Fetches the value of a single-valued integer attribute in a generic SCIM
+   * resource. If the path exists, the JSON node at the path must be an
+   * {@link Integer}. If the path does not exist, {@code null} will be returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":7
+   *     "numGroups": 14
    *   }
+   * </pre>
+   *
+   * To fetch this value, use the following Java code:
+   * <pre><code>
+   *   Integer groupCount = gsr.getIntegerValue("numGroups");
+   *
+   *   // Non-existent paths will return null.
+   *   gsr.getIntegerValue("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getIntegerValue(Path.fromString("path1"))
-   *   returns 7
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getIntegerValue(Path.fromString("bogusPath"))
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public Integer getIntegerValue(@NotNull final Path path)
@@ -1674,30 +1421,13 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of Integer from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of Integer.  If the path does
-   * not exist, an empty list will be returned.
-   *   <p>
+   * Alternate version of {@link #getIntegerValueList(Path)} that accepts a path
+   * as a string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":[11, 13]
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getIntegerValueList("path1")
-   *   returns a list containing 11, 13
-   *   <p>
-   *
-   *   getIntegerValueList("bogusPath")
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<Integer> getIntegerValueList(@NotNull final String path)
@@ -1707,30 +1437,33 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of Integer from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of Integer.  If the path
-   * does not exist, an empty list will be returned.
-   *   <p>
+   * Fetches the values of a multi-valued attribute of integers in a generic
+   * SCIM resource. If the path exists, the JSON node at the path must be a list
+   * of {@link Integer} values. If the path does not exist, {@code null} will be
+   * returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":[11, 13]
+   *     "fibonacciNumbers": [ 2, 3, 5, 8, 13 ]
    *   }
+   * </pre>
+   *
+   * To fetch all of this attribute's values, use the following Java code:
+   * <pre><code>
+   *   List&lt;Integer&gt; fibonacciNumbers =
+   *           gsr.getIntegerValueList("fibonacciNumbers");
+   *
+   *   // Non-existent paths will return an empty list.
+   *   List&lt;Integer&gt; emptyList =
+   *           gsr.getIntegerValueList("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getIntegerValueList(Path.fromString("path1"))
-   *   returns a list containing 11, 13
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getIntegerValueList(Path.fromString("bogusPath"))
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<Integer> getIntegerValueList(@NotNull final Path path)
@@ -1747,40 +1480,16 @@ public final class GenericScimResource implements ScimResource
     return values;
   }
 
-  /////////////////////////////////////
-  // SCIM Long methods
-  /////////////////////////////////////
   /**
-   * Adds or replaces a Long value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":7
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.replaceValue("path1", path1value)
-   *   where path1value is a Long
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
+   * Alternate version of {@link #replaceValue(Path, Long)} that accepts a path
+   * as a string.
    *
-   *   gsr.replaceValue("path2", path2value)
-   *   where path2value is a Long
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the 64-bit attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final String path,
@@ -1791,36 +1500,25 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds or replaces a Long value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Updates a single-valued 64-bit numerical attribute in a generic SCIM
+   * resource. Consider a GenericScimResource of the following form:
+   * <pre>
+   *   {
+   *     "numGroups": 14
+   *   }
+   * </pre>
+   *
+   * To update this value, use the following Java code:
    * <pre><code>
-   * {
-   *   "path1":7
-   * }
+   *   gsr.replaceValue("numGroups", 13L);
    * </code></pre>
-   *   <p>
-   *   gsr.replaceValue(Path.fromString("path1"), path1value)
-   *   where path1value is a Long
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
    *
-   *   gsr.replaceValue(Path.fromString("path2"), path2value)
-   *   where path2value is a Long
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the 64-bit attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final Path path,
@@ -1831,36 +1529,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds Long values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":[ 11, 13 ]
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.addLongValues("path1", path1values)
-   *   where path1Value is a List of Long.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
+   * Alternate version of {@link #addLongValues(Path, List)} that accepts a path
+   * as a string.
    *
-   *   gsr.addLongValues("path2", path2values)
-   *   where path2values is a List of Long.
-   *   Would create a new array called "path2"
-   *   <p>
-   *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @param path   The path to a multi-valued attribute of 64-bit values. If the
+   *               path does not exist, a new attribute will be added to the
+   *               resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    */
   @NotNull
   public GenericScimResource addLongValues(@NotNull final String path,
@@ -1871,13 +1547,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addLongValues(String, List)}.
+   * Alternate version of {@link #addLongValues(Path, List)} that accepts
+   * individual values instead of a list, and accepts a path as a string.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -1891,36 +1568,37 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds Long values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Adds new values to a multi-valued attribute of 64-bit quantities in a
+   * generic SCIM resource. If no ArrayNode exists at the specified path, a new
+   * ArrayNode will be created.
+   * <br><br>
+   *
+   * For example, consider the following GenericScimResource:
+   * <pre>
+   *   {
+   *     "fibonacciNumbers": [ 2, 3, 5, 8, 13 ]
+   *   }
+   * </pre>
+   *
+   * To add new values, use one of the following methods in Java code:
    * <pre><code>
-   * {
-   *   "path1":[ 11, 13 ]
-   * }
+   *   gsr.addLongValues("fibonacciNumbers", 21L);
+   *
+   *   // This method is useful when the new values are already in a list.
+   *   gsr.addLongValues("fibonacciNumbers", List.of(21L, 34L));
+   *
+   *   // Creates a new array of values on the resource.
+   *   gsr.addLongValues("perfectSquares", 1L, 4L, 9L);
    * </code></pre>
-   *   <p>
-   *   gsr.addLongValues(Path.fromString("path1"), path1values)
-   *   where path1Value is a List of Long.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
    *
-   *   gsr.addLongValues(Path.fromString("path2"), path2values)
-   *   where path2values is a List of Long.
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path   The path to a multi-valued attribute of 64-bit values. If the
+   *               path does not exist, a new attribute will be added to the
+   *               resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is invalid).
    */
   @NotNull
   public GenericScimResource addLongValues(@NotNull final Path path,
@@ -1937,13 +1615,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addLongValues(Path, List)}.
+   * Alternate version of {@link #addLongValues(Path, List)} that accepts
+   * individual values instead of a list.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -1957,30 +1636,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a Long value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a Long.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Alternate version of {@link #getLongValue(Path)} that accepts a path as a
+   * string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":7
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getLongValue("path1")
-   *   returns 7
-   *   <p>
-   *
-   *   getLongValue("bogusPath")
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public Long getLongValue(@NotNull final String path)
@@ -1990,30 +1653,32 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a Long value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a Long.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Fetches the value of a single-valued 64-bit numerical attribute in a
+   * generic SCIM resource. If the path exists, the JSON node at the path must
+   * be a {@link Long}. If the path does not exist, {@code null} will be
+   * returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":7
+   *     "numGroups": 14
    *   }
+   * </pre>
+   *
+   * To fetch this value, use the following Java code:
+   * <pre><code>
+   *   Long groupCount = gsr.getLongValue("numGroups");
+   *
+   *   // Non-existent paths will return null.
+   *   gsr.getLongValue("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getLongValue(Path.fromString("path1"))
-   *   returns 7
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getLongValue(Path.fromString("bogusPath"))
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public Long getLongValue(@NotNull final Path path)
@@ -2024,30 +1689,13 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of Long from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of Long.  If the path does
-   * not exist, an empty list will be returned.
-   *   <p>
+   * Alternate version of {@link #getLongValueList(Path)} that accepts a path
+   * as a string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":[11, 13]
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getLongValueList("path1")
-   *   returns a list containing 11, 13
-   *   <p>
-   *
-   *   getLongValueList("bogusPath")
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<Long> getLongValueList(@NotNull final String path)
@@ -2057,30 +1705,33 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of Long from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of Long.  If the path
-   * does not exist, an empty list will be returned.
-   *   <p>
+   * Fetches the values of a multi-valued attribute of 64-bit numbers in a
+   * generic SCIM resource. If the path exists, the JSON node at the path must
+   * be a list of {@link Long} values. If the path does not exist, {@code null}
+   * will be returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":[11, 13]
+   *     "fibonacciNumbers": [ 2, 3, 5, 8, 13 ]
    *   }
+   * </pre>
+   *
+   * To fetch all of this attribute's values, use the following Java code:
+   * <pre><code>
+   *   List&lt;Long&gt; fibonacciNumbers =
+   *           gsr.getLongValueList("fibonacciNumbers");
+   *
+   *   // Non-existent paths will return an empty list.
+   *   List&lt;Long&gt; emptyList =
+   *           gsr.getLongValueList("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getLongValueList(Path.fromString("path1"))
-   *   returns a list containing 11, 13
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getLongValueList(Path.fromString("bogusPath"))
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<Long> getLongValueList(@NotNull final Path path)
@@ -2097,40 +1748,16 @@ public final class GenericScimResource implements ScimResource
     return values;
   }
 
-  /////////////////////////////////////
-  // SCIM Date/Time methods
-  /////////////////////////////////////
   /**
-   * Adds or replaces a Date value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":"1970-04-20T17:54:47.542Z"
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.replaceValue("path1", path1value)
-   *   where path1value is a Date
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
+   * Alternate version of {@link #replaceValue(Path, Date)} that accepts a path
+   * as a string.
    *
-   *   gsr.replaceValue("path2", path2value)
-   *   where path2value is a Date
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the timestamp attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final String path,
@@ -2141,36 +1768,28 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds or replaces a Date value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Updates a timestamp attribute in a generic SCIM resource. Consider a
+   * GenericScimResource of the following form:
+   * <pre>
+   *   {
+   *     "lastModified": "2016-04-16T12:17:42.000Z"
+   *   }
+   * </pre>
+   *
+   * To update this value, use the following Java code:
    * <pre><code>
-   * {
-   *   "path1":"1970-04-20T17:54:47.542Z"
-   * }
+   *   Calendar calendar = Calendar.getInstance();
+   *   calendar.set(2024, Calendar.SEPTEMBER, 30, 9, 20);
+   *
+   *   gsr.replaceValue("lastModified", calendar.getTime());
    * </code></pre>
-   *   <p>
-   *   gsr.replaceValue(Path.fromString("path1"), path1value)
-   *   where path1value is a Date
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
    *
-   *   gsr.replaceValue(Path.fromString("path2"), path2value)
-   *   where path2value is a Date
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the timestamp attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final Path path,
@@ -2181,36 +1800,17 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds Date values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":[ "1970-04-20T17:54:47.542Z", "2000-04-20T17:54:47.542Z" ]
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.addDateValues("path1", path1values)
-   *   where path1Value is a List of Date.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
+   * Alternate version of {@link #addDateValues(Path, List)} that accepts a path
+   * as a string.
    *
-   *   gsr.addDateValues("path2", path2values)
-   *   where path2values is a List of Date.
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path   The path to a multi-valued attribute of 64-bit values. If the
+   *               path does not exist, a new attribute will be added to the
+   *               resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is invalid).
    */
   @NotNull
   public GenericScimResource addDateValues(@NotNull final String path,
@@ -2221,13 +1821,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addDateValues(String, List)}.
+   * Alternate version of {@link #addDateValues(Path, List)} that accepts
+   * individual values instead of a list, and accepts a path as a string.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -2241,36 +1842,44 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds Date values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Adds new values to a multi-valued attribute of timestamps in a generic SCIM
+   * resource. If no ArrayNode exists at the specified path, a new ArrayNode
+   * will be created.
+   * <br><br>
+   *
+   * For example, consider the following GenericScimResource:
+   * <pre>
+   *   {
+   *     "notableTimestamps": [
+   *         "2015-03-20T20:38:42.000Z",
+   *         "2016-04-16T12:17:42.000Z"
+   *     ]
+   *   }
+   * </pre>
+   *
+   * To add new values, use one of the following methods in Java code:
    * <pre><code>
-   * {
-   *   "path1":[ "1970-04-20T17:54:47.542Z", "2000-04-20T17:54:47.542Z" ]
-   * }
+   *   Calendar calendar = Calendar.getInstance();
+   *   calendar.set(2024, Calendar.SEPTEMBER, 30, 9, 20);
+   *   Date newTimestamp = calendar.getTime();
+   *
+   *   gsr.addDateValues("notableTimestamps", newTimestamp);
+   *
+   *   // This method is useful when the new values are already in a list.
+   *   gsr.addDateValues("notableTimestamps", List.of(newTimestamp));
+   *
+   *   // Creates a new array of values on the resource.
+   *   gsr.addDateValues("otherTimes", newTimestamp);
    * </code></pre>
-   *   <p>
-   *   gsr.addDateValues(Path.fromString("path1"), path1values)
-   *   where path1Value is a List of Date.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
    *
-   *   gsr.addDateValues(Path.fromString("path2"), path2values)
-   *   where path2values is a List of Date.
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path   The path to a multi-valued attribute of 64-bit values. If the
+   *               path does not exist, a new attribute will be added to the
+   *               resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is invalid).
    */
   @NotNull
   public GenericScimResource addDateValues(@NotNull final Path path,
@@ -2287,13 +1896,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addDateValues(Path, List)}.
+   * Alternate version of {@link #addDateValues(Path, List)} that accepts
+   * individual values instead of a list, and accepts a path as a string.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -2307,30 +1917,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a Date value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a Date.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Alternate version of {@link #getDateValue(Path)} that accepts a path as a
+   * string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":"1970-04-20T17:54:47.542Z"
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getDateValue("path1")
-   *   returns a Date representing "1970-04-20T17:54:47.542Z"
-   *   <p>
-   *
-   *   getDateValue("bogusPath")
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public Date getDateValue(@NotNull final String path)
@@ -2340,30 +1934,31 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a Date value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a Date.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Fetches the value of a timestamp attribute in a generic SCIM resource. If
+   * the path exists, the JSON node at the path must be a {@link Date}. If the
+   * path does not exist, {@code null} will be returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":"1970-04-20T17:54:47.542Z"
+   *     "lastModified": "2016-04-16T12:17:42.000Z"
    *   }
+   * </pre>
+   *
+   * To fetch this value, use the following Java code:
+   * <pre><code>
+   *   Date modifyTimestamp = gsr.getDateValue("lastModified");
+   *
+   *   // Non-existent paths will return null.
+   *   gsr.getDateValue("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getDateValue(Path.fromString("path1"))
-   *   returns a Date representing "1970-04-20T17:54:47.542Z"
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getDateValue(Path.fromString("bogusPath"))
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public Date getDateValue(@NotNull final Path path)
@@ -2378,31 +1973,13 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of Date from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of Date.  If the path does
-   * not exist, an empty list will be returned.
-   *   <p>
+   * Alternate version of {@link #getDateValueList(Path)} that accepts a path as
+   * a string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":["1970-04-20T17:54:47.542Z", "2000-04-20T17:54:47.542Z"]
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getDateValueList("path1")
-   *   returns a list containing dates representing
-   *       "1970-04-20T17:54:47.542Z", "2000-04-20T17:54:47.542Z"
-   *   <p>
-   *
-   *   getDateValueList("bogusPath")
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<Date> getDateValueList(@NotNull final String path)
@@ -2412,31 +1989,34 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of Date from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of Date.  If the path
-   * does not exist, an empty list will be returned.
-   *   <p>
+   * Fetches the values of a multi-valued attribute of timestamps in a generic
+   * SCIM resource. If the path exists, the JSON node at the path must be a list
+   * of {@link Date} values. If the path does not exist, {@code null} will be
+   * returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":["1970-04-20T17:54:47.542Z", "2000-04-20T17:54:47.542Z"]
+   *     "notableTimestamps": [
+   *         "2015-03-20T20:38:42.000Z",
+   *         "2016-04-16T12:17:42.000Z"
+   *     ]
    *   }
+   * </pre>
+   *
+   * To fetch all of this attribute's values, use the following Java code:
+   * <pre><code>
+   *   List&lt;Date&gt; timestamps = gsr.getDateValueList("notableTimestamps");
+   *
+   *   // Non-existent paths will return an empty list.
+   *   List&lt;Date&gt; emptyList = gsr.getDateValueList("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getDateValueList(Path.fromString("path1"))
-   *   returns a list containing dates representing
-   *       "1970-04-20T17:54:47.542Z", "2000-04-20T17:54:47.542Z"
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getDateValueList(Path.fromString("bogusPath"))
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<Date> getDateValueList(@NotNull final Path path)
@@ -2454,11 +2034,12 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a JsonNode that represents the supplied date.
+   * Converts a {@link Date} object into a Jackson JsonNode.
    *
-   * @param date the date to represent as a JsonNode.
-   * @return the JsonNode representing the date.
-   * @throws ScimException thrown if an error occurs.
+   * @param date  The date to represent as a JsonNode.
+   * @return      A JsonNode representing the date.
+   *
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public static TextNode getDateJsonNode(@Nullable final Date date)
@@ -2468,11 +2049,12 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets the date represented by the supplied JsonNode.
+   * Converts a {@link JsonNode} into a {@link Date} object.
    *
-   * @param node the JsonNode representing the date.
-   * @return the date represented by the JsonNode.
-   * @throws ScimException thrown if an error occurs.
+   * @param node  The JsonNode representing the date.
+   * @return      The date represented by the JsonNode.
+   *
+   * @throws ScimException  If the JsonNode was not properly formatted.
    */
   @Nullable
   public static Date getDateFromJsonNode(@NotNull final JsonNode node)
@@ -2492,40 +2074,16 @@ public final class GenericScimResource implements ScimResource
     }
   }
 
-  /////////////////////////////////////
-  // SCIM Binary methods
-  /////////////////////////////////////
   /**
-   * Adds or replaces a binary value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":"AjIzLg=="
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.replaceValue("path1", path1value)
-   *   where path1value is a byte[]
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
+   * Alternate version of {@link #replaceValue(Path, byte[])} that accepts a
+   * path as a string.
    *
-   *   gsr.replaceValue("path2", path2value)
-   *   where path2value is a byte[]
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the binary attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final String path,
@@ -2536,36 +2094,27 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds or replaces a binary value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Updates a single-valued binary attribute in a generic SCIM resource. Binary
+   * data is displayed on SCIM resources in base64-encoded form. Consider a
+   * GenericScimResource of the following form:
+   * <pre>
+   *   {
+   *     "encodedMessage": "VW5ib3VuZElECg=="
+   *   }
+   * </pre>
+   *
+   * To update this value, use the following Java code:
    * <pre><code>
-   * {
-   *   "path1":"AjIzLg=="
-   * }
+   *   byte[] data = new byte[] { 0x50, 0x69, 0x6E, 0x67, 0x0A });
+   *   gsr.replaceValue("encodedMessage", data);
    * </code></pre>
-   *   <p>
-   *   gsr.replaceValue(Path.fromString("path1"), path1value)
-   *   where path1value is a byte[]
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
    *
-   *   gsr.replaceValue(Path.fromString("path2"), path2value)
-   *   where path2value is a byte[]
-   *   would add a field called "path2" with the value of the path2value
-   *   variabl
-   *   <p>
+   * @param path  The path to the binary attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final Path path,
@@ -2576,36 +2125,17 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds binary values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":[ "AjIzLg==", "AjNjLp==" ]
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.addBinaryValues("path1", path1values)
-   *   where path1Value is a List of byte[].
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
+   * Alternate version of {@link #addBinaryValues(Path, List)} that accepts a
+   * path as a string.
    *
-   *   gsr.addBinaryValues("path2", path2values)
-   *   where path2values is a List of byte[].
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path   The path to a multi-valued attribute of base64-encoded
+   *               values. If the path does not exist, a new attribute will be
+   *               added to the resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is invalid).
    */
   @NotNull
   public GenericScimResource addBinaryValues(@NotNull final String path,
@@ -2616,13 +2146,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addBinaryValues(String, List)}.
+   * Alternate version of {@link #addBinaryValues(Path, List)} that accepts
+   * individual values instead of a list, and accepts a path as a string.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -2636,38 +2167,46 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds binary values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Adds new values to a multi-valued attribute of base64-encoded strings in a
+   * generic SCIM resource. If no ArrayNode exists at the specified path, a new
+   * ArrayNode will be created.
+   * <br><br>
+   *
+   * For example, consider the following GenericScimResource:
+   * <pre>
+   *   {
+   *     "certificates": [
+   *         "VGhhbmtzIGZvciBkZWNvZGluZyBvdXIgbGl0dGxlIGVhc3RlciBlZ2cuCg==",
+   *         "V2UgaG9wZSB0aGlzIGRvY3VtZW50YXRpb24gaXMgdXNlZnVsIHRvIHlvdS4K",
+   *         "WW91IGFyZSBsb3ZlZCwgYW5kIHlvdSBtYXR0ZXIuCg=="
+   *     ]
+   *   }
+   * </pre>
+   *
+   * To add new values, use one of the following methods in Java code:
    * <pre><code>
-   * {
-   *   "path1":[ "AjIzLg==", "AjNjLp==" ]
-   * }
+   *   byte[] data = new byte[] { 0x54, 0x68, 0x61, 0x6E, 0x6B };
+   *   byte[] moreData = new byte[] { 0x79, 0x6F, 0x75 };
+   *   gsr.addBinaryValues("certificates", data, moreData);
+   *
+   *   // This method is useful when the new values are already in a list.
+   *   gsr.addBinaryValues("certificates", List.of(data, moreData));
+   *
+   *   // Creates a new array of values on the resource.
+   *   gsr.addBinaryValues("otherData", data);
    * </code></pre>
-   *   <p>
-   *   gsr.addBinaryValues(Path.fromString("path1"), path1values)
-   *   where path1Value is a List of byte[].
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
    *
-   *   gsr.addBinaryValues(Path.fromString("path2"), path2values)
-   *   where path2values is a List of byte[].
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path   The path to a multi-valued attribute of base64-encoded
+   *               values. If the path does not exist, a new attribute will be
+   *               added to the resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is invalid).
    */
   @NotNull
+  @SuppressWarnings("SpellCheckingInspection")
   public GenericScimResource addBinaryValues(@NotNull final Path path,
                                              @NotNull final List<byte[]> values)
       throws ScimException
@@ -2682,13 +2221,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addBinaryValues(Path, List)}.
+   * Alternate version of {@link #addBinaryValues(Path, List)} that accepts
+   * individual values instead of a list.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -2702,31 +2242,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a binary value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a binary value.  If the path does not
-   * exist, "{@code null}" will be returned.
-   *   <p>
+   * Alternate version of {@link #getBinaryValue(Path)} that accepts a path as
+   * a string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":"AjIzLg=="
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getBinaryValue("path1")
-   *   returns the byte array decoded from "AjIzLg=="
-   *   <p>
-   *
-   *   getBinaryValue("bogusPath")
-   *   returns null
-   *   <p>
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public byte[] getBinaryValue(@NotNull final String path)
@@ -2736,30 +2259,31 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a binary value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a binary value.  If the path does
-   * not exist, "{@code null}" will be returned.
-   *   <p>
+   * Fetches the value of a base64-encoded attribute in a generic SCIM resource.
+   * If the path exists, the JSON node at the path must be a {@code byte[]}. If
+   * the path does not exist, {@code null} will be returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":"AjIzLg=="
+   *     "encodedMessage": "VW5ib3VuZElECg=="
    *   }
+   * </pre>
+   *
+   * To fetch this value, use the following Java code:
+   * <pre><code>
+   *   byte[] message = gsr.getBinaryValue("encodedMessage");
+   *
+   *   // Non-existent paths will return null.
+   *   gsr.getBinaryValue("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getBinaryValue(Path.fromString("path1"))
-   *   returns the byte array decoded from "AjIzLg=="
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getBinaryValue(Path.fromString("bogusPath"))
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public byte[] getBinaryValue(@NotNull final Path path)
@@ -2782,31 +2306,13 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of byte[] from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of binary values.  If the path
-   * does not exist, an empty list will be returned.
-   *   <p>
+   * Alternate version of {@link #getBinaryValue(Path)} that accepts a path as
+   * a string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":["AjIzLg==", "AjNjLp=="]
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getBinaryValueList("path1")
-   *   returns a list containing the byte arrays decoded from
-   *       "AjIzLg==", "AjNjLp=="
-   *   <p>
-   *
-   *   getBinaryValueList("bogusPath")
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<byte[]> getBinaryValueList(@NotNull final String path)
@@ -2816,33 +2322,38 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of byte[] from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of binary values.  If the path
-   * does not exist, an empty list will be returned.
-   *   <p>
+   * Fetches the values of a multi-valued attribute of base64-encoded strings in
+   * a generic SCIM resource. If the path exists, the JSON node at the path must
+   * be a list of {@code byte[]} values. If the path does not exist,
+   * {@code null} will be returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":["AjIzLg==", "AjNjLp=="]
+   *     "certificates": [
+   *         "VGhhbmtzIGZvciBkZWNvZGluZyBvdXIgbGl0dGxlIGVhc3RlciBlZ2cuCg==",
+   *         "V2UgaG9wZSB0aGlzIGRvY3VtZW50YXRpb24gaXMgdXNlZnVsIHRvIHlvdS4K",
+   *         "WW91IGFyZSBsb3ZlZCwgYW5kIHlvdSBtYXR0ZXIuCg=="
+   *     ]
    *   }
+   * </pre>
+   *
+   * To fetch all of this attribute's values, use the following Java code:
+   * <pre><code>
+   *   List&lt;byte[]&gt; certs = gsr.getBinaryValueList("certificates");
+   *
+   *   // Non-existent paths will return an empty list.
+   *   List&lt;byte[]&gt; emptyList = gsr.getBinaryValueList("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getBinaryValueList(Path.fromString("path1"))
-   *   returns a list containing the byte arrays decoded from
-   *       "AjIzLg==", "AjNjLp=="
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getBinaryValueList(Path.fromString("bogusPath"))
-   *   returns an empty list
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
+  @SuppressWarnings("SpellCheckingInspection")
   public List<byte[]> getBinaryValueList(@NotNull final Path path)
       throws ScimException
   {
@@ -2875,36 +2386,15 @@ public final class GenericScimResource implements ScimResource
   // SCIM Ref methods
   /////////////////////////////////////
   /**
-   * Adds or replaces a URI value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":"http://localhost:8080/uri/One"
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.replaceValue("path1", path1value)
-   *   where path1value is a URI
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
+   * Alternate version of {@link #replaceValue(Path, URI)} that accepts a path
+   * as a string.
    *
-   *   gsr.replaceValue("path2", path2value)
-   *   where path2value is a URI
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
+   * @param path  The path to the URI attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
   public GenericScimResource replaceValue(@NotNull final String path,
@@ -2915,36 +2405,29 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds or replaces a URI value in a generic SCIM resource.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":"http://localhost:8080/uri/One"
-   * }
-   * </code></pre>
-   *   <p>
-   *   gsr.replaceValue(Path.fromString("path1"), path1value)
-   *   where path1value is a URI
-   *   would change the "path1" field to the value of the path1value
-   *   variable
-   *   <p>
-   *   gsr.replaceValue(Path.fromString("path2"), path2value)
-   *   where path2value is a URI
-   *   would add a field called "path2" with the value of the path2value
-   *   variable
-   *   <p>
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
+   * Updates a single-valued URI attribute in a generic SCIM resource. Consider
+   * a GenericScimResource of the following form:
+   * <pre>
+   *   {
+   *     "profilePicture": "https://example.com/trucy.png"
+   *   }
+   * </pre>
    *
-   * @param path the path to replace the value for.
-   * @param value the new value.
-   * @return returns the new generic SCIM resource (this).
-   * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * To update this value, use the following Java code:
+   * <pre><code>
+   *   gsr.replaceValue("profilePicture",
+   *           new URI("https://example.com/trucy_new.png"));
+   * </code></pre>
+   *
+   * @param path  The path to the URI attribute.
+   * @param value The new value.
+   * @return      The updated generic SCIM resource (this object).
+   *
+   * @throws ScimException If an error occurs while parsing the resource (e.g.,
+   *                       an invalid path was provided).
    */
   @NotNull
+  @SuppressWarnings("JavadocLinkAsPlainText")
   public GenericScimResource replaceValue(@NotNull final Path path,
                                           @NotNull final URI value)
       throws ScimException
@@ -2954,40 +2437,17 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds URI values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   * For example:
-   *   <p>
-   * In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   * {
-   *   "path1":
-   *   [
-   *       "http://localhost:8080/uri/One", "http://localhost:8080/uri/Two"
-   *   ]
-   * }
-   * </code></pre>
+   * Alternate version of {@link #addURIValues(Path, List)} that accepts a path
+   * as a string.
    *
-   *   <p>
-   *   gsr.addURIValues("path1", path1values)
-   *   where path1Value is a List of URI.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
+   * @param path   The path to a multi-valued attribute of URI values. If the
+   *               path does not exist, a new attribute will be added to the
+   *               resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   gsr.addURIValues("path2", path2values)
-   *   where path2values is a List of URI.
-   *   Would create a new array called "path2"
-   *   <p>
-   *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is invalid).
    */
   @NotNull
   public GenericScimResource addURIValues(@NotNull final String path,
@@ -2998,13 +2458,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addURIValues(String, List)}.
+   * Alternate version of {@link #addURIValues(Path, List)} that accepts
+   * individual values instead of a list, and accepts a path as a string.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -3018,41 +2479,46 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Adds URI values to an array node.  If no array node exists at the
-   * specified path, a new array node will be created.
-   *   <p>
-   * For example:
-   * In a GenericScimResource (gsr) representing the following resource:
+   * Adds new values to a multi-valued attribute of URIs in a generic SCIM
+   * resource. If no ArrayNode exists at the specified path, a new ArrayNode
+   * will be created.
+   * <br><br>
+   *
+   * For example, consider the following GenericScimResource:
+   * <pre>
+   *   {
+   *     "bookmarks": [
+   *         "https://example.com/rickRoll.mp4",
+   *         "file:///home/UnboundID/sdks"
+   *     ]
+   *   }
+   * </pre>
+   *
+   * To add new values, use one of the following methods in Java code:
    * <pre><code>
-   * {
-   *   "path1":
-   *   [
-   *       "http://localhost:8080/uri/One", "http://localhost:8080/uri/Two"
-   *   ]
-   * }
+   *   gsr.addURIValues("bookmarks",
+   *           new URI("https://example.org/index.html"),
+   *           new URI("https://example.org/login")
+   *   );
+   *
+   *   // This method is useful when the new values are already in a list.
+   *   gsr.addURIValues("bookmarks", List.of(new URI("https://example.org")));
+   *
+   *   // Creates a new array of values on the resource.
+   *   gsr.addURIValues("ldapURLs", new URI("ldap://ds.example.com"));
    * </code></pre>
-   *   <p>
-   *   gsr.addURIValues(Path.fromString("path1"), path1values)
-   *   where path1Value is a List of URI.
-   *   Would add each of the items in the path1values list to the
-   *   "path1" list in the generic SCIM resource
-   *   <p>
    *
-   *   gsr.addURIValues(Path.fromString("path2"), path2values)
-   *   where path2values is a List of URI.
-   *   Would create a new array called "path2"
-   *   <p>
+   * @param path   The path to a multi-valued attribute of URI values. If the
+   *               path does not exist, a new attribute will be added to the
+   *               resource.
+   * @param values A list containing the new values.
+   * @return       The updated generic SCIM resource (this object).
    *
-   *   Note that in a case where multiple paths match (for example
-   *   a path with a filter), all paths that match will be affected.
-   *
-   * @param path the path to add the list to.
-   * @param values a list containing the new values.
-   * @return returns the new generic SCIM resource (this).
    * @throws ScimException thrown if an error occurs (for example
-   * if the path or value is "{@code null}" or invalid).
+   * if the path or value is invalid).
    */
   @NotNull
+  @SuppressWarnings("JavadocLinkAsPlainText")
   public GenericScimResource addURIValues(@NotNull final Path path,
                                           @NotNull final List<URI> values)
       throws ScimException
@@ -3067,13 +2533,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Alternate version of {@link #addURIValues(Path, List)}.
+   * Alternate version of {@link #addURIValues(Path, List)} that accepts
+   * individual values instead of a list.
    *
    * @param path    The path to the attribute that should be updated.
    * @param value1  The first value.
    * @param values  An optional field for additional values. Any {@code null}
    *                values will be ignored.
-   * @return        This object.
+   * @return        The updated generic SCIM resource (this object).
    *
    * @throws ScimException  If the path is invalid.
    */
@@ -3087,30 +2554,14 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a URI value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a URI.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Alternate version of {@link #getURIValue(Path)} that accepts a path as a
+   * string.
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
-   *   {
-   *     "path1":"http://localhost:8080/uri/One"
-   *   }
-   * </code></pre>
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getURIValue("path1")
-   *   returns "http://localhost:8080/uri/One"
-   *   <p>
-   *
-   *   getURIValue("bogusPath")
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
   public URI getURIValue(@NotNull final String path)
@@ -3120,32 +2571,34 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a URI value from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a URI.  If the path does not exist,
-   * "{@code null}" will be returned.
-   *   <p>
+   * Fetches the value of a single-valued URI attribute in a generic SCIM
+   * resource. If the path exists, the JSON node at the path must be a
+   * {@link URI}. If the path does not exist, {@code null} will be returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":"http://localhost:8080/uri/One"
+   *     "profilePicture": "https://example.com/trucy.png"
    *   }
+   * </pre>
+   *
+   * To fetch this value, use the following Java code:
+   * <pre><code>
+   *   URI message = gsr.getURIValue("profilePicture");
+   *
+   *   // Non-existent paths will return null.
+   *   gsr.getURIValue("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getURIValue(Path.fromString("path1"))
-   *   returns "http://localhost:8080/uri/One"
-   *   <p>
+   * @param path The path to the requested attribute.
+   * @return     The value at the path, or {@code null} if the path does not
+   *             exist on the resource.
    *
-   *   getURIValue(Path.fromString("bogusPath"))
-   *   returns null
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or null.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @Nullable
+  @SuppressWarnings("JavadocLinkAsPlainText")
   public URI getURIValue(@NotNull final Path path)
       throws ScimException
   {
@@ -3168,14 +2621,14 @@ public final class GenericScimResource implements ScimResource
    *
    * For example:
    *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * <pre>
    *   {
    *     "path1":
    *     [
    *       "http://localhost:8080/uri/One", "http://localhost:8080/uri/Two"
    *     ]
    *   }
-   * </code></pre>
+   * </pre>
    *   <p>
    *
    *   getURIValueList("path1")
@@ -3188,7 +2641,7 @@ public final class GenericScimResource implements ScimResource
    *
    * @param path the path to get the value from.
    * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
   public List<URI> getURIValueList(@NotNull final String path)
@@ -3198,37 +2651,37 @@ public final class GenericScimResource implements ScimResource
   }
 
   /**
-   * Gets a list of URI from a generic SCIM resource.  If the path exists,
-   * the JSON node at the path must be a list of URI.  If the path
-   * does not exist, an empty list will be returned.
-   *   <p>
+   * Fetches the values of a multi-valued attribute of URIs in a generic SCIM
+   * resource. If the path exists, the JSON node at the path must be a list of
+   * {@link URI} values. If the path does not exist, {@code null} will be
+   * returned.
+   * <br><br>
    *
-   * For example:
-   *   In a GenericScimResource (gsr) representing the following resource:
-   * <pre><code>
+   * For example, consider the following GenericScimResource:
+   * <pre>
    *   {
-   *     "path1":
-   *     [
-   *         "http://localhost:8080/uri/One", "http://localhost:8080/uri/Two"
+   *     "bookmarks": [
+   *         "https://example.com/rickRoll.mp4",
+   *         "file:///home/unboundid/sdks"
    *     ]
    *   }
+   * </pre>
+   *
+   * To fetch all of this attribute's values, use the following Java code:
+   * <pre><code>
+   *   List&lt;URI&gt; links = gsr.getURIValueList("bookmarks");
+   *
+   *   // Non-existent paths will return an empty list.
+   *   List&lt;URI&gt; emptyList = gsr.getURIValueList("pathThatDoesNotExist");
    * </code></pre>
-   *   <p>
    *
-   *   getURIValueList(Path.fromString("path1"))
-   *   returns a list containing
-   *       "http://localhost:8080/uri/One", "http://localhost:8080/uri/Two"
-   *   <p>
+   * @param path  The path to the requested attribute.
+   * @return      The value at the path, or an empty list.
    *
-   *   getURIValueList(Path.fromString("bogusPath"))
-   *   returns an empty list
-   *   <p>
-   *
-   * @param path the path to get the value from.
-   * @return the value at the path, or an empty list.
-   * @throws ScimException thrown if an error occurs.
+   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
+  @SuppressWarnings("JavadocLinkAsPlainText")
   public List<URI> getURIValueList(@NotNull final Path path)
       throws ScimException
   {

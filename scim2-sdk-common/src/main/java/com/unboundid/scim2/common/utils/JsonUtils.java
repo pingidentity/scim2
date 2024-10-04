@@ -574,7 +574,8 @@ public class JsonUtils
    * @param path The path to the attributes whose values to retrieve.
    * @param node the ObjectNode to find the path in.
    * @return the node located at the path, or a NullNode.
-   * @throws ScimException throw in case of errors.
+   * @throws ScimException  If an error occurs while parsing the ObjectNode
+   *                        (e.g., the path matches multiple attributes).
    */
   @NotNull
   public static JsonNode getValue(@NotNull final Path path,
