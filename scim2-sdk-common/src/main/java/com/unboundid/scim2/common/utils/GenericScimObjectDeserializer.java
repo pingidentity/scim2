@@ -28,7 +28,7 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import java.io.IOException;
 
 /**
- * Deserializer for the GenericScimObject.
+ * Deserializer for {@link GenericScimResource}.
  */
 public class GenericScimObjectDeserializer
     extends JsonDeserializer<GenericScimResource>

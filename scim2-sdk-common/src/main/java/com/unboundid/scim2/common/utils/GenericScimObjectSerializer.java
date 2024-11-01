@@ -27,12 +27,11 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import java.io.IOException;
 
 /**
- * Serializer for generic scim objects.
+ * Serializer for {@link GenericScimResource}.
  */
 public class GenericScimObjectSerializer
     extends JsonSerializer<GenericScimResource>
 {
-
   /**
    * {@inheritDoc}
    */
