@@ -769,7 +769,7 @@ public class GenericScimResourceObjectTest
         .addURIValues("pictures", new URI("https://example.com/photo.jpg"))
         .addURIValues(Path.fromString("links"), new URI("https://example.com"));
 
-    // Compare the deserialized forms.
+    // Compare the serialized forms.
     assertThat(gsr.getObjectNode().toString()).isEqualTo(expected.toString());
   }
 
