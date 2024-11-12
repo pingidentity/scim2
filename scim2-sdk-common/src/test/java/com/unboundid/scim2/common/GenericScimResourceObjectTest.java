@@ -18,8 +18,9 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.core.Base64Variants;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.UserResource;
@@ -32,6 +33,7 @@ import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 
@@ -161,14 +164,14 @@ public class GenericScimResourceObjectTest
         getStringValue(path2), value2);
 
     List<String> list1 = gsr.addStringValues(path3,
-        Lists.<String>newArrayList(arrayValue1, arrayValue2)).
+        List.of(arrayValue1, arrayValue2)).
         getStringValueList(Path.fromString(path3));
     Assert.assertEquals(list1.size(), 2);
     Assert.assertTrue(list1.contains(arrayValue1));
     Assert.assertTrue(list1.contains(arrayValue2));
 
     List<String> list2 = gsr.addStringValues(Path.fromString(path4),
-        Lists.<String>newArrayList(arrayValue3, arrayValue4)).
+        List.of(arrayValue3, arrayValue4)).
         getStringValueList(path4);
     Assert.assertEquals(list2.size(), 2);
     Assert.assertTrue(list2.contains(arrayValue3));
@@ -183,24 +186,39 @@ public class GenericScimResourceObjectTest
 
   /**
    * Test boolean methods.
+   *
    * @throws ScimException if an error occurs.
    */
   @Test
   public void testBooleanMethods() throws ScimException
   {
-    String path1 = "path1";
-    Boolean value1 = Boolean.TRUE;
-    String path2 = "path2";
-    Boolean value2 = Boolean.FALSE;
+    GenericScimResource gsr = new GenericScimResource()
+        .replaceValue("liftsWeights", Boolean.TRUE)
+        .replaceValue("hasMuscle", Boolean.FALSE);
 
-    GenericScimResource gsr = new GenericScimResource();
-    Assert.assertEquals(gsr.replaceValue(path1, value1).
-        getBooleanValue(Path.fromString(path1)), value1);
-    Assert.assertEquals(gsr.replaceValue(Path.fromString(path2), value2).
-        getBooleanValue(path2), value2);
+    // Ensure that fetching a non-existent value returns null.
+    assertThat(gsr.getBooleanValue("bogusPath")).isNull();
+    assertThat(gsr.getBooleanValue(Path.fromString("bogusPath"))).isNull();
 
-    Assert.assertNull(gsr.getBooleanValue("bogusPath"));
-    Assert.assertNull(gsr.getBooleanValue(Path.fromString("bogusPath")));
+    // Update an existing value from false to true.
+    assertThat(gsr.getBooleanValue("hasMuscle")).isFalse();
+    gsr.replaceValue("hasMuscle", true);
+    assertThat(gsr.getBooleanValue("hasMuscle")).isTrue();
+
+    // Update an existing value from true to false.
+    assertThat(gsr.getBooleanValue("liftsWeights")).isTrue();
+    gsr.replaceValue("liftsWeights", false);
+    assertThat(gsr.getBooleanValue("liftsWeights")).isFalse();
+
+    // Set a new 'true' value that was not on the resource before.
+    assertThat(gsr.getBooleanValue("mfaEnabled")).isNull();
+    gsr.replaceValue("mfaEnabled", true);
+    assertThat(gsr.getBooleanValue("mfaEnabled")).isTrue();
+
+    // Set a new 'false' value that was not on the resource before.
+    assertThat(gsr.getBooleanValue("enabled")).isNull();
+    gsr.replaceValue("enabled", false);
+    assertThat(gsr.getBooleanValue("enabled")).isFalse();
   }
 
   /**
@@ -228,12 +246,12 @@ public class GenericScimResourceObjectTest
         getDoubleValue(path2), value2, 0.01);
 
     List<Double> list1 = gsr.addDoubleValues(path3,
-        Lists.<Double>newArrayList(arrayValue1, arrayValue2)).
+        List.of(arrayValue1, arrayValue2)).
         getDoubleValueList(Path.fromString(path3));
     Assert.assertEquals(list1.size(), 2);
 
      List<Double> list2 = gsr.addDoubleValues(Path.fromString(path4),
-         Lists.<Double>newArrayList(arrayValue3, arrayValue4)).
+         List.of(arrayValue3, arrayValue4)).
         getDoubleValueList(path4);
     Assert.assertEquals(list2.size(), 2);
 
@@ -269,14 +287,14 @@ public class GenericScimResourceObjectTest
         getIntegerValue(path2), value2);
 
     List<Integer> list1 = gsr.addIntegerValues(path3,
-        Lists.<Integer>newArrayList(arrayValue1, arrayValue2)).
+        List.of(arrayValue1, arrayValue2)).
         getIntegerValueList(Path.fromString(path3));
     Assert.assertEquals(list1.size(), 2);
     Assert.assertTrue(list1.contains(arrayValue1));
     Assert.assertTrue(list1.contains(arrayValue2));
 
     List<Integer> list2 = gsr.addIntegerValues(Path.fromString(path4),
-        Lists.<Integer>newArrayList(arrayValue3, arrayValue4)).
+        List.of(arrayValue3, arrayValue4)).
         getIntegerValueList(path4);
     Assert.assertEquals(list2.size(), 2);
     Assert.assertTrue(list2.contains(arrayValue3));
@@ -314,14 +332,14 @@ public class GenericScimResourceObjectTest
         getLongValue(path2), value2);
 
     List<Long> list1 = gsr.addLongValues(path3,
-        Lists.<Long>newArrayList(arrayValue1, arrayValue2)).
+        List.of(arrayValue1, arrayValue2)).
         getLongValueList(Path.fromString(path3));
     Assert.assertEquals(list1.size(), 2);
     Assert.assertTrue(list1.contains(arrayValue1));
     Assert.assertTrue(list1.contains(arrayValue2));
 
     List<Long> list2 = gsr.addLongValues(Path.fromString(path4),
-        Lists.<Long>newArrayList(arrayValue3, arrayValue4)).
+        List.of(arrayValue3, arrayValue4)).
         getLongValueList(path4);
     Assert.assertEquals(list2.size(), 2);
     Assert.assertTrue(list2.contains(arrayValue3));
@@ -369,14 +387,14 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals(gsr.getStringValue(path2), DateTimeUtils.format(value2));
 
     List<Date> list1 = gsr.addDateValues(path3,
-        Lists.<Date>newArrayList(arrayValue1, arrayValue2)).
+        List.of(arrayValue1, arrayValue2)).
         getDateValueList(Path.fromString(path3));
     Assert.assertEquals(list1.size(), 2);
     Assert.assertTrue(list1.contains(arrayValue1));
     Assert.assertTrue(list1.contains(arrayValue2));
 
     List<Date> list2 = gsr.addDateValues(Path.fromString(path4),
-        Lists.<Date>newArrayList(arrayValue3, arrayValue4)).
+        List.of(arrayValue3, arrayValue4)).
         getDateValueList(path4);
     Assert.assertEquals(list2.size(), 2);
     Assert.assertTrue(list2.contains(arrayValue3));
@@ -416,14 +434,14 @@ public class GenericScimResourceObjectTest
         getURIValue(path2), value2);
 
     List<URI> list1 = gsr.addURIValues(path3,
-        Lists.<URI>newArrayList(arrayValue1, arrayValue2)).
+        List.of(arrayValue1, arrayValue2)).
         getURIValueList(Path.fromString(path3));
     Assert.assertEquals(list1.size(), 2);
     Assert.assertTrue(list1.contains(arrayValue1));
     Assert.assertTrue(list1.contains(arrayValue2));
 
     List<URI> list2 = gsr.addURIValues(Path.fromString(path4),
-        Lists.<URI>newArrayList(arrayValue3, arrayValue4)).
+        List.of(arrayValue3, arrayValue4)).
         getURIValueList(path4);
     Assert.assertEquals(list2.size(), 2);
     Assert.assertTrue(list2.contains(arrayValue3));
@@ -476,7 +494,7 @@ public class GenericScimResourceObjectTest
         getBinaryValue(path2), value2);
 
     List<byte[]> list1 = gsr.addBinaryValues(path3,
-        Lists.<byte[]>newArrayList(arrayValue1, arrayValue2)).
+        List.of(arrayValue1, arrayValue2)).
         getBinaryValueList(Path.fromString(path3));
     Assert.assertEquals(list1.size(), 2);
     assertByteArrayListContainsBytes(list1, arrayValue1);
@@ -505,7 +523,7 @@ public class GenericScimResourceObjectTest
     assertByteArrayListContainsBytes(list1, arrayValue2);
 
     List<byte[]> list2 = gsr.addBinaryValues(Path.fromString(path4),
-        Lists.<byte[]>newArrayList(arrayValue3, arrayValue4)).
+        List.of(arrayValue3, arrayValue4)).
         getBinaryValueList(path4);
     Assert.assertEquals(list2.size(), 2);
     assertByteArrayListContainsBytes(list2, arrayValue3);
@@ -617,6 +635,144 @@ public class GenericScimResourceObjectTest
     assertEquals(resource, resource2);
   }
 
+  /**
+   * Tests the JsonNode-based methods that state the following text:
+   * <pre>
+   *   If the path matches multiple values (i.e., if the {@link Path} contains
+   *   a filter), all paths that match will be updated.
+   * </pre>
+   */
+  @Test
+  public void testJsonMethodsWithFilter() throws Exception
+  {
+    // Initialize the JSON object as a GenericScimResource.
+    String rawJSON = "{"
+        + "  \"emails\": ["
+        + "    {"
+        + "      \"type\": \"work\","
+        + "      \"value\": \"email1@example.com\""
+        + "    },"
+        + "    {"
+        + "      \"type\": \"work\","
+        + "      \"value\": \"email2@example.com\""
+        + "    },"
+        + "    {"
+        + "      \"value\": \"emailWithNoType@example.com\""
+        + "    }"
+        + "  ]"
+        + "}";
+    ObjectNode node = JsonUtils.getObjectReader()
+        .readValue(rawJSON, ObjectNode.class);
+    final GenericScimResource resource = new GenericScimResource(node);
+
+    // Ensure the object does not yet contain the new email that will be set by
+    // the 'replace' method.
+    assertThat(resource.toString()).doesNotContain("newEmail@example.com");
+
+    // Test the 'replace' method by updating the value of all emails that match
+    // a filter.
+    resource.replaceValue(Path.fromString("emails[type pr].value"),
+        TextNode.valueOf("newEmail@example.com"));
+
+    // Fetch the value from the ObjectNode and convert it to a list so that
+    // it may be validated.
+    List<?> emailList = getValueAsList(resource, "emails");
+
+    // Iterate through each email and ensure there are two emails that have the
+    // new value.
+    int emailsWithExpectedValue = 0;
+    for (var email : emailList)
+    {
+      // Convert the email into a JsonNode and fetch the value field.
+      JsonNode valueNode = JsonUtils.valueToNode(email).get("value");
+      assertThat(valueNode).isNotNull();
+      assertThat(valueNode.isTextual()).isTrue();
+      if ("newEmail@example.com".equals(valueNode.asText()))
+      {
+        emailsWithExpectedValue++;
+      }
+    }
+    assertThat(emailsWithExpectedValue).isEqualTo(2);
+
+    // Test the 'add' method by adding a new "customField" field on all paths
+    // that match a filter.
+    resource.addValues(Path.fromString("emails[type eq \"work\"].customField"),
+        JsonUtils.getJsonNodeFactory().arrayNode().add("data"));
+    emailList = getValueAsList(resource, "emails");
+
+    int emailsWithCustomData = 0;
+    for (var email : emailList)
+    {
+      JsonNode valueNode = JsonUtils.valueToNode(email).get("customField");
+      if (valueNode != null)
+      {
+        emailsWithCustomData++;
+      }
+    }
+    assertThat(emailsWithCustomData).isEqualTo(2);
+
+    // Test the 'remove' method by removing any paths that match the filters.
+    // This should leave only the "no type" email on the resource.
+    resource.removeValues(Path.fromString("emails[customField pr]"));
+    emailList = getValueAsList(resource, "emails");
+    assertThat(emailList).hasSize(1);
+    assertThat(emailList.get(0).toString())
+        .contains("emailWithNoType@example.com");
+  }
+
+  /**
+   * Validate the addition of new multi-valued attributes that do not yet exist
+   * on a resource.
+   */
+  @Test
+  public void testAddNewArrays() throws Exception
+  {
+    // Set a calendar object with a time zone for a consistent JSON output in
+    // build pipelines.
+    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    calendar.setTimeInMillis(1426883922000L);
+    Date date = calendar.getTime();
+
+    JsonNode expected = JsonUtils.getObjectReader().readTree("{"
+        + "  \"emails\" : [ \"email1@example.com\", \"email2@example.com\" ],"
+        + "  \"aliases\" : [ \"shady\", \"slim\" ],"
+        + "  \"recentWeights\" : [ 104.0, 104.9 ],"
+        + "  \"recentHeights\" : [ 121.0, 120.9, 120.8 ],"
+        + "  \"fibonacciNumbers\" : [ 2, 3, 5, 8, 13 ],"
+        + "  \"timeTables\" : [ 0, 1, 2, 145 ],"
+        + "  \"wholeNumbers\" : [ 9223372036854775807 ],"
+        + "  \"negativeNumbers\" : [ -9223372036854775808 ],"
+        + "  \"projectInception\" : [ \"2015-03-20T20:38:42Z\" ],"
+        + "  \"innovationTime\" : [ \"2015-03-20T20:38:42Z\" ],"
+        + "  \"publicKeys\" : [ \"aGV5\" ],"
+        + "  \"code\" : [ \"aGk=\" ],"
+        + "  \"pictures\" : [ \"https://example.com/photo.jpg\" ],"
+        + "  \"links\" : [ \"https://example.com\" ]"
+        + "}"
+    );
+
+    GenericScimResource gsr = new GenericScimResource()
+        .addValues("emails", JsonUtils.getJsonNodeFactory().arrayNode()
+            .add("email1@example.com")
+            .add("email2@example.com"))
+        .addStringValues("aliases", "shady", "slim")
+        .addDoubleValues("recentWeights", 104.0, 104.9)
+        .addDoubleValues(Path.fromString("recentHeights"), 121.0, 120.9, 120.8)
+        .addIntegerValues("fibonacciNumbers", 2, 3, 5, 8, 13)
+        .addIntegerValues(Path.fromString("timeTables"), 0, 1, 2, 145)
+        .addLongValues("wholeNumbers", Long.MAX_VALUE)
+        .addLongValues(Path.fromString("negativeNumbers"), Long.MIN_VALUE)
+        .addDateValues("projectInception", date)
+        .addDateValues(Path.fromString("innovationTime"), date)
+        .addBinaryValues("publicKeys", new byte[] { 0x68, 0x65, 0x79 })
+        .addBinaryValues(Path.fromString("code"), new byte[] { 104, 105 })
+        .addURIValues("pictures", new URI("https://example.com/photo.jpg"))
+        .addURIValues(Path.fromString("links"), new URI("https://example.com"));
+
+    // Compare the serialized forms.
+    assertThat(gsr.getObjectNode().toString()).isEqualTo(expected.toString());
+  }
+
   private void assertByteArrayListContainsBytes(
       List<byte[]> byteArrayList, byte[] bytes)
   {
@@ -633,4 +789,26 @@ public class GenericScimResourceObjectTest
     Assert.assertTrue(found);
   }
 
+  /**
+   * Fetches the values of a multi-valued String attribute stored on a generic
+   * SCIM resource. This method takes the array and converts it into a list
+   * to simplify assertion validation.
+   *
+   * @param resource  The generic SCIM resource containing the attribute to
+   *                  retrieve.
+   * @param path      The path to the attribute.
+   * @return          A list containing the values of the multi-valued
+   *                  attribute.
+   *
+   * @throws Exception  If an error occurs while parsing the resource.
+   */
+  private List<?> getValueAsList(GenericScimResource resource, String path)
+      throws Exception
+  {
+    JsonNode emailsJson = resource.getValue(path);
+    List<?> emailList = JsonUtils.nodeToValue(emailsJson, List.class);
+    assertThat(emailList).isNotNull();
+
+    return emailList;
+  }
 }

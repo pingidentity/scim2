@@ -36,6 +36,11 @@ The default value of `APPEND_NEW_PATCH_VALUES_PROPERTY` is `true`, which will al
 value (i.e., email) on the multi-valued attribute instead of updating an existing value/email.
 This matches the behavior of the SDK since the 3.0.0 release.
 
+Refreshed the documentation of the `GenericScimResource` class to provide better insight on how it
+can be used to define resource types for objects that don't have a strongly defined schema. The
+class-level Javadoc describes how to interface with the object effectively, and the methods now
+provide clearer examples of how they can be used.
+
 ## v3.1.0 - 2024-Jun-25
 Updated all classes within the UnboundID SCIM 2 SDK to utilize `@Nullable` and `@NotNull`
 annotations for all non-primitive input parameters, member variables, and return values. These
