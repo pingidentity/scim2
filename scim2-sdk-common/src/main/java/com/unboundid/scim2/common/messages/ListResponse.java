@@ -76,25 +76,31 @@ public final class ListResponse<T> extends BaseScimResource
 
   /**
    * Create a new List Response.
+   * <br><br>
+   * This constructor is primarily utilized by Jackson when converting JSON
+   * strings into a ListResponse object. To create a ListResponse in code,
+   * it is suggested to use
+   * {@link ListResponse#ListResponse(int, List, Integer, Integer)}.
    *
    * @param props  Properties to construct the List Response.
    */
   @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
   @SuppressWarnings("unchecked")
   public ListResponse(@NotNull final Map<String, Object> props)
+      throws IllegalArgumentException
   {
     final Map<String, Object> properties =
-      new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+        new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     properties.putAll(props);
 
-    checkRequiredProperties(properties, "totalResults", "resources");
-
+    checkRequiredProperties(properties, "totalResults");
     this.totalResults = (Integer) properties.get("totalResults");
-    this.resources = (List<T>) properties.get("resources");
-    this.startIndex = properties.containsKey("startIndex") ?
-      (Integer) properties.get("startIndex") : null;
-    this.itemsPerPage = properties.containsKey("itemsPerPage") ?
-      (Integer) properties.get("itemsPerPage") : null;
+    this.startIndex   = (Integer) properties.get("startIndex");
+    this.itemsPerPage = (Integer) properties.get("itemsPerPage");
+
+    var resourcesList = (List<T>) properties.get("Resources");
+    this.resources = getResources(resourcesList, totalResults);
+
     if (properties.containsKey("schemas"))
     {
       this.setSchemaUrns((Collection<String>) properties.get("schemas"));
@@ -116,6 +122,7 @@ public final class ListResponse<T> extends BaseScimResource
                       @NotNull final List<T> resources,
                       @Nullable final Integer startIndex,
                       @Nullable final Integer itemsPerPage)
+      throws IllegalArgumentException
   {
     this.totalResults = totalResults;
     this.startIndex   = startIndex;
@@ -231,7 +238,7 @@ public final class ListResponse<T> extends BaseScimResource
       return false;
     }
 
-    ListResponse that = (ListResponse) o;
+    ListResponse<?> that = (ListResponse<?>) o;
 
     if (totalResults != that.totalResults)
     {
@@ -283,5 +290,45 @@ public final class ListResponse<T> extends BaseScimResource
           "Missing required creator property '%s'", property));
       }
     }
+  }
+
+  /**
+   * Computes the appropriate value for the {@code Resources} list, or throws
+   * an exception if the ListResponse object would be invalid.
+   * <br><br>
+   * In most cases, the list of resources is non-null. However, we must permit
+   * null {@code Resources} lists whenever the value of {@code totalResults} is
+   * 0. RFC 7644 states:
+   * <pre>
+   *   Resources  A multi-valued list of complex objects containing the
+   *       requested resources...  REQUIRED if "totalResults" is non-zero.
+   * </pre>
+   *
+   * @param resources     The resource list that should be analyzed.
+   * @param totalResults  The value of {@code totalResults} on the ListResponse.
+   * @return  A non-null list of resources.
+   *
+   * @throws IllegalArgumentException   If the {@code Resources} list is
+   *                                    {@code null} but {@code totalResults} is
+   *                                    non-zero.
+   */
+  @NotNull
+  private List<T> getResources(final @Nullable List<T> resources,
+                               final int totalResults)
+      throws IllegalArgumentException
+  {
+    if (resources == null)
+    {
+      if (totalResults != 0)
+      {
+        throw new IllegalArgumentException(
+            "Missing 'Resources' property, which must be present if"
+                + " totalResults is non-zero.");
+      }
+
+      return Collections.emptyList();
+    }
+
+    return resources;
   }
 }
