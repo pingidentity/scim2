@@ -40,9 +40,64 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Class representing a SCIM 2 list response.
+ * This class represents a SCIM 2.0 list response. A list response represents a
+ * list of results with some additional metadata.
+ * <br><br>
  *
- * @param <T> The type of the returned resources.
+ * A list response can be broken down into pages, where each page contains a
+ * subset of the overall results. Pagination allows the SCIM service provider to
+ * return reasonably-sized JSON responses and avoid expensive computations. The
+ * next set/page of results can be retrieved by leveraging the "startIndex"
+ * field, which represent the page number. Note that pagination is not a hard
+ * requirement of the SCIM 2.0 protocol, so some service providers do not
+ * support it.
+ * <br><br>
+ *
+ * List responses contain the following fields:
+ * <ul>
+ *   <li> {@code Resources}: An array containing the list of results returned.
+ *
+ *   <li> {@code itemsPerPage}: Indicates the number of results present in the
+ *        {@code Resources} array.
+ *
+ *   <li> {@code totalResults}: Indicates the total number of results for the
+ *        query. If all of the results are present within the Resources
+ *        array, then this value will be equivalent to {@code itemsPerPage}.
+ *
+ *   <li> {@code startIndex}: The index indicating the page number that is
+ *         desired, if pagination is supported by the SCIM service.
+ * </ul>
+ *
+ * An example list response takes the following form:
+ * <pre>
+ *   {
+ *       "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+ *       "totalResults": 100,
+ *       "itemsPerPage": 1,
+ *       "Resources": [
+ *           {
+ *               "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+ *               "userName": "muhammad.ali",
+ *               "title": "Champ"
+ *           }
+ *       ]
+ *   }
+ * </pre>
+ *
+ * To create the above list response, use the following Java code:
+ * <pre>
+ *   UserResource muhammad = new UserResource()
+ *           .setUserName("muhammad.ali")
+ *           .setTitle("Champ");
+ *   ListResponse&lt;UserResource&gt; response =
+ *           new ListResponse&lt;&gt;(100, List.of(muhammad), 1, null);
+ * </pre>
+ *
+ * Any Collection may be passed directly into the alternate constructor.
+ * <pre>
+ *   List&lt;UserResource&gt; users = getUserList();
+ *   ListResponse&lt;UserResource&gt; response = new ListResponse&lt;&gt;(users);
+ * </pre>
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:ListResponse",
     name="List Response", description = "SCIM 2.0 List Response")
@@ -76,25 +131,32 @@ public final class ListResponse<T> extends BaseScimResource
 
   /**
    * Create a new List Response.
+   * <br><br>
+   *
+   * This constructor is primarily utilized by Jackson when converting JSON
+   * strings into a ListResponse object. To create a ListResponse in code,
+   * it is suggested to use
+   * {@link ListResponse#ListResponse(int, List, Integer, Integer)}.
    *
    * @param props  Properties to construct the List Response.
    */
   @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
   @SuppressWarnings("unchecked")
   public ListResponse(@NotNull final Map<String, Object> props)
+      throws IllegalArgumentException
   {
     final Map<String, Object> properties =
-      new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+        new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     properties.putAll(props);
 
-    checkRequiredProperties(properties, "totalResults", "resources");
-
+    checkRequiredProperties(properties, "totalResults");
     this.totalResults = (Integer) properties.get("totalResults");
-    this.resources = (List<T>) properties.get("resources");
-    this.startIndex = properties.containsKey("startIndex") ?
-      (Integer) properties.get("startIndex") : null;
-    this.itemsPerPage = properties.containsKey("itemsPerPage") ?
-      (Integer) properties.get("itemsPerPage") : null;
+    this.startIndex   = (Integer) properties.get("startIndex");
+    this.itemsPerPage = (Integer) properties.get("itemsPerPage");
+
+    var resourcesList = (List<T>) properties.get("Resources");
+    this.resources = getResources(resourcesList, itemsPerPage, totalResults);
+
     if (properties.containsKey("schemas"))
     {
       this.setSchemaUrns((Collection<String>) properties.get("schemas"));
@@ -116,6 +178,7 @@ public final class ListResponse<T> extends BaseScimResource
                       @NotNull final List<T> resources,
                       @Nullable final Integer startIndex,
                       @Nullable final Integer itemsPerPage)
+      throws IllegalArgumentException
   {
     this.totalResults = totalResults;
     this.startIndex   = startIndex;
@@ -231,7 +294,7 @@ public final class ListResponse<T> extends BaseScimResource
       return false;
     }
 
-    ListResponse that = (ListResponse) o;
+    ListResponse<?> that = (ListResponse<?>) o;
 
     if (totalResults != that.totalResults)
     {
@@ -283,5 +346,53 @@ public final class ListResponse<T> extends BaseScimResource
           "Missing required creator property '%s'", property));
       }
     }
+  }
+
+  /**
+   * Computes the appropriate value for the {@code Resources} list, or throws
+   * an exception if the ListResponse object would be invalid.
+   * <br><br>
+   *
+   * In most cases, the list of resources is non-null. However, we must permit
+   * null {@code Resources} lists whenever the value of {@code totalResults} or
+   * {@code itemsPerPage} is 0. RFC 7644 states:
+   * <pre>
+   * Resources  A multi-valued list of complex objects containing the
+   *            requested resources...  REQUIRED if "totalResults" is non-zero.
+   * </pre>
+   *
+   * Though not mentioned in the RFC, this method also checks the value of
+   * {@code itemsPerPage} to permit null arrays in this unlikely case as well.
+   *
+   * @param resources     The resource list that should be analyzed.
+   * @param itemsPerPage  The value of {@code itemsPerPage} on the ListResponse.
+   * @param totalResults  The value of {@code totalResults} on the ListResponse.
+   * @return  A non-null list of resources.
+   *
+   * @throws IllegalArgumentException   If the {@code Resources} list is
+   *                                    {@code null} but {@code totalResults} is
+   *                                    non-zero.
+   */
+  @NotNull
+  private List<T> getResources(final @Nullable List<T> resources,
+                               final @Nullable Integer itemsPerPage,
+                               final int totalResults)
+      throws IllegalArgumentException
+  {
+    if (resources == null)
+    {
+      boolean itemsPerPageIsZero = (itemsPerPage != null && itemsPerPage == 0);
+      if (totalResults == 0 || itemsPerPageIsZero)
+      {
+        return Collections.emptyList();
+      }
+
+      throw new IllegalArgumentException(
+          "Failed to create the ListResponse since it is missing the"
+              + " 'Resources' property, which must be present if totalResults"
+              + " is non-zero.");
+    }
+
+    return resources;
   }
 }
