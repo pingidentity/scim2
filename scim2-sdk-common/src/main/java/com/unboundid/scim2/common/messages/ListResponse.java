@@ -403,6 +403,6 @@ public final class ListResponse<T> extends BaseScimResource
 
     throw new IllegalStateException(
         "Failed to create the ListResponse since it is missing the 'Resources'"
-            + "  property, which must be present if totalResults is non-zero.");
+            + " property, which must be present if totalResults is non-zero.");
   }
 }
