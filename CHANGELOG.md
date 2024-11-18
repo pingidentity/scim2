@@ -41,6 +41,15 @@ can be used to define resource types for objects that don't have a strongly defi
 class-level Javadoc describes how to interface with the object effectively, and the methods now
 provide clearer examples of how they can be used.
 
+Updated the class-level documentation of `ListResponse` to provide more background about the
+resource type and how to interface with the object.
+
+Updated the `ListResponse` class to prevent deserialization errors when the `Resources` array is
+`null`. This is now permitted when `totalResults` and/or `itemsPerPage` is set to 0.
+[RFC 7644 Section 3.4.2](https://datatracker.ietf.org/doc/html/rfc7644#section-3.4.2)
+explicitly states that the `Resources` array may be null when `totalResults` is 0, so the SCIM SDK
+will no longer throw deserialization exceptions when processing JSON of this form.
+
 ## v3.1.0 - 2024-Jun-25
 Updated all classes within the UnboundID SCIM 2 SDK to utilize `@Nullable` and `@NotNull`
 annotations for all non-primitive input parameters, member variables, and return values. These
