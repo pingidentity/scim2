@@ -17,8 +17,10 @@
 
 package com.unboundid.scim2.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
@@ -30,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -150,7 +154,8 @@ public class ListResponseTestCase
    * @throws Exception  If an unexpected error occurs.
    */
   @Test
-  public void testListResponseFormat() throws Exception {
+  public void testListResponseFormat() throws Exception
+  {
     // Reformat the expected JSON to a standardized form.
     String expectedJSON =
             JsonUtils.getObjectReader().readTree(SINGLE_ELEMENT_LIST_RESPONSE)
@@ -162,5 +167,117 @@ public class ListResponseTestCase
             JsonUtils.getObjectWriter().writeValueAsString(listResponse);
 
     assertEquals(listResponseJSON, expectedJSON);
+  }
+
+
+  /**
+   * Ensures {@code null} resources are permitted during deserialization when
+   * {@code totalResults} or {@code itemsPerPage} are zero.
+   */
+  @Test
+  public void testDeserializingNullResourcesArray() throws Exception
+  {
+    // The object reader that will be used to serialize JSON strings into
+    // ListResponse objects.
+    final ObjectReader reader = JsonUtils.getObjectReader();
+
+    // When 'totalResults' is 0, a missing "Resources" property should be
+    // permitted and translated into an empty list.
+    String noResource = "{ "
+        + "  \"schemas\": ["
+        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
+        + "  ],"
+        + "  \"totalResults\": 0,"
+        + "  \"itemsPerPage\": 0"
+        + "}";
+    ListResponse<?> object = reader.readValue(noResource, ListResponse.class);
+    assertThat(object.getTotalResults()).isEqualTo(0);
+    assertThat(object.getItemsPerPage()).isEqualTo(0);
+    assertThat(object.getStartIndex()).isNull();
+    assertThat(object.getResources())
+        .isNotNull()
+        .isEmpty();
+
+    // Test the emptiest possible valid ListResponse object. There should be no
+    // problems with setting the other fields to null or empty.
+    String smallResponse = "{ "
+        + "  \"schemas\": ["
+        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
+        + "  ],"
+        + "  \"totalResults\": 0"
+        + "}";
+    ListResponse<?> small = reader.readValue(smallResponse, ListResponse.class);
+    assertThat(small.getTotalResults()).isEqualTo(0);
+    assertThat(small.getItemsPerPage()).isNull();
+    assertThat(small.getStartIndex()).isNull();
+    assertThat(small.getResources())
+        .isNotNull()
+        .isEmpty();
+
+    // An explicit empty array should still be permitted if totalResults == 0.
+    String emptyArray = "{ "
+        + "  \"schemas\": ["
+        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
+        + "  ],"
+        + "  \"totalResults\": 0,"
+        + "  \"Resources\": []"
+        + "}";
+    ListResponse<?> response = reader.readValue(emptyArray, ListResponse.class);
+    assertThat(response.getTotalResults()).isEqualTo(0);
+    assertThat(response.getItemsPerPage()).isNull();
+    assertThat(response.getStartIndex()).isNull();
+    assertThat(response.getResources())
+        .isNotNull()
+        .isEmpty();
+
+    // This is illegal since the Resources array is missing when totalResults is
+    // non-zero.
+    String invalidJSON = "{ "
+        + "  \"schemas\": ["
+        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
+        + "  ],"
+        + "  \"totalResults\": 1"
+        + "}";
+    assertThatThrownBy(()-> reader.readValue(invalidJSON, ListResponse.class))
+        .isInstanceOf(JsonProcessingException.class)
+        .hasMessageContaining("Failed to create the ListResponse since it is")
+        .hasMessageContaining("missing the 'Resources' property");
+
+    // The following is a valid list response since itemsPerPage restricts the
+    // resource list size to 0.
+    String newObj = "{ "
+        + "  \"schemas\": ["
+        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
+        + "  ],"
+        + "  \"totalResults\": 100,"
+        + "  \"itemsPerPage\": 0,"
+        + "  \"Resources\": []"
+        + "}";
+    ListResponse<?> response2 = reader.readValue(newObj, ListResponse.class);
+    assertThat(response2.getTotalResults()).isEqualTo(100);
+    assertThat(response2.getItemsPerPage()).isEqualTo(0);
+    assertThat(response2.getStartIndex()).isNull();
+    assertThat(response2.getResources())
+        .isNotNull()
+        .isEmpty();
+
+    // This response is technically invalid since it should use an empty array.
+    // However, if a SCIM service is willing to return null when totalResults is
+    // 0, they might do the same for itemsPerPage. The SCIM SDK permits this
+    // operation in order to make it easier to work with these SCIM services.
+    String itemsJSON = "{ "
+        + "  \"schemas\": ["
+        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
+        + "  ],"
+        + "  \"totalResults\": 100,"
+        + "  \"itemsPerPage\": 0"
+        + "}";
+    ListResponse<?> response3 = reader.readValue(itemsJSON, ListResponse.class);
+    assertThat(response3.getTotalResults()).isEqualTo(100);
+    assertThat(response3.getItemsPerPage()).isEqualTo(0);
+    assertThat(response3.getStartIndex()).isNull();
+    assertThat(response3.getResources())
+        .isNotNull()
+        .isEmpty();
   }
 }

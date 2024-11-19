@@ -40,7 +40,73 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Class representing a SCIM 2 list response.
+ * This class represents a SCIM 2.0 list response. A list response represents a
+ * list of results with some additional metadata. This resource type is used as
+ * a response to search requests and "list" requests (e.g., a GET request on
+ * {@code /Users}).
+ * <br><br>
+ *
+ * A list response can be broken down into pages, where each page contains a
+ * subset of the overall results. Pagination allows the SCIM service provider to
+ * return reasonably-sized JSON responses and avoid expensive computations. The
+ * next page of results can be retrieved by leveraging the "startIndex" field,
+ * which represents the page number. Pagination is not a hard requirement of the
+ * SCIM 2.0 protocol, so some SCIM services do not support it.
+ * <br><br>
+ *
+ * List responses contain the following fields:
+ * <ul>
+ *   <li> {@code Resources}: A list of SCIM resource objects.
+ *   <li> {@code itemsPerPage}: Indicates the number of results that are present
+ *        in the {@code Resources} array.
+ *   <li> {@code totalResults}: Indicates the total number of results that match
+ *        the list or query operation. This value may be larger than the value
+ *        of {@code itemsPerPage} if all of the matched resources are not
+ *        present in the provided {@code Resources} array.
+ *   <li> {@code startIndex}: The index indicating the page number, if
+ *        pagination is supported by the SCIM service.
+ * </ul>
+ *
+ * An example list response takes the following form:
+ * <pre>
+ *   {
+ *       "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+ *       "totalResults": 100,
+ *       "itemsPerPage": 1,
+ *       "Resources": [
+ *           {
+ *               "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+ *               "userName": "muhammad.ali",
+ *               "title": "Champ"
+ *           }
+ *       ]
+ *   }
+ * </pre>
+ *
+ * To create the above list response, use the following Java code:
+ * <pre>
+ *   UserResource muhammad = new UserResource()
+ *           .setUserName("muhammad.ali")
+ *           .setTitle("Champ");
+ *   ListResponse&lt;UserResource&gt; response =
+ *           new ListResponse&lt;&gt;(100, List.of(muhammad), 1, null);
+ * </pre>
+ *
+ * Any Collection may be passed directly into the alternate constructor.
+ * <pre>
+ *   List&lt;UserResource&gt; list = getUserList();
+ *   ListResponse&lt;UserResource&gt; response = new ListResponse&lt;&gt;(list);
+ * </pre>
+ *
+ * When iterating over the elements in a list response's {@code Resources} list,
+ * it is possible to iterate directly over the ListResponse object:
+ * <pre>
+ *   ListResponse&lt;BaseScimResource&gt; listResponse = getResponse();
+ *   for (BaseScimResource resource : listResponse)
+ *   {
+ *     System.out.println(resource.getId());
+ *   }
+ * </pre>
  *
  * @param <T> The type of the returned resources.
  */
@@ -74,27 +140,36 @@ public final class ListResponse<T> extends BaseScimResource
   @JsonProperty(value = "Resources", required = true)
   private final List<T> resources;
 
+  @NotNull
+  private static final Integer ZERO = 0;
+
   /**
    * Create a new List Response.
+   * <br><br>
+   *
+   * This constructor is utilized by Jackson when converting JSON strings into
+   * ListResponse objects. To create a ListResponse in code, it is suggested to
+   * use {@link ListResponse#ListResponse(int, List, Integer, Integer)}.
    *
    * @param props  Properties to construct the List Response.
    */
   @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
   @SuppressWarnings("unchecked")
   public ListResponse(@NotNull final Map<String, Object> props)
+      throws IllegalArgumentException, IllegalStateException
   {
     final Map<String, Object> properties =
-      new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+        new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     properties.putAll(props);
 
-    checkRequiredProperties(properties, "totalResults", "resources");
-
+    checkRequiredProperties(properties, "totalResults");
     this.totalResults = (Integer) properties.get("totalResults");
-    this.resources = (List<T>) properties.get("resources");
-    this.startIndex = properties.containsKey("startIndex") ?
-      (Integer) properties.get("startIndex") : null;
-    this.itemsPerPage = properties.containsKey("itemsPerPage") ?
-      (Integer) properties.get("itemsPerPage") : null;
+    this.itemsPerPage = (Integer) properties.get("itemsPerPage");
+    this.startIndex   = (Integer) properties.get("startIndex");
+
+    var initList = (List<T>) properties.get("Resources");
+    this.resources = resourcesOrEmptyList(initList, itemsPerPage, totalResults);
+
     if (properties.containsKey("schemas"))
     {
       this.setSchemaUrns((Collection<String>) properties.get("schemas"));
@@ -116,6 +191,7 @@ public final class ListResponse<T> extends BaseScimResource
                       @NotNull final List<T> resources,
                       @Nullable final Integer startIndex,
                       @Nullable final Integer itemsPerPage)
+      throws IllegalArgumentException
   {
     this.totalResults = totalResults;
     this.startIndex   = startIndex;
@@ -231,7 +307,7 @@ public final class ListResponse<T> extends BaseScimResource
       return false;
     }
 
-    ListResponse that = (ListResponse) o;
+    ListResponse<?> that = (ListResponse<?>) o;
 
     if (totalResults != that.totalResults)
     {
@@ -274,6 +350,7 @@ public final class ListResponse<T> extends BaseScimResource
   private void checkRequiredProperties(
       @NotNull final Map<String, Object> properties,
       @NotNull final String... requiredProperties)
+          throws IllegalStateException
   {
     for (final String property : requiredProperties)
     {
@@ -283,5 +360,49 @@ public final class ListResponse<T> extends BaseScimResource
           "Missing required creator property '%s'", property));
       }
     }
+  }
+
+  /**
+   * Fetches a non-null representation of the {@code Resources} list, or throws
+   * an exception if the ListResponse object would be invalid.
+   * <br><br>
+   *
+   * A JSON list response may contain a null value for {@code Resources} only
+   * if there are no results to display. RFC 7644 states:
+   * <pre>
+   * Resources  A multi-valued list of complex objects containing the
+   *            requested resources...  REQUIRED if "totalResults" is non-zero.
+   * </pre>
+   *
+   * This method only permits {@code null} arrays when the provided list should
+   * have been empty (i.e., when either integer value is 0).
+   *
+   * @param resources     The list that should be analyzed.
+   * @param itemsPerPage  The value of {@code itemsPerPage} on the ListResponse.
+   * @param totalResults  The value of {@code totalResults} on the ListResponse.
+   * @return  A non-null list of resources.
+   *
+   * @throws IllegalStateException  If {@code Resources} is {@code null} but
+   *                                neither integer is 0.
+   */
+  @NotNull
+  private List<T> resourcesOrEmptyList(@Nullable final List<T> resources,
+                                       @Nullable final Integer itemsPerPage,
+                                       final int totalResults)
+      throws IllegalStateException
+  {
+    if (resources != null)
+    {
+      return resources;
+    }
+
+    if (totalResults == 0 || ZERO.equals(itemsPerPage))
+    {
+      return Collections.emptyList();
+    }
+
+    throw new IllegalStateException(
+        "Failed to create the ListResponse since it is missing the 'Resources'"
+            + " property, which must be present if totalResults is non-zero.");
   }
 }
