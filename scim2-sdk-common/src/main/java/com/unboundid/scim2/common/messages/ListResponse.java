@@ -386,8 +386,8 @@ public final class ListResponse<T> extends BaseScimResource
    *                                neither integer is 0.
    */
   @NotNull
-  private List<T> resourcesOrEmptyList(final @Nullable List<T> resources,
-                                       final @Nullable Integer itemsPerPage,
+  private List<T> resourcesOrEmptyList(@Nullable final List<T> resources,
+                                       @Nullable final Integer itemsPerPage,
                                        final int totalResults)
       throws IllegalStateException
   {
