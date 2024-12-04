@@ -2,11 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## v3.2.0 - TBD
+## v3.2.0 - 2024-Dec-04
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
 true.
 
 Updated Jackson dependencies to 2.17.2.
+
+Added better customization of the MapperFactory. The
+[MapperFactory](scim2-sdk-common/src/main/java/com/unboundid/scim2/common/utils/MapperFactory.java)
+class can be used to customize the behavior of the SDK when it converts JSON strings to Java
+Objects, and vice versa. This release now supports overriding the `JsonUtils.createObjectMapper()`
+method to allow for the addition of custom serializers and deserializers. See the class-level
+Javadoc of `MapperFactory` for more information on how to accomplish this.
 
 Added a property that allows ADD patch operations with value filters to target an existing value.
 For example, consider the following patch request. This request aims to add a `display` field on a
@@ -35,6 +42,8 @@ PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY = false;
 The default value of `APPEND_NEW_PATCH_VALUES_PROPERTY` is `true`, which will always add a new
 value (i.e., email) on the multi-valued attribute instead of updating an existing value/email.
 This matches the behavior of the SDK since the 3.0.0 release.
+
+&nbsp;
 
 Refreshed the documentation of the `GenericScimResource` class to provide better insight on how it
 can be used to define resource types for objects that don't have a strongly defined schema. The
