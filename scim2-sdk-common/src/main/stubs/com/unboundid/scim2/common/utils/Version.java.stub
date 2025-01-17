@@ -5,15 +5,14 @@
 package com.unboundid.scim2.common.utils;
 
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
-
 /**
- * This class provides information about the current set of version definitions.
+ * This class provides information about the build version.
  */
 public final class Version
 {
@@ -32,13 +31,11 @@ public final class Version
   public static final String PRODUCT_NAME = "@PRODUCT_NAME@";
 
 
-
   /**
-   * The short product name for the @SHORT_NAME@ library.  This will not have
-   * any spaces. For this build, the value is "@SHORT_NAME@".
+   * The short product name for the @SHORT_NAME@ library.  This will not
+   * have any spaces. For this build, the value is "@SHORT_NAME@".
    */
   public static final String SHORT_NAME = "@SHORT_NAME@";
-
 
 
   /**
@@ -56,37 +53,35 @@ public final class Version
 
 
   /**
-   * The Subversion path associated with the build root directory from which
-   * this build of the @SHORT_NAME@ was generated.  It may be an absolute local
-   * filesystem path if the Subversion path isn't available at build time.
-   * For this build, the value is "@GIT_PATH@".
+   * The Git branch associated with the build root directory from which this
+   * build of the @SHORT_NAME@ was generated.  For this build, the value is
+   * "@GIT_PATH@".
    */
   public static final String REPOSITORY_PATH = "@GIT_PATH@";
 
 
   /**
-   * The source revision number from which this build of the @SHORT_NAME@ was
-   * generated.  It may be -1 if the Subversion revision isn't available at
-   * build time.  For this build, the value is @GIT_REVISION@.
+   * The source revision number from which this build of the @SHORT_NAME@
+   * was generated.  For this build, the value is
+   * "@GIT_REVISION@".
    */
-  public static final String REVISION_NUMBER = "@GIT_REVISION@";
+  public static final String REVISION_NUMBER =
+      "@GIT_REVISION@";
 
 
   /**
    * The full version string for the @SHORT_NAME@ library.  For this build,
    * the value is "@PRODUCT_NAME@ @VERSION@".
    */
-  public static final String FULL_VERSION_STRING =
-       PRODUCT_NAME + ' ' + VERSION;
-
+  public static final String FULL_VERSION_STRING = PRODUCT_NAME + ' ' + VERSION;
 
 
   /**
    * The short version string for the @SHORT_NAME@ library.  This will not
-   * have any spaces. For this build, the value is "@SHORT_NAME@-@VERSION@".
+   * have any spaces. For this build, the value is
+   * "@SHORT_NAME@-@VERSION@".
    */
-  public static final String SHORT_VERSION_STRING =
-       SHORT_NAME + '-' + VERSION;
+  public static final String SHORT_VERSION_STRING = SHORT_NAME + '-' + VERSION;
 
 
 
@@ -103,14 +98,11 @@ public final class Version
   /**
    * Prints version information from this class to standard output.
    *
-   * @param  args  The command-line arguments provided to this program.
+   * @param args  The command-line arguments provided to this program.
    */
-  public static void main(final String... args)
+  public static void main(@Nullable final String... args)
   {
-    for (final String line : getVersionLines())
-    {
-      System.out.println(line);
-    }
+    getVersionLines().forEach(System.out::println);
   }
 
 
@@ -119,22 +111,20 @@ public final class Version
    * Retrieves a list of lines containing information about the @SHORT_NAME@
    * library version.
    *
-   * @return  A list of lines containing information about the @SHORT_NAME@
-   *          library version.
+   * @return  The list of product information lines.
    */
+  @NotNull
   public static List<String> getVersionLines()
   {
-    final ArrayList<String> versionLines = new ArrayList<String>(11);
-
-    versionLines.add("Full Version String:   " + FULL_VERSION_STRING);
-    versionLines.add("Short Version String:  " + SHORT_VERSION_STRING);
-    versionLines.add("Product Name:          " + PRODUCT_NAME);
-    versionLines.add("Short Name:            " + SHORT_NAME);
-    versionLines.add("Version:               " + VERSION);
-    versionLines.add("Timestamp:             " + BUILD_TIMESTAMP);
-    versionLines.add("Repository Path:       " + REPOSITORY_PATH);
-    versionLines.add("Revision Number:       " + REVISION_NUMBER);
-
-    return Collections.unmodifiableList(versionLines);
+    return List.of(
+        "Full Version String:   " + FULL_VERSION_STRING,
+        "Short Version String:  " + SHORT_VERSION_STRING,
+        "Product Name:          " + PRODUCT_NAME,
+        "Short Name:            " + SHORT_NAME,
+        "Version:               " + VERSION,
+        "Timestamp:             " + BUILD_TIMESTAMP,
+        "Repository Path:       " + REPOSITORY_PATH,
+        "Revision Number:       " + REVISION_NUMBER
+    );
   }
 }
