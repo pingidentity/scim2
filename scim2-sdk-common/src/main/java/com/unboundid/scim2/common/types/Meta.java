@@ -26,7 +26,7 @@ import java.util.Calendar;
 /**
  * Stores metadata about a SCIM object.
  */
-public final class Meta
+public class Meta
 {
   @Nullable
   @Attribute(description = "The resource Type",
