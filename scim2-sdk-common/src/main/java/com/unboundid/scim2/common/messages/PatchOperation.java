@@ -329,8 +329,10 @@ public abstract class PatchOperation
     }
 
     /**
-     * This method processes an add operation whose attribute path contains a
-     * value selection filter. This operation takes the form of:
+     * This method processes an add operation that aims to update a value within
+     * an array. For example, the following patch operation attempts to update
+     * a user's work address by adding a new street address value. Addresses
+     * other than the work address will not be updated.
      * <pre>
      *   {
      *     "op": "add",
@@ -339,33 +341,52 @@ public abstract class PatchOperation
      *   }
      * </pre>
      *
-     * When this patch operation is applied by a SCIM service provider, it
-     * should result in both the {@code streetAddress} and the {@code type}
-     * fields being appended to the {@code addresses} attribute.
+     * By default, the SCIM SDK will look through the {@code addresses} on the
+     * target resource and add the new value for any address that matches. For
+     * example, consider an existing user resource that has:
+     * <pre>
+     *   "addresses": [
+     *       {
+     *         "formatted": "Formatted Ghost Avenue",
+     *         "type": "work"
+     *       },
+     *       {
+     *         "formatted": "Unrelated Address",
+     *         "type": "home"
+     *       }
+     *   ]
+     * </pre>
+     *
+     * If the above patch operation is applied to this resource, it will result
+     * in:
+     * <pre>
+     *   "addresses": [
+     *       {
+     *         "formatted": "Formatted Ghost Avenue",
+     *         "streetAddress": "100 Tricky Ghost Avenue",
+     *         "type": "work"
+     *       },
+     *       {
+     *         "formatted": "Unrelated Address",
+     *         "type": "home"
+     *       }
+     *   ]
+     * </pre>
+     *
+     * If the patch operation is applied to a resource that has no work address,
+     * then a new value will be added to the multi-valued attribute.
      * <pre>
      *   "addresses": [
      *       {
      *         "streetAddress": "100 Tricky Ghost Avenue",
      *         "type": "work"
      *       }
-     *   ]
+     *    ]
      * </pre>
      *
-     * While RFC 7644 does not dictate or describe this use case, this
-     * convention is nevertheless used by some SCIM service providers to specify
-     * additional data for a multi-valued parameter, such as a work address or a
-     * home email.
-     * <br><br>
-     * Note that filters in attribute paths are treated differently for other
-     * types of patch operations. For example, a {@code remove} operation with a
-     * path of {@code addresses[type eq "work"]} would only delete address
-     * values that contain a {@code "type": "work"} field. In other words, these
-     * filters are normally used to modify a subset of multi-valued attributes,
-     * but the use case for add operations is unique.
-     *
      * @param path              The attribute path that contains a value filter.
-     *                          This value filter will be added as part of the
-     *                          new attribute value.
+     *                          This value filter will specify which values
+     *                          within the array that should be updated.
      * @param existingResource  The most recent copy of the resource.
      * @param value             The new sub-attribute value that should be added
      *                          to the existing resource.
@@ -2055,8 +2076,8 @@ public abstract class PatchOperation
 
   /**
    * This field represents a property that can customize behavior when
-   * processing ADD PATCH operations with a value filter. This is used for
-   * multi-valued attributes such as {@code emails}, and is not used for
+   * processing {@code add} PATCH operations with a value filter. This is used
+   * for multi-valued attributes such as {@code emails}, and is not used for
    * {@code remove} or {@code replace} operations. For example, consider the
    * following patch request:
    * <pre>
@@ -2074,16 +2095,15 @@ public abstract class PatchOperation
    *
    * When this property is enabled and the above patch request is applied, the
    * following JSON will be appended to the {@code emails} of the user
-   * resource:
+   * resource, regardless of the current contents of the user:
    * <pre>
    *   {
    *     "type": "work",
    *     "display": "apollo.j@example.com"
    *   }
    * </pre>
-   * Note that this value is added regardless of the current state of the
-   * resource, so enabling this property for PATCH requests has the potential
-   * to result in multiple emails containing a {@code type} of {@code work}.
+   * Thus, enabling this property for PATCH requests has the potential to result
+   * in multiple emails containing a {@code type} of {@code work}.
    * <br><br>
    *
    * If this property is <em>disabled</em>, then in the above example, the
@@ -2094,5 +2114,5 @@ public abstract class PatchOperation
    *
    * @since 3.2.0
    */
-  public static boolean APPEND_NEW_PATCH_VALUES_PROPERTY = true;
+  public static boolean APPEND_NEW_PATCH_VALUES_PROPERTY = false;
 }

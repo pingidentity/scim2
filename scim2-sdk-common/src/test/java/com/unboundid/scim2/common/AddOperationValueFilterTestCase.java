@@ -49,7 +49,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  *     "value": "sissel@example.com"
  *   }
  * </pre>
+ *
+ * For more background on this type of patch operation, see the Javadoc for
+ * {@link PatchOperation.AddOperation#applyAddWithValueFilter}.
  */
+@SuppressWarnings("JavadocReference")
 public class AddOperationValueFilterTestCase
 {
   /**
@@ -58,7 +62,7 @@ public class AddOperationValueFilterTestCase
   @AfterMethod
   public void tearDown()
   {
-    PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY = true;
+    PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY = false;
   }
 
   /**
@@ -106,9 +110,6 @@ public class AddOperationValueFilterTestCase
     Path path;
     PatchRequest request;
     UserResource resource = new UserResource();
-
-    // Unset the property to use the new behavior.
-    PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY = false;
 
     // Add a work email to a list of existing emails.
     resource.setEmails(
