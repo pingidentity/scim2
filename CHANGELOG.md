@@ -2,7 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## v3.2.1 - TBD
+## v4.0.0 - TBD
+Updated the default behavior for ADD patch requests with value filters (e.g.,
+`emails[type eq "work"].display`). The SCIM SDK will now target existing values within the
+multi-valued attribute. For more background on this type of patch request, see the release notes for
+the 3.2.0 release where this was introduced (but not made the default). To restore the old behavior,
+set the following property in your application:
+```
+PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY = true;
+```
 
 ## v3.2.0 - 2024-Dec-04
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
