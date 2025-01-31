@@ -23,6 +23,7 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Group membership for the user.
@@ -192,20 +193,19 @@ public class Group
 
     Group group = (Group) o;
 
-    if (value != null ? !value.equals(group.value) : group.value != null)
+    if (!Objects.equals(value, group.value))
     {
       return false;
     }
-    if (ref != null ? !ref.equals(group.ref) : group.ref != null)
+    if (!Objects.equals(ref, group.ref))
     {
       return false;
     }
-    if (display != null ? !display.equals(group.display) :
-        group.display != null)
+    if (!Objects.equals(display, group.display))
     {
       return false;
     }
-    return !(type != null ? !type.equals(group.type) : group.type != null);
+    return Objects.equals(type, group.type);
 
   }
 

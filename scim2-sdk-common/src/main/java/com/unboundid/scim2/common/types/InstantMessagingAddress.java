@@ -21,6 +21,8 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * Instant messaging address for the user.
  */
@@ -189,20 +191,19 @@ public class InstantMessagingAddress
 
     InstantMessagingAddress im = (InstantMessagingAddress) o;
 
-    if (value != null ? !value.equals(im.value) : im.value != null)
+    if (!Objects.equals(value, im.value))
     {
       return false;
     }
-    if (display != null ? !display.equals(im.display) : im.display != null)
+    if (!Objects.equals(display, im.display))
     {
       return false;
     }
-    if (type != null ? !type.equals(im.type) : im.type != null)
+    if (!Objects.equals(type, im.type))
     {
       return false;
     }
-    return !(primary != null ? !primary.equals(im.primary) :
-        im.primary != null);
+    return Objects.equals(primary, im.primary);
 
   }
 

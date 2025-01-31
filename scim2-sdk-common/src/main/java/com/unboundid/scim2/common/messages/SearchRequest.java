@@ -24,6 +24,7 @@ import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
 
+import java.util.Objects;
 import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.*;
@@ -232,26 +233,23 @@ public final class SearchRequest extends BaseScimResource
 
     SearchRequest that = (SearchRequest) o;
 
-    if (attributes != null ? !attributes.equals(that.attributes) :
-        that.attributes != null)
+    if (!Objects.equals(attributes, that.attributes))
     {
       return false;
     }
-    if (count != null ? !count.equals(that.count) : that.count != null)
+    if (!Objects.equals(count, that.count))
     {
       return false;
     }
-    if (excludedAttributes != null ?
-        !excludedAttributes.equals(that.excludedAttributes) :
-        that.excludedAttributes != null)
+    if (!Objects.equals(excludedAttributes, that.excludedAttributes))
     {
       return false;
     }
-    if (filter != null ? !filter.equals(that.filter) : that.filter != null)
+    if (!Objects.equals(filter, that.filter))
     {
       return false;
     }
-    if (sortBy != null ? !sortBy.equals(that.sortBy) : that.sortBy != null)
+    if (!Objects.equals(sortBy, that.sortBy))
     {
       return false;
     }
@@ -259,8 +257,7 @@ public final class SearchRequest extends BaseScimResource
     {
       return false;
     }
-    if (startIndex != null ? !startIndex.equals(that.startIndex) :
-        that.startIndex != null)
+    if (!Objects.equals(startIndex, that.startIndex))
     {
       return false;
     }

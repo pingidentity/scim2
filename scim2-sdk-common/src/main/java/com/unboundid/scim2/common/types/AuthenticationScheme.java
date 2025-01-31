@@ -24,6 +24,7 @@ import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 /**
  * A complex type that specifies supported Authentication Scheme properties.
@@ -203,26 +204,23 @@ public class AuthenticationScheme
     {
       return false;
     }
-    if (description != null ? !description.equals(that.description) :
-        that.description != null)
+    if (!Objects.equals(description, that.description))
     {
       return false;
     }
-    if (documentationUri != null ? !documentationUri.equals(
-        that.documentationUri) : that.documentationUri != null)
+    if (!Objects.equals(documentationUri, that.documentationUri))
     {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    if (specUri != null ? !specUri.equals(that.specUri) :
-        that.specUri != null)
+    if (!Objects.equals(specUri, that.specUri))
     {
       return false;
     }
-    if (type != null ? !type.equals(that.type) : that.type != null)
+    if (!Objects.equals(type, that.type))
     {
       return false;
     }
@@ -268,7 +266,7 @@ public class AuthenticationScheme
               "(unless used in conjunction with some external secure system " +
               "such as SSL), as the user name and password are passed over " +
               "the network as cleartext.",
-          new URI("http://www.ietf.org/rfc/rfc2617.txt"),
+          new URI("https://www.ietf.org/rfc/rfc2617.txt"),
           null,
           "httpbasic", primary);
     }
@@ -299,7 +297,7 @@ public class AuthenticationScheme
               "token, which is defined in RFC 6750 as \"a string " +
               "representing an access authorization issued to the client\", " +
               "rather than using the resource owner's credentials directly.",
-          new URI("http://tools.ietf.org/html/rfc6750"),
+          new URI("https://tools.ietf.org/html/rfc6750"),
           null,
           "oauthbearertoken", primary);
     }

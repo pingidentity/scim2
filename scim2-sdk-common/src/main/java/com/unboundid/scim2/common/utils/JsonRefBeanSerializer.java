@@ -63,9 +63,8 @@ public class JsonRefBeanSerializer extends JsonSerializer<Object>
         }
         field.setAccessible(true);
         Object obj = field.get(value);
-        if (obj instanceof JsonReference)
+        if (obj instanceof JsonReference<?> reference)
         {
-          JsonReference<?> reference = (JsonReference<?>) obj;
           if (reference.isSet())
           {
             gen.writeFieldName(field.getName());

@@ -101,12 +101,11 @@ public final class AndFilter extends CombiningFilter
     {
       return true;
     }
-    if (!(o instanceof AndFilter))
+    if (!(o instanceof AndFilter that))
     {
       return false;
     }
 
-    AndFilter that = (AndFilter) o;
     if (getCombinedFilters().size() != that.getCombinedFilters().size())
     {
       return false;

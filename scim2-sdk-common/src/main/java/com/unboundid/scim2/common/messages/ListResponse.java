@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -220,7 +221,7 @@ public final class ListResponse<T> extends BaseScimResource
   public ListResponse(@NotNull final Collection<T> resources)
   {
     this.totalResults = resources.size();
-    this.resources = new ArrayList<T>(resources);
+    this.resources = new ArrayList<>(resources);
     this.startIndex = null;
     this.itemsPerPage = null;
   }
@@ -313,8 +314,7 @@ public final class ListResponse<T> extends BaseScimResource
     {
       return false;
     }
-    if (itemsPerPage != null ? !itemsPerPage.equals(that.itemsPerPage) :
-        that.itemsPerPage != null)
+    if (!Objects.equals(itemsPerPage, that.itemsPerPage))
     {
       return false;
     }
@@ -322,8 +322,7 @@ public final class ListResponse<T> extends BaseScimResource
     {
       return false;
     }
-    if (startIndex != null ? !startIndex.equals(that.startIndex) :
-        that.startIndex != null)
+    if (!Objects.equals(startIndex, that.startIndex))
     {
       return false;
     }
@@ -339,12 +338,8 @@ public final class ListResponse<T> extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (int) (totalResults ^ (totalResults >>> 32));
-    result = 31 * result + resources.hashCode();
-    result = 31 * result + (startIndex != null ? startIndex.hashCode() : 0);
-    result = 31 * result + (itemsPerPage != null ? itemsPerPage.hashCode() : 0);
-    return result;
+    return Objects.hash(super.hashCode(), totalResults, resources, startIndex,
+        itemsPerPage);
   }
 
   private void checkRequiredProperties(

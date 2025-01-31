@@ -242,8 +242,7 @@ public abstract class BaseScimResource
   @NotNull
   protected Map<String, Object> getAny()
   {
-    HashMap<String, Object> map =
-        new HashMap<String, Object>(extensionObjectNode.size());
+    HashMap<String, Object> map = new HashMap<>(extensionObjectNode.size());
     Iterator<Map.Entry<String, JsonNode>> i = extensionObjectNode.fields();
     while (i.hasNext())
     {
@@ -541,22 +540,19 @@ public abstract class BaseScimResource
 
     BaseScimResource that = (BaseScimResource) o;
 
-    if (extensionObjectNode != null ?
-        !extensionObjectNode.equals(that.extensionObjectNode) :
-        that.extensionObjectNode != null)
+    if (!Objects.equals(extensionObjectNode, that.extensionObjectNode))
     {
       return false;
     }
-    if (externalId != null ? !externalId.equals(that.externalId) :
-        that.externalId != null)
+    if (!Objects.equals(externalId, that.externalId))
     {
       return false;
     }
-    if (id != null ? !id.equals(that.id) : that.id != null)
+    if (!Objects.equals(id, that.id))
     {
       return false;
     }
-    if (meta != null ? !meta.equals(that.meta) : that.meta != null)
+    if (!Objects.equals(meta, that.meta))
     {
       return false;
     }

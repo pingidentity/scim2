@@ -19,6 +19,8 @@ package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * This class can be used in a bean that is converted to json.  If
  * used with the JsonReferenceBeanSerializer, the json that is created
@@ -120,7 +122,7 @@ public class JsonReference<T>
     {
       return false;
     }
-    return !(obj != null ? !obj.equals(that.obj) : that.obj != null);
+    return Objects.equals(obj, that.obj);
 
   }
 

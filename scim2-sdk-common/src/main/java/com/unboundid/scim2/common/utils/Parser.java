@@ -402,7 +402,7 @@ public class Parser
       c = reader.read();
     }
 
-    if (b.length() > 0)
+    if (!b.isEmpty())
     {
       return b.toString();
     }
@@ -465,7 +465,7 @@ public class Parser
       }
       if (c == '(' || c == ')')
       {
-        if (b.length() > 0)
+        if (!b.isEmpty())
         {
           // Do not consume the parenthesis.
           reader.unread();
@@ -484,7 +484,7 @@ public class Parser
       }
       if (isValueFilter && c == ']')
       {
-        if (b.length() > 0)
+        if (!b.isEmpty())
         {
           // Do not consume the closing brace.
           reader.unread();
@@ -511,7 +511,7 @@ public class Parser
       c = reader.read();
     }
 
-    if (b.length() > 0)
+    if (!b.isEmpty())
     {
       return b.toString();
     }
@@ -531,8 +531,8 @@ public class Parser
                                    final boolean isValueFilter)
       throws BadRequestException
   {
-    final Stack<Filter> outputStack = new Stack<Filter>();
-    final Stack<String> precedenceStack = new Stack<String>();
+    final Stack<Filter> outputStack = new Stack<>();
+    final Stack<String> precedenceStack = new Stack<>();
 
     String token;
     String previousToken = null;
@@ -587,7 +587,7 @@ public class Parser
           !expectsNewFilter(previousToken))
       {
         // pop all the pending ands first before pushing or.
-        LinkedList<Filter> andComponents = new LinkedList<Filter>();
+        LinkedList<Filter> andComponents = new LinkedList<>();
         while (!precedenceStack.isEmpty())
         {
           if (precedenceStack.peek().equalsIgnoreCase(
@@ -809,7 +809,7 @@ public class Parser
   {
     String operator = null;
     String repeatingOperator = null;
-    LinkedList<Filter> components = new LinkedList<Filter>();
+    LinkedList<Filter> components = new LinkedList<>();
 
     // Iterate over the logical operators on the stack until either there are
     // no more operators or an opening parenthesis or not is found.

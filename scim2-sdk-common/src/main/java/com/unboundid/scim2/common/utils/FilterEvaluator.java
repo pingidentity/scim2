@@ -410,8 +410,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     {
       List<JsonNode> nodes =
           JsonUtils.findMatchingPaths(path, (ObjectNode) jsonNode);
-      ArrayList<JsonNode> flattenedNodes =
-          new ArrayList<JsonNode>(nodes.size());
+      ArrayList<JsonNode> flattenedNodes = new ArrayList<>(nodes.size());
       for (JsonNode node : nodes)
       {
         if (node.isArray())

@@ -218,7 +218,7 @@ public final class StaticUtils
   @NotNull
   public static <T> Set<T> arrayToSet(@NotNull final T... i)
   {
-    Set<T> set = new LinkedHashSet<T>(i.length);
+    Set<T> set = new LinkedHashSet<>(i.length);
     Collections.addAll(set, i);
     return set;
   }

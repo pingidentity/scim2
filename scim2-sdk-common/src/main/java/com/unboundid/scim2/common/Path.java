@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents a path to one or more JSON values that are the targets
@@ -121,8 +122,7 @@ public final class Path implements Iterable<Path.Element>
       {
         return false;
       }
-      if (valueFilter != null ? !valueFilter.equals(element.valueFilter) :
-          element.valueFilter != null)
+      if (!Objects.equals(valueFilter, element.valueFilter))
       {
         return false;
       }
@@ -200,7 +200,7 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public Path attribute(@NotNull final String attribute)
   {
-    List<Element> newElements = new ArrayList<Element>(this.elements);
+    List<Element> newElements = new ArrayList<>(this.elements);
     newElements.add(new Element(attribute, null));
     return new Path(schemaUrn, newElements);
   }
@@ -219,7 +219,7 @@ public final class Path implements Iterable<Path.Element>
   public Path attribute(@NotNull final String attribute,
                         @Nullable final Filter valueFilter)
   {
-    List<Element> newElements = new ArrayList<Element>(this.elements);
+    List<Element> newElements = new ArrayList<>(this.elements);
     newElements.add(new Element(attribute, valueFilter));
     return new Path(schemaUrn, newElements);
   }
@@ -236,8 +236,8 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public Path attribute(@NotNull final Path path)
   {
-    List<Element> newElements = new ArrayList<Element>(
-        this.elements.size() + path.size());
+    List<Element> newElements =
+        new ArrayList<>(this.elements.size() + path.size());
     newElements.addAll(this.elements);
     newElements.addAll(path.elements);
     return new Path(schemaUrn, newElements);
@@ -257,7 +257,7 @@ public final class Path implements Iterable<Path.Element>
                       @NotNull final String attribute,
                       @Nullable final Filter valueFilter)
   {
-    List<Element> newElements = new ArrayList<Element>(this.elements);
+    List<Element> newElements = new ArrayList<>(this.elements);
     newElements.set(index, new Element(attribute, valueFilter));
     return new Path(schemaUrn, newElements);
   }
@@ -273,7 +273,7 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public Path replace(final int index, @NotNull final String attribute)
   {
-    List<Element> newElements = new ArrayList<Element>(this.elements);
+    List<Element> newElements = new ArrayList<>(this.elements);
     newElements.set(index,
         new Element(attribute, this.elements.get(index).getValueFilter()));
     return new Path(schemaUrn, newElements);
@@ -290,7 +290,7 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public Path replace(final int index, @Nullable final Filter valueFilter)
   {
-    List<Element> newElements = new ArrayList<Element>(this.elements);
+    List<Element> newElements = new ArrayList<>(this.elements);
     newElements.set(index,
         new Element(this.elements.get(index).getAttribute(), valueFilter));
     return new Path(schemaUrn, newElements);
@@ -366,7 +366,7 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public Path withoutFilters()
   {
-    ArrayList<Element> newElements = new ArrayList<Element>(elements.size());
+    ArrayList<Element> newElements = new ArrayList<>(elements.size());
     for (Element element : elements)
     {
       newElements.add(new Element(element.getAttribute(), null));
@@ -420,7 +420,7 @@ public final class Path implements Iterable<Path.Element>
           String.format("Invalid extension schema URN: %s",
               schemaUrn));
     }
-    return new Path(schemaUrn, Collections.<Element>emptyList());
+    return new Path(schemaUrn, Collections.emptyList());
   }
 
   /**

@@ -21,6 +21,8 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * Phone number for the user.
  */
@@ -187,20 +189,19 @@ public class PhoneNumber
 
     PhoneNumber that = (PhoneNumber) o;
 
-    if (value != null ? !value.equals(that.value) : that.value != null)
+    if (!Objects.equals(value, that.value))
     {
       return false;
     }
-    if (display != null ? !display.equals(that.display) : that.display != null)
+    if (!Objects.equals(display, that.display))
     {
       return false;
     }
-    if (type != null ? !type.equals(that.type) : that.type != null)
+    if (!Objects.equals(type, that.type))
     {
       return false;
     }
-    return !(primary != null ? !primary.equals(that.primary) :
-        that.primary != null);
+    return !(!Objects.equals(primary, that.primary));
 
   }
 

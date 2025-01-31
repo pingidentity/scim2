@@ -33,6 +33,8 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.utils.StatusDeserializer;
 import com.unboundid.scim2.common.utils.StatusSerializer;
 
+import java.util.Objects;
+
 /**
  * This class represents a SCIM API error response. An error response represents
  * a JSON body with an error message from a SCIM service provider. It has a
@@ -181,12 +183,11 @@ public final class ErrorResponse extends BaseScimResource
     {
       return false;
     }
-    if (detail != null ? !detail.equals(that.detail) : that.detail != null)
+    if (!Objects.equals(detail, that.detail))
     {
       return false;
     }
-    if (scimType != null ? !scimType.equals(that.scimType) :
-        that.scimType != null)
+    if (!Objects.equals(scimType, that.scimType))
     {
       return false;
     }

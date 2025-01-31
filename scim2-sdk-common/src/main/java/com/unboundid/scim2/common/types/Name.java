@@ -21,6 +21,8 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * The components of the user's full name.
  */
@@ -280,33 +282,27 @@ public class Name
 
     Name name = (Name) o;
 
-    if (formatted != null ? !formatted.equals(name.formatted) :
-        name.formatted != null)
+    if (!Objects.equals(formatted, name.formatted))
     {
       return false;
     }
-    if (familyName != null ? !familyName.equals(name.familyName) :
-        name.familyName != null)
+    if (!Objects.equals(familyName, name.familyName))
     {
       return false;
     }
-    if (givenName != null ? !givenName.equals(name.givenName) :
-        name.givenName != null)
+    if (!Objects.equals(givenName, name.givenName))
     {
       return false;
     }
-    if (middleName != null ? !middleName.equals(name.middleName) :
-        name.middleName != null)
+    if (!Objects.equals(middleName, name.middleName))
     {
       return false;
     }
-    if (honorificPrefix != null ? !honorificPrefix.equals(
-        name.honorificPrefix) : name.honorificPrefix != null)
+    if (!Objects.equals(honorificPrefix, name.honorificPrefix))
     {
       return false;
     }
-    return !(honorificSuffix != null ? !honorificSuffix.equals(
-        name.honorificSuffix) : name.honorificSuffix != null);
+    return !(!Objects.equals(honorificSuffix, name.honorificSuffix));
 
   }
 

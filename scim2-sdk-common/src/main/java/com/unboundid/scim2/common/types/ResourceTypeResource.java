@@ -26,9 +26,9 @@ import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * The "ResourceType" schema specifies the meta-data about a resource
@@ -142,8 +142,7 @@ public class ResourceTypeResource extends BaseScimResource
     this.endpoint = endpoint;
     this.schema = schema;
     this.schemaExtensions = schemaExtensions == null ?
-        null : Collections.unmodifiableList(
-        new ArrayList<SchemaExtension>(schemaExtensions));
+        null : List.copyOf(schemaExtensions);
   }
 
   /**
@@ -296,7 +295,7 @@ public class ResourceTypeResource extends BaseScimResource
       {
         return false;
       }
-      if (schema != null ? !schema.equals(that.schema) : that.schema != null)
+      if (!Objects.equals(schema, that.schema))
       {
         return false;
       }
@@ -344,27 +343,23 @@ public class ResourceTypeResource extends BaseScimResource
 
     ResourceTypeResource that = (ResourceTypeResource) o;
 
-    if (description != null ? !description.equals(that.description) :
-        that.description != null)
+    if (!Objects.equals(description, that.description))
     {
       return false;
     }
-    if (endpoint != null ? !endpoint.equals(that.endpoint) :
-        that.endpoint != null)
+    if (!Objects.equals(endpoint, that.endpoint))
     {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    if (schema != null ? !schema.equals(that.schema) : that.schema != null)
+    if (!Objects.equals(schema, that.schema))
     {
       return false;
     }
-    if (schemaExtensions != null ?
-        !schemaExtensions.equals(that.schemaExtensions) :
-        that.schemaExtensions != null)
+    if (!Objects.equals(schemaExtensions, that.schemaExtensions))
     {
       return false;
     }

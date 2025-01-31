@@ -22,6 +22,7 @@ import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Calendar;
+import java.util.Objects;
 
 /**
  * Stores metadata about a SCIM object.
@@ -184,26 +185,23 @@ public final class Meta
 
     Meta meta = (Meta) o;
 
-    if (created != null ? !created.equals(meta.created) : meta.created != null)
+    if (!Objects.equals(created, meta.created))
     {
       return false;
     }
-    if (lastModified != null ? !lastModified.equals(meta.lastModified) :
-        meta.lastModified != null)
+    if (!Objects.equals(lastModified, meta.lastModified))
     {
       return false;
     }
-    if (location != null ? !location.equals(meta.location) :
-        meta.location != null)
+    if (!Objects.equals(location, meta.location))
     {
       return false;
     }
-    if (resourceType != null ? !resourceType.equals(meta.resourceType) :
-        meta.resourceType != null)
+    if (!Objects.equals(resourceType, meta.resourceType))
     {
       return false;
     }
-    if (version != null ? !version.equals(meta.version) : meta.version != null)
+    if (!Objects.equals(version, meta.version))
     {
       return false;
     }

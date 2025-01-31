@@ -21,6 +21,8 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * Address for the user.
  */
@@ -334,43 +336,36 @@ public class Address
 
     Address address = (Address) o;
 
-    if (formatted != null ? !formatted.equals(address.formatted) :
-        address.formatted != null)
+    if (!Objects.equals(formatted, address.formatted))
     {
       return false;
     }
-    if (streetAddress != null ? !streetAddress.equals(address.streetAddress) :
-        address.streetAddress != null)
+    if (!Objects.equals(streetAddress, address.streetAddress))
     {
       return false;
     }
-    if (locality != null ? !locality.equals(address.locality) :
-        address.locality != null)
+    if (!Objects.equals(locality, address.locality))
     {
       return false;
     }
-    if (region != null ? !region.equals(address.region) :
-        address.region != null)
+    if (!Objects.equals(region, address.region))
     {
       return false;
     }
-    if (postalCode != null ? !postalCode.equals(address.postalCode) :
-        address.postalCode != null)
+    if (!Objects.equals(postalCode, address.postalCode))
     {
       return false;
     }
-    if (country != null ? !country.equals(address.country) :
-        address.country != null)
+    if (!Objects.equals(country, address.country))
     {
       return false;
     }
-    if (type != null ? !type.equals(address.type) : address.type != null)
+    if (!Objects.equals(type, address.type))
     {
       return false;
     }
-    return !(primary != null ? !primary.equals(address.primary) :
-        address.primary != null);
 
+    return Objects.equals(primary, address.primary);
   }
 
   /**

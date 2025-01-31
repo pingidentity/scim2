@@ -174,12 +174,12 @@ public class JsonUtils
           arrayNode = filterArray((ArrayNode) node, valueFilter,
               removeValues);
         }
-        if (arrayNode.size() > 0)
+        if (!arrayNode.isEmpty())
         {
           values.add(arrayNode);
         }
 
-        if (removeValues && (valueFilter == null || node.size() == 0))
+        if (removeValues && (valueFilter == null || node.isEmpty()))
         {
           // There are no more values left after removing the matching values.
           // Just remove the field.
@@ -255,7 +255,7 @@ public class JsonUtils
         if (valueFilter != null)
         {
           arrayNode = filterArray(arrayNode, valueFilter, false);
-          if (arrayNode.size() == 0)
+          if (arrayNode.isEmpty())
           {
             throw BadRequestException.noTarget("Attribute " +
                 field + " does not have a value matching the " +
@@ -519,7 +519,7 @@ public class JsonUtils
 
       if (node.isArray())
       {
-        if (node.size() > 0)
+        if (!node.isEmpty())
         {
           setPathPresent(true);
         }

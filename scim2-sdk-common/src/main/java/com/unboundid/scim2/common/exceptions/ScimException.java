@@ -232,20 +232,20 @@ public class ScimException extends Exception
   public static ScimException createException(
       @NotNull final ErrorResponse scimError, @Nullable final Exception cause)
   {
-    switch (scimError.getStatus())
+    return switch (scimError.getStatus())
     {
-      case 304 : return new NotModifiedException(scimError, null, cause);
-      case 400 : return new BadRequestException(scimError, cause);
-      case 401 : return new UnauthorizedException(scimError, cause);
-      case 403 : return new ForbiddenException(scimError, cause);
-      case 404 : return new ResourceNotFoundException(scimError, cause);
-      case 405 : return new MethodNotAllowedException(scimError, cause);
-      case 409 : return new ResourceConflictException(scimError, cause);
-      case 412 : return new PreconditionFailedException(scimError, null, cause);
+      case 304 -> new NotModifiedException(scimError, null, cause);
+      case 400 -> new BadRequestException(scimError, cause);
+      case 401 -> new UnauthorizedException(scimError, cause);
+      case 403 -> new ForbiddenException(scimError, cause);
+      case 404 -> new ResourceNotFoundException(scimError, cause);
+      case 405 -> new MethodNotAllowedException(scimError, cause);
+      case 409 -> new ResourceConflictException(scimError, cause);
+      case 412 -> new PreconditionFailedException(scimError, null, cause);
 //      case 413 : return new RequestEntityTooLargeException(errorMessage);
-      case 500 : return new ServerErrorException(scimError, cause);
-      case 501 : return new NotImplementedException(scimError, cause);
-      default : return new ScimException(scimError, cause);
-    }
+      case 500 -> new ServerErrorException(scimError, cause);
+      case 501 -> new NotImplementedException(scimError, cause);
+      default -> new ScimException(scimError, cause);
+    };
   }
 }

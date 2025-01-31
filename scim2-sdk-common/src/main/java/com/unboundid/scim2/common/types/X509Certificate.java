@@ -22,6 +22,7 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A public key certificate in {@code X.509} form that can be assigned to a
@@ -193,16 +194,15 @@ public class X509Certificate
     {
       return false;
     }
-    if (display != null ? !display.equals(that.display) : that.display != null)
+    if (!Objects.equals(display, that.display))
     {
       return false;
     }
-    if (type != null ? !type.equals(that.type) : that.type != null)
+    if (!Objects.equals(type, that.type))
     {
       return false;
     }
-    return !(primary != null ? !primary.equals(that.primary) :
-        that.primary != null);
+    return Objects.equals(primary, that.primary);
 
   }
 

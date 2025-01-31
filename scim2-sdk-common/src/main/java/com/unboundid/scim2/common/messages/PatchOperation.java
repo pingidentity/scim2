@@ -199,7 +199,7 @@ public abstract class PatchOperation
     public <T> List<T> getValues(@NotNull final Class<T> cls)
         throws JsonProcessingException, ScimException
     {
-      ArrayList<T> objects = new ArrayList<T>(value.size());
+      ArrayList<T> objects = new ArrayList<>(value.size());
       for (JsonNode node : value)
       {
         objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
@@ -704,7 +704,7 @@ public abstract class PatchOperation
     public <T> List<T> getValues(@NotNull final Class<T> cls)
         throws JsonProcessingException, ScimException
     {
-      ArrayList<T> objects = new ArrayList<T>(value.size());
+      ArrayList<T> objects = new ArrayList<>(value.size());
       for (JsonNode node : value)
       {
         objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));

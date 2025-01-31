@@ -25,12 +25,12 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * An attribute in a schema for a SCIM Object.
@@ -622,7 +622,7 @@ public class AttributeDefinition
       {
         if (this.subAttributes == null)
         {
-          this.subAttributes = new LinkedList<AttributeDefinition>();
+          this.subAttributes = new LinkedList<>();
         }
         this.subAttributes.addAll(Arrays.asList(subAttributes));
       }
@@ -682,7 +682,7 @@ public class AttributeDefinition
       {
         if (this.canonicalValues == null)
         {
-          this.canonicalValues = new HashSet<String>();
+          this.canonicalValues = new HashSet<>();
         }
         this.canonicalValues.addAll(Arrays.asList(canonicalValues));
       }
@@ -757,7 +757,7 @@ public class AttributeDefinition
       {
         if (this.referenceTypes == null)
         {
-          this.referenceTypes = new HashSet<String>();
+          this.referenceTypes = new HashSet<>();
         }
         this.referenceTypes.addAll(Arrays.asList(referenceTypes));
       }
@@ -862,22 +862,19 @@ public class AttributeDefinition
   {
     this.name = name;
     this.type = type;
-    this.subAttributes = subAttributes == null ?
-        null : Collections.unmodifiableList(
-        new ArrayList<AttributeDefinition>(subAttributes));
+    this.subAttributes =
+        subAttributes == null ? null : List.copyOf(subAttributes);
     this.multiValued = multiValued;
     this.description = description;
     this.required = required;
-    this.canonicalValues = canonicalValues == null ?
-        null : Collections.unmodifiableList(
-        new ArrayList<String>(canonicalValues));
+    this.canonicalValues =
+        canonicalValues == null ? null : List.copyOf(canonicalValues);
     this.caseExact = caseExact;
     this.mutability = mutability;
     this.returned = returned;
     this.uniqueness = uniqueness;
-    this.referenceTypes = referenceTypes == null ?
-        null : Collections.unmodifiableList(
-        new ArrayList<String>(referenceTypes));
+    this.referenceTypes =
+        referenceTypes == null ? null : List.copyOf(referenceTypes);
   }
 
   /**
@@ -1091,52 +1088,40 @@ public class AttributeDefinition
     {
       return false;
     }
-    if (canonicalValues != null ?
-        !canonicalValues.equals(that.canonicalValues) :
-        that.canonicalValues != null)
+    if (!Objects.equals(canonicalValues, that.canonicalValues))
     {
       return false;
     }
-    if (description != null ? !description.equals(that.description) :
-        that.description != null)
+    if (!Objects.equals(description, that.description))
     {
       return false;
     }
-    if (mutability != null ? !mutability.equals(that.mutability) :
-        that.mutability != null)
+    if (!Objects.equals(mutability, that.mutability))
     {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    if (referenceTypes != null ? !referenceTypes.equals(that.referenceTypes) :
-        that.referenceTypes != null)
+    if (!Objects.equals(referenceTypes, that.referenceTypes))
     {
       return false;
     }
-    if (returned != null ? !returned.equals(that.returned) :
-        that.returned != null)
+    if (!Objects.equals(returned, that.returned))
     {
       return false;
     }
-    if (subAttributes != null ? !subAttributes.equals(that.subAttributes) :
-        that.subAttributes != null)
+    if (!Objects.equals(subAttributes, that.subAttributes))
     {
       return false;
     }
-    if (type != null ? !type.equals(that.type) : that.type != null)
-    {
-      return false;
-    }
-    if (uniqueness != null ? !uniqueness.equals(that.uniqueness) :
-        that.uniqueness != null)
+    if (!Objects.equals(type, that.type))
     {
       return false;
     }
 
-    return true;
+    return Objects.equals(uniqueness, that.uniqueness);
   }
 
   /**

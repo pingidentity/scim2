@@ -99,20 +99,13 @@ public enum DebugType
   {
     final String lowerName = toLowerCase(name);
 
-    if (lowerName.equals("exception"))
+    return switch (lowerName)
     {
-      return EXCEPTION;
-    }
-    else if (lowerName.equals("coding-error"))
-    {
-      return CODING_ERROR;
-    }
-    else if (lowerName.equals("other"))
-    {
-      return OTHER;
-    }
-
-    return null;
+      case "exception" -> EXCEPTION;
+      case "coding-error" -> CODING_ERROR;
+      case "other" -> OTHER;
+      default -> null;
+    };
   }
 
 
