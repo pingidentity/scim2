@@ -283,6 +283,11 @@ public final class SearchRequestBuilder
       if (response.getStatusInfo().getFamily() ==
           Response.Status.Family.SUCCESSFUL)
       {
+        response.bufferEntity();
+        /* fully read and close the input stream, allowing the buffered result
+           to be used while still keeping the TCP connection open for subsequent
+           requests
+         */
         InputStream inputStream = response.readEntity(InputStream.class);
         try
         {
