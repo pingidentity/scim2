@@ -17,6 +17,7 @@
 
 package com.unboundid.scim2.common;
 
+import com.unboundid.scim2.common.utils.StaticUtils;
 import org.testng.annotations.Test;
 
 import static com.unboundid.scim2.common.utils.StaticUtils.splitCommaSeparatedString;
@@ -85,5 +86,24 @@ public class StaticUtilsTest
 
     assertThat(splitCommaSeparatedString("   value1 ,    , value3  "))
         .containsExactly("value1", "", "value3");
+  }
+
+  /**
+   * Basic test for {@link StaticUtils#toLowerCase} that ensures it can accept
+   * {@code null} inputs.
+   */
+  @Test
+  public void testToLowercase()
+  {
+    // A null input should not cause an exception.
+    //
+    // noinspection ConstantValue
+    assertThat(StaticUtils.toLowerCase(null)).isNull();
+
+    // These test cases are not extensive since the method is a wrapper around
+    // String#toLowerCase().
+    assertThat(StaticUtils.toLowerCase("lowerstring")).isEqualTo("lowerstring");
+    assertThat(StaticUtils.toLowerCase("sPoNgEbOb tExT"))
+        .isEqualTo("spongebob text");
   }
 }

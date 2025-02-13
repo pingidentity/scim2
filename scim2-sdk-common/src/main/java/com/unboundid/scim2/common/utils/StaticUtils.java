@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -59,100 +60,7 @@ public final class StaticUtils
       return null;
     }
 
-    final int length = s.length();
-    final char[] charArray = s.toCharArray();
-    for (int i=0; i < length; i++)
-    {
-      switch (charArray[i])
-      {
-        case 'A':
-          charArray[i] = 'a';
-          break;
-        case 'B':
-          charArray[i] = 'b';
-          break;
-        case 'C':
-          charArray[i] = 'c';
-          break;
-        case 'D':
-          charArray[i] = 'd';
-          break;
-        case 'E':
-          charArray[i] = 'e';
-          break;
-        case 'F':
-          charArray[i] = 'f';
-          break;
-        case 'G':
-          charArray[i] = 'g';
-          break;
-        case 'H':
-          charArray[i] = 'h';
-          break;
-        case 'I':
-          charArray[i] = 'i';
-          break;
-        case 'J':
-          charArray[i] = 'j';
-          break;
-        case 'K':
-          charArray[i] = 'k';
-          break;
-        case 'L':
-          charArray[i] = 'l';
-          break;
-        case 'M':
-          charArray[i] = 'm';
-          break;
-        case 'N':
-          charArray[i] = 'n';
-          break;
-        case 'O':
-          charArray[i] = 'o';
-          break;
-        case 'P':
-          charArray[i] = 'p';
-          break;
-        case 'Q':
-          charArray[i] = 'q';
-          break;
-        case 'R':
-          charArray[i] = 'r';
-          break;
-        case 'S':
-          charArray[i] = 's';
-          break;
-        case 'T':
-          charArray[i] = 't';
-          break;
-        case 'U':
-          charArray[i] = 'u';
-          break;
-        case 'V':
-          charArray[i] = 'v';
-          break;
-        case 'W':
-          charArray[i] = 'w';
-          break;
-        case 'X':
-          charArray[i] = 'x';
-          break;
-        case 'Y':
-          charArray[i] = 'y';
-          break;
-        case 'Z':
-          charArray[i] = 'z';
-          break;
-        default:
-          if (charArray[i] > 0x7F)
-          {
-            return s.toLowerCase();
-          }
-          break;
-      }
-    }
-
-    return new String(charArray);
+    return s.toLowerCase(Locale.ROOT);
   }
 
 
