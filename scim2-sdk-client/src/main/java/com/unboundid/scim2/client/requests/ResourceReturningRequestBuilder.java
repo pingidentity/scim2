@@ -37,7 +37,7 @@ public abstract class ResourceReturningRequestBuilder
   protected boolean excluded;
 
   /**
-   * The attribute list of include or exclude.
+   * The attribute list to include or exclude.
    */
   @Nullable
   protected Set<String> attributes;

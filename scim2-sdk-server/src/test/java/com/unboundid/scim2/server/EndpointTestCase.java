@@ -86,6 +86,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -1166,6 +1167,34 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       Assert.assertEquals(ex.getMessage(), response.getDetail());
       Assert.assertEquals(response.getDetail(), "Unauthorized");
     }
+  }
+
+  /**
+   * This test validates the SDK's parsing of the ListResponse defined in
+   * {@link TestResourceEndpoint#testListResponseCaseSensitivity}.
+   */
+  @Test
+  public void testListResponseParsingCaseSensitivity() throws Exception
+  {
+    final ScimService service = new ScimService(target());
+    ListResponse<UserResource> response =
+        service.searchRequest("Users/testListResponseCaseSensitivity")
+        .invoke(UserResource.class);
+
+    // Even though the attribute casing is varied, all named fields should
+    // have been successfully parsed.
+    assertThat(response.getSchemaUrns())
+        .hasSize(1)
+        .first()
+        .isEqualTo("urn:ietf:params:scim:api:messages:2.0:ListResponse");
+    assertThat(response.getTotalResults()).isEqualTo(2);
+    assertThat(response.getItemsPerPage()).isEqualTo(1);
+    assertThat(response.getResources())
+        .hasSize(1)
+        .first().isEqualTo(new UserResource().setUserName("k.dot"));
+
+    // startIndex was not included, so it should not have a value.
+    assertThat(response.getStartIndex()).isNull();
   }
 
 

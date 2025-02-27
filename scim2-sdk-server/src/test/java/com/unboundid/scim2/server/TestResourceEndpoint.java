@@ -39,7 +39,10 @@ import jakarta.ws.rs.core.UriInfo;
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 
 /**
- * A per resource life cycle Resource Endpoint implementation.
+ * This class is used in conjunction with the {@link EndpointTestCase} to test
+ * response handling (e.g., ensuring that a specific exception is thrown for a
+ * particular HTTP error code). Each endpoint defined in this file allows
+ * specific behavior to be triggered easily.
  */
 @ResourceType(
     description = "User Account",
@@ -148,5 +151,33 @@ public class TestResourceEndpoint
       return resourcePreparer.trimRetrievedResource(resource);
     }
     throw new ResourceNotFoundException("No resource with ID " + id);
+  }
+
+  /**
+   * An example response of unconventional attribute casing in a ListResponse.
+   * This tests the parsing logic in
+   * {@link com.unboundid.scim2.client.requests.SearchRequestBuilder}.
+   *
+   * @return  A response to test.
+   */
+  @GET
+  @Path("testListResponseCaseSensitivity")
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
+  public Response testListResponseCaseSensitivity()
+  {
+    return Response.status(Response.Status.OK)
+        .type(MEDIA_TYPE_SCIM)
+        .entity("{ "
+            + "  \"SCHEMAS\": ["
+            + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
+            + "  ],"
+            + "  \"tOtAlReSuLtS\": 2,"
+            + "  \"ItemsPerPage\": 1,"
+            + "  \"resources\": ["
+            + "    {"
+            + "      \"userName\": \"k.dot\""
+            + "    }"
+            + "  ]"
+            + "}").build();
   }
 }

@@ -267,12 +267,11 @@ public class RequestBuilder<T extends RequestBuilder>
   Invocation.Builder buildRequest()
   {
     Invocation.Builder builder =
-        buildTarget().request(accept.toArray(new String[accept.size()]));
+        buildTarget().request(accept.toArray(new String[0]));
     for (Map.Entry<String, List<Object>> header : headers.entrySet())
     {
-      builder = builder.header(header.getKey(),
-                               StaticUtils.listToString(header.getValue(),
-                                                        ", "));
+      String stringValue = StaticUtils.listToString(header.getValue(), ", ");
+      builder = builder.header(header.getKey(), stringValue);
     }
     return builder;
   }
