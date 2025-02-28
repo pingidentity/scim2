@@ -1169,6 +1169,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     }
   }
 
+
   /**
    * This test validates the SDK's parsing of the ListResponse defined in
    * {@link TestResourceEndpoint#testListResponseCaseSensitivity}.
@@ -1179,7 +1180,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     final ScimService service = new ScimService(target());
     ListResponse<UserResource> response =
         service.searchRequest("Users/testListResponseCaseSensitivity")
-        .invoke(UserResource.class);
+            .invoke(UserResource.class);
 
     // Even though the attribute casing is varied, all named fields should
     // have been successfully parsed.
@@ -1220,7 +1221,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       Assert.assertTrue(response.getDetail().contains("Method Not Allowed"));
     }
   }
-
 
 
   /**

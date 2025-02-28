@@ -167,7 +167,7 @@ public class TestResourceEndpoint
   {
     return Response.status(Response.Status.OK)
         .type(MEDIA_TYPE_SCIM)
-        .entity("{ "
+        .entity("{"
             + "  \"SCHEMAS\": ["
             + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
             + "  ],"

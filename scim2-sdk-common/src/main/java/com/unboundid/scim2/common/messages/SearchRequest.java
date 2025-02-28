@@ -60,6 +60,7 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
  *        service provider supports pagination.
  *   <li> {@code count}: The maximum number of resources to return.
  * </ul>
+ * <br><br>
  *
  * Search requests can be issued in two ways: with GET requests or POST
  * requests. A GET search request involves the use of HTTP query parameters,
