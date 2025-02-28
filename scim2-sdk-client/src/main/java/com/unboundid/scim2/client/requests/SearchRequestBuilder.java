@@ -17,9 +17,9 @@
 
 package com.unboundid.scim2.client.requests;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.client.SearchResultHandler;
 import com.unboundid.scim2.common.ScimResource;
@@ -39,7 +39,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.ResponseProcessingException;
 import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,9 +51,13 @@ import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_PAGE
 import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_PAGE_START_INDEX;
 import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_SORT_BY;
 import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_SORT_ORDER;
+import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static jakarta.ws.rs.core.Response.Status.Family.SUCCESSFUL;
 
 /**
- * A builder for SCIM search requests.
+ * This class provides a builder for SCIM 2.0 search requests. For more
+ * information, see the documentation in {@link SearchRequest}.
  */
 public final class SearchRequestBuilder
     extends ResourceReturningRequestBuilder<SearchRequestBuilder>
@@ -235,122 +238,111 @@ public final class SearchRequestBuilder
    * @throws ProcessingException If a JAX-RS runtime exception occurred.
    * @throws ScimException If the SCIM service provider responded with an error.
    */
+  @SuppressWarnings("SpellCheckingInspection")
   private <T> void invoke(final boolean post,
                           @NotNull final SearchResultHandler<T> resultHandler,
                           @NotNull final Class<T> cls)
       throws ScimException
   {
-    Response response;
-    if (post)
+    try (Response response = (post) ? sendPostSearch() : buildRequest().get())
     {
-      Set<String> attributeSet = null;
-      Set<String> excludedAttributeSet = null;
-      if (attributes != null && attributes.size() > 0)
+      if (response.getStatusInfo().getFamily() != SUCCESSFUL)
       {
-        if (!excluded)
-        {
-          attributeSet = attributes;
-        }
-        else
-        {
-          excludedAttributeSet = attributes;
-        }
+        throw toScimException(response);
       }
 
-      SearchRequest searchRequest = new SearchRequest(attributeSet,
-          excludedAttributeSet, filter, sortBy, sortOrder, startIndex, count);
-
-      Invocation.Builder builder = target().
-          path(ApiConstants.SEARCH_WITH_POST_PATH_EXTENSION).
-          request(ScimService.MEDIA_TYPE_SCIM_TYPE,
-                  MediaType.APPLICATION_JSON_TYPE);
-      for (Map.Entry<String, List<Object>> header : headers.entrySet())
+      final JsonFactory factory = JsonUtils.getObjectReader().getFactory();
+      try (InputStream inputStream = response.readEntity(InputStream.class);
+           JsonParser parser = factory.createParser(inputStream))
       {
-        builder = builder.header(header.getKey(),
-                                 StaticUtils.listToString(header.getValue(),
-                                                          ", "));
-      }
-      response = builder.post(Entity.entity(searchRequest,
-                                            getContentType()));
-    }
-    else
-    {
-      response = buildRequest().get();
-    }
+        parser.nextToken();
 
-    try
-    {
-      if (response.getStatusInfo().getFamily() ==
-          Response.Status.Family.SUCCESSFUL)
-      {
-        InputStream inputStream = response.readEntity(InputStream.class);
-        try
+        boolean proceed = true;
+        while (proceed && parser.nextToken() != JsonToken.END_OBJECT)
         {
-          JsonParser parser = JsonUtils.getObjectReader().
-              getFactory().createParser(inputStream);
-          try
+          String field = String.valueOf(parser.currentName());
+          parser.nextToken();
+
+          switch (toLowerCase(field))
           {
-            parser.nextToken();
-            boolean stop = false;
-            while (!stop && parser.nextToken() != JsonToken.END_OBJECT)
-            {
-              String field = parser.getCurrentName();
-              parser.nextToken();
-              if (field.equals("schemas"))
+            case "schemas":
+              parser.skipChildren();
+              break;
+            case "totalresults":
+              resultHandler.totalResults(parser.getIntValue());
+              break;
+            case "startindex":
+              resultHandler.startIndex(parser.getIntValue());
+              break;
+            case "itemsperpage":
+              resultHandler.itemsPerPage(parser.getIntValue());
+              break;
+            case "resources":
+              while (parser.nextToken() != JsonToken.END_ARRAY)
               {
-                parser.skipChildren();
-              } else if (field.equals("totalResults"))
-              {
-                resultHandler.totalResults(parser.getIntValue());
-              } else if (field.equals("startIndex"))
-              {
-                resultHandler.startIndex(parser.getIntValue());
-              } else if (field.equals("itemsPerPage"))
-              {
-                resultHandler.itemsPerPage(parser.getIntValue());
-              } else if (field.equals("Resources"))
-              {
-                while (parser.nextToken() != JsonToken.END_ARRAY)
+                if (!resultHandler.resource(parser.readValueAs(cls)))
                 {
-                  if (!resultHandler.resource(parser.readValueAs(cls)))
-                  {
-                    stop = true;
-                    break;
-                  }
+                  proceed = false;
+                  break;
                 }
-              } else if (SchemaUtils.isUrn(field))
+              }
+              break;
+
+            default:
+              if (SchemaUtils.isUrn(field))
               {
-                resultHandler.extension(
-                    field, parser.<ObjectNode>readValueAsTree());
-              } else
+                resultHandler.extension(field, parser.readValueAsTree());
+              }
+              else
               {
                 // Just skip this field
                 parser.nextToken();
               }
-            }
-          }
-          finally
-          {
-            if (inputStream != null)
-            {
-              inputStream.close();
-            }
-            parser.close();
           }
         }
-        catch (IOException e)
-        {
-          throw new ResponseProcessingException(response, e);
-        }
+      }
+      catch (IOException e)
+      {
+        throw new ResponseProcessingException(response, e);
+      }
+    }
+  }
+
+  /**
+   * Issues a POST search request, i.e., a {@link SearchRequest}. A common
+   * example of this is the {@code /Users/.search} endpoint.
+   *
+   * @return  The HTTP {@link Response} to the POST request.
+   */
+  @NotNull
+  private Response sendPostSearch()
+  {
+    Set<String> attributeSet = null;
+    Set<String> excludedAttributeSet = null;
+    if (attributes != null && !attributes.isEmpty())
+    {
+      if (excluded)
+      {
+        excludedAttributeSet = attributes;
       }
       else
       {
-        throw toScimException(response);
+        attributeSet = attributes;
       }
     }
-    finally
+
+    SearchRequest searchRequest = new SearchRequest(attributeSet,
+        excludedAttributeSet, filter, sortBy, sortOrder, startIndex, count);
+
+    Invocation.Builder builder = target().
+        path(ApiConstants.SEARCH_WITH_POST_PATH_EXTENSION).
+        request(ScimService.MEDIA_TYPE_SCIM_TYPE, APPLICATION_JSON_TYPE);
+    for (Map.Entry<String, List<Object>> header : headers.entrySet())
     {
-      response.close();
+      String stringValue = StaticUtils.listToString(header.getValue(), ", ");
+      builder = builder.header(header.getKey(), stringValue);
     }
+
+    return builder.post(Entity.entity(searchRequest, getContentType()));
   }
 }

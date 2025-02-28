@@ -12,6 +12,12 @@ set the following property in your application:
 PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY = true;
 ```
 
+Updated `SearchRequestBuilder` to be more permissive of ListResponses with non-standard attribute
+casing (e.g., if a response includes a `"resources"` array instead of `"Resources"`).
+
+Updated the class-level documentation of `SearchRequest` to provide more background about how
+searches are performed in the SCIM standard.
+
 ## v3.2.0 - 2024-Dec-04
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
 true.

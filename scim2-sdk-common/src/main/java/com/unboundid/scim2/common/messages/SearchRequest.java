@@ -23,14 +23,71 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
+import com.unboundid.scim2.common.filters.Filter;
 
 import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.*;
 
 /**
- * Class representing a SCIM 2 search request.
+ * This class represents a SCIM 2.0 search request.
+ * <br><br>
+ *
+ * A SCIM search involves requests to endpoints such as {@code /Users} or
+ * {@code /Groups}, where multiple results may be returned. When a client sends
+ * a search request, the HTTP response that they will receive from the SCIM
+ * service will be a {@link ListResponse}, which will provide a list of
+ * resources.
+ * <br><br>
+ *
+ * Search requests can include the following parameters to fine-tune the result
+ * set:
+ * <ul>
+ *   <li> {@code filter}: A SCIM {@link Filter} that requests specific resources
+ *        that match a given filter criteria.
+ *   <li> {@code attributes}: A set of values indicating which attributes
+ *        should be included in the response. For example, including "userName"
+ *        would ensure that the returned resources will only display the value
+ *        of the {@code userName} attribute. Note that the {@code id} attribute
+ *        is always returned.
+ *   <li> {@code excludedAttributes}: A set of values indicating attributes
+ *        that should not be included on the returned resources.
+ *   <li> {@code sortBy}: Indicates the attribute whose value should be used to
+ *         sort the resources, if the SCIM service supports sorting.
+ *   <li> {@code sortOrder}: The order that the {@code sortBy} parameter is
+ *        applied. This may be set to "ascending" (the default) or "descending".
+ *   <li> {@code startIndex}: The page number of the ListResponse, if the SCIM
+ *        service provider supports pagination.
+ *   <li> {@code count}: The maximum number of resources to return.
+ * </ul>
+ * <br><br>
+ *
+ * Search requests can be issued in two ways: with GET requests or POST
+ * requests. A GET search request involves the use of HTTP query parameters,
+ * e.g.:
+ * <pre>
+ *   GET  https://example.com/v2/Users?filter=userName eq "K.Dot"
+ *
+ *   // Sometimes URLs must encode characters.
+ *   GET  https://example.com/v2/Users?filter=userName%20eq%20%K.Dot%22
+ * </pre>
+ *
+ * A POST search request is typically issued to an endpoint ending in
+ * {@code /.search}, e.g., {@code /Users/.search}. This allows clients to pass
+ * search criteria in a JSON body instead of passing them as query parameters.
+ * An example request is shown below:
+ * <pre>
+ *    POST https://example.com/v2/Users/.search
+ *
+ *    {
+ *      "schemas": [ "urn:ietf:params:scim:api:messages:2.0:SearchRequest" ],
+ *      "attributes": [ "userName", "displayName" ],
+ *      "filter": "userName eq \"K.Dot\"",
+ *      "count": 2
+ *    }
+ * </pre>
  */
+@SuppressWarnings("JavadocLinkAsPlainText")
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:SearchRequest",
     name="Search Operation", description = "SCIM 2.0 Search Request")
 public final class SearchRequest extends BaseScimResource
