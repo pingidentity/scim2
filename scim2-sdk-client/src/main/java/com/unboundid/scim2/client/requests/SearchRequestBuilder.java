@@ -171,7 +171,7 @@ public final class SearchRequestBuilder
   public <T> ListResponse<T> invoke(@NotNull final Class<T> cls)
       throws ScimException
   {
-    ListResponseBuilder<T> listResponseBuilder = new ListResponseBuilder<T>();
+    ListResponseBuilder<T> listResponseBuilder = new ListResponseBuilder<>();
     invoke(false, listResponseBuilder, cls);
     return listResponseBuilder.build();
   }
@@ -205,7 +205,7 @@ public final class SearchRequestBuilder
       @NotNull final Class<T> cls)
           throws ScimException
   {
-    ListResponseBuilder<T> listResponseBuilder = new ListResponseBuilder<T>();
+    ListResponseBuilder<T> listResponseBuilder = new ListResponseBuilder<>();
     invoke(true, listResponseBuilder, cls);
     return listResponseBuilder.build();
   }

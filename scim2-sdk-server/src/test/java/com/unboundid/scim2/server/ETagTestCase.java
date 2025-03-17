@@ -23,7 +23,6 @@ import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.NotModifiedException;
 import com.unboundid.scim2.common.exceptions.ScimException;
-import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.AuthenticationScheme;
 import com.unboundid.scim2.common.types.BulkConfig;
@@ -38,8 +37,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.server.providers.JsonProcessingExceptionMapper;
 import com.unboundid.scim2.server.providers.RuntimeExceptionMapper;
 import com.unboundid.scim2.server.providers.ScimExceptionMapper;
-import com.unboundid.scim2.server.resources.
-    AbstractServiceProviderConfigEndpoint;
+import com.unboundid.scim2.server.resources.AbstractServiceProviderConfigEndpoint;
 import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
@@ -233,8 +231,7 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
         GenericScimResource.class), true, false);
 
     // endpoint + id + patchrequest
-    PatchRequest patchRequest =
-        new PatchRequest(Collections.<PatchOperation>emptyList());
+    PatchRequest patchRequest = new PatchRequest(Collections.emptyList());
     verifyEtagHeaders(
         scimService.modify(ETAG_URI.toString(), "123", patchRequest,
             GenericScimResource.class), false, false);

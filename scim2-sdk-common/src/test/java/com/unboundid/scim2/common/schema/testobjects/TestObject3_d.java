@@ -18,7 +18,7 @@
 package com.unboundid.scim2.common.schema.testobjects;
 
 /**
- * Created by dvernon on 2/25/15.
+ * Class used by unit tests.
  */
 public class TestObject3_d
 {

@@ -26,9 +26,9 @@ import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * The "ResourceType" schema specifies the meta-data about a resource
@@ -142,8 +142,7 @@ public class ResourceTypeResource extends BaseScimResource
     this.endpoint = endpoint;
     this.schema = schema;
     this.schemaExtensions = schemaExtensions == null ?
-        null : Collections.unmodifiableList(
-        new ArrayList<SchemaExtension>(schemaExtensions));
+        null : List.copyOf(schemaExtensions);
   }
 
   /**
@@ -203,7 +202,7 @@ public class ResourceTypeResource extends BaseScimResource
 
   /**
    * This class holds information about schema extensions for resource
-   * types.  It contains a urn and a boolean indicating if it's required
+   * types.  It contains an urn and a boolean indicating if it's required
    * or optional.
    */
   public static class SchemaExtension
@@ -259,12 +258,10 @@ public class ResourceTypeResource extends BaseScimResource
     }
 
     /**
-     * Gets the boolean indicating if the schema is required
-     * for this schema extension (for a the resource type this
-     * schema extension is part of).
+     * Indicates whether the schema is required for this schema extension
+     * (for the resource type this schema extension is part of).
      *
-     * @return boolean boolean indicating if the schema is required
-     * for this schema extension.
+     * @return Whether the schema is required for this schema extension.
      */
     public boolean isRequired()
     {
@@ -296,12 +293,7 @@ public class ResourceTypeResource extends BaseScimResource
       {
         return false;
       }
-      if (schema != null ? !schema.equals(that.schema) : that.schema != null)
-      {
-        return false;
-      }
-
-      return true;
+      return Objects.equals(schema, that.schema);
     }
 
     /**
@@ -312,9 +304,7 @@ public class ResourceTypeResource extends BaseScimResource
     @Override
     public int hashCode()
     {
-      int result = schema != null ? schema.hashCode() : 0;
-      result = 31 * result + (required ? 1 : 0);
-      return result;
+      return Objects.hash(required, schema);
     }
   }
 
@@ -343,33 +333,23 @@ public class ResourceTypeResource extends BaseScimResource
     }
 
     ResourceTypeResource that = (ResourceTypeResource) o;
-
-    if (description != null ? !description.equals(that.description) :
-        that.description != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    if (endpoint != null ? !endpoint.equals(that.endpoint) :
-        that.endpoint != null)
+    if (!Objects.equals(description, that.description))
     {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null)
+    if (!Objects.equals(endpoint, that.endpoint))
     {
       return false;
     }
-    if (schema != null ? !schema.equals(that.schema) : that.schema != null)
+    if (!Objects.equals(schema, that.schema))
     {
       return false;
     }
-    if (schemaExtensions != null ?
-        !schemaExtensions.equals(that.schemaExtensions) :
-        that.schemaExtensions != null)
-    {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(schemaExtensions, that.schemaExtensions);
   }
 
   /**
@@ -380,13 +360,6 @@ public class ResourceTypeResource extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (name != null ? name.hashCode() : 0);
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (endpoint != null ? endpoint.hashCode() : 0);
-    result = 31 * result + (schema != null ? schema.hashCode() : 0);
-    result = 31 * result + (schemaExtensions != null ?
-        schemaExtensions.hashCode() : 0);
-    return result;
+    return Objects.hash(name, description, endpoint, schema, schemaExtensions);
   }
 }

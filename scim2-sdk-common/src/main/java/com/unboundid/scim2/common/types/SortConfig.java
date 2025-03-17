@@ -78,13 +78,7 @@ public class SortConfig
     }
 
     SortConfig that = (SortConfig) o;
-
-    if (supported != that.supported)
-    {
-      return false;
-    }
-
-    return true;
+    return supported == that.supported;
   }
 
   /**

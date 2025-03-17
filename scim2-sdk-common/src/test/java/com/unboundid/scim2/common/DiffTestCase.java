@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -137,7 +138,7 @@ public class DiffTestCase
 
     d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 1);
-    assertTrue(d.contains(PatchOperation.replace((ObjectNode)
+    assertTrue(d.contains(PatchOperation.replace(
         JsonUtils.getJsonNodeFactory().objectNode().set("name", name))));
 
     d2 = JsonUtils.diff(source, target, true);
@@ -519,14 +520,8 @@ public class DiffTestCase
     target.put("title", "hot shot");
     target.put("userType", "employee");
 
-    try
-    {
-      List<PatchOperation> d = JsonUtils.diff(source, target, false);
-      fail("Expected NullPointerException");
-    } catch (NullPointerException e)
-    {
-      // pass
-    }
+    assertThatThrownBy(() -> JsonUtils.diff(source, target, false))
+        .isInstanceOf(NullPointerException.class);
   }
 
   /**
@@ -548,14 +543,8 @@ public class DiffTestCase
     source.put("title", "hot shot");
     source.put("userType", "employee");
 
-    try
-    {
-      List<PatchOperation> d = JsonUtils.diff(source, target, false);
-      fail("Expected NullPointerException");
-    } catch (NullPointerException e)
-    {
-      // pass
-    }
+    assertThatThrownBy(() -> JsonUtils.diff(source, target, false))
+        .isInstanceOf(NullPointerException.class);
   }
 
   /**
@@ -571,23 +560,11 @@ public class DiffTestCase
     ObjectNode source = null;
     ObjectNode target = null;
 
-    try
-    {
-      List<PatchOperation> d = JsonUtils.diff(source, target, false);
-      fail("Expected NullPointerException");
-    } catch (NullPointerException e)
-    {
-      // pass
-    }
+    assertThatThrownBy(() -> JsonUtils.diff(source, target, false))
+        .isInstanceOf(NullPointerException.class);
 
-    try
-    {
-      List<PatchOperation> d = JsonUtils.diff(source, target, true);
-      fail("Expected NullPointerException");
-    } catch (NullPointerException e)
-    {
-      // pass
-    }
+    assertThatThrownBy(() -> JsonUtils.diff(source, target, true))
+    .isInstanceOf(NullPointerException.class);
   }
 
   /**
@@ -713,336 +690,336 @@ public class DiffTestCase
   public void sanityTest() throws Exception
   {
     ObjectNode source = (ObjectNode) JsonUtils.getObjectReader().readTree(
-        "{\n" +
-        "  \"addresses\": [\n" +
-        "    {\n" +
-        "      \"streetAddress\": \"60804 Ridge Street\",\n" +
-        "      \"locality\": \"Indianapolis\",\n" +
-        "      \"region\": \"HI\",\n" +
-        "      \"postalCode\": \"92756\",\n" +
-        "      \"country\": \"US\",\n" +
-        "      \"primary\": true,\n" +
-        "      \"type\": \"home\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"someObject\": [\n" +
-        "    {\n" +
-        "      \"someField\": \"A\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"urn:pingidentity:schemas:sample:profile:1.0\": {\n" +
-        "    \"birthdayDayMonth\": {\n" +
-        "      \"day\": 24,\n" +
-        "      \"month\": 12\n" +
-        "    },\n" +
-        "    \"communicationOpts\": [\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:Opt:SMSMarketing\",\n" +
-        "        \"destination\": \"+1 921 433 6722\",\n" +
-        "        \"destinationType\": \"sms\",\n" +
-        "        \"polarityOpt\": \"out\",\n" +
-        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
-        "        \"frequency\": \"daily;5:33\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:Opt:EmailMarketing\",\n" +
-        "        \"destination\": \"user.13@example.com\",\n" +
-        "        \"destinationType\": \"email\",\n" +
-        "        \"polarityOpt\": \"in\",\n" +
-        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
-        "        \"frequency\": \"daily;5:33\"\n" +
-        "      }\n" +
-        "    ],\n" +
-        "    \"contentOpts\": [\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:Opt:Coupons\",\n" +
-        "        \"polarityOpt\": \"out\",\n" +
-        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:Opt:Newsletters\",\n" +
-        "        \"polarityOpt\": \"in\",\n" +
-        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:Opt:Notification\",\n" +
-        "        \"polarityOpt\": \"in\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
-        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\"\n" +
-        "      }\n" +
-        "    ],\n" +
-        "    \"postalCode\": \"92756\",\n" +
-        "    \"termsOfService\": [\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:ToS:StandardUser:1.0\",\n" +
-        "        \"timeStamp\": \"2013-11-13T12:40:57Z\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Mobile:1.0\"\n" +
-        "      }\n" +
-        "    ],\n" +
-        "    \"topicPreferences\": [\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:finance:renting\",\n" +
-        "        \"strength\": -10,\n" +
-        "        \"timeStamp\": \"2014-12-20T17:54:25Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:auto:maintenance\",\n" +
-        "        \"strength\": -8,\n" +
-        "        \"timeStamp\": \"2013-11-25T12:45:21Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:health:heart\",\n" +
-        "        \"strength\": -5,\n" +
-        "        \"timeStamp\": \"2013-10-30T13:32:39Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:clothing:shoes\",\n" +
-        "        \"strength\": 10,\n" +
-        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:clothing:workout\",\n" +
-        "        \"strength\": 10,\n" +
-        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:clothing:casual\",\n" +
-        "        \"strength\": 10,\n" +
-        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:clothing:accessories\",\n" +
-        "        \"strength\": -10,\n" +
-        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:clothing:impress\",\n" +
-        "        \"strength\": -10,\n" +
-        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
-        "      }\n" +
-        "    ]\n" +
-        "  },\n" +
-        "  \"displayName\": \"Jacquelynn Ellis\",\n" +
-        "  \"emails\": [\n" +
-        "    {\n" +
-        "      \"value\": \"user.13@example.com\",\n" +
-        "      \"verified\": false,\n" +
-        "      \"primary\": false,\n" +
-        "      \"type\": \"work\"\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"value\": \"Jacquelynn.Ellis@gmail.com\",\n" +
-        "      \"verified\": true,\n" +
-        "      \"primary\": true,\n" +
-        "      \"type\": \"home\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"meta\": {\n" +
-        "    \"lastModified\": \"2015-10-13T16:54:59.157Z\",\n" +
-        "    \"resourceType\": \"Users\"\n" +
-        "  },\n" +
-        "  \"name\": {\n" +
-        "    \"familyName\": \"Ellis\",\n" +
-        "    \"formatted\": \"Chad Sanford\",\n" +
-        "    \"givenName\": \"Jacquelynn\",\n" +
-        "    \"middleName\": \"Krystle\"\n" +
-        "  },\n" +
-        "  \"phoneNumbers\": [\n" +
-        "    {\n" +
-        "      \"value\": \"+1 909 234 2568\",\n" +
-        "      \"type\": \"work\",\n" +
-        "      \"verified\": false,\n" +
-        "      \"primary\": false\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"value\": \"+1 191 623 7660\",\n" +
-        "      \"type\": \"home\",\n" +
-        "      \"verified\": false,\n" +
-        "      \"primary\": false\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"value\": \"+1 490 020 8366\",\n" +
-        "      \"type\": \"mobile\",\n" +
-        "      \"verified\": true,\n" +
-        "      \"primary\": true\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"userName\": \"user.0\",\n" +
-        "  \"id\": \"ad55a34a-763f-358f-93f9-da86f9ecd9e4\",\n" +
-        "  \"schemas\": [\n" +
-        "    \"urn:pingidentity:schemas:User:1.0\",\n" +
-        "    \"urn:pingidentity:schemas:sample:profile:1.0\"\n" +
-        "  ]\n" +
-        "}");
+        """
+            {
+              "addresses": [
+                {
+                  "streetAddress": "60804 Ridge Street",
+                  "locality": "Indianapolis",
+                  "region": "HI",
+                  "postalCode": "92756",
+                  "country": "US",
+                  "primary": true,
+                  "type": "home"
+                }
+              ],
+              "someObject": [
+                {
+                  "someField": "A"
+                }
+              ],
+              "urn:pingidentity:schemas:sample:profile:1.0": {
+                "birthdayDayMonth": {
+                  "day": 24,
+                  "month": 12
+                },
+                "communicationOpts": [
+                  {
+                    "id": "urn:X-UnboundID:Opt:SMSMarketing",
+                    "destination": "+1 921 433 6722",
+                    "destinationType": "sms",
+                    "polarityOpt": "out",
+                    "timeStamp": "2015-10-11T22:58:08.608Z",
+                    "collector": "urn:X-UnboundID:App:Profile-Manager:1.0",
+                    "frequency": "daily;5:33"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:Opt:EmailMarketing",
+                    "destination": "user.13@example.com",
+                    "destinationType": "email",
+                    "polarityOpt": "in",
+                    "timeStamp": "2015-10-11T22:58:08.608Z",
+                    "collector": "urn:X-UnboundID:App:Profile-Manager:1.0",
+                    "frequency": "daily;5:33"
+                  }
+                ],
+                "contentOpts": [
+                  {
+                    "id": "urn:X-UnboundID:Opt:Coupons",
+                    "polarityOpt": "out",
+                    "timeStamp": "2015-10-11T22:58:08.608Z",
+                    "collector": "urn:X-UnboundID:App:Profile-Manager:1.0"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:Opt:Newsletters",
+                    "polarityOpt": "in",
+                    "timeStamp": "2015-10-11T22:58:08.608Z",
+                    "collector": "urn:X-UnboundID:App:Profile-Manager:1.0"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:Opt:Notification",
+                    "polarityOpt": "in",
+                    "collector": "urn:X-UnboundID:App:Profile-Manager:1.0",
+                    "timeStamp": "2015-10-11T22:58:08.608Z"
+                  }
+                ],
+                "postalCode": "92756",
+                "termsOfService": [
+                  {
+                    "id": "urn:X-UnboundID:ToS:StandardUser:1.0",
+                    "timeStamp": "2013-11-13T12:40:57Z",
+                    "collector": "urn:X-UnboundID:App:Mobile:1.0"
+                  }
+                ],
+                "topicPreferences": [
+                  {
+                    "id": "urn:X-UnboundID:topic:finance:renting",
+                    "strength": -10,
+                    "timeStamp": "2014-12-20T17:54:25Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:auto:maintenance",
+                    "strength": -8,
+                    "timeStamp": "2013-11-25T12:45:21Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:health:heart",
+                    "strength": -5,
+                    "timeStamp": "2013-10-30T13:32:39Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:clothing:shoes",
+                    "strength": 10,
+                    "timeStamp": "2015-10-12T14:57:36.494Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:clothing:workout",
+                    "strength": 10,
+                    "timeStamp": "2015-10-12T14:57:36.494Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:clothing:casual",
+                    "strength": 10,
+                    "timeStamp": "2015-10-12T14:57:36.494Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:clothing:accessories",
+                    "strength": -10,
+                    "timeStamp": "2015-10-12T14:57:36.494Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:clothing:impress",
+                    "strength": -10,
+                    "timeStamp": "2015-10-12T14:57:36.494Z"
+                  }
+                ]
+              },
+              "displayName": "Jacquelynn Ellis",
+              "emails": [
+                {
+                  "value": "user.13@example.com",
+                  "verified": false,
+                  "primary": false,
+                  "type": "work"
+                },
+                {
+                  "value": "Jacquelynn.Ellis@gmail.com",
+                  "verified": true,
+                  "primary": true,
+                  "type": "home"
+                }
+              ],
+              "meta": {
+                "lastModified": "2015-10-13T16:54:59.157Z",
+                "resourceType": "Users"
+              },
+              "name": {
+                "familyName": "Ellis",
+                "formatted": "Chad Sanford",
+                "givenName": "Jacquelynn",
+                "middleName": "Krystle"
+              },
+              "phoneNumbers": [
+                {
+                  "value": "+1 909 234 2568",
+                  "type": "work",
+                  "verified": false,
+                  "primary": false
+                },
+                {
+                  "value": "+1 191 623 7660",
+                  "type": "home",
+                  "verified": false,
+                  "primary": false
+                },
+                {
+                  "value": "+1 490 020 8366",
+                  "type": "mobile",
+                  "verified": true,
+                  "primary": true
+                }
+              ],
+              "userName": "user.0",
+              "id": "ad55a34a-763f-358f-93f9-da86f9ecd9e4",
+              "schemas": [
+                "urn:pingidentity:schemas:User:1.0",
+                "urn:pingidentity:schemas:sample:profile:1.0"
+              ]
+            }""");
 
     ObjectNode target = (ObjectNode) JsonUtils.getObjectReader().readTree(
-        "{\n" +
-        "  \"schemas\": [\n" +
-        "    \"urn:pingidentity:schemas:User:1.0\",\n" +
-        "    \"urn:pingidentity:schemas:sample:profile:1.0\"\n" +
-        "  ],\n" +
-        "  \"addresses\": [\n" +
-        "    {\n" +
-        "      \"streetAddress\": \"60804 Ridge Street\",\n" +
-        "      \"locality\": \"Indianapolis\",\n" +
-        "      \"region\": \"HI\",\n" +
-        "      \"postalCode\": \"92756\",\n" +
-        "      \"country\": \"US\",\n" +
-        "      \"primary\": true,\n" +
-        "      \"type\": \"home\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"someObject\": [\n" +
-        "    {\n" +
-        "      \"someField\": \"B\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"displayName\": \"Jacquelynn Ellis\",\n" +
-        "  \"emails\": [\n" +
-        "    {\n" +
-        "      \"value\": \"user.13@example.com\",\n" +
-        "      \"verified\": false,\n" +
-        "      \"primary\": false,\n" +
-        "      \"type\": \"work\"\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"value\": \"Jacquelynn.Ellis@gmail.com\",\n" +
-        "      \"verified\": true,\n" +
-        "      \"primary\": true,\n" +
-        "      \"type\": \"home\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"name\": {\n" +
-        "    \"familyName\": \"Ellis\",\n" +
-        "    \"formatted\": \"Chad Sanford\",\n" +
-        "    \"givenName\": \"Jacquelynn\",\n" +
-        "    \"middleName\": \"Krystle\"\n" +
-        "  },\n" +
-        "  \"phoneNumbers\": [\n" +
-        "    {\n" +
-        "      \"value\": \"+1 909 234 2568\",\n" +
-        "      \"type\": \"work\",\n" +
-        "      \"verified\": false,\n" +
-        "      \"primary\": false\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"value\": \"+1 191 623 7660\",\n" +
-        "      \"type\": \"home\",\n" +
-        "      \"verified\": false,\n" +
-        "      \"primary\": false\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"value\": \"+1 490 020 8366\",\n" +
-        "      \"type\": \"mobile\",\n" +
-        "      \"verified\": true,\n" +
-        "      \"primary\": true\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"urn:pingidentity:schemas:sample:profile:1.0\": {\n" +
-        "    \"birthdayDayMonth\": {\n" +
-        "      \"day\": 24,\n" +
-        "      \"month\": 12\n" +
-        "    },\n" +
-        "    \"communicationOpts\": [\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:Opt:SMSMarketing\",\n" +
-        "        \"destination\": \"+1 921 433 6722\",\n" +
-        "        \"destinationType\": \"sms\",\n" +
-        "        \"polarityOpt\": \"out\",\n" +
-        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
-        "        \"frequency\": \"daily;5:33\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:Opt:EmailMarketing\",\n" +
-        "        \"destination\": \"user.13@example.com\",\n" +
-        "        \"destinationType\": \"email\",\n" +
-        "        \"polarityOpt\": \"in\",\n" +
-        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
-        "        \"frequency\": \"daily;5:33\"\n" +
-        "      }\n" +
-        "    ],\n" +
-        "    \"contentOpts\": [\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:Opt:Coupons\",\n" +
-        "        \"polarityOpt\": \"out\",\n" +
-        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:Opt:Newsletters\",\n" +
-        "        \"polarityOpt\": \"in\",\n" +
-        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:Opt:Notification\",\n" +
-        "        \"polarityOpt\": \"in\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Profile-Manager:1.0\",\n"+
-        "        \"timeStamp\": \"2015-10-11T22:58:08.608Z\"\n" +
-        "      }\n" +
-        "    ],\n" +
-        "    \"postalCode\": \"92756\",\n" +
-        "    \"termsOfService\": [\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:ToS:StandardUser:1.0\",\n" +
-        "        \"timeStamp\": \"2013-11-13T12:40:57Z\",\n" +
-        "        \"collector\": \"urn:X-UnboundID:App:Mobile:1.0\"\n" +
-        "      }\n" +
-        "    ],\n" +
-        "    \"topicPreferences\": [\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:finance:renting\",\n" +
-        "        \"strength\": -10,\n" +
-        "        \"timeStamp\": \"2014-12-20T17:54:25Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:auto:maintenance\",\n" +
-        "        \"strength\": -8,\n" +
-        "        \"timeStamp\": \"2013-11-25T12:45:21Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:health:heart\",\n" +
-        "        \"strength\": -5,\n" +
-        "        \"timeStamp\": \"2013-10-30T13:32:39Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:clothing:shoes\",\n" +
-        "        \"strength\": 10,\n" +
-        "        \"timeStamp\": \"2015-10-13T14:57:36.494Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:clothing:workout\",\n" +
-        "        \"strength\": 10,\n" +
-        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:clothing:casual\",\n" +
-        "        \"strength\": 10,\n" +
-        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:clothing:accessories\",\n" +
-        "        \"strength\": -10,\n" +
-        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"id\": \"urn:X-UnboundID:topic:clothing:impress\",\n" +
-        "        \"strength\": -10,\n" +
-        "        \"timeStamp\": \"2015-10-12T14:57:36.494Z\"\n" +
-        "      }\n" +
-        "    ]\n" +
-        "  },\n" +
-        "  \"userName\": \"user.0\",\n" +
-        "  \"photoURLs\": [\n" +
-        "    \n" +
-        "  ]\n" +
-        "}");
+        """
+            {
+              "schemas": [
+                "urn:pingidentity:schemas:User:1.0",
+                "urn:pingidentity:schemas:sample:profile:1.0"
+              ],
+              "addresses": [
+                {
+                  "streetAddress": "60804 Ridge Street",
+                  "locality": "Indianapolis",
+                  "region": "HI",
+                  "postalCode": "92756",
+                  "country": "US",
+                  "primary": true,
+                  "type": "home"
+                }
+              ],
+              "someObject": [
+                {
+                  "someField": "B"
+                }
+              ],
+              "displayName": "Jacquelynn Ellis",
+              "emails": [
+                {
+                  "value": "user.13@example.com",
+                  "verified": false,
+                  "primary": false,
+                  "type": "work"
+                },
+                {
+                  "value": "Jacquelynn.Ellis@gmail.com",
+                  "verified": true,
+                  "primary": true,
+                  "type": "home"
+                }
+              ],
+              "name": {
+                "familyName": "Ellis",
+                "formatted": "Chad Sanford",
+                "givenName": "Jacquelynn",
+                "middleName": "Krystle"
+              },
+              "phoneNumbers": [
+                {
+                  "value": "+1 909 234 2568",
+                  "type": "work",
+                  "verified": false,
+                  "primary": false
+                },
+                {
+                  "value": "+1 191 623 7660",
+                  "type": "home",
+                  "verified": false,
+                  "primary": false
+                },
+                {
+                  "value": "+1 490 020 8366",
+                  "type": "mobile",
+                  "verified": true,
+                  "primary": true
+                }
+              ],
+              "urn:pingidentity:schemas:sample:profile:1.0": {
+                "birthdayDayMonth": {
+                  "day": 24,
+                  "month": 12
+                },
+                "communicationOpts": [
+                  {
+                    "id": "urn:X-UnboundID:Opt:SMSMarketing",
+                    "destination": "+1 921 433 6722",
+                    "destinationType": "sms",
+                    "polarityOpt": "out",
+                    "timeStamp": "2015-10-11T22:58:08.608Z",
+                    "collector": "urn:X-UnboundID:App:Profile-Manager:1.0",
+                    "frequency": "daily;5:33"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:Opt:EmailMarketing",
+                    "destination": "user.13@example.com",
+                    "destinationType": "email",
+                    "polarityOpt": "in",
+                    "timeStamp": "2015-10-11T22:58:08.608Z",
+                    "collector": "urn:X-UnboundID:App:Profile-Manager:1.0",
+                    "frequency": "daily;5:33"
+                  }
+                ],
+                "contentOpts": [
+                  {
+                    "id": "urn:X-UnboundID:Opt:Coupons",
+                    "polarityOpt": "out",
+                    "timeStamp": "2015-10-11T22:58:08.608Z",
+                    "collector": "urn:X-UnboundID:App:Profile-Manager:1.0"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:Opt:Newsletters",
+                    "polarityOpt": "in",
+                    "timeStamp": "2015-10-11T22:58:08.608Z",
+                    "collector": "urn:X-UnboundID:App:Profile-Manager:1.0"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:Opt:Notification",
+                    "polarityOpt": "in",
+                    "collector": "urn:X-UnboundID:App:Profile-Manager:1.0",
+                    "timeStamp": "2015-10-11T22:58:08.608Z"
+                  }
+                ],
+                "postalCode": "92756",
+                "termsOfService": [
+                  {
+                    "id": "urn:X-UnboundID:ToS:StandardUser:1.0",
+                    "timeStamp": "2013-11-13T12:40:57Z",
+                    "collector": "urn:X-UnboundID:App:Mobile:1.0"
+                  }
+                ],
+                "topicPreferences": [
+                  {
+                    "id": "urn:X-UnboundID:topic:finance:renting",
+                    "strength": -10,
+                    "timeStamp": "2014-12-20T17:54:25Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:auto:maintenance",
+                    "strength": -8,
+                    "timeStamp": "2013-11-25T12:45:21Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:health:heart",
+                    "strength": -5,
+                    "timeStamp": "2013-10-30T13:32:39Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:clothing:shoes",
+                    "strength": 10,
+                    "timeStamp": "2015-10-13T14:57:36.494Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:clothing:workout",
+                    "strength": 10,
+                    "timeStamp": "2015-10-12T14:57:36.494Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:clothing:casual",
+                    "strength": 10,
+                    "timeStamp": "2015-10-12T14:57:36.494Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:clothing:accessories",
+                    "strength": -10,
+                    "timeStamp": "2015-10-12T14:57:36.494Z"
+                  },
+                  {
+                    "id": "urn:X-UnboundID:topic:clothing:impress",
+                    "strength": -10,
+                    "timeStamp": "2015-10-12T14:57:36.494Z"
+                  }
+                ]
+              },
+              "userName": "user.0",
+              "photoURLs": []
+            }""");
 
     List<PatchOperation> d = JsonUtils.diff(source, target, false);
     assertEquals(d.size(), 2);
@@ -1066,25 +1043,26 @@ public class DiffTestCase
   @Test
   public void testMultiValuedAttributesWithEmptyValues() throws IOException
   {
-    String jsonString = "{\n" +
-        "  \"schemas\" : [ \"urn:unboundid:configuration:2.0\" ],\n" +
-        "  \"id\" : \"userRoot2\",\n" +
-        "  \"meta\" : {\n" +
-        "    \"resourceType\" : \"LocalDbBackend\",\n" +
-        "    \"location\" : \"http://localhost:5033/config/v2/Backends/userRoot2\"\n" +
-        "  },\n" +
-        "  \"urn:unboundid:configuration:2.0\" : {\n" +
-        "    \"type\" : \"LocalDbBackend\"\n" +
-        "  },\n" +
-        "  \"backendId\" : \"userRoot2\",\n" +
-        "  \"backgroundPrime\" : \"false\",\n" +
-        "  \"backupFilePermissions\" : \"700\",\n" +
-        "  \"baseDn\" : [ \"dc=example2,dc=com\" ],\n" +
-        "  \"checkpointOnCloseCount\" : \"2\",\n" +
-        "  \"cleanerThreadWaitTime\" : \"120000\",\n" +
-        "  \"compactCommonParentDn\" : [ ],\n" +
-        "  \"jeProperty\" : [ ]\n" +
-        "}";
+    String jsonString = """
+        {
+          "schemas" : [ "urn:unboundid:configuration:2.0" ],
+          "id" : "userRoot2",
+          "meta" : {
+            "resourceType" : "LocalDbBackend",
+            "location" : "http://localhost:5033/config/v2/Backends/userRoot2"
+          },
+          "urn:unboundid:configuration:2.0" : {
+            "type" : "LocalDbBackend"
+          },
+          "backendId" : "userRoot2",
+          "backgroundPrime" : "false",
+          "backupFilePermissions" : "700",
+          "baseDn" : [ "dc=example2,dc=com" ],
+          "checkpointOnCloseCount" : "2",
+          "cleanerThreadWaitTime" : "120000",
+          "compactCommonParentDn" : [ ],
+          "jeProperty" : [ ]
+        }""";
     ObjectNode source = JsonUtils.getObjectReader().
         forType(ObjectNode.class).readValue(jsonString);
     ObjectNode target = JsonUtils.getObjectReader().
@@ -1099,8 +1077,7 @@ public class DiffTestCase
     while (i.hasNext())
     {
       JsonNode field = i.next();
-      if (field.isNull() ||
-          (field.isArray() && field.size() == 0))
+      if (field.isNull() || (field.isArray() && field.isEmpty()))
       {
         i.remove();
       }

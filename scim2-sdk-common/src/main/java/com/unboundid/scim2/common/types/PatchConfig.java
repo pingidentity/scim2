@@ -78,13 +78,7 @@ public class PatchConfig
     }
 
     PatchConfig that = (PatchConfig) o;
-
-    if (supported != that.supported)
-    {
-      return false;
-    }
-
-    return true;
+    return supported == that.supported;
   }
 
   /**

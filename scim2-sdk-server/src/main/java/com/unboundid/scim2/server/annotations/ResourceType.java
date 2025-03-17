@@ -40,8 +40,7 @@ public @interface ResourceType
   String description();
 
   /**
-   * The name for the object.  This is a human readable
-   * name.
+   * The name for the object.  This is a human-readable name.
    *
    * @return The object's human-readable name.
    */
@@ -74,8 +73,8 @@ public @interface ResourceType
 
   /**
    * Whether this resource type and its associated schemas should be
-   * discoverable using the SCIM 2 standard /resourceTypes and /schemas
-   * endpoints.
+   * discoverable using the SCIM 2 standard {@code /ResourceTypes} and
+   * {@code /Schemas} endpoints.
    *
    * @return A flag indicating the discoverability of this resource type and
    * its associated schemas.

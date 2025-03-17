@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
@@ -122,7 +123,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 public abstract class PatchOperation
 {
   // The attribute path that is targeted by the patch operation (i.e., the
-  // attribute that should be updated. Note that this is an optional field for
+  // attribute that should be updated). Note that this is an optional field for
   // add and replace operations, but it is mandatory for remove operations.
   @Nullable
   private final Path path;
@@ -187,8 +188,7 @@ public abstract class PatchOperation
         throw new IllegalArgumentException("Patch operation contains " +
             "multiple values");
       }
-      return JsonUtils.getObjectReader().treeToValue(
-          value, cls);
+      return JsonUtils.getObjectReader().treeToValue(value, cls);
     }
 
     /**
@@ -199,7 +199,7 @@ public abstract class PatchOperation
     public <T> List<T> getValues(@NotNull final Class<T> cls)
         throws JsonProcessingException, ScimException
     {
-      ArrayList<T> objects = new ArrayList<T>(value.size());
+      ArrayList<T> objects = new ArrayList<>(value.size());
       for (JsonNode node : value)
       {
         objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
@@ -545,17 +545,11 @@ public abstract class PatchOperation
       }
 
       AddOperation that = (AddOperation) o;
-      if (getPath() != null ? !getPath().equals(that.getPath()) :
-          that.getPath() != null)
+      if (!Objects.equals(getPath(), that.getPath()))
       {
         return false;
       }
-      if (!value.equals(that.value))
-      {
-        return false;
-      }
-
-      return true;
+      return value.equals(that.value);
     }
 
     /**
@@ -566,9 +560,7 @@ public abstract class PatchOperation
     @Override
     public int hashCode()
     {
-      int result = getPath() != null ? getPath().hashCode() : 0;
-      result = 31 * result + value.hashCode();
-      return result;
+      return Objects.hash(getPath(), value);
     }
 
   }
@@ -633,14 +625,7 @@ public abstract class PatchOperation
       }
 
       RemoveOperation that = (RemoveOperation) o;
-
-      if (getPath() != null ? !getPath().equals(that.getPath()) :
-          that.getPath() != null)
-      {
-        return false;
-      }
-
-      return true;
+      return Objects.equals(getPath(), that.getPath());
     }
 
     /**
@@ -651,7 +636,7 @@ public abstract class PatchOperation
     @Override
     public int hashCode()
     {
-      return getPath() != null ? getPath().hashCode() : 0;
+      return Objects.hash(getPath());
     }
   }
 
@@ -725,7 +710,7 @@ public abstract class PatchOperation
     public <T> List<T> getValues(@NotNull final Class<T> cls)
         throws JsonProcessingException, ScimException
     {
-      ArrayList<T> objects = new ArrayList<T>(value.size());
+      ArrayList<T> objects = new ArrayList<>(value.size());
       for (JsonNode node : value)
       {
         objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
@@ -764,18 +749,11 @@ public abstract class PatchOperation
       }
 
       ReplaceOperation that = (ReplaceOperation) o;
-
-      if (getPath() != null ? !getPath().equals(that.getPath()) :
-          that.getPath() != null)
+      if (!Objects.equals(getPath(), that.getPath()))
       {
         return false;
       }
-      if (!value.equals(that.value))
-      {
-        return false;
-      }
-
-      return true;
+      return value.equals(that.value);
     }
 
     /**
@@ -786,9 +764,7 @@ public abstract class PatchOperation
     @Override
     public int hashCode()
     {
-      int result = getPath() != null ? getPath().hashCode() : 0;
-      result = 31 * result + value.hashCode();
-      return result;
+      return Objects.hash(getPath(), value);
     }
   }
 
@@ -2025,21 +2001,19 @@ public abstract class PatchOperation
    * @return The new patch operation.
    */
   @NotNull
+  @SuppressWarnings("UnnecessaryDefault")
   public static PatchOperation create(@NotNull final PatchOpType opType,
                                       @NotNull final Path path,
                                       @NotNull final JsonNode value)
   {
-    switch (opType)
+    return switch (opType)
     {
-      case ADD:
-        return add(path, value);
-      case REPLACE:
-        return replace(path, value);
-      case REMOVE:
-        return remove(path);
-      default:
-        throw new IllegalArgumentException("Unknown patch op type " + opType);
-    }
+      case ADD -> add(path, value);
+      case REPLACE -> replace(path, value);
+      case REMOVE -> remove(path);
+      default ->
+          throw new IllegalArgumentException("Unknown patch op type " + opType);
+    };
   }
 
 

@@ -22,6 +22,7 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A public key certificate in {@code X.509} form that can be assigned to a
@@ -188,22 +189,19 @@ public class X509Certificate
     }
 
     X509Certificate that = (X509Certificate) o;
-
-    if (!Arrays.equals(value, that.value))
+    if (!Objects.equals(display, that.display))
     {
       return false;
     }
-    if (display != null ? !display.equals(that.display) : that.display != null)
+    if (!Objects.equals(type, that.type))
     {
       return false;
     }
-    if (type != null ? !type.equals(that.type) : that.type != null)
+    if (!Objects.equals(primary, that.primary))
     {
       return false;
     }
-    return !(primary != null ? !primary.equals(that.primary) :
-        that.primary != null);
-
+    return Arrays.equals(value, that.value);
   }
 
   /**
@@ -214,10 +212,6 @@ public class X509Certificate
   @Override
   public int hashCode()
   {
-    int result = value != null ? Arrays.hashCode(value) : 0;
-    result = 31 * result + (display != null ? display.hashCode() : 0);
-    result = 31 * result + (type != null ? type.hashCode() : 0);
-    result = 31 * result + (primary != null ? primary.hashCode() : 0);
-    return result;
+    return Objects.hash(display, type, primary, Arrays.hashCode(value));
   }
 }

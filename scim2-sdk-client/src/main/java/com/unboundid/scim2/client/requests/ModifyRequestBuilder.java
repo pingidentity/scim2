@@ -64,7 +64,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
   private ModifyRequestBuilder(@NotNull final WebTarget target)
   {
     super(target);
-    this.operations = new LinkedList<PatchOperation>();
+    this.operations = new LinkedList<>();
   }
 
   /**
@@ -145,22 +145,18 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
     {
       PatchRequest patchRequest = new PatchRequest(operations);
-      Response response = buildRequest().method("PATCH",
-          Entity.entity(patchRequest, getContentType()));
-      try
+      try (Response response = buildRequest().method("PATCH",
+          Entity.entity(patchRequest, getContentType())))
       {
         if (response.getStatusInfo().getFamily() ==
             Response.Status.Family.SUCCESSFUL)
         {
           return response.readEntity(cls);
-        } else
+        }
+        else
         {
           throw toScimException(response);
         }
-      }
-      finally
-      {
-        response.close();
       }
     }
   }
@@ -209,9 +205,8 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     public <T> T invoke(@NotNull final Class<T> cls) throws ScimException
     {
       PatchRequest patchRequest = new PatchRequest(operations);
-      Response response = buildRequest().method("PATCH",
-          Entity.entity(patchRequest, getContentType()));
-      try
+      try (Response response = buildRequest().method("PATCH",
+          Entity.entity(patchRequest, getContentType())))
       {
         if (response.getStatusInfo().getFamily() ==
             Response.Status.Family.SUCCESSFUL)
@@ -222,10 +217,6 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
         {
           throw toScimException(response);
         }
-      }
-      finally
-      {
-        response.close();
       }
     }
   }
@@ -435,7 +426,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
   }
 
   /**
-   * Add a new patch operation this this patch request.
+   * Add a new patch operation to this patch request.
    *
    * @param op The patch operation to add.
    *

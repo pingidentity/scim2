@@ -49,8 +49,7 @@ public class SchemaAwareFilterEvaluatorTestCase
   @BeforeClass
   public void setUp() throws Exception
   {
-    List<AttributeDefinition> attributeDefinitions =
-        new ArrayList<AttributeDefinition>(4);
+    List<AttributeDefinition> attributeDefinitions = new ArrayList<>();
 
     AttributeDefinition.Builder builder = new AttributeDefinition.Builder();
     builder.setName("insensitive");
@@ -68,13 +67,12 @@ public class SchemaAwareFilterEvaluatorTestCase
     resourceTypeDefinition = new ResourceTypeDefinition.Builder(
         "test", "test").setCoreSchema(schema).build();
 
-    ObjectNode node =
-        (ObjectNode) JsonUtils.getObjectReader().readTree(
-            "{  \n" +
-                "  \"id\":\"test\",\n" +
-                "  \"insensitive\":\"HeRe\",\n" +
-                "  \"sensitive\":\"hErE\"\n" +
-                "}");
+    ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().readTree("""
+        {
+          "id":"test",
+          "insensitive":"HeRe",
+          "sensitive":"hErE"
+        }""");
     testResource = new GenericScimResource(node);
   }
 

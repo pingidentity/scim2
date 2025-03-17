@@ -35,61 +35,62 @@ public class AccountStateTest
   public void testAccountState() throws Exception
   {
     String accountStateString =
-        "{\n" +
-            "  \"accountDisabled\": false,\n" +
-            "  \"accountExpirationTime\": \"2015-07-06T04:03:02.000Z\",\n" +
-            "  \"secondsUntilAccountExpiration\": 10,\n" +
-            "  \"passwordChangedTime\": \"2015-07-06T04:04:02.000Z\",\n" +
-            "  \"passwordExpirationWarnedTime\": \"2015-07-06T04:05:02.000Z\",\n" +
-            "  \"secondsUntilPasswordExpiration\": 11,\n" +
-            "  \"secondsUntilPasswordExpirationWarning\": 12,\n" +
-            "  \"authenticationFailureTimes\": [\n" +
-            "    \"2015-07-06T04:10:02.000Z\",\n" +
-            "    \"2015-07-06T04:11:02.000Z\",\n" +
-            "    \"2015-07-06T04:12:02.000Z\"\n" +
-            "  ],\n" +
-            "  \"secondsUntilAuthenticationFailureUnlock\": 13,\n" +
-            "  \"remainingAuthenticationFailureCount\": 14,\n" +
-            "  \"lastLoginTime\": \"2015-07-06T04:06:02.000Z\",\n" +
-            "  \"secondsUntilIdleLockout\": 15,\n" +
-            "  \"mustChangePassword\": true,\n" +
-            "  \"graceLoginTimes\": [\n" +
-            "    \"2015-07-06T04:20:02.000Z\",\n" +
-            "    \"2015-07-06T04:21:02.000Z\",\n" +
-            "    \"2015-07-06T04:22:02.000Z\"\n" +
-            "  ],\n" +
-            "  \"remainingGraceLoginCount\": 17,\n" +
-            "  \"passwordChangedByRequiredTime\": \"2015-07-06T04:07:02.000Z\",\n" +
-            "  \"passwordHistory\": [\n" +
-            "    \"pw_one\",\n" +
-            "    \"pw_two\",\n" +
-            "    \"pw_three\"\n" +
-            "  ],\n" +
-            "  \"retiredPassword\": {\n" +
-            "    \"passwordRetiredTime\": \"2015-07-06T04:20:02.000Z\",\n" +
-            "    \"passwordExpirationTime\": \"2015-07-06T04:20:02.000Z\"\n" +
-            "  },\n" +
-            "  \"accountActivationTime\": \"2015-07-06T04:07:02.000Z\",\n" +
-            "  \"secondsUntilAccountActivation\": 18,\n" +
-            "  \"accountUsabilityNotices\": [\n" +
-            "    {\n" +
-            "      \"name\": \"test1\",\n" +
-            "      \"message\": \"test is a test\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"accountUsabilityWarnings\": [\n" +
-            "    {\n" +
-            "      \"name\": \"test1\",\n" +
-            "      \"message\": \"test is a test\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"accountUsabilityErrors\": [\n" +
-            "    {\n" +
-            "      \"name\": \"test1\",\n" +
-            "      \"message\": \"test is a test\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}";
+        """
+            {
+              "accountDisabled": false,
+              "accountExpirationTime": "2015-07-06T04:03:02.000Z",
+              "secondsUntilAccountExpiration": 10,
+              "passwordChangedTime": "2015-07-06T04:04:02.000Z",
+              "passwordExpirationWarnedTime": "2015-07-06T04:05:02.000Z",
+              "secondsUntilPasswordExpiration": 11,
+              "secondsUntilPasswordExpirationWarning": 12,
+              "authenticationFailureTimes": [
+                "2015-07-06T04:10:02.000Z",
+                "2015-07-06T04:11:02.000Z",
+                "2015-07-06T04:12:02.000Z"
+              ],
+              "secondsUntilAuthenticationFailureUnlock": 13,
+              "remainingAuthenticationFailureCount": 14,
+              "lastLoginTime": "2015-07-06T04:06:02.000Z",
+              "secondsUntilIdleLockout": 15,
+              "mustChangePassword": true,
+              "graceLoginTimes": [
+                "2015-07-06T04:20:02.000Z",
+                "2015-07-06T04:21:02.000Z",
+                "2015-07-06T04:22:02.000Z"
+              ],
+              "remainingGraceLoginCount": 17,
+              "passwordChangedByRequiredTime": "2015-07-06T04:07:02.000Z",
+              "passwordHistory": [
+                "pw_one",
+                "pw_two",
+                "pw_three"
+              ],
+              "retiredPassword": {
+                "passwordRetiredTime": "2015-07-06T04:20:02.000Z",
+                "passwordExpirationTime": "2015-07-06T04:20:02.000Z"
+              },
+              "accountActivationTime": "2015-07-06T04:07:02.000Z",
+              "secondsUntilAccountActivation": 18,
+              "accountUsabilityNotices": [
+                {
+                  "name": "test1",
+                  "message": "test is a test"
+                }
+              ],
+              "accountUsabilityWarnings": [
+                {
+                  "name": "test1",
+                  "message": "test is a test"
+                }
+              ],
+              "accountUsabilityErrors": [
+                {
+                  "name": "test1",
+                  "message": "test is a test"
+                }
+              ]
+            }""";
 
     AccountState accountState =
         JsonUtils.getObjectReader().forType(AccountState.class).

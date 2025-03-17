@@ -28,6 +28,7 @@ import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This object contains all of the information about the account state.
@@ -186,9 +187,9 @@ public class AccountState extends BaseScimResource
    * @return a boolean indicating whether or not the account is disabled.
    */
   @Nullable
-   public Boolean isAccountDisabled()
+  public Boolean isAccountDisabled()
   {
-    return (accountDisabled == null) ? null : accountDisabled.getObj();
+    return JsonReference.getObject(accountDisabled);
   }
 
   /**
@@ -199,7 +200,7 @@ public class AccountState extends BaseScimResource
    */
   public void setAccountDisabled(@Nullable final Boolean accountDisabled)
   {
-    this.accountDisabled = new JsonReference<Boolean>(accountDisabled);
+    this.accountDisabled = new JsonReference<>(accountDisabled);
   }
 
   /**
@@ -210,8 +211,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Calendar getAccountExpirationTime()
   {
-    return (accountExpirationTime == null) ?
-        null : accountExpirationTime.getObj();
+    return JsonReference.getObject(accountExpirationTime);
   }
 
   /**
@@ -222,8 +222,7 @@ public class AccountState extends BaseScimResource
   public void setAccountExpirationTime(
       @Nullable final Calendar accountExpirationTime)
   {
-    this.accountExpirationTime =
-        new JsonReference<Calendar>(accountExpirationTime);
+    this.accountExpirationTime = new JsonReference<>(accountExpirationTime);
   }
 
   /**
@@ -234,8 +233,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Long getSecondsUntilAccountExpiration()
   {
-    return (secondsUntilAccountExpiration == null) ?
-        null : secondsUntilAccountExpiration.getObj();
+    return JsonReference.getObject(secondsUntilAccountExpiration);
   }
 
   /**
@@ -247,7 +245,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Long secondsUntilAccountExpiration)
   {
     this.secondsUntilAccountExpiration =
-        new JsonReference<Long>(secondsUntilAccountExpiration);
+        new JsonReference<>(secondsUntilAccountExpiration);
   }
 
   /**
@@ -258,7 +256,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Calendar getPasswordChangedTime()
   {
-    return (passwordChangedTime == null) ? null : passwordChangedTime.getObj();
+    return JsonReference.getObject(passwordChangedTime);
   }
 
   /**
@@ -269,7 +267,7 @@ public class AccountState extends BaseScimResource
   public void setPasswordChangedTime(
       @Nullable final Calendar passwordChangedTime)
   {
-    this.passwordChangedTime = new JsonReference<Calendar>(passwordChangedTime);
+    this.passwordChangedTime = new JsonReference<>(passwordChangedTime);
   }
 
   /**
@@ -280,8 +278,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Calendar getPasswordExpirationWarnedTime()
   {
-    return (passwordExpirationWarnedTime == null) ?
-        null : passwordExpirationWarnedTime.getObj();
+    return JsonReference.getObject(passwordExpirationWarnedTime);
   }
 
   /**
@@ -293,7 +290,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Calendar passwordExpirationWarnedTime)
   {
     this.passwordExpirationWarnedTime =
-        new JsonReference<Calendar>(passwordExpirationWarnedTime);
+        new JsonReference<>(passwordExpirationWarnedTime);
   }
 
   /**
@@ -304,8 +301,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Long getSecondsUntilPasswordExpiration()
   {
-    return (secondsUntilPasswordExpiration == null) ?
-        null : secondsUntilPasswordExpiration.getObj();
+    return JsonReference.getObject(secondsUntilPasswordExpiration);
   }
 
   /**
@@ -318,7 +314,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Long secondsUntilPasswordExpiration)
   {
     this.secondsUntilPasswordExpiration =
-        new JsonReference<Long>(secondsUntilPasswordExpiration);
+        new JsonReference<>(secondsUntilPasswordExpiration);
   }
 
   /**
@@ -329,8 +325,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Long getSecondsUntilPasswordExpirationWarning()
   {
-    return (secondsUntilPasswordExpirationWarning == null) ?
-        null : secondsUntilPasswordExpirationWarning.getObj();
+    return JsonReference.getObject(secondsUntilPasswordExpirationWarning);
   }
 
   /**
@@ -343,7 +338,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Long secondsUntilPasswordExpirationWarning)
   {
     this.secondsUntilPasswordExpirationWarning =
-        new JsonReference<Long>(secondsUntilPasswordExpirationWarning);
+        new JsonReference<>(secondsUntilPasswordExpirationWarning);
   }
 
   /**
@@ -354,8 +349,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Long getSecondsUntilAuthenticationFailureUnlock()
   {
-    return (secondsUntilAuthenticationFailureUnlock == null) ?
-        null : secondsUntilAuthenticationFailureUnlock.getObj();
+    return JsonReference.getObject(secondsUntilAuthenticationFailureUnlock);
   }
 
   /**
@@ -368,7 +362,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Long secondsUntilAuthenticationFailureUnlock)
   {
     this.secondsUntilAuthenticationFailureUnlock =
-        new JsonReference<Long>(secondsUntilAuthenticationFailureUnlock);
+        new JsonReference<>(secondsUntilAuthenticationFailureUnlock);
   }
 
   /**
@@ -379,8 +373,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Integer getRemainingAuthenticationFailureCount()
   {
-    return (remainingAuthenticationFailureCount == null) ?
-        null : remainingAuthenticationFailureCount.getObj();
+    return JsonReference.getObject(remainingAuthenticationFailureCount);
   }
 
   /**
@@ -393,7 +386,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Integer remainingAuthenticationFailureCount)
   {
     this.remainingAuthenticationFailureCount =
-        new JsonReference<Integer>(remainingAuthenticationFailureCount);
+        new JsonReference<>(remainingAuthenticationFailureCount);
   }
 
   /**
@@ -404,7 +397,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Calendar getLastLoginTime()
   {
-    return (lastLoginTime == null) ? null : lastLoginTime.getObj();
+    return JsonReference.getObject(lastLoginTime);
   }
 
   /**
@@ -414,7 +407,7 @@ public class AccountState extends BaseScimResource
    */
   public void setLastLoginTime(@Nullable final Calendar lastLoginTime)
   {
-    this.lastLoginTime = new JsonReference<Calendar>(lastLoginTime);
+    this.lastLoginTime = new JsonReference<>(lastLoginTime);
   }
 
   /**
@@ -425,8 +418,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Long getSecondsUntilIdleLockout()
   {
-    return (secondsUntilIdleLockout == null) ?
-        null : secondsUntilIdleLockout.getObj();
+    return JsonReference.getObject(secondsUntilIdleLockout);
   }
 
   /**
@@ -437,8 +429,7 @@ public class AccountState extends BaseScimResource
   private void setSecondsUntilIdleLockout(
       @Nullable final Long secondsUntilIdleLockout)
   {
-    this.secondsUntilIdleLockout =
-        new JsonReference<Long>(secondsUntilIdleLockout);
+    this.secondsUntilIdleLockout = new JsonReference<>(secondsUntilIdleLockout);
   }
 
   /**
@@ -449,7 +440,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Boolean isMustChangePassword()
   {
-    return (mustChangePassword == null) ? null : mustChangePassword.getObj();
+    return JsonReference.getObject(mustChangePassword);
   }
 
   /**
@@ -460,7 +451,7 @@ public class AccountState extends BaseScimResource
    */
   public void setMustChangePassword(@Nullable final Boolean mustChangePassword)
   {
-    this.mustChangePassword = new JsonReference<Boolean>(mustChangePassword);
+    this.mustChangePassword = new JsonReference<>(mustChangePassword);
   }
 
   /**
@@ -471,8 +462,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Long getSecondsUntilPasswordResetLockout()
   {
-    return (secondsUntilPasswordResetLockout == null) ?
-        null : secondsUntilPasswordResetLockout.getObj();
+    return JsonReference.getObject(secondsUntilPasswordResetLockout);
   }
 
   /**
@@ -485,7 +475,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Long secondsUntilPasswordResetLockout)
   {
     this.secondsUntilPasswordResetLockout =
-        new JsonReference<Long>(secondsUntilPasswordResetLockout);
+        new JsonReference<>(secondsUntilPasswordResetLockout);
   }
 
   /**
@@ -496,8 +486,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Integer getRemainingGraceLoginCount()
   {
-    return (remainingGraceLoginCount == null) ?
-        null : remainingGraceLoginCount.getObj();
+    return JsonReference.getObject(remainingGraceLoginCount);
   }
 
   /**
@@ -509,7 +498,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Integer remainingGraceLoginCount)
   {
     this.remainingGraceLoginCount =
-        new JsonReference<Integer>(remainingGraceLoginCount);
+        new JsonReference<>(remainingGraceLoginCount);
   }
 
   /**
@@ -520,8 +509,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Calendar getPasswordChangedByRequiredTime()
   {
-    return (passwordChangedByRequiredTime == null) ?
-        null : passwordChangedByRequiredTime.getObj();
+    return JsonReference.getObject(passwordChangedByRequiredTime);
   }
 
   /**
@@ -533,7 +521,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Calendar passwordChangedByRequiredTime)
   {
     this.passwordChangedByRequiredTime =
-        new JsonReference<Calendar>(passwordChangedByRequiredTime);
+        new JsonReference<>(passwordChangedByRequiredTime);
   }
 
   /**
@@ -544,8 +532,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Long getSecondsUntilRequiredChangeTime()
   {
-    return (secondsUntilRequiredChangeTime == null) ?
-        null : secondsUntilRequiredChangeTime.getObj();
+    return JsonReference.getObject(secondsUntilRequiredChangeTime);
   }
 
   /**
@@ -558,7 +545,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Long secondsUntilRequiredChangeTime)
   {
     this.secondsUntilRequiredChangeTime =
-        new JsonReference<Long>(secondsUntilRequiredChangeTime);
+        new JsonReference<>(secondsUntilRequiredChangeTime);
   }
 
   /**
@@ -569,8 +556,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public List<Calendar> getAuthenticationFailureTimes()
   {
-    return (authenticationFailureTimes == null) ?
-        null : authenticationFailureTimes.getObj();
+    return JsonReference.getObject(authenticationFailureTimes);
   }
 
   /**
@@ -582,7 +568,7 @@ public class AccountState extends BaseScimResource
       @Nullable final List<Calendar> authenticationFailureTimes)
   {
     this.authenticationFailureTimes =
-        new JsonReference<List<Calendar>>(authenticationFailureTimes);
+        new JsonReference<>(authenticationFailureTimes);
   }
 
   /**
@@ -593,7 +579,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public List<Calendar> getGraceLoginTimes()
   {
-    return (graceLoginTimes == null) ? null : graceLoginTimes.getObj();
+    return JsonReference.getObject(graceLoginTimes);
   }
 
   /**
@@ -603,7 +589,7 @@ public class AccountState extends BaseScimResource
    */
   public void setGraceLoginTimes(@Nullable final List<Calendar> graceLoginTimes)
   {
-    this.graceLoginTimes = new JsonReference<List<Calendar>>(graceLoginTimes);
+    this.graceLoginTimes = new JsonReference<>(graceLoginTimes);
   }
 
   /**
@@ -614,7 +600,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public List<String> getPasswordHistory()
   {
-    return (passwordHistory == null) ? null : passwordHistory.getObj();
+    return JsonReference.getObject(passwordHistory);
   }
 
   /**
@@ -624,7 +610,7 @@ public class AccountState extends BaseScimResource
    */
   private void setPasswordHistory(@Nullable final List<String> passwordHistory)
   {
-    this.passwordHistory = new JsonReference<List<String>>(passwordHistory);
+    this.passwordHistory = new JsonReference<>(passwordHistory);
   }
 
   /**
@@ -632,7 +618,7 @@ public class AccountState extends BaseScimResource
    */
   public void clearPasswordHistory()
   {
-    this.passwordHistory = new JsonReference<List<String>>(null);
+    this.passwordHistory = new JsonReference<>(null);
   }
 
   /**
@@ -643,7 +629,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public RetiredPassword getRetiredPassword()
   {
-    return (retiredPassword == null) ? null : retiredPassword.getObj();
+    return JsonReference.getObject(retiredPassword);
   }
 
   /**
@@ -654,7 +640,7 @@ public class AccountState extends BaseScimResource
   private void setRetiredPassword(
       @Nullable final RetiredPassword retiredPassword)
   {
-    this.retiredPassword = new JsonReference<RetiredPassword>(retiredPassword);
+    this.retiredPassword = new JsonReference<>(retiredPassword);
   }
 
   /**
@@ -662,7 +648,7 @@ public class AccountState extends BaseScimResource
    */
   public void purgeRetiredPassword()
   {
-    this.retiredPassword = new JsonReference<RetiredPassword>(null);
+    this.retiredPassword = new JsonReference<>(null);
   }
 
   /**
@@ -673,8 +659,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Calendar getAccountActivationTime()
   {
-    return (accountActivationTime == null) ?
-        null : accountActivationTime.getObj();
+    return JsonReference.getObject(accountActivationTime);
   }
 
   /**
@@ -685,8 +670,7 @@ public class AccountState extends BaseScimResource
   public void setAccountActivationTime(
       @Nullable final Calendar accountActivationTime)
   {
-    this.accountActivationTime =
-        new JsonReference<Calendar>(accountActivationTime);
+    this.accountActivationTime = new JsonReference<>(accountActivationTime);
   }
 
   /**
@@ -697,8 +681,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public Long getSecondsUntilAccountActivation()
   {
-    return (secondsUntilAccountActivation == null) ?
-        null : secondsUntilAccountActivation.getObj();
+    return JsonReference.getObject(secondsUntilAccountActivation);
   }
 
   /**
@@ -711,7 +694,7 @@ public class AccountState extends BaseScimResource
       @Nullable final Long secondsUntilAccountActivation)
   {
     this.secondsUntilAccountActivation =
-        new JsonReference<Long>(secondsUntilAccountActivation);
+        new JsonReference<>(secondsUntilAccountActivation);
   }
 
   /**
@@ -722,8 +705,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public List<AccountUsabilityIssue> getAccountUsabilityNotices()
   {
-    return (accountUsabilityNotices == null) ?
-        null : accountUsabilityNotices.getObj();
+    return JsonReference.getObject(accountUsabilityNotices);
   }
 
   /**
@@ -734,8 +716,7 @@ public class AccountState extends BaseScimResource
   private void setAccountUsabilityNotices(
       @Nullable final List<AccountUsabilityIssue> accountUsabilityNotices)
   {
-    this.accountUsabilityNotices =
-        new JsonReference<List<AccountUsabilityIssue>>(accountUsabilityNotices);
+    this.accountUsabilityNotices = new JsonReference<>(accountUsabilityNotices);
   }
 
   /**
@@ -746,8 +727,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public List<AccountUsabilityIssue> getAccountUsabilityWarnings()
   {
-    return (accountUsabilityWarnings == null) ?
-        null : accountUsabilityWarnings.getObj();
+    return JsonReference.getObject(accountUsabilityWarnings);
   }
 
   /**
@@ -759,8 +739,7 @@ public class AccountState extends BaseScimResource
       @Nullable final List<AccountUsabilityIssue> accountUsabilityWarnings)
   {
     this.accountUsabilityWarnings =
-        new JsonReference<List<AccountUsabilityIssue>>(
-            accountUsabilityWarnings);
+        new JsonReference<>(accountUsabilityWarnings);
   }
 
   /**
@@ -771,8 +750,7 @@ public class AccountState extends BaseScimResource
   @Nullable
   public List<AccountUsabilityIssue> getAccountUsabilityErrors()
   {
-    return (accountUsabilityErrors == null) ?
-        null : accountUsabilityErrors.getObj();
+    return JsonReference.getObject(accountUsabilityErrors);
   }
 
   /**
@@ -783,8 +761,7 @@ public class AccountState extends BaseScimResource
   private void setAccountUsabilityErrors(
       @Nullable final List<AccountUsabilityIssue> accountUsabilityErrors)
   {
-    this.accountUsabilityErrors =
-        new JsonReference<List<AccountUsabilityIssue>>(accountUsabilityErrors);
+    this.accountUsabilityErrors = new JsonReference<>(accountUsabilityErrors);
   }
 
   /**
@@ -801,183 +778,130 @@ public class AccountState extends BaseScimResource
     {
       return true;
     }
-
     if (o == null || getClass() != o.getClass())
     {
       return false;
     }
-
     if (!super.equals(o))
     {
       return false;
     }
 
     AccountState that = (AccountState) o;
-
-    if (accountDisabled != null ?
-        !accountDisabled.equals(that.accountDisabled) :
-        that.accountDisabled != null)
+    if (!Objects.equals(accountDisabled, that.accountDisabled))
     {
       return false;
     }
-
-    if (accountExpirationTime != null ?
-        !accountExpirationTime.equals(that.accountExpirationTime) :
-        that.accountExpirationTime != null)
+    if (!Objects.equals(accountExpirationTime, that.accountExpirationTime))
     {
       return false;
     }
-
-    if (secondsUntilAccountExpiration != null
-        ? !secondsUntilAccountExpiration.equals(
-        that.secondsUntilAccountExpiration) :
-        that.secondsUntilAccountExpiration != null)
+    if (!Objects.equals(secondsUntilAccountExpiration,
+        that.secondsUntilAccountExpiration))
     {
       return false;
     }
-    if (passwordChangedTime != null ?
-        !passwordChangedTime.equals(that.passwordChangedTime) :
-        that.passwordChangedTime != null)
+    if (!Objects.equals(passwordChangedTime, that.passwordChangedTime))
     {
       return false;
     }
-    if (passwordExpirationWarnedTime != null ?
-        !passwordExpirationWarnedTime.equals(that.passwordExpirationWarnedTime)
-        : that.passwordExpirationWarnedTime != null)
+    if (!Objects.equals(passwordExpirationWarnedTime,
+        that.passwordExpirationWarnedTime))
     {
       return false;
     }
-    if (secondsUntilPasswordExpiration != null
-        ? !secondsUntilPasswordExpiration.equals(
-        that.secondsUntilPasswordExpiration) :
-        that.secondsUntilPasswordExpiration != null)
+    if (!Objects.equals(secondsUntilPasswordExpiration,
+        that.secondsUntilPasswordExpiration))
     {
       return false;
     }
-    if (secondsUntilPasswordExpirationWarning != null ?
-        !secondsUntilPasswordExpirationWarning.equals(
-            that.secondsUntilPasswordExpirationWarning) :
-        that.secondsUntilPasswordExpirationWarning != null)
+    if (!Objects.equals(secondsUntilPasswordExpirationWarning,
+        that.secondsUntilPasswordExpirationWarning))
     {
       return false;
     }
-    if (authenticationFailureTimes != null ?
-        !authenticationFailureTimes.equals(that.authenticationFailureTimes) :
-        that.authenticationFailureTimes != null)
+    if (!Objects.equals(authenticationFailureTimes,
+        that.authenticationFailureTimes))
     {
       return false;
     }
-    if (secondsUntilAuthenticationFailureUnlock != null ?
-        !secondsUntilAuthenticationFailureUnlock.equals(
-            that.secondsUntilAuthenticationFailureUnlock) :
-        that.secondsUntilAuthenticationFailureUnlock != null)
+    if (!Objects.equals(secondsUntilAuthenticationFailureUnlock,
+        that.secondsUntilAuthenticationFailureUnlock))
     {
       return false;
     }
-    if (remainingAuthenticationFailureCount != null ?
-        !remainingAuthenticationFailureCount.equals(
-            that.remainingAuthenticationFailureCount) :
-        that.remainingAuthenticationFailureCount != null)
+    if (!Objects.equals(remainingAuthenticationFailureCount,
+        that.remainingAuthenticationFailureCount))
     {
       return false;
     }
-    if (lastLoginTime != null ?
-        !lastLoginTime.equals(that.lastLoginTime) : that.lastLoginTime != null)
+    if (!Objects.equals(lastLoginTime, that.lastLoginTime))
     {
       return false;
     }
-    if (secondsUntilIdleLockout != null ?
-        !secondsUntilIdleLockout.equals(that.secondsUntilIdleLockout)
-        : that.secondsUntilIdleLockout != null)
+    if (!Objects.equals(secondsUntilIdleLockout, that.secondsUntilIdleLockout))
     {
       return false;
     }
-    if (mustChangePassword != null ?
-        !mustChangePassword.equals(that.mustChangePassword) :
-        that.mustChangePassword != null)
+    if (!Objects.equals(mustChangePassword, that.mustChangePassword))
     {
       return false;
     }
-    if (secondsUntilPasswordResetLockout != null ?
-        !secondsUntilPasswordResetLockout.equals(
-            that.secondsUntilPasswordResetLockout) :
-        that.secondsUntilPasswordResetLockout != null)
+    if (!Objects.equals(secondsUntilPasswordResetLockout,
+        that.secondsUntilPasswordResetLockout))
     {
       return false;
     }
-    if (graceLoginTimes != null ?
-        !graceLoginTimes.equals(that.graceLoginTimes) :
-        that.graceLoginTimes != null)
+    if (!Objects.equals(graceLoginTimes, that.graceLoginTimes))
     {
       return false;
     }
-    if (remainingGraceLoginCount != null ?
-        !remainingGraceLoginCount.equals(that.remainingGraceLoginCount) :
-        that.remainingGraceLoginCount != null)
+    if (!Objects.equals(remainingGraceLoginCount,
+        that.remainingGraceLoginCount))
     {
       return false;
     }
-    if (passwordChangedByRequiredTime != null ?
-        !passwordChangedByRequiredTime.equals(
-            that.passwordChangedByRequiredTime) :
-        that.passwordChangedByRequiredTime != null)
+    if (!Objects.equals(passwordChangedByRequiredTime,
+        that.passwordChangedByRequiredTime))
     {
       return false;
     }
-    if (secondsUntilRequiredChangeTime != null ?
-        !secondsUntilRequiredChangeTime.equals(
-            that.secondsUntilRequiredChangeTime) :
-        that.secondsUntilRequiredChangeTime != null)
+    if (!Objects.equals(secondsUntilRequiredChangeTime,
+        that.secondsUntilRequiredChangeTime))
     {
       return false;
     }
-    if (passwordHistory != null ?
-        !passwordHistory.equals(that.passwordHistory) :
-        that.passwordHistory != null)
+    if (!Objects.equals(passwordHistory, that.passwordHistory))
     {
       return false;
     }
-    if (retiredPassword != null ?
-        !retiredPassword.equals(that.retiredPassword) :
-        that.retiredPassword != null)
+    if (!Objects.equals(retiredPassword, that.retiredPassword))
     {
       return false;
     }
-    if (accountActivationTime != null ?
-        !accountActivationTime.equals(that.accountActivationTime) :
-        that.accountActivationTime != null)
+    if (!Objects.equals(accountActivationTime, that.accountActivationTime))
     {
       return false;
     }
-    if (secondsUntilAccountActivation != null ?
-        !secondsUntilAccountActivation.equals(
-            that.secondsUntilAccountActivation) :
-        that.secondsUntilAccountActivation != null)
+    if (!Objects.equals(secondsUntilAccountActivation,
+        that.secondsUntilAccountActivation))
     {
       return false;
     }
-    if (lastLoginIpAddress != null ?
-        !lastLoginIpAddress.equals(that.lastLoginIpAddress) :
-        that.lastLoginIpAddress != null)
+    if (!Objects.equals(lastLoginIpAddress, that.lastLoginIpAddress))
     {
       return false;
     }
-    if (accountUsabilityNotices != null ?
-        !accountUsabilityNotices.equals(that.accountUsabilityNotices) :
-        that.accountUsabilityNotices != null)
+    if (!Objects.equals(accountUsabilityNotices, that.accountUsabilityNotices))
     {
       return false;
     }
-    if (accountUsabilityWarnings != null ?
-        !accountUsabilityWarnings.equals(that.accountUsabilityWarnings)
-        : that.accountUsabilityWarnings != null)
+    if (!Objects.equals(accountUsabilityWarnings,
+        that.accountUsabilityWarnings))
     {
       return false;
     }
-    return !(accountUsabilityErrors != null ?
-        !accountUsabilityErrors.equals(that.accountUsabilityErrors) :
-        that.accountUsabilityErrors != null);
-
+    return Objects.equals(accountUsabilityErrors, that.accountUsabilityErrors);
   }
 
   /**
@@ -988,59 +912,32 @@ public class AccountState extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (accountDisabled != null ?
-        accountDisabled.hashCode() : 0);
-    result = 31 * result + (accountExpirationTime != null ?
-        accountExpirationTime.hashCode() : 0);
-    result = 31 * result + (secondsUntilAccountExpiration != null ?
-        secondsUntilAccountExpiration.hashCode() : 0);
-    result = 31 * result + (passwordChangedTime != null ?
-        passwordChangedTime.hashCode() : 0);
-    result = 31 * result + (passwordExpirationWarnedTime != null ?
-        passwordExpirationWarnedTime.hashCode() : 0);
-    result = 31 * result + (secondsUntilPasswordExpiration != null ?
-        secondsUntilPasswordExpiration.hashCode() : 0);
-    result = 31 * result + (secondsUntilPasswordExpirationWarning != null ?
-        secondsUntilPasswordExpirationWarning.hashCode() : 0);
-    result = 31 * result + (authenticationFailureTimes != null ?
-        authenticationFailureTimes.hashCode() : 0);
-    result = 31 * result + (secondsUntilAuthenticationFailureUnlock != null ?
-        secondsUntilAuthenticationFailureUnlock.hashCode() : 0);
-    result = 31 * result + (remainingAuthenticationFailureCount != null ?
-        remainingAuthenticationFailureCount.hashCode() : 0);
-    result = 31 * result + (lastLoginTime != null ?
-        lastLoginTime.hashCode() : 0);
-    result = 31 * result + (secondsUntilIdleLockout != null ?
-        secondsUntilIdleLockout.hashCode() : 0);
-    result = 31 * result + (mustChangePassword != null ?
-        mustChangePassword.hashCode() : 0);
-    result = 31 * result + (secondsUntilPasswordResetLockout != null ?
-        secondsUntilPasswordResetLockout.hashCode() : 0);
-    result = 31 * result + (graceLoginTimes != null ?
-        graceLoginTimes.hashCode() : 0);
-    result = 31 * result + (remainingGraceLoginCount != null ?
-        remainingGraceLoginCount.hashCode() : 0);
-    result = 31 * result + (passwordChangedByRequiredTime != null ?
-        passwordChangedByRequiredTime.hashCode() : 0);
-    result = 31 * result + (secondsUntilRequiredChangeTime != null ?
-        secondsUntilRequiredChangeTime.hashCode() : 0);
-    result = 31 * result + (passwordHistory != null ?
-        passwordHistory.hashCode() : 0);
-    result = 31 * result + (retiredPassword != null ?
-        retiredPassword.hashCode() : 0);
-    result = 31 * result + (accountActivationTime != null ?
-        accountActivationTime.hashCode() : 0);
-    result = 31 * result + (secondsUntilAccountActivation != null ?
-        secondsUntilAccountActivation.hashCode() : 0);
-    result = 31 * result + (lastLoginIpAddress != null ?
-        lastLoginIpAddress.hashCode() : 0);
-    result = 31 * result + (accountUsabilityNotices != null ?
-        accountUsabilityNotices.hashCode() : 0);
-    result = 31 * result + (accountUsabilityWarnings != null ?
-        accountUsabilityWarnings.hashCode() : 0);
-    result = 31 * result + (accountUsabilityErrors != null ?
-        accountUsabilityErrors.hashCode() : 0);
-    return result;
+    return Objects.hash(super.hashCode(),
+        accountDisabled,
+        accountExpirationTime,
+        secondsUntilAccountExpiration,
+        passwordChangedTime,
+        passwordExpirationWarnedTime,
+        secondsUntilPasswordExpiration,
+        secondsUntilPasswordExpirationWarning,
+        authenticationFailureTimes,
+        secondsUntilAuthenticationFailureUnlock,
+        remainingAuthenticationFailureCount,
+        lastLoginTime,
+        secondsUntilIdleLockout,
+        mustChangePassword,
+        secondsUntilPasswordResetLockout,
+        graceLoginTimes,
+        remainingGraceLoginCount,
+        passwordChangedByRequiredTime,
+        secondsUntilRequiredChangeTime,
+        passwordHistory,
+        retiredPassword,
+        accountActivationTime,
+        secondsUntilAccountActivation,
+        lastLoginIpAddress,
+        accountUsabilityNotices,
+        accountUsabilityWarnings,
+        accountUsabilityErrors);
   }
 }

@@ -25,12 +25,14 @@ import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.Parser;
-import com.unboundid.scim2.common.utils.StaticUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+
+import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
 
 /**
  * This class represents a path to one or more JSON values that are the targets
@@ -116,18 +118,11 @@ public final class Path implements Iterable<Path.Element>
 
       Element element = (Element) o;
 
-      if (!StaticUtils.toLowerCase(attribute).equals(
-          StaticUtils.toLowerCase(element.attribute)))
+      if (!toLowerCase(attribute).equals(toLowerCase(element.attribute)))
       {
         return false;
       }
-      if (valueFilter != null ? !valueFilter.equals(element.valueFilter) :
-          element.valueFilter != null)
-      {
-        return false;
-      }
-
-      return true;
+      return Objects.equals(valueFilter, element.valueFilter);
     }
 
     /**
@@ -138,9 +133,7 @@ public final class Path implements Iterable<Path.Element>
     @Override
     public int hashCode()
     {
-      int result = StaticUtils.toLowerCase(attribute).hashCode();
-      result = 31 * result + (valueFilter != null ? valueFilter.hashCode() : 0);
-      return result;
+      return Objects.hash(toLowerCase(attribute), valueFilter);
     }
 
     /**
@@ -200,7 +193,7 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public Path attribute(@NotNull final String attribute)
   {
-    List<Element> newElements = new ArrayList<Element>(this.elements);
+    List<Element> newElements = new ArrayList<>(this.elements);
     newElements.add(new Element(attribute, null));
     return new Path(schemaUrn, newElements);
   }
@@ -219,7 +212,7 @@ public final class Path implements Iterable<Path.Element>
   public Path attribute(@NotNull final String attribute,
                         @Nullable final Filter valueFilter)
   {
-    List<Element> newElements = new ArrayList<Element>(this.elements);
+    List<Element> newElements = new ArrayList<>(this.elements);
     newElements.add(new Element(attribute, valueFilter));
     return new Path(schemaUrn, newElements);
   }
@@ -236,8 +229,7 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public Path attribute(@NotNull final Path path)
   {
-    List<Element> newElements = new ArrayList<Element>(
-        this.elements.size() + path.size());
+    List<Element> newElements = new ArrayList<>(elements.size() + path.size());
     newElements.addAll(this.elements);
     newElements.addAll(path.elements);
     return new Path(schemaUrn, newElements);
@@ -257,7 +249,7 @@ public final class Path implements Iterable<Path.Element>
                       @NotNull final String attribute,
                       @Nullable final Filter valueFilter)
   {
-    List<Element> newElements = new ArrayList<Element>(this.elements);
+    List<Element> newElements = new ArrayList<>(this.elements);
     newElements.set(index, new Element(attribute, valueFilter));
     return new Path(schemaUrn, newElements);
   }
@@ -273,7 +265,7 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public Path replace(final int index, @NotNull final String attribute)
   {
-    List<Element> newElements = new ArrayList<Element>(this.elements);
+    List<Element> newElements = new ArrayList<>(this.elements);
     newElements.set(index,
         new Element(attribute, this.elements.get(index).getValueFilter()));
     return new Path(schemaUrn, newElements);
@@ -290,7 +282,7 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public Path replace(final int index, @Nullable final Filter valueFilter)
   {
-    List<Element> newElements = new ArrayList<Element>(this.elements);
+    List<Element> newElements = new ArrayList<>(this.elements);
     newElements.set(index,
         new Element(this.elements.get(index).getAttribute(), valueFilter));
     return new Path(schemaUrn, newElements);
@@ -337,10 +329,10 @@ public final class Path implements Iterable<Path.Element>
 
   /**
    * Whether this path targets the root of the JSON object that represents the
-   * SCIM resource or an schema extension.
+   * SCIM resource or a schema extension.
    *
    * @return {@code true} if this path targets the root of the JSON object that
-   * represents the SCIM resource or an schema extension or {@code false}
+   * represents the SCIM resource or a schema extension or {@code false}
    * otherwise.
    */
   public boolean isRoot()
@@ -366,7 +358,7 @@ public final class Path implements Iterable<Path.Element>
   @NotNull
   public Path withoutFilters()
   {
-    ArrayList<Element> newElements = new ArrayList<Element>(elements.size());
+    ArrayList<Element> newElements = new ArrayList<>(elements.size());
     for (Element element : elements)
     {
       newElements.add(new Element(element.getAttribute(), null));
@@ -420,7 +412,7 @@ public final class Path implements Iterable<Path.Element>
           String.format("Invalid extension schema URN: %s",
               schemaUrn));
     }
-    return new Path(schemaUrn, Collections.<Element>emptyList());
+    return new Path(schemaUrn, Collections.emptyList());
   }
 
   /**
@@ -473,14 +465,12 @@ public final class Path implements Iterable<Path.Element>
     }
 
     Path path = (Path) o;
-
     if (schemaUrn != null ? !schemaUrn.equalsIgnoreCase(path.schemaUrn) :
         path.schemaUrn != null)
     {
       return false;
     }
     return elements.equals(path.elements);
-
   }
 
   /**
@@ -491,10 +481,7 @@ public final class Path implements Iterable<Path.Element>
   @Override
   public int hashCode()
   {
-    int result = schemaUrn != null ?
-        StaticUtils.toLowerCase(schemaUrn).hashCode() : 0;
-    result = 31 * result + elements.hashCode();
-    return result;
+    return Objects.hash(toLowerCase(schemaUrn), elements);
   }
 
   /**

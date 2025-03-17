@@ -33,7 +33,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 public class ResourceDiff extends JsonDiff
 {
   @NotNull
-  private ResourceTypeDefinition resourceTypeDefinition;
+  private final ResourceTypeDefinition resourceTypeDefinition;
 
   /**
    * Construct a ResourceDiff instance.

@@ -133,7 +133,7 @@ public class ScimMultiValuedObject<T>
   }
 
   /**
-   * Get's the value of this occurrence of the multi-valued attribute.
+   * Gets the value of this occurrence of the multi-valued attribute.
    * @return the value of this occurrence of the multi-valued attribute.
    */
   public T getValue()

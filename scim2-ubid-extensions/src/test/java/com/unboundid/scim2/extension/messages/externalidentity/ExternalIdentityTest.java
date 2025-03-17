@@ -33,29 +33,29 @@ public class ExternalIdentityTest
   @Test
   public void testSerialization() throws Exception
   {
-    String externalIdString =
-        "{  \n" +
-            "   \"provider\":{  \n" +
-            "      \"name\":\"testName\",\n" +
-            "      \"description\":\"testDescription\",\n" +
-            "      \"iconUrl\":\"http://localhost:3020/test/url\",\n" +
-            "      \"type\":\"testType\"\n" +
-            "   },\n" +
-            "   \"providerUserId\":\"testUserId\",\n" +
-            "   \"accessToken\":\"testAccessToken\",\n" +
-            "   \"refreshToken\":\"testRefreshToken\",\n" +
-            "   \"callbackUrl\":\"testCallbackUrl\",\n" +
-            "   \"callbackParameters\":\n" +
-            "   {\n" +
-            "       \"testParamOne\":\"testValueOne\",\n" +
-            "       \"testParamTwo\":\"testValueTwo\",\n" +
-            "       \"testParamThree\":\"testValueThree\"\n" +
-            "   },\n" +
-            "   \"meta\":{  \n" +
-            "      \"created\":\"2015-07-04T00:00:00.000Z\",\n" +
-            "      \"lastModified\":\"2015-07-06T04:03:02.000Z\"\n" +
-            "   }\n" +
-            "}";
+    String externalIdString = """
+            {
+               "provider":{
+                  "name":"testName",
+                  "description":"testDescription",
+                  "iconUrl":"http://localhost:3020/test/url",
+                  "type":"testType"
+               },
+               "providerUserId":"testUserId",
+               "accessToken":"testAccessToken",
+               "refreshToken":"testRefreshToken",
+               "callbackUrl":"testCallbackUrl",
+               "callbackParameters":
+               {
+                   "testParamOne":"testValueOne",
+                   "testParamTwo":"testValueTwo",
+                   "testParamThree":"testValueThree"
+               },
+               "meta":{
+                  "created":"2015-07-04T00:00:00.000Z",
+                  "lastModified":"2015-07-06T04:03:02.000Z"
+               }
+            }""";
 
     ExternalIdentity externalId = JsonUtils.getObjectReader().
         forType(ExternalIdentity.class).readValue(externalIdString);

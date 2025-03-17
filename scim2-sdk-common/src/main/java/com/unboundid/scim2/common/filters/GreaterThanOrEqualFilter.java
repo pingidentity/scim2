@@ -23,6 +23,8 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
+import java.util.Objects;
+
 /**
  * This class represents a SCIM {@code ge} filter. For a given attribute name,
  * "Greater Than Or Equal To" filters match SCIM resources that contain a larger
@@ -101,17 +103,11 @@ public final class GreaterThanOrEqualFilter extends ComparisonFilter
     }
 
     ComparisonFilter that = (ComparisonFilter) o;
-
     if (!getAttributePath().equals(that.getAttributePath()))
     {
       return false;
     }
-    if (!getComparisonValue().equals(that.getComparisonValue()))
-    {
-      return false;
-    }
-
-    return true;
+    return getComparisonValue().equals(that.getComparisonValue());
   }
 
   /**
@@ -122,8 +118,6 @@ public final class GreaterThanOrEqualFilter extends ComparisonFilter
   @Override
   public int hashCode()
   {
-    int result = getAttributePath().hashCode();
-    result = 31 * result + getComparisonValue().hashCode();
-    return result;
+    return Objects.hash(getAttributePath(), getComparisonValue());
   }
 }

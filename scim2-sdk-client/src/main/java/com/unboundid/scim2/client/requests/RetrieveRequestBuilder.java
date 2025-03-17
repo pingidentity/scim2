@@ -130,8 +130,7 @@ public abstract class RetrieveRequestBuilder
     @NotNull
     public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
     {
-      Response response = buildRequest().get();
-      try
+      try (Response response = buildRequest().get())
       {
         if (response.getStatusInfo().getFamily() ==
             Response.Status.Family.SUCCESSFUL)
@@ -142,10 +141,6 @@ public abstract class RetrieveRequestBuilder
         {
           throw toScimException(response);
         }
-      }
-      finally
-      {
-        response.close();
       }
     }
   }
@@ -194,8 +189,7 @@ public abstract class RetrieveRequestBuilder
     @NotNull
     public <T> T invoke(@NotNull final Class<T> cls) throws ScimException
     {
-      Response response = buildRequest().get();
-      try
+      try (Response response = buildRequest().get())
       {
         if (response.getStatusInfo().getFamily() ==
             Response.Status.Family.SUCCESSFUL)
@@ -206,10 +200,6 @@ public abstract class RetrieveRequestBuilder
         {
           throw toScimException(response);
         }
-      }
-      finally
-      {
-        response.close();
       }
     }
   }

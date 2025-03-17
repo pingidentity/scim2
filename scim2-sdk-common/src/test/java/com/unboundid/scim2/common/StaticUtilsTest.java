@@ -33,6 +33,7 @@ public class StaticUtilsTest
   public void testSplitCommaSeparatedString()
   {
     // Ensure the validity of the @NotNull parameter.
+    //noinspection DataFlowIssue
     assertThatThrownBy(() -> splitCommaSeparatedString(null))
         .isInstanceOf(NullPointerException.class);
 

@@ -24,6 +24,7 @@ import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 /**
  * A complex type that specifies supported Authentication Scheme properties.
@@ -198,36 +199,27 @@ public class AuthenticationScheme
     }
 
     AuthenticationScheme that = (AuthenticationScheme) o;
-
     if (primary != that.primary)
     {
       return false;
     }
-    if (description != null ? !description.equals(that.description) :
-        that.description != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    if (documentationUri != null ? !documentationUri.equals(
-        that.documentationUri) : that.documentationUri != null)
+    if (!Objects.equals(description, that.description))
     {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null)
+    if (!Objects.equals(specUri, that.specUri))
     {
       return false;
     }
-    if (specUri != null ? !specUri.equals(that.specUri) :
-        that.specUri != null)
+    if (!Objects.equals(documentationUri, that.documentationUri))
     {
       return false;
     }
-    if (type != null ? !type.equals(that.type) : that.type != null)
-    {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(type, that.type);
   }
 
   /**
@@ -238,14 +230,8 @@ public class AuthenticationScheme
   @Override
   public int hashCode()
   {
-    int result = name != null ? name.hashCode() : 0;
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (specUri != null ? specUri.hashCode() : 0);
-    result = 31 * result + (documentationUri != null ?
-        documentationUri.hashCode() : 0);
-    result = 31 * result + (type != null ? type.hashCode() : 0);
-    result = 31 * result + (primary ? 1 : 0);
-    return result;
+    return Objects.hash(primary, name, description, specUri, documentationUri,
+        type);
   }
 
   /**
@@ -263,12 +249,13 @@ public class AuthenticationScheme
     {
       return new AuthenticationScheme(
           "HTTP Basic",
-          "The HTTP Basic Access Authentication scheme. This scheme is not " +
-              "considered to be a secure method of user authentication " +
-              "(unless used in conjunction with some external secure system " +
-              "such as SSL), as the user name and password are passed over " +
-              "the network as cleartext.",
-          new URI("http://www.ietf.org/rfc/rfc2617.txt"),
+          """
+              The HTTP Basic Access Authentication scheme. This scheme is not \
+              considered to be a secure method of user authentication \
+              (unless used in conjunction with some external secure system \
+              such as SSL), as the user name and password are passed over \
+              the network as cleartext.""",
+          new URI("https://www.ietf.org/rfc/rfc2617.txt"),
           null,
           "httpbasic", primary);
     }
@@ -294,12 +281,13 @@ public class AuthenticationScheme
     {
       return new AuthenticationScheme(
           "OAuth 2.0 Bearer Token",
-          "The OAuth 2.0 Bearer Token Authentication scheme. OAuth enables " +
-              "clients to access protected resources by obtaining an access " +
-              "token, which is defined in RFC 6750 as \"a string " +
-              "representing an access authorization issued to the client\", " +
-              "rather than using the resource owner's credentials directly.",
-          new URI("http://tools.ietf.org/html/rfc6750"),
+          """
+              The OAuth 2.0 Bearer Token Authentication scheme. OAuth enables \
+              clients to access protected resources by obtaining an access \
+              token, which is defined in RFC 6750 as "a string \
+              representing an access authorization issued to the client", \
+              rather than using the resource owner's credentials directly.""",
+          new URI("https://tools.ietf.org/html/rfc6750"),
           null,
           "oauthbearertoken", primary);
     }

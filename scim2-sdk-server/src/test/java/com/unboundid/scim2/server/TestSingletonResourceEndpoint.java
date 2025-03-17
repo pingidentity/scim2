@@ -63,8 +63,7 @@ public class TestSingletonResourceEndpoint
   private static final ResourceTypeDefinition RESOURCE_TYPE_DEFINITION =
       ResourceTypeDefinition.fromJaxRsResource(
           TestSingletonResourceEndpoint.class);
-  private final Map<String, UserResource> users =
-      new HashMap<String, UserResource>();
+  private final Map<String, UserResource> users = new HashMap<>();
 
   /**
    * Test SCIM search.
@@ -79,8 +78,7 @@ public class TestSingletonResourceEndpoint
       @Context final UriInfo uriInfo) throws ScimException
   {
     SimpleSearchResults<UserResource> results =
-        new SimpleSearchResults<UserResource>(
-            RESOURCE_TYPE_DEFINITION, uriInfo);
+        new SimpleSearchResults<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     results.addAll(users.values());
     return results;
   }
@@ -107,7 +105,7 @@ public class TestSingletonResourceEndpoint
     }
 
     ResourcePreparer<UserResource> resourcePreparer =
-        new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);
+        new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     return resourcePreparer.trimRetrievedResource(found);
   }
 
@@ -130,7 +128,7 @@ public class TestSingletonResourceEndpoint
     users.put(resource.getId(), resource);
 
     ResourcePreparer<UserResource> resourcePreparer =
-        new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);
+        new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     return resourcePreparer.trimCreatedResource(resource, resource);
   }
 
@@ -175,7 +173,7 @@ public class TestSingletonResourceEndpoint
     }
     users.put(id, resource);
     ResourcePreparer<UserResource> resourcePreparer =
-        new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);
+        new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     return resourcePreparer.trimReplacedResource(resource, resource);
   }
 
@@ -207,7 +205,7 @@ public class TestSingletonResourceEndpoint
     {
       operation.apply(node);
     }
-    UserResource patchedFound = null;
+    UserResource patchedFound;
     try
     {
       patchedFound =
@@ -219,7 +217,7 @@ public class TestSingletonResourceEndpoint
     }
     users.put(id, patchedFound);
     ResourcePreparer<UserResource> resourcePreparer =
-        new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);
+        new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     return resourcePreparer.trimModifiedResource(patchedFound, patchRequest);
   }
 }

@@ -174,12 +174,12 @@ public class JsonUtils
           arrayNode = filterArray((ArrayNode) node, valueFilter,
               removeValues);
         }
-        if (arrayNode.size() > 0)
+        if (!arrayNode.isEmpty())
         {
           values.add(arrayNode);
         }
 
-        if (removeValues && (valueFilter == null || node.size() == 0))
+        if (removeValues && (valueFilter == null || node.isEmpty()))
         {
           // There are no more values left after removing the matching values.
           // Just remove the field.
@@ -255,7 +255,7 @@ public class JsonUtils
         if (valueFilter != null)
         {
           arrayNode = filterArray(arrayNode, valueFilter, false);
-          if (arrayNode.size() == 0)
+          if (arrayNode.isEmpty())
           {
             throw BadRequestException.noTarget("Attribute " +
                 field + " does not have a value matching the " +
@@ -519,13 +519,13 @@ public class JsonUtils
 
       if (node.isArray())
       {
-        if (node.size() > 0)
+        if (!node.isEmpty())
         {
-          setPathPresent(true);
+          setPathPresent();
         }
       } else if (! node.isMissingNode())
       {
-        setPathPresent(true);
+        setPathPresent();
       }
     }
 
@@ -542,12 +542,10 @@ public class JsonUtils
 
     /**
      * Sets the value of pathPresent.
-     *
-     * @param pathPresent the new value of pathPresent.
      */
-    private void setPathPresent(final boolean pathPresent)
+    private void setPathPresent()
     {
-      this.pathPresent = pathPresent;
+      this.pathPresent = true;
     }
   }
 
@@ -556,20 +554,24 @@ public class JsonUtils
    * It is expected that there will only be one matching path.  If there
    * are multiple matching paths (for example a path with filters can
    * match multiple nodes), an exception will be thrown.
+   * <br><br>
    *
-   * For example:
-   *   With an ObjectNode representing:
+   * For example, with an ObjectNode representing:
+   * <pre>
    *     {
    *       "name":"Bob",
    *       "favoriteColors":["red","green","blue"]
    *     }
+   * </pre>
    *
-   *   getValue(Path.fromString("name")
-   *   will return a TextNode containing "{@code Bob}"
+   * <pre><code>
+   *   // Returns a TextNode containing "Bob".
+   *   getValue(Path.fromString("name"));
    *
-   *   getValue(Path.fromString("favoriteColors"))
-   *   will return an ArrayNode containing TextNodes with the following
-   *   values - "{@code red}", "{@code green}", and "{@code blue}".
+   *   // Returns an ArrayNode of TextNodes with the values "red", "green", and
+   *   // "blue".
+   *   getValue(Path.fromString("favoriteColors"));
+   * </code></pre>
    *
    * @param path The path to the attributes whose values to retrieve.
    * @param node the ObjectNode to find the path in.
@@ -622,7 +624,8 @@ public class JsonUtils
    * </pre>
    *
    * However, if the last element of the path references a JSON array, the
-   * entire ArrayNode will returned. For example given the following ObjectNode:
+   * entire ArrayNode will be returned. For example, given the following
+   * ObjectNode:
    *
    * <pre>
    *   {
@@ -691,7 +694,7 @@ public class JsonUtils
    *     replaced.
    *   </li>
    *   <li>
-   *     If the path targets an attribute that does not exist (has not value),
+   *     If the path targets an attribute that does not exist (has no value),
    *     the attribute is added with the new value.
    *   </li>
    *   <li>
@@ -1185,8 +1188,12 @@ public class JsonUtils
 
   /**
    * Validates whether the provided node is null or an empty array.
+   *
+   * @param node  The node to be evaluated.
+   * @return {@code true} if the provided node was {@code null}, a
+   *         {@link NullNode}, or an empty {@link ArrayNode}.
    */
-  private static boolean isNullNodeOrEmptyArray(@Nullable final JsonNode node)
+  public static boolean isNullNodeOrEmptyArray(@Nullable final JsonNode node)
   {
     if (node == null || node.isNull())
     {

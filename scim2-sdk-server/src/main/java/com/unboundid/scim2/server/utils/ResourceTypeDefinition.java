@@ -87,12 +87,12 @@ public final class ResourceTypeDefinition
     private SchemaResource coreSchema;
 
     @NotNull
-    private Set<SchemaResource> requiredSchemaExtensions =
-        new HashSet<SchemaResource>();
+    private final Set<SchemaResource> requiredSchemaExtensions =
+        new HashSet<>();
 
     @NotNull
-    private Set<SchemaResource> optionalSchemaExtensions =
-        new HashSet<SchemaResource>();
+    private final Set<SchemaResource> optionalSchemaExtensions =
+        new HashSet<>();
 
     private boolean discoverable = true;
 
@@ -119,8 +119,8 @@ public final class ResourceTypeDefinition
     /**
      * Sets the ID of the resource type.
      *
-     * @param id the ID of the resource type.
-     * @return this builder.
+     * @param id The ID of the resource type.
+     * @return This builder.
      */
     @NotNull
     public Builder setId(@Nullable final String id)
@@ -132,8 +132,8 @@ public final class ResourceTypeDefinition
     /**
      * Sets the description of the resource type.
      *
-     * @param description the description of the resource type.
-     * @return this builder.
+     * @param description The description of the resource type.
+     * @return This builder.
      */
     @NotNull
     public Builder setDescription(@Nullable final String description)
@@ -145,8 +145,8 @@ public final class ResourceTypeDefinition
     /**
      * Sets the core schema of the resource type.
      *
-     * @param coreSchema the core schema of the resource type.
-     * @return this builder.
+     * @param coreSchema The core schema of the resource type.
+     * @return This builder.
      */
     @NotNull
     public Builder setCoreSchema(@Nullable final SchemaResource coreSchema)
@@ -158,9 +158,9 @@ public final class ResourceTypeDefinition
     /**
      * Adds a required schema extension for a resource type.
      *
-     * @param schemaExtension the required schema extension for the resource
+     * @param schemaExtension The required schema extension for the resource
      *                        type.
-     * @return this builder.
+     * @return This builder.
      */
     @NotNull
     public Builder addRequiredSchemaExtension(
@@ -171,11 +171,11 @@ public final class ResourceTypeDefinition
     }
 
     /**
-     * Adds a operation schema extension for a resource type.
+     * Adds an operation schema extension for a resource type.
      *
-     * @param schemaExtension the operation schema extension for the resource
+     * @param schemaExtension The operation schema extension for the resource
      *                        type.
-     * @return this builder.
+     * @return This builder.
      */
     @NotNull
     public Builder addOptionalSchemaExtension(
@@ -186,13 +186,13 @@ public final class ResourceTypeDefinition
     }
 
     /**
-     * Sets whether this resource type is discoverable over the /ResourceTypes
-     * endpoint.
+     * Sets whether this resource type is discoverable over the
+     * {@code /ResourceTypes} endpoint.
      *
      * @param discoverable {@code true} this resource type is discoverable over
-     *                     the /ResourceTypes endpoint or {@code false}
+     *                     the {@code /ResourceTypes} endpoint or {@code false}
      *                     otherwise.
-     * @return this builder.
+     * @return This builder.
      */
     @NotNull
     public Builder setDiscoverable(final boolean discoverable)
@@ -209,17 +209,11 @@ public final class ResourceTypeDefinition
     @NotNull
     public ResourceTypeDefinition build()
     {
-      Map<SchemaResource, Boolean> schemaExtensions =
-          new HashMap<SchemaResource, Boolean>(requiredSchemaExtensions.size() +
-              optionalSchemaExtensions.size());
-      for (SchemaResource schema : requiredSchemaExtensions)
-      {
-        schemaExtensions.put(schema, true);
-      }
-      for (SchemaResource schema : optionalSchemaExtensions)
-      {
-        schemaExtensions.put(schema, false);
-      }
+      Map<SchemaResource, Boolean> schemaExtensions = new HashMap<>(
+          requiredSchemaExtensions.size() + optionalSchemaExtensions.size());
+      requiredSchemaExtensions.forEach(s -> schemaExtensions.put(s, true));
+      optionalSchemaExtensions.forEach(s -> schemaExtensions.put(s, false));
+
       return new ResourceTypeDefinition(id, name, description, endpoint,
           coreSchema, schemaExtensions, discoverable);
     }
@@ -248,7 +242,7 @@ public final class ResourceTypeDefinition
     this.coreSchema = coreSchema;
     this.schemaExtensions = Collections.unmodifiableMap(schemaExtensions);
     this.discoverable = discoverable;
-    this.attributeNotationMap = new HashMap<Path, AttributeDefinition>();
+    this.attributeNotationMap = new HashMap<>();
 
     // Add the common attributes
     buildAttributeNotationMap(Path.root(),
@@ -286,7 +280,7 @@ public final class ResourceTypeDefinition
   /**
    * Gets the resource type name.
    *
-   * @return the name of the resource type.
+   * @return The name of the resource type.
    */
   @NotNull
   public String getName()
@@ -297,7 +291,7 @@ public final class ResourceTypeDefinition
   /**
    * Gets the description of the resource type.
    *
-   * @return the description of the resource type.
+   * @return The description of the resource type.
    */
   @Nullable
   public String getDescription()
@@ -308,7 +302,7 @@ public final class ResourceTypeDefinition
   /**
    * Gets the resource type's endpoint.
    *
-   * @return the endpoint for the resource type.
+   * @return The endpoint for the resource type.
    */
   @NotNull
   public String getEndpoint()
@@ -319,7 +313,7 @@ public final class ResourceTypeDefinition
   /**
    * Gets the resource type's schema.
    *
-   * @return the schema for the resource type.
+   * @return The schema for the resource type.
    */
   @Nullable
   public SchemaResource getCoreSchema()
@@ -330,7 +324,7 @@ public final class ResourceTypeDefinition
   /**
    * Gets the resource type's schema extensions.
    *
-   * @return the schema extensions for the resource type.
+   * @return The schema extensions for the resource type.
    */
   @NotNull
   public Map<SchemaResource, Boolean> getSchemaExtensions()
@@ -340,8 +334,8 @@ public final class ResourceTypeDefinition
 
   /**
    * Whether this resource type and its associated schemas should be
-   * discoverable using the SCIM 2 standard /resourceTypes and /schemas
-   * endpoints.
+   * discoverable using the SCIM 2 standard {@code /ResourceTypes} and
+   * {@code /Schemas} endpoints.
    *
    * @return {@code true} if discoverable or {@code false} otherwise.
    */
@@ -396,11 +390,9 @@ public final class ResourceTypeDefinition
         coreSchemaUri = new URI(coreSchema.getId());
       }
       List<ResourceTypeResource.SchemaExtension> schemaExtensionList = null;
-      if (schemaExtensions.size() > 0)
+      if (!schemaExtensions.isEmpty())
       {
-        schemaExtensionList =
-            new ArrayList<ResourceTypeResource.SchemaExtension>(
-                schemaExtensions.size());
+        schemaExtensionList = new ArrayList<>(schemaExtensions.size());
 
         for (Map.Entry<SchemaResource, Boolean> schemaExtension :
             schemaExtensions.entrySet())
@@ -424,11 +416,11 @@ public final class ResourceTypeDefinition
    * Create a new instance representing the resource type implemented by a
    * root JAX-RS resource class.
    *
-   * @param resource a root resource whose
+   * @param resource A root resource whose
    *                 {@link com.unboundid.scim2.server.annotations.ResourceType}
    *                 and {@link jakarta.ws.rs.Path} values will be used to
    *                 initialize the ResourceTypeDefinition.
-   * @return a new ResourceTypeDefinition or {@code null} if resource is not
+   * @return A new ResourceTypeDefinition, or {@code null} if resource is not
    * annotated with {@link com.unboundid.scim2.server.annotations.ResourceType}
    * and {@link jakarta.ws.rs.Path}.
    */
@@ -461,25 +453,19 @@ public final class ResourceTypeDefinition
 
     try
     {
-      ResourceTypeDefinition.Builder builder =
-          new Builder(resourceType.name(), path.value());
-      builder.setDescription(resourceType.description());
-      builder.setCoreSchema(SchemaUtils.getSchema(resourceType.schema()));
-      builder.setDiscoverable(
-          resourceType.discoverable());
+      var builder = new Builder(resourceType.name(), path.value())
+              .setDescription(resourceType.description())
+              .setCoreSchema(SchemaUtils.getSchema(resourceType.schema()))
+              .setDiscoverable(resourceType.discoverable());
 
-      for (Class<?> optionalSchemaExtension :
-          resourceType.optionalSchemaExtensions())
+      for (Class<?> extension : resourceType.optionalSchemaExtensions())
       {
-        builder.addOptionalSchemaExtension(
-            SchemaUtils.getSchema(optionalSchemaExtension));
+        builder.addOptionalSchemaExtension(SchemaUtils.getSchema(extension));
       }
 
-      for (Class<?> requiredSchemaExtension :
-          resourceType.requiredSchemaExtensions())
+      for (Class<?> extension : resourceType.requiredSchemaExtensions())
       {
-        builder.addRequiredSchemaExtension(
-            SchemaUtils.getSchema(requiredSchemaExtension));
+        builder.addRequiredSchemaExtension(SchemaUtils.getSchema(extension));
       }
 
       return builder.build();

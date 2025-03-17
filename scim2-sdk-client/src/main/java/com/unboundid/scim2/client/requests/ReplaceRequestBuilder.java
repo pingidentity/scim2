@@ -107,9 +107,8 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
   @NotNull
   public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
   {
-    Response response = buildRequest().put(
-        Entity.entity(resource, getContentType()));
-    try
+    try (Response response = buildRequest().put(
+        Entity.entity(resource, getContentType())))
     {
       if (response.getStatusInfo().getFamily() ==
           Response.Status.Family.SUCCESSFUL)
@@ -120,10 +119,6 @@ public final class ReplaceRequestBuilder<T extends ScimResource>
       {
         throw toScimException(response);
       }
-    }
-    finally
-    {
-      response.close();
     }
   }
 }

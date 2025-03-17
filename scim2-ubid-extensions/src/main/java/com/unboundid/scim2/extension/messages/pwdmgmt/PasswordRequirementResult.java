@@ -105,7 +105,7 @@ public class PasswordRequirementResult
   }
 
   /**
-   * Gets the additonal information for this password update error.
+   * Gets the additional information for this password update error.
    *
    * @return the additional information, such as the failure message
    * for this password update error.

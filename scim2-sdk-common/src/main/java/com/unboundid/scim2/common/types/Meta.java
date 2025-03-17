@@ -22,6 +22,7 @@ import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Calendar;
+import java.util.Objects;
 
 /**
  * Stores metadata about a SCIM object.
@@ -183,32 +184,23 @@ public final class Meta
     }
 
     Meta meta = (Meta) o;
-
-    if (created != null ? !created.equals(meta.created) : meta.created != null)
+    if (!Objects.equals(created, meta.created))
     {
       return false;
     }
-    if (lastModified != null ? !lastModified.equals(meta.lastModified) :
-        meta.lastModified != null)
+    if (!Objects.equals(lastModified, meta.lastModified))
     {
       return false;
     }
-    if (location != null ? !location.equals(meta.location) :
-        meta.location != null)
+    if (!Objects.equals(location, meta.location))
     {
       return false;
     }
-    if (resourceType != null ? !resourceType.equals(meta.resourceType) :
-        meta.resourceType != null)
+    if (!Objects.equals(resourceType, meta.resourceType))
     {
       return false;
     }
-    if (version != null ? !version.equals(meta.version) : meta.version != null)
-    {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(version, meta.version);
   }
 
   /**
@@ -219,11 +211,6 @@ public final class Meta
   @Override
   public int hashCode()
   {
-    int result = resourceType != null ? resourceType.hashCode() : 0;
-    result = 31 * result + (created != null ? created.hashCode() : 0);
-    result = 31 * result + (lastModified != null ? lastModified.hashCode() : 0);
-    result = 31 * result + (location != null ? location.hashCode() : 0);
-    result = 31 * result + (version != null ? version.hashCode() : 0);
-    return result;
+    return Objects.hash(created, lastModified, location, resourceType, version);
   }
 }

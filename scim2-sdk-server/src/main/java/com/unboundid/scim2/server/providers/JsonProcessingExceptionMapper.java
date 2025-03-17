@@ -76,9 +76,9 @@ public class JsonProcessingExceptionMapper implements
     else
     {
       if (exception.getCause() != null &&
-          exception.getCause() instanceof ScimException)
+          exception.getCause() instanceof ScimException scimException)
       {
-        errorResponse = ((ScimException) exception.getCause()).getScimError();
+        errorResponse = scimException.getScimError();
       }
       else
       {

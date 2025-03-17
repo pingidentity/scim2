@@ -21,16 +21,19 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * email address for the user.
  */
 public class Email
 {
   @Nullable
-  @Attribute(description = "E-mail addresses for the user. The value\n" +
-      "SHOULD be canonicalized by the Service Provider, e.g.\n" +
-      "bjensen@example.com instead of bjensen@EXAMPLE.COM. Canonical Type\n" +
-      "values of work, home, and other.",
+  @Attribute(description = """
+      E-mail addresses for the user. The value
+      SHOULD be canonicalized by the Service Provider, e.g.
+      bjensen@example.com instead of bjensen@EXAMPLE.COM. Canonical Type
+      values of work, home, and other.""",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -189,23 +192,19 @@ public class Email
     }
 
     Email email = (Email) o;
-
-    if (value != null ? !value.equals(email.value) : email.value != null)
+    if (!Objects.equals(value, email.value))
     {
       return false;
     }
-    if (display != null ? !display.equals(email.display) :
-        email.display != null)
+    if (!Objects.equals(display, email.display))
     {
       return false;
     }
-    if (type != null ? !type.equals(email.type) : email.type != null)
+    if (!Objects.equals(type, email.type))
     {
       return false;
     }
-    return !(primary != null ? !primary.equals(email.primary) :
-        email.primary != null);
-
+    return Objects.equals(primary, email.primary);
   }
 
   /**
@@ -216,10 +215,6 @@ public class Email
   @Override
   public int hashCode()
   {
-    int result = value != null ? value.hashCode() : 0;
-    result = 31 * result + (display != null ? display.hashCode() : 0);
-    result = 31 * result + (type != null ? type.hashCode() : 0);
-    result = 31 * result + (primary != null ? primary.hashCode() : 0);
-    return result;
+    return Objects.hash(value, display, type, primary);
   }
 }

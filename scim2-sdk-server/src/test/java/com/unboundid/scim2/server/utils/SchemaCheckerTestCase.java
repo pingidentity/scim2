@@ -67,8 +67,7 @@ public class SchemaCheckerTestCase
   {
     coreSchema = SchemaUtils.getSchema(UserResource.class);
 
-    List<AttributeDefinition> attributeDefinitions =
-        new ArrayList<AttributeDefinition>();
+    List<AttributeDefinition> attributeDefinitions = new ArrayList<>();
 
     // String
     AttributeDefinition.Builder builder = new AttributeDefinition.Builder();
@@ -225,174 +224,153 @@ public class SchemaCheckerTestCase
   @Test
   public void sanityCheck() throws Exception
   {
-    String USER = "{  \n" +
-        "  \"schemas\":[  \n" +
-        "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
-        "    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n" +
-        "  ],\n" +
-        "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
-        "  \"externalId\":\"701984\",\n" +
-        "  \"userName\":\"bjensen@example.com\",\n" +
-         // Check for case insensitive behavior
-        "  \"nAme\":{  \n" +
-        "    \"formatted\":\"Ms. Barbara J Jensen III\",\n" +
-         // Check for case insensitive behavior
-        "    \"FAMILYName\":\"Jensen\",\n" +
-        "    \"givenName\":\"Barbara\",\n" +
-        "    \"middleName\":\"Jane\",\n" +
-        "    \"honorificPrefix\":\"Ms.\",\n" +
-        "    \"honorificSuffix\":\"III\"\n" +
-        "  },\n" +
-        "  \"displayName\":\"Babs Jensen\",\n" +
-        "  \"nickName\":\"Babs\",\n" +
-        "  \"profileUrl\":\"https://login.example.com/bjensen\",\n" +
-        "  \"emails\":[  \n" +
-        "    {  \n" +
-        "      \"value\":\"bjensen@example.com\",\n" +
-        "      \"type\":\"work\",\n" +
-         // Check for case insensitive behavior
-        "      \"pRIMary\":true\n" +
-        "    },\n" +
-        "    {  \n" +
-        "      \"value\":\"babs@jensen.org\",\n" +
-        "      \"type\":\"home\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"addresses\":[  \n" +
-        "    {  \n" +
-        "      \"streetAddress\":\"100 Universal City Plaza\",\n" +
-        "      \"locality\":\"Hollywood\",\n" +
-        "      \"region\":\"CA\",\n" +
-        "      \"postalCode\":\"91608\",\n" +
-        "      \"country\":\"USA\",\n" +
-        "      \"formatted\":\"100 Universal City Plaza\\nHollywood, " +
-        "CA 91608 USA\",\n" +
-        "      \"type\":\"work\",\n" +
-        "      \"primary\":true\n" +
-        "    },\n" +
-        "    {  \n" +
-        "      \"streetAddress\":\"456 Hollywood Blvd\",\n" +
-        "      \"locality\":\"Hollywood\",\n" +
-        "      \"region\":\"CA\",\n" +
-        "      \"postalCode\":\"91608\",\n" +
-        "      \"country\":\"USA\",\n" +
-        "      \"formatted\":\"456 Hollywood Blvd\\nHollywood, " +
-        "CA 91608 USA\",\n" +
-        "      \"type\":\"home\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"phoneNumbers\":[  \n" +
-        "    {  \n" +
-        "      \"value\":\"555-555-5555\",\n" +
-        "      \"type\":\"work\"\n" +
-        "    },\n" +
-        "    {  \n" +
-        "      \"value\":\"555-555-4444\",\n" +
-        "      \"type\":\"mobile\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"ims\":[  \n" +
-        "    {  \n" +
-        "      \"value\":\"someaimhandle\",\n" +
-        "      \"type\":\"aim\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"photos\":[  \n" +
-        "    {  \n" +
-        "      \"value\":\"https://photos.example.com/profilephoto/" +
-        "72930000000Ccne/F\",\n" +
-        "      \"type\":\"photo\"\n" +
-        "    },\n" +
-        "    {  \n" +
-        "      \"value\":\"https://photos.example.com/profilephoto/" +
-        "72930000000Ccne/T\",\n" +
-        "      \"type\":\"thumbnail\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"userType\":\"Employee\",\n" +
-        "  \"title\":\"Tour Guide\",\n" +
-        "  \"preferredLanguage\":\"en-US\",\n" +
-        "  \"locale\":\"en-US\",\n" +
-        "  \"timezone\":\"America/Los_Angeles\",\n" +
-        "  \"active\":true,\n" +
-        "  \"password\":\"t1meMa$heen\",\n" +
-        "  \"groups\":[  \n" +
-        "    {  \n" +
-        "      \"value\":\"e9e30dba-f08f-4109-8486-d5c6a331660a\",\n" +
-        "      \"$ref\":\"../Groups/e9e30dba-f08f-4109-8486-d5c6a331660a\",\n" +
-        "      \"display\":\"Tour Guides\"\n" +
-        "    },\n" +
-        "    {  \n" +
-        "      \"value\":\"fc348aa8-3835-40eb-a20b-c726e15c55b5\",\n" +
-        "      \"$ref\":\"../Groups/fc348aa8-3835-40eb-a20b-c726e15c55b5\",\n" +
-        "      \"display\":\"Employees\"\n" +
-        "    },\n" +
-        "    {  \n" +
-        "      \"value\":\"71ddacd2-a8e7-49b8-a5db-ae50d0a5bfd7\",\n" +
-        "      \"$ref\":\"../Groups/71ddacd2-a8e7-49b8-a5db-ae50d0a5bfd7\",\n" +
-        "      \"display\":\"US Employees\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"x509Certificates\":[  \n" +
-        "    {  \n" +
-        "      \"value\":\"MIIDQzCCAqygAwIBAgICEAAwDQYJKoZIhvcNAQEFBQAwTj" +
-        "ELMAkGA1UEBhMCVVMx" +
-        "        EzARBgNVBAgMCkNhbGlmb3JuaWExFDASBgNVBAoMC2V4YW1wbGUuY29t" +
-        "MRQwEgYD" +
-        "        VQQDDAtleGFtcGxlLmNvbTAeFw0xMTEwMjIwNjI0MzFaFw0xMjEwMDQw" +
-        "NjI0MzFa" +
-        "        MH8xCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRQwEgYD" +
-        "VQQKDAtl" +
-        "        eGFtcGxlLmNvbTEhMB8GA1UEAwwYTXMuIEJhcmJhcmEgSiBKZW5zZW4g" +
-        "SUlJMSIw" +
-        "        IAYJKoZIhvcNAQkBFhNiamVuc2VuQGV4YW1wbGUuY29tMIIBIjANBgkq" +
-        "hkiG9w0B" +
-        "        AQEFAAOCAQ8AMIIBCgKCAQEA7Kr+Dcds/JQ5GwejJFcBIP682X3xpjis" +
-        "56AK02bc" +
-        "        1FLgzdLI8auoR+cC9/Vrh5t66HkQIOdA4unHh0AaZ4xL5PhVbXIPMB5v" +
-        "APKpzz5i" +
-        "        PSi8xO8SL7I7SDhcBVJhqVqr3HgllEG6UClDdHO7nkLuwXq8HcISKkbT" +
-        "5WFTVfFZ" +
-        "        zidPl8HZ7DhXkZIRtJwBweq4bvm3hM1Os7UQH05ZS6cVDgweKNwdLLrT" +
-        "51ikSQG3" +
-        "        DYrl+ft781UQRIqxgwqCfXEuDiinPh0kkvIi5jivVu1Z9QiwlYEdRbLJ" +
-        "4zJQBmDr" +
-        "        SGTMYn4lRc2HgHO4DqB/bnMVorHB0CC6AV1QoFK4GPe1LwIDAQABo3sw" +
-        "eTAJBgNV" +
-        "        HRMEAjAAMCwGCWCGSAGG+EIBDQQfFh1PcGVuU1NMIEdlbmVyYXRlZCBDZ" +
-        "XJ0aWZp" +
-        "        Y2F0ZTAdBgNVHQ4EFgQU8pD0U0vsZIsaA16lL8En8bx0F/gwHwYDVR0jB" +
-        "BgwFoAU" +
-        "        dGeKitcaF7gnzsNwDx708kqaVt0wDQYJKoZIhvcNAQEFBQADgYEAA81Ss" +
-        "FnOdYJt" +
-        "        Ng5Tcq+/ByEDrBgnusx0jloUhByPMEVkoMZ3J7j1ZgI8rAbOkNngX8+pK" +
-        "fTiDz1R" +
-        "        C4+dx8oU6Za+4NJXUjlL5CvV6BEYb1+QAEJwitTVvxB/A67g42/vzgAto" +
-        "RUeDov1" +
-        "        +GFiBZ+GNF/cAYKcMtGcrs2i97ZkJMo=\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\":{\n" +
-        "    \"employeeNumber\":\"701984\",\n" +
-        "    \"costCenter\":\"4130\",\n" +
-        "    \"organization\":\"Universal Studios\",\n" +
-        "    \"division\":\"Theme Park\",\n" +
-        "    \"department\":\"Tour Operations\",\n" +
-        "    \"manager\":{  \n" +
-        "      \"value\":\"26118915-6090-4610-87e4-49d8ca9f808d\",\n" +
-        "      \"$ref\":\"../Users/26118915-6090-4610-87e4-49d8ca9f808d\",\n" +
-        "      \"displayName\":\"John Smith\"\n" +
-        "    }\n" +
-        "  },\n" +
-        "  \"meta\":{  \n" +
-        "    \"resourceType\":\"User\",\n" +
-        "    \"created\":\"2010-01-23T04:56:22Z\",\n" +
-        "    \"lastModified\":\"2011-05-13T04:42:34Z\",\n" +
-        "    \"version\":\"W\\/\\\"3694e05e9dff591\\\"\",\n" +
-        "    \"location\":\"https://example.com/v2/Users/" +
-        "2819c223-7f76-453a-919d-413861904646\"\n" +
-        "  }\n" +
-        "}";
+    @SuppressWarnings("SpellCheckingInspection")
+    String USER = """
+        {
+          "schemas":[
+            "urn:ietf:params:scim:schemas:core:2.0:User",
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
+          ],
+          "id":"2819c223-7f76-453a-919d-413861904646",
+          "externalId":"701984",
+          "userName":"bjensen@example.com",
+          "nAme":{
+            "formatted":"Ms. Barbara J Jensen III",
+            "FAMILYName":"Jensen",
+            "givenName":"Barbara",
+            "middleName":"Jane",
+            "honorificPrefix":"Ms.",
+            "honorificSuffix":"III"
+          },
+          "displayName":"Babs Jensen",
+          "nickName":"Babs",
+          "profileUrl":"https://login.example.com/bjensen",
+          "emails":[
+            {
+              "value":"bjensen@example.com",
+              "type":"work",
+              "pRIMary":true
+            },
+            {
+              "value":"babs@jensen.org",
+              "type":"home"
+            }
+          ],
+          "addresses":[
+            {
+              "streetAddress":"100 Universal City Plaza",
+              "locality":"Hollywood",
+              "region":"CA",
+              "postalCode":"91608",
+              "country":"USA",
+              "formatted":"100 Universal City Plaza\\nHollywood, CA 91608 USA",
+              "type":"work",
+              "primary":true
+            },
+            {
+              "streetAddress":"456 Hollywood Blvd",
+              "locality":"Hollywood",
+              "region":"CA",
+              "postalCode":"91608",
+              "country":"USA",
+              "formatted":"456 Hollywood Blvd\\nHollywood, CA 91608 USA",
+              "type":"home"
+            }
+          ],
+          "phoneNumbers":[
+            {
+              "value":"555-555-5555",
+              "type":"work"
+            },
+            {
+              "value":"555-555-4444",
+              "type":"mobile"
+            }
+          ],
+          "ims":[
+            {
+              "value":"someaimhandle",
+              "type":"aim"
+            }
+          ],
+          "photos":[
+            {
+              "value":"https://photos.example.com/profilephoto/\
+        72930000000Ccne/F",
+              "type":"photo"
+            },
+            {
+              "value":"https://photos.example.com/profilephoto/\
+        72930000000Ccne/T",
+              "type":"thumbnail"
+            }
+          ],
+          "userType":"Employee",
+          "title":"Tour Guide",
+          "preferredLanguage":"en-US",
+          "locale":"en-US",
+          "timezone":"America/Los_Angeles",
+          "active":true,
+          "password":"t1meMa$heen",
+          "groups":[
+            {
+              "value":"e9e30dba-f08f-4109-8486-d5c6a331660a",
+              "$ref":"../Groups/e9e30dba-f08f-4109-8486-d5c6a331660a",
+              "display":"Tour Guides"
+            },
+            {
+              "value":"fc348aa8-3835-40eb-a20b-c726e15c55b5",
+              "$ref":"../Groups/fc348aa8-3835-40eb-a20b-c726e15c55b5",
+              "display":"Employees"
+            },
+            {
+              "value":"71ddacd2-a8e7-49b8-a5db-ae50d0a5bfd7",
+              "$ref":"../Groups/71ddacd2-a8e7-49b8-a5db-ae50d0a5bfd7",
+              "display":"US Employees"
+            }
+          ],
+          "x509Certificates":[
+            {
+              "value": \
+        "MIIDQzCCAqygAwIBAgICEAAwDQYJKoZIhvcNAQEFBQAwTjELMAkGA1UEBhMCVVMxEzARBg\
+        NVBAgMCkNhbGlmb3JuaWExFDASBgNVBAoMC2V4YW1wbGUuY29tMRQwEgYDVQQDDAtleGFtc\
+        GxlLmNvbTAeFw0xMTEwMjIwNjI0MzFaFw0xMjEwMDQwNjI0MzFaMH8xCzAJBgNVBAYTAlVT\
+        MRMwEQYDVQQIDApDYWxpZm9ybmlhMRQwEgYDVQQKDAtleGFtcGxlLmNvbTEhMB8GA1UEAww\
+        YTXMuIEJhcmJhcmEgSiBKZW5zZW4gSUlJMSIwIAYJKoZIhvcNAQkBFhNiamVuc2VuQGV4YW\
+        1wbGUuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7Kr+Dcds/JQ5GwejJ\
+        FcBIP682X3xpjis56AK02bc1FLgzdLI8auoR+cC9/Vrh5t66HkQIOdA4unHh0AaZ4xL5PhV\
+        bXIPMB5vAPKpzz5iPSi8xO8SL7I7SDhcBVJhqVqr3HgllEG6UClDdHO7nkLuwXq8HcISKkb\
+        T5WFTVfFZzidPl8HZ7DhXkZIRtJwBweq4bvm3hM1Os7UQH05ZS6cVDgweKNwdLLrT51ikSQ\
+        G3DYrl+ft781UQRIqxgwqCfXEuDiinPh0kkvIi5jivVu1Z9QiwlYEdRbLJ4zJQBmDrSGTMY\
+        n4lRc2HgHO4DqB/bnMVorHB0CC6AV1QoFK4GPe1LwIDAQABo3sweTAJBgNVHRMEAjAAMCwG\
+        CWCGSAGG+EIBDQQfFh1PcGVuU1NMIEdlbmVyYXRlZCBDZXJ0aWZpY2F0ZTAdBgNVHQ4EFgQ\
+        U8pD0U0vsZIsaA16lL8En8bx0F/gwHwYDVR0jBBgwFoAUdGeKitcaF7gnzsNwDx708kqaVt\
+        0wDQYJKoZIhvcNAQEFBQADgYEAA81SsFnOdYJtNg5Tcq+/ByEDrBgnusx0jloUhByPMEVko\
+        MZ3J7j1ZgI8rAbOkNngX8+pKfTiDz1RC4+dx8oU6Za+4NJXUjlL5CvV6BEYb1+QAEJwitTV\
+        vxB/A67g42/vzgAtoRUeDov1+GFiBZ+GNF/cAYKcMtGcrs2i97ZkJMo="
+            }
+          ],
+          "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User":{
+            "employeeNumber":"701984",
+            "costCenter":"4130",
+            "organization":"Universal Studios",
+            "division":"Theme Park",
+            "department":"Tour Operations",
+            "manager":{
+              "value":"26118915-6090-4610-87e4-49d8ca9f808d",
+              "$ref":"../Users/26118915-6090-4610-87e4-49d8ca9f808d",
+              "displayName":"John Smith"
+            }
+          },
+          "meta":{
+            "resourceType":"User",
+            "created":"2010-01-23T04:56:22Z",
+            "lastModified":"2011-05-13T04:42:34Z",
+            "version":"W\\/\\"3694e05e9dff591\\"",
+            "location":"https://example.com/v2/Users/\
+        2819c223-7f76-453a-919d-413861904646"
+          }
+        }""";
     ObjectNode userResource =
         (ObjectNode) JsonUtils.getObjectReader().readTree(USER);
 
@@ -439,59 +417,54 @@ public class SchemaCheckerTestCase
     // Make sure the ObjectNode wasn't modified during the check.
     assertEquals(userResource, copyUserResource);
 
-    // Check modify
     String patchRequestStr =
-        "{  \n" +
-            "  \"op\":\"add\",\n" +
-            "  \"value\":{  \n" +
-         // Check for case insensitive behavior
-            "    \"passWORD\":\"password\",\n" +
-            "    \"name\":{  \n" +
-            "      \"givenName\":\"Barbara\",\n" +
-         // Check for case insensitive behavior
-            "      \"FAMILYName\":\"Jensen\",\n" +
-            "      \"formatted\":\"Barbara Ann Jensen\"\n" +
-            "    },\n" +
-            "    \"emails\":[  \n" +
-            "      {  \n" +
-         // Check for case insensitive behavior
-            "        \"VALUE\":\"bjensen@example.com\",\n" +
-            "        \"type\":\"work\"\n" +
-            "      },\n" +
-            "      {  \n" +
-            "        \"value\":\"babs@jensen.org\",\n" +
-            "        \"type\":\"home\"\n" +
-            "      }\n" +
-            "    ],\n" +
-            "    \"urn:ietf:params:scim:schemas:extension:" +
-            "enterprise:2.0:User\":{  \n" +
-            "      \"employeeNumber\":\"701984\"\n" +
-            "    },\n" +
-            "    \"addresses\":[  \n" +
-            "      {  \n" +
-            "        \"type\":\"work\",\n" +
-            "        \"streetAddress\":\"13809 Research Blvd\",\n" +
-            "        \"locality\":\"Austin\",\n" +
-            "        \"region\":\"TX\",\n" +
-            "        \"postalCode\":\"78750\",\n" +
-            "        \"country\":\"USA\",\n" +
-            "        \"formatted\":\"13809 Research Blvd\\n" +
-            "Austin, TX 78750 USA\",\n" +
-            "        \"primary\":true\n" +
-            "      },\n" +
-            "      {  \n" +
-            "        \"type\":\"home\",\n" +
-            "        \"streetAddress\":\"456 Hollywood Blvd\",\n" +
-            "        \"locality\":\"Hollywood\",\n" +
-            "        \"region\":\"CA\",\n" +
-            "        \"postalCode\":\"91608\",\n" +
-            "        \"country\":\"USA\",\n" +
-            "        \"formatted\":\"456 Hollywood Blvd\\n" +
-            "Hollywood, CA 91608 USA\"\n" +
-            "      }\n" +
-            "    ]\n" +
-            "  }\n" +
-            "}";
+        """
+            {
+              "op":"add",
+              "value":{
+                "passWORD":"password",
+                "name":{
+                  "givenName":"Barbara",
+                  "FAMILYName":"Jensen",
+                  "formatted":"Barbara Ann Jensen"
+                },
+                "emails":[
+                  {
+                    "VALUE":"bjensen@example.com",
+                    "type":"work"
+                  },
+                  {
+                    "value":"babs@jensen.org",
+                    "type":"home"
+                  }
+                ],
+                "urn:ietf:params:scim:schemas:extension:\
+            enterprise:2.0:User":{
+                  "employeeNumber":"701984"
+                },
+                "addresses":[
+                  {
+                    "type":"work",
+                    "streetAddress":"13809 Research Blvd",
+                    "locality":"Austin",
+                    "region":"TX",
+                    "postalCode":"78750",
+                    "country":"USA",
+                    "formatted":"13809 Research Blvd\\nAustin, TX 78750 USA",
+                    "primary":true
+                  },
+                  {
+                    "type":"home",
+                    "streetAddress":"456 Hollywood Blvd",
+                    "locality":"Hollywood",
+                    "region":"CA",
+                    "postalCode":"91608",
+                    "country":"USA",
+                    "formatted":"456 Hollywood Blvd\\nHollywood, CA 91608 USA"
+                  }
+                ]
+              }
+            }""";
 
     PatchOperation operation =
         JsonUtils.getObjectReader().forType(PatchOperation.class).
@@ -749,7 +722,7 @@ public class SchemaCheckerTestCase
     resource.putObject("urn:id:extWithReqAttr").put("test", "test");
 
     // Shouldn't be able to remove the core schema
-    List<PatchOperation> patchOps = new LinkedList<PatchOperation>();
+    List<PatchOperation> patchOps = new LinkedList<>();
     patchOps.add(PatchOperation.remove(Path.root().attribute("schemas",
         Filter.eq("value", "urn:ietf:params:scim:schemas:core:2.0:User"))));
 
@@ -758,7 +731,7 @@ public class SchemaCheckerTestCase
         results.getSyntaxIssues().toString());
 
     // Shouldn't be able to remove a required schema extension
-    patchOps = new LinkedList<PatchOperation>();
+    patchOps = new LinkedList<>();
     patchOps.add(PatchOperation.remove(Path.root().attribute("schemas",
         Filter.eq("value", "urn:id:extWithReqAttr"))));
 
@@ -767,7 +740,7 @@ public class SchemaCheckerTestCase
         results.getSyntaxIssues().toString());
 
         // Shouldn't be able to replace the core schema
-    patchOps = new LinkedList<PatchOperation>();
+    patchOps = new LinkedList<>();
     patchOps.add(PatchOperation.replace(Path.root().attribute("schemas",
             Filter.eq("value", "urn:ietf:params:scim:schemas:core:2.0:User")),
         TextNode.valueOf("urn:id:extWithOptAttr")));
@@ -777,7 +750,7 @@ public class SchemaCheckerTestCase
         results.getSyntaxIssues().toString());
 
     // Shouldn't be able to replace a required schema extension
-    patchOps = new LinkedList<PatchOperation>();
+    patchOps = new LinkedList<>();
     patchOps.add(PatchOperation.replace(Path.root().attribute("schemas",
         Filter.eq("value", "urn:id:extWithReqAttr")),
         TextNode.valueOf("urn:id:extWithOptAttr")));
@@ -787,7 +760,7 @@ public class SchemaCheckerTestCase
         results.getSyntaxIssues().toString());
 
     // Shouldn't be able to add an undefined schema extension
-    patchOps = new LinkedList<PatchOperation>();
+    patchOps = new LinkedList<>();
     patchOps.add(PatchOperation.add(Path.root().attribute("schemas"),
         JsonUtils.getJsonNodeFactory().arrayNode().add("urn:id:undefined")));
 
@@ -990,7 +963,7 @@ public class SchemaCheckerTestCase
     // Can't remove required attributes in patch
     if (attributeDefinition.isRequired())
     {
-      // Check for case insensitive behavior
+      // Check for case-insensitive behavior
       results = checker.checkModify(Collections.singleton(
           PatchOperation.remove(Path.fromString("TEST"))), null);
       assertEquals(results.getSyntaxIssues().size(), 1,
@@ -1806,7 +1779,7 @@ public class SchemaCheckerTestCase
         results.getSyntaxIssues().toString());
     assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
-    if (!((node.isArray() || node.isObject()) && node.size() == 0))
+    if (!((node.isArray() || node.isObject()) && node.isEmpty()))
     {
       // Partial patch
       results = checker.checkModify(Collections.singleton(
@@ -1854,7 +1827,7 @@ public class SchemaCheckerTestCase
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
-      if (!((node.isArray() || node.isObject()) && node.size() == 0))
+      if (!((node.isArray() || node.isObject()) && node.isEmpty()))
       {
         // Partial patch
         results = checker.checkModify(Collections.singleton(
@@ -1897,7 +1870,7 @@ public class SchemaCheckerTestCase
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
-      if (!((node.isArray() || node.isObject()) && node.size() == 0))
+      if (!((node.isArray() || node.isObject()) && node.isEmpty()))
       {
         // Partial patch
         results = checker.checkModify(Collections.singleton(
@@ -1937,7 +1910,7 @@ public class SchemaCheckerTestCase
         results.getSyntaxIssues().toString());
     assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
-    if (!((node.isArray() || node.isObject()) && node.size() == 0))
+    if (!((node.isArray() || node.isObject()) && node.isEmpty()))
     {
       // Partial patch
       results = checker.checkModify(Collections.singleton(
@@ -1980,7 +1953,7 @@ public class SchemaCheckerTestCase
           results.getSyntaxIssues().toString());
       assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
 
-      if (!((node.isArray() || node.isObject()) && node.size() == 0))
+      if (!((node.isArray() || node.isObject()) && node.isEmpty()))
       {
         // Partial patch
         results = checker.checkModify(Collections.singleton(
@@ -2056,8 +2029,7 @@ public class SchemaCheckerTestCase
   @Test
   public void testAttributeMutability() throws Exception
   {
-    List<AttributeDefinition> attributeDefinitions =
-        new ArrayList<AttributeDefinition>();
+    List<AttributeDefinition> attributeDefinitions = new ArrayList<>();
 
     // Read-only attribute
     AttributeDefinition readOnly = new AttributeDefinition.Builder().
@@ -2268,23 +2240,23 @@ public class SchemaCheckerTestCase
   {
     return new Object[][] {
         {"syntaxIssueOne, syntaxIssueTwo",
-            Arrays.asList("syntaxIssueOne", "syntaxIssueTwo"),
+            List.of("syntaxIssueOne", "syntaxIssueTwo"),
             Collections.emptyList(), Collections.emptyList()},
         {"mutabilityIssueOne, mutabilityIssueTwo",
             Collections.emptyList(),
-            Arrays.asList("mutabilityIssueOne", "mutabilityIssueTwo"),
+            List.of("mutabilityIssueOne", "mutabilityIssueTwo"),
             Collections.emptyList()},
         {"pathIssueOne, pathIssueTwo",
             Collections.emptyList(), Collections.emptyList(),
-            Arrays.asList("pathIssueOne", "pathIssueTwo")},
+            List.of("pathIssueOne", "pathIssueTwo")},
         {"syntaxIssueOne, syntaxIssueTwo",
-            Arrays.asList("syntaxIssueOne", "syntaxIssueTwo"),
-            Arrays.asList("mutabilityIssueOne", "mutabilityIssueTwo"),
-            Arrays.asList("pathIssueOne", "pathIssueTwo")},
+            List.of("syntaxIssueOne", "syntaxIssueTwo"),
+            List.of("mutabilityIssueOne", "mutabilityIssueTwo"),
+            List.of("pathIssueOne", "pathIssueTwo")},
         {"mutabilityIssueOne",
             Collections.emptyList(),
-            Arrays.asList("mutabilityIssueOne"),
-            Arrays.asList("pathIssueOne", "pathIssueTwo")},
+            List.of("mutabilityIssueOne"),
+            List.of("pathIssueOne", "pathIssueTwo")},
         {null,
             Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList()}

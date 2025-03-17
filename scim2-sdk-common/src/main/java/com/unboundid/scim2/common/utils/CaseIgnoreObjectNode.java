@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
-/**
+/*
  * Portions Copyright ©2009-2015 FasterXML, LLC
  */
 
@@ -119,7 +119,7 @@ public class CaseIgnoreObjectNode extends ObjectNode
       {
         if (localFoundSoFar == null)
         {
-          localFoundSoFar = new ArrayList<JsonNode>();
+          localFoundSoFar = new ArrayList<>();
         }
         localFoundSoFar.add(entry.getValue());
       }
@@ -153,7 +153,7 @@ public class CaseIgnoreObjectNode extends ObjectNode
       {
         if (localFoundSoFar == null)
         {
-          localFoundSoFar = new ArrayList<String>();
+          localFoundSoFar = new ArrayList<>();
         }
         localFoundSoFar.add(entry.getValue().asText());
       }
@@ -203,7 +203,7 @@ public class CaseIgnoreObjectNode extends ObjectNode
       {
         if (localFoundSoFar == null)
         {
-          localFoundSoFar = new ArrayList<JsonNode>();
+          localFoundSoFar = new ArrayList<>();
         }
         localFoundSoFar.add(this);
       }

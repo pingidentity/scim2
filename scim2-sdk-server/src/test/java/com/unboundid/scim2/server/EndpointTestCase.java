@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.jakarta.rs.cfg.JakartaRSFeature;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
-import com.google.common.collect.Lists;
 import com.unboundid.scim2.client.ScimInterface;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.client.ScimServiceException;
@@ -68,7 +67,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
@@ -87,6 +85,7 @@ import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -182,8 +181,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     {
       throw new RuntimeException(e);
     }
-
-
   }
 
   /**
@@ -206,23 +203,15 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   @Test
   public void testPutServiceProviderConfig()
   {
-    try
-    {
-      ScimService scimService = new ScimService(target());
-      scimService.modifyRequest(
-          scimService.getServiceProviderConfig()).invoke();
-    }
-    catch (WebApplicationException e)
-    {
-      assertEquals(e.getResponse().getStatus(), 501);
-      ErrorResponse errorResponse =
-          e.getResponse().readEntity(ErrorResponse.class);
-      assertEquals(errorResponse.getStatus(), Integer.valueOf(501));
-    }
-    catch (ScimException e)
-    {
-      e.printStackTrace();
-    }
+    ScimService service = new ScimService(target());
+    assertThatThrownBy(() ->
+        service.modifyRequest(service.getServiceProviderConfig()).invoke())
+        .isInstanceOf(MethodNotAllowedException.class)
+        .satisfies(e -> {
+          ErrorResponse r = ((MethodNotAllowedException) e).getScimError();
+          assertThat(r.getStatus()).isEqualTo(405);
+          assertThat(r.getDetail()).contains("Method Not Allowed");
+        });
   }
 
   /**
@@ -420,7 +409,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     WebTarget target = target().register(
         new JacksonJsonProvider(JsonUtils.createObjectMapper()));
 
-    Set<String> excludedAttributes = new HashSet<String>();
+    Set<String> excludedAttributes = new HashSet<>();
     excludedAttributes.add("addresses");
     excludedAttributes.add("phoneNumbers");
     SearchRequest searchRequest = new SearchRequest(
@@ -484,15 +473,10 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     UriBuilder subResourceUri =
         UriBuilder.fromUri(ScimService.ME_URI).path("something");
-    try
-    {
-      scimService.retrieve(subResourceUri.build(), UserResource.class);
-      fail("Sub-resource should not exist");
-    }
-    catch (ScimException e)
-    {
-      // Expected.
-    }
+
+    assertThatThrownBy(() ->
+      scimService.retrieve(subResourceUri.build(), UserResource.class))
+        .isInstanceOf(ScimException.class);
   }
 
   /**
@@ -589,32 +573,28 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     scimService.delete(createdUser);
 
-    try
-    {
-      scimService.retrieve(createdUser);
-      fail("Resource should have been deleted");
-    }
-    catch (ResourceNotFoundException e)
-    {
-      // expected
-    }
+    assertThatThrownBy(() -> scimService.retrieve(createdUser))
+        .isInstanceOf(ResourceNotFoundException.class);
 
     // Now with no accept header
     WebTarget target = target().register(
         new JacksonJsonProvider(JsonUtils.createObjectMapper()));
-
-    Response response = target.path("SingletonUsers").path("deleteUser").
-        request().delete();
-    assertEquals(response.getStatus(), 404);
-    assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+    try (Response response = target.path("SingletonUsers").path("deleteUser")
+        .request().delete())
+    {
+      assertEquals(response.getStatus(), 404);
+      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+    }
 
     // With invalid accept type (DS-14520)
     target = target().register(
         new JacksonJsonProvider(JsonUtils.createObjectMapper()));
-    response = target.path("SingletonUsers").path("deleteUser").
-        request().accept(MediaType.APPLICATION_ATOM_XML_TYPE).delete();
-    assertEquals(response.getStatus(), 404);
-    assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+    try (Response response = target.path("SingletonUsers").path("deleteUser").
+        request().accept(MediaType.APPLICATION_ATOM_XML_TYPE).delete())
+    {
+      assertEquals(response.getStatus(), 404);
+      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+    }
   }
 
   /**
@@ -703,13 +683,13 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     PhoneNumber phone2 = new PhoneNumber().
         setValue("123123123").setType("work").setPrimary(true);
 
-    List<PatchOperation> patchOperations = new ArrayList<PatchOperation>();
+    List<PatchOperation> patchOperations = new ArrayList<>();
     patchOperations.add(PatchOperation.remove("displayName"));
     patchOperations.add(PatchOperation.replace("name.middleName", "the"));
     patchOperations.add(PatchOperation.replace(
         "emails[type eq \"work\"].value", "bobNew@tester.com"));
     patchOperations.add(PatchOperation.add("phoneNumbers",
-        JsonUtils.valueToNode(Lists.newArrayList(phone1, phone2))));
+        JsonUtils.valueToNode(List.of(phone1, phone2))));
 
     UserResource updatedUser = scimInterface.modify(
         createdUser, new PatchRequest(patchOperations));
@@ -747,13 +727,13 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     PhoneNumber phone2 = new PhoneNumber().
         setValue("123123123").setType("work").setPrimary(true);
 
-    List<PatchOperation> patchOperations = new ArrayList<PatchOperation>();
+    List<PatchOperation> patchOperations = new ArrayList<>();
     patchOperations.add(PatchOperation.remove("displayName"));
     patchOperations.add(PatchOperation.replace("name.middleName", "the"));
     patchOperations.add(PatchOperation.replace(
         "emails[type eq \"work\"].value", "bobNew@tester.com"));
     patchOperations.add(PatchOperation.add("phoneNumbers",
-        JsonUtils.valueToNode(Lists.newArrayList(phone1, phone2))));
+        JsonUtils.valueToNode(List.of(phone1, phone2))));
 
     UserResource updatedUser = scimInterface.modify(
         "SingletonUsers", createdUser.getId(),
@@ -939,17 +919,11 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     try
     {
-      try
-      {
-        service.retrieveRequest(ScimService.ME_URI).
-            queryParam(expectedKey, "unexpectedValue").
-            invoke(UserResource.class);
-        fail("Expected BadRequestException");
-      }
-      catch (BadRequestException e)
-      {
-        // Expected.
-      }
+      assertThatThrownBy(() ->
+          service.retrieveRequest(ScimService.ME_URI)
+              .queryParam(expectedKey, "unexpectedValue")
+              .invoke(UserResource.class))
+          .isInstanceOf(BadRequestException.class);
 
       service.retrieveRequest(ScimService.ME_URI).
           queryParam(expectedKey, expectedValue).
@@ -1027,17 +1001,11 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     try
     {
-      try
-      {
-        service.retrieveRequest(ScimService.ME_URI).
-            header(expectedKey, "unexpectedValue").
-            invoke(UserResource.class);
-        fail("Expected BadRequestException");
-      }
-      catch (BadRequestException e)
-      {
-        // Expected.
-      }
+      assertThatThrownBy(() ->
+          service.retrieveRequest(ScimService.ME_URI)
+              .header(expectedKey, "unexpectedValue")
+              .invoke(UserResource.class))
+          .isInstanceOf(BadRequestException.class);
 
       service.retrieveRequest(ScimService.ME_URI).
           header(expectedKey, expectedValue).
@@ -1200,30 +1168,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
 
   /**
-   * Test that MethodNotAllowedExceptions are thrown properly.
-   *
-   * @throws ScimException uncaught exceptions indicate an error.
-   */
-  @Test
-  public void testMethodNotAllowed() throws ScimException
-  {
-    final ScimService service = new ScimService(target());
-
-    try
-    {
-      service.create("Users/schema", new GenericScimResource());
-      Assert.fail("Expecting a MethodNotFoundException");
-    }
-    catch (MethodNotAllowedException ex)
-    {
-      ErrorResponse response = ex.getScimError();
-      Assert.assertEquals(response.getStatus(), Integer.valueOf(405));
-      Assert.assertTrue(response.getDetail().contains("Method Not Allowed"));
-    }
-  }
-
-
-  /**
    * Test custom content-type.
    *
    * @throws ScimException if an error occurs.
@@ -1256,37 +1200,24 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
   /**
    * Test accept(null) throws proper exception.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
-  public void testAcceptExceptions() throws ScimException
+  public void testAcceptExceptions()
   {
     ScimService scimService = new ScimService(target());
 
     // Create a new user.
-    try
-    {
-      String returnString = new String(scimService.retrieveRequest(
-          "CustomContent", "123").accept(null).
-          invoke(byte[].class));
-      Assert.fail("Expected illegal argument exception");
-    }
-    catch (IllegalArgumentException ex)
-    {
-      // Expected.  Ignore.
-    }
-    try
-    {
-      String returnString = new String(scimService.retrieveRequest(
-          "CustomContent", "123").accept().
-          invoke(byte[].class));
-      Assert.fail("Expected illegal argument exception");
-    }
-    catch (IllegalArgumentException ex)
-    {
-      // Expected.  Ignore.
-    }
+    assertThatThrownBy(() ->
+        new String(scimService.retrieveRequest("CustomContent", "123")
+            .accept((String[]) null)
+            .invoke(byte[].class)))
+        .isInstanceOf(IllegalArgumentException.class);
+
+    assertThatThrownBy(() ->
+        new String(scimService.retrieveRequest("CustomContent", "123")
+            .accept()
+            .invoke(byte[].class)))
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
 

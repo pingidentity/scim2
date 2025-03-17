@@ -18,7 +18,7 @@ jobs:
     - name: Install minimum-supported JDK for Checkstyle
       uses: actions/setup-java@v3
       with:
-        java-version: 11
+        java-version: 17
         distribution: 'temurin'
         cache: maven
 
@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         # Compile and build with supported LTS releases of Java.
-        java-version: [ 11, 17, 21 ]
+        java-version: [ 17, 21 ]
 
     steps:
     - run: |

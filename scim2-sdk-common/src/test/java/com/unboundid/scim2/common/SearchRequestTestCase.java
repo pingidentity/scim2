@@ -24,8 +24,6 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
@@ -41,20 +39,22 @@ public class SearchRequestTestCase
    * @throws ScimException If an error occurs.
    */
   @Test
-  public void testSearchRequest() throws IOException, ScimException
+  public void testSearchRequest() throws Exception
   {
+    // Test case insensitivity
     SearchRequest searchRequest = JsonUtils.getObjectReader().
         forType(SearchRequest.class).
-        readValue("{\n" +
-            "     \"schemas\": [" +
-            "\"urn:ietf:params:scim:api:messages:2.0:SearchRequest\"],\n" +
-            "     \"attributes\": [\"displayName\", \"userName\"],\n" +
-            // Test case insensitivity
-            "     \"Filter\":\n" +
-            "       \"displayName sw \\\"smith\\\"\",\n" +
-            "     \"startIndex\": 1,\n" +
-            "     \"counT\": 10\n" +
-            "}");
+        readValue("""
+            {
+                 "schemas": [
+                     "urn:ietf:params:scim:api:messages:2.0:SearchRequest"
+                 ],
+                 "attributes": ["displayName", "userName"],
+                 "Filter":
+                   "displayName sw \\"smith\\"",
+                 "startIndex": 1,
+                 "counT": 10
+            }""");
 
     assertEquals(searchRequest.getAttributes(),
         StaticUtils.arrayToSet("displayName", "userName"));
@@ -65,15 +65,16 @@ public class SearchRequestTestCase
     assertEquals(searchRequest.getStartIndex(), Integer.valueOf(1));
     assertEquals(searchRequest.getCount(), Integer.valueOf(10));
 
-    searchRequest = JsonUtils.getObjectReader().
-        forType(SearchRequest.class).
-        readValue("{\n" +
-            "     \"schemas\": [" +
-            "\"urn:ietf:params:scim:api:messages:2.0:SearchRequest\"],\n" +
-            "     \"excludedAttributes\": [\"displayName\", \"userName\"],\n" +
-            "     \"sortBy\": \"name.lastName\",\n" +
-            "     \"sortOrder\": \"descending\"\n" +
-            "}");
+    searchRequest =
+        JsonUtils.getObjectReader().forType(SearchRequest.class).readValue("""
+            {
+                "schemas": [
+                     "urn:ietf:params:scim:api:messages:2.0:SearchRequest"
+                 ],
+                 "excludedAttributes": ["displayName", "userName"],
+                 "sortBy": "name.lastName",
+                 "sortOrder": "descending"
+            }""");
 
     assertNull(searchRequest.getAttributes());
     assertEquals(searchRequest.getExcludedAttributes(),

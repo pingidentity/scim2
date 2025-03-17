@@ -39,7 +39,7 @@ public class PasswordUpdateErr
           + " to change the password.",
       multiValueClass = PasswordRequirementResult.class)
   private List<PasswordRequirementResult> passwordRequirements =
-      new ArrayList<PasswordRequirementResult>();
+      new ArrayList<>();
 
 
   /**

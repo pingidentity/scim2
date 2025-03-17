@@ -23,6 +23,7 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * A complex type that optionally allows Service Providers to represent
@@ -154,18 +155,15 @@ public class Manager
     }
 
     Manager manager = (Manager) o;
-
-    if (value != null ? !value.equals(manager.value) : manager.value != null)
+    if (!Objects.equals(value, manager.value))
     {
       return false;
     }
-    if (ref != null ? !ref.equals(manager.ref) : manager.ref != null)
+    if (!Objects.equals(ref, manager.ref))
     {
       return false;
     }
-    return !(displayName != null ? !displayName.equals(manager.displayName) :
-        manager.displayName != null);
-
+    return Objects.equals(displayName, manager.displayName);
   }
 
   /**
@@ -176,9 +174,6 @@ public class Manager
   @Override
   public int hashCode()
   {
-    int result = value != null ? value.hashCode() : 0;
-    result = 31 * result + (ref != null ? ref.hashCode() : 0);
-    result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
-    return result;
+    return Objects.hash(value, ref, displayName);
   }
 }

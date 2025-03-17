@@ -270,8 +270,7 @@ public class Parser
         i = trimmedPathString.lastIndexOf(':');
       }
       String schemaUrn = trimmedPathString.substring(0, i++);
-      String attributeName =
-          trimmedPathString.substring(i, trimmedPathString.length());
+      String attributeName = trimmedPathString.substring(i);
       try
       {
         path = Path.root(schemaUrn);
@@ -289,7 +288,6 @@ public class Parser
     }
 
     String token;
-
     while ((token = readPathToken(reader)) != null)
     {
       if (token.isEmpty())
@@ -344,12 +342,8 @@ public class Parser
   /**
    * Read a path token. A token is either:
    * <ul>
-   *   <li>
-   *     An attribute name terminated by a period.
-   *   </li>
-   *   <li>
-   *     An attribute name terminated by an opening brace.
-   *   </li>
+   *   <li> An attribute name terminated by a period.
+   *   <li> An attribute name terminated by an opening brace.
    * </ul>
    *
    * @param reader The reader to read from.
@@ -402,7 +396,7 @@ public class Parser
       c = reader.read();
     }
 
-    if (b.length() > 0)
+    if (!b.isEmpty())
     {
       return b.toString();
     }
@@ -412,24 +406,12 @@ public class Parser
   /**
    * Read a filter token. A token is either:
    * <ul>
-   *   <li>
-   *     An attribute path terminated by a space or an opening parenthesis.
-   *   </li>
-   *   <li>
-   *     An attribute path terminated by an opening brace.
-   *   </li>
-   *   <li>
-   *     An operator terminated by a space or an opening parenthesis.
-   *   </li>
-   *   <li>
-   *     An opening parenthesis.
-   *   </li>
-   *   <li>
-   *     An closing parenthesis.
-   *   </li>
-   *   <li>
-   *     An closing brace.
-   *   </li>
+   *   <li> An attribute path terminated by a space or an opening parenthesis.
+   *   <li> An attribute path terminated by an opening brace.
+   *   <li> An operator terminated by a space or an opening parenthesis.
+   *   <li> An opening parenthesis.
+   *   <li> A closing parenthesis.
+   *   <li> A closing brace.
    * </ul>
    *
    * @param reader The reader to read from.
@@ -465,7 +447,7 @@ public class Parser
       }
       if (c == '(' || c == ')')
       {
-        if (b.length() > 0)
+        if (!b.isEmpty())
         {
           // Do not consume the parenthesis.
           reader.unread();
@@ -484,7 +466,7 @@ public class Parser
       }
       if (isValueFilter && c == ']')
       {
-        if (b.length() > 0)
+        if (!b.isEmpty())
         {
           // Do not consume the closing brace.
           reader.unread();
@@ -511,7 +493,7 @@ public class Parser
       c = reader.read();
     }
 
-    if (b.length() > 0)
+    if (!b.isEmpty())
     {
       return b.toString();
     }
@@ -531,8 +513,8 @@ public class Parser
                                    final boolean isValueFilter)
       throws BadRequestException
   {
-    final Stack<Filter> outputStack = new Stack<Filter>();
-    final Stack<String> precedenceStack = new Stack<String>();
+    final Stack<Filter> outputStack = new Stack<>();
+    final Stack<String> precedenceStack = new Stack<>();
 
     String token;
     String previousToken = null;
@@ -587,7 +569,7 @@ public class Parser
           !expectsNewFilter(previousToken))
       {
         // pop all the pending ands first before pushing or.
-        LinkedList<Filter> andComponents = new LinkedList<Filter>();
+        LinkedList<Filter> andComponents = new LinkedList<>();
         while (!precedenceStack.isEmpty())
         {
           if (precedenceStack.peek().equalsIgnoreCase(
@@ -712,7 +694,7 @@ public class Parser
             // Reset back to the beginning of the JSON value.
             reader.reset();
             // Skip the number of chars consumed by JSON parser.
-            reader.skip(parser.getCurrentLocation().getCharOffset());
+            reader.skip(parser.currentLocation().getCharOffset());
           }
           catch (IOException e)
           {
@@ -809,7 +791,7 @@ public class Parser
   {
     String operator = null;
     String repeatingOperator = null;
-    LinkedList<Filter> components = new LinkedList<Filter>();
+    LinkedList<Filter> components = new LinkedList<>();
 
     // Iterate over the logical operators on the stack until either there are
     // no more operators or an opening parenthesis or not is found.

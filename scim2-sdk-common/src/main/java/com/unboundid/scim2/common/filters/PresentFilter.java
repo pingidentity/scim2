@@ -123,13 +123,7 @@ public final class PresentFilter extends Filter
     }
 
     PresentFilter that = (PresentFilter) o;
-
-    if (!filterAttribute.equals(that.filterAttribute))
-    {
-      return false;
-    }
-
-    return true;
+    return filterAttribute.equals(that.filterAttribute);
   }
 
   /**

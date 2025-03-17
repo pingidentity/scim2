@@ -71,38 +71,39 @@ public class GenericScimResourceObjectTest
   public void testBasicParsing() throws Exception
   {
     ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().
-        readTree("{\n" +
-            "    \"externalId\": \"user:externalId\",\n" +
-            "    \"id\": \"user:id\",\n" +
-            "    \"meta\": {\n" +
-            "        \"created\": \"2015-02-27T11:28:39.042Z\",\n" +
-            "        \"lastModified\": \"2015-02-27T11:29:39.042Z\",\n" +
-            "        \"locAtion\": \"http://here/user\",\n" +
-            "        \"resourceType\": \"some resource type\",\n" +
-            "        \"version\": \"1.0\"\n" +
-            "    },\n" +
-            "    \"name\": {\n" +
-            "        \"first\": \"name:first\",\n" +
-            "        \"last\": \"name:last\",\n" +
-            "        \"middle\": \"name:middle\"\n" +
-            "    },\n" +
-            "    \"shoeSize\" : \"12W\",\n" +
-            "    \"password\": \"user:password\",\n" +
-            "    \"Schemas\": [" +
-            "    \"urn:pingidentity:schemas:baseSchema\", " +
-            "    \"urn:pingidentity:schemas:favoriteColor\"" +
-            "    ],\n" +
-            "    \"urn:pingidentity:schemas:favoriteColor\": {\n" +
-            "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
-            "    },\n" +
-            "    \"userName\": \"user:username\"\n" +
-            "}");
+        readTree("""
+            {
+                "externalId": "user:externalId",
+                "id": "user:id",
+                "meta": {
+                    "created": "2015-02-27T11:28:39.042Z",
+                    "lastModified": "2015-02-27T11:29:39.042Z",
+                    "locAtion": "https://here/user",
+                    "resourceType": "some resource type",
+                    "version": "1.0"
+                },
+                "name": {
+                    "first": "name:first",
+                    "last": "name:last",
+                    "middle": "name:middle"
+                },
+                "shoeSize" : "12W",
+                "password": "user:password",
+                "Schemas": [
+                    "urn:pingidentity:schemas:baseSchema",
+                    "urn:pingidentity:schemas:favoriteColor"
+                ],
+                "urn:pingidentity:schemas:favoriteColor": {
+                    "favoriteColor": "extension:favoritecolor"
+                },
+                "userName": "user:username"
+            }""");
 
     GenericScimResource gso = new GenericScimResource(node);
 
     ScimResource cso = gso;
 
-    Set<String> schemaSet = new HashSet<String>();
+    Set<String> schemaSet = new HashSet<>();
     schemaSet.add("urn:pingidentity:schemas:baseSchema");
     schemaSet.add("urn:pingidentity:schemas:favoriteColor");
 
@@ -130,7 +131,7 @@ public class GenericScimResourceObjectTest
         "2015-02-27T11:29:39.042Z");
 
     Assert.assertEquals(meta.getLocation().toString(),
-                        "http://here/user");
+                        "https://here/user");
     Assert.assertEquals(meta.getResourceType(), "some resource type");
     Assert.assertEquals(meta.getVersion(), "1.0");
 
@@ -561,17 +562,10 @@ public class GenericScimResourceObjectTest
     assertNotEquals(resource2, resource);
 
     // An object should always be equal to itself.
+    //noinspection EqualsWithItself
     assertEquals(resource, resource);
+    //noinspection EqualsWithItself
     assertEquals(resource2, resource2);
-
-    // Scenarios involving a null ObjectNode field should not cause an exception.
-    GenericScimResource nullResource = new GenericScimResource(null);
-    assertNotEquals(resource, nullResource);
-    assertNotEquals(nullResource, resource);
-    assertEquals(nullResource, new GenericScimResource(null));
-    assertEquals(new GenericScimResource(null), nullResource);
-    assertNotEquals(resource, null);
-    assertNotEquals(null, resource);
 
     // Other object types should never be equivalent.
     assertNotEquals(new GenericScimResource(), new Object());
@@ -594,31 +588,30 @@ public class GenericScimResourceObjectTest
     GenericScimResource resource = new GenericScimResource();
     GenericScimResource resource2 = new GenericScimResource();
 
-    resource.addStringValues("favoriteArtists",
-            Arrays.asList("Beethoven", "Mozart"));
+    resource.addStringValues("favoriteArtists", List.of("Beethoven", "Mozart"));
     resource2.addStringValues("favoriteArtists", "Beethoven", "Mozart");
     assertEquals(resource, resource2);
 
-    resource.addDoubleValues("testScores", Arrays.asList(100.0, 98.0, 11.2));
+    resource.addDoubleValues("testScores", List.of(100.0, 98.0, 11.2));
     resource2.addDoubleValues("testScores", 100.0, 98.0, 11.2);
     assertEquals(resource, resource2);
 
-    resource.addIntegerValues("pushUpCountHistory", Arrays.asList(11, 19, 83));
+    resource.addIntegerValues("pushUpCountHistory", List.of(11, 19, 83));
     resource2.addIntegerValues("pushUpCountHistory", 11, 19, 83);
     assertEquals(resource, resource2);
 
-    resource.addLongValues("pullUpCountHistory", Arrays.asList(11L, 19L, 83L));
+    resource.addLongValues("pullUpCountHistory", List.of(11L, 19L, 83L));
     resource2.addLongValues("pullUpCountHistory", 11L, 19L, 83L);
     assertEquals(resource, resource2);
 
-    resource.addDateValues("flightDays", Arrays.asList(
+    resource.addDateValues("flightDays", List.of(
             new Date(0L), new Date(1685499903710L)));
     resource2.addDateValues("flightDays",
             new Date(0L), new Date(1685499903710L));
     assertEquals(resource, resource2);
 
     resource.addBinaryValues("publicKeys",
-            Arrays.asList(
+            List.of(
                 new byte[] { 87, 104, 121, 32, 100, 105, 100, 32, 121, 111, 117 },
                 new byte[] { 100, 101, 99, 111, 100, 101, 32, 116, 104, 105, 115, 63 }
     ));
@@ -628,8 +621,8 @@ public class GenericScimResourceObjectTest
     );
     assertEquals(resource, resource2);
 
-    resource.addURIValues("permittedEndpoints", Arrays.asList(
-            URI.create("/Users"), URI.create("/Hackers")));
+    resource.addURIValues("permittedEndpoints",
+            List.of(URI.create("/Users"), URI.create("/Hackers")));
     resource2.addURIValues("permittedEndpoints",
             URI.create("/Users"), URI.create("/Hackers"));
     assertEquals(resource, resource2);
@@ -646,21 +639,22 @@ public class GenericScimResourceObjectTest
   public void testJsonMethodsWithFilter() throws Exception
   {
     // Initialize the JSON object as a GenericScimResource.
-    String rawJSON = "{"
-        + "  \"emails\": ["
-        + "    {"
-        + "      \"type\": \"work\","
-        + "      \"value\": \"email1@example.com\""
-        + "    },"
-        + "    {"
-        + "      \"type\": \"work\","
-        + "      \"value\": \"email2@example.com\""
-        + "    },"
-        + "    {"
-        + "      \"value\": \"emailWithNoType@example.com\""
-        + "    }"
-        + "  ]"
-        + "}";
+    String rawJSON = """
+        {
+          "emails": [
+            {
+              "type": "work",
+              "value": "email1@example.com"
+            },
+            {
+              "type": "work",
+              "value": "email2@example.com"
+            },
+            {
+              "value": "emailWithNoType@example.com"
+            }
+          ]
+        }""";
     ObjectNode node = JsonUtils.getObjectReader()
         .readValue(rawJSON, ObjectNode.class);
     final GenericScimResource resource = new GenericScimResource(node);
@@ -733,22 +727,23 @@ public class GenericScimResourceObjectTest
     calendar.setTimeInMillis(1426883922000L);
     Date date = calendar.getTime();
 
-    JsonNode expected = JsonUtils.getObjectReader().readTree("{"
-        + "  \"emails\" : [ \"email1@example.com\", \"email2@example.com\" ],"
-        + "  \"aliases\" : [ \"shady\", \"slim\" ],"
-        + "  \"recentWeights\" : [ 104.0, 104.9 ],"
-        + "  \"recentHeights\" : [ 121.0, 120.9, 120.8 ],"
-        + "  \"fibonacciNumbers\" : [ 2, 3, 5, 8, 13 ],"
-        + "  \"timeTables\" : [ 0, 1, 2, 145 ],"
-        + "  \"wholeNumbers\" : [ 9223372036854775807 ],"
-        + "  \"negativeNumbers\" : [ -9223372036854775808 ],"
-        + "  \"projectInception\" : [ \"2015-03-20T20:38:42Z\" ],"
-        + "  \"innovationTime\" : [ \"2015-03-20T20:38:42Z\" ],"
-        + "  \"publicKeys\" : [ \"aGV5\" ],"
-        + "  \"code\" : [ \"aGk=\" ],"
-        + "  \"pictures\" : [ \"https://example.com/photo.jpg\" ],"
-        + "  \"links\" : [ \"https://example.com\" ]"
-        + "}"
+    JsonNode expected = JsonUtils.getObjectReader().readTree("""
+        {
+          "emails": [ "email1@example.com", "email2@example.com" ],
+          "aliases": [ "shady", "slim" ],
+          "recentWeights": [ 104.0, 104.9 ],
+          "recentHeights": [ 121.0, 120.9, 120.8 ],
+          "fibonacciNumbers": [ 2, 3, 5, 8, 13 ],
+          "timeTables": [ 0, 1, 2, 145 ],
+          "wholeNumbers": [ 9223372036854775807 ],
+          "negativeNumbers": [ -9223372036854775808 ],
+          "projectInception": [ "2015-03-20T20:38:42Z" ],
+          "innovationTime": [ "2015-03-20T20:38:42Z" ],
+          "publicKeys": [ "aGV5" ],
+          "code": [ "aGk=" ],
+          "pictures": [ "https://example.com/photo.jpg" ],
+          "links": [ "https://example.com" ]
+        }"""
     );
 
     GenericScimResource gsr = new GenericScimResource()

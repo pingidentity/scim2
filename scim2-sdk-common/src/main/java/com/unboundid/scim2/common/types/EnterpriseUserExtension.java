@@ -22,6 +22,8 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
+import java.util.Objects;
+
 /**
  * SCIM extension commonly used in representing users that belong to, or act
  * on behalf of a business or enterprise.
@@ -254,35 +256,27 @@ public class EnterpriseUserExtension
     }
 
     EnterpriseUserExtension that = (EnterpriseUserExtension) o;
-
-    if (employeeNumber != null ? !employeeNumber.equals(that.employeeNumber) :
-        that.employeeNumber != null)
+    if (!Objects.equals(employeeNumber, that.employeeNumber))
     {
       return false;
     }
-    if (costCenter != null ? !costCenter.equals(that.costCenter) :
-        that.costCenter != null)
+    if (!Objects.equals(costCenter, that.costCenter))
     {
       return false;
     }
-    if (organization != null ? !organization.equals(that.organization) :
-        that.organization != null)
+    if (!Objects.equals(organization, that.organization))
     {
       return false;
     }
-    if (division != null ? !division.equals(that.division) :
-        that.division != null)
+    if (!Objects.equals(division, that.division))
     {
       return false;
     }
-    if (department != null ? !department.equals(that.department) :
-        that.department != null)
+    if (!Objects.equals(department, that.department))
     {
       return false;
     }
-    return !(manager != null ? !manager.equals(that.manager) :
-        that.manager != null);
-
+    return Objects.equals(manager, that.manager);
   }
 
   /**
@@ -293,12 +287,7 @@ public class EnterpriseUserExtension
   @Override
   public int hashCode()
   {
-    int result = employeeNumber != null ? employeeNumber.hashCode() : 0;
-    result = 31 * result + (costCenter != null ? costCenter.hashCode() : 0);
-    result = 31 * result + (organization != null ? organization.hashCode() : 0);
-    result = 31 * result + (division != null ? division.hashCode() : 0);
-    result = 31 * result + (department != null ? department.hashCode() : 0);
-    result = 31 * result + (manager != null ? manager.hashCode() : 0);
-    return result;
+    return Objects.hash(employeeNumber, costCenter, organization, division,
+        department, manager);
   }
 }

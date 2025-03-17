@@ -235,31 +235,32 @@ public class ExtensionsTest
   @Test
   public void testJsonParsing_annotations() throws Exception
   {
-    String jsonString = "{\n" +
-        "    \"externalId\": \"user:externalId\",\n" +
-        "    \"id\": \"user:id\",\n" +
-        "    \"meta\": {\n" +
-        "        \"created\": \"2015-02-27T14:00:04Z\",\n" +
-        "        \"lastModified\": \"2015-02-27T14:00:04Z\",\n" +
-        "        \"location\": \"http://here/user\",\n" +
-        "        \"resourceType\": \"some resource type\",\n" +
-        "        \"version\": \"1.0\"\n" +
-        "    },\n" +
-        "    \"name\": {\n" +
-        "        \"first\": \"name:first\",\n" +
-        "        \"last\": \"name:last\",\n" +
-        "        \"middle\": \"name:middle\"\n" +
-        "    },\n" +
-        "    \"password\": \"user:password\",\n" +
-        "    \"schemas\": [\n" +
-        "        \"urn:pingidentity:schemas:FavoriteColor\",\n" +
-        "        \"urn:junit:CoreClass_User:Users\"\n" +
-        "    ],\n" +
-        "    \"urn:pingidentity:schemas:FavoriteColor\": {\n" +
-        "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
-        "    },\n" +
-        "    \"userName\": \"user:username\"\n" +
-        "}";
+    String jsonString = """
+        {
+            "externalId": "user:externalId",
+            "id": "user:id",
+            "meta": {
+                "created": "2015-02-27T14:00:04Z",
+                "lastModified": "2015-02-27T14:00:04Z",
+                "location": "https://here/user",
+                "resourceType": "some resource type",
+                "version": "1.0"
+            },
+            "name": {
+                "first": "name:first",
+                "last": "name:last",
+                "middle": "name:middle"
+            },
+            "password": "user:password",
+            "schemas": [
+                "urn:pingidentity:schemas:FavoriteColor",
+                "urn:junit:CoreClass_User:Users"
+            ],
+            "urn:pingidentity:schemas:FavoriteColor": {
+                "favoriteColor": "extension:favoritecolor"
+            },
+            "userName": "user:username"
+        }""";
 
     CoreClass_User user = JsonUtils.getObjectReader().forType(
         CoreClass_User.class).readValue(jsonString);
@@ -270,7 +271,7 @@ public class ExtensionsTest
     Assert.assertEquals(user.getExternalId(), "user:externalId");
 
     // check the schemas
-    Set<String> schemaSet = new HashSet<String>();
+    Set<String> schemaSet = new HashSet<>();
     schemaSet.add("urn:pingidentity:schemas:FavoriteColor");
     schemaSet.add("urn:junit:CoreClass_User:Users");
 
@@ -296,9 +297,8 @@ public class ExtensionsTest
     ExtensionClass extensionClass = JsonUtils.nodeToValue(
         commonScimObject.getValue(Path.root(ExtensionClass.class)),
         ExtensionClass.class);
-    Map extensionAttrs = JsonUtils.nodeToValue(
-        commonScimObject.getValue(
-            "urn:pingidentity:schemas:FavoriteColor:"),
+    var extensionAttrs = JsonUtils.nodeToValue(
+        commonScimObject.getValue("urn:pingidentity:schemas:FavoriteColor:"),
         Map.class);
 
     Assert.assertEquals(extensionClass.getFavoriteColor(),
@@ -323,7 +323,7 @@ public class ExtensionsTest
     Meta meta = new Meta();
     meta.setCreated(new GregorianCalendar());
     meta.setLastModified(new GregorianCalendar());
-    meta.setLocation(new URI("http://here/user"));
+    meta.setLocation(new URI("https://here/user"));
     meta.setResourceType("some resource type");
     meta.setVersion("1.0");
 
@@ -351,31 +351,32 @@ public class ExtensionsTest
    */
   private GenericScimResource getGenericUser() throws Exception
   {
-    String jsonString = "{\n" +
-        "    \"externalId\": \"user:externalId\",\n" +
-        "    \"id\": \"user:id\",\n" +
-        "    \"meta\": {\n" +
-        "        \"created\": \"2015-02-27T14:00:04Z\",\n" +
-        "        \"lastModified\": \"2015-02-27T14:00:04Z\",\n" +
-        "        \"location\": \"http://here/user\",\n" +
-        "        \"resourceType\": \"some resource type\",\n" +
-        "        \"version\": \"1.0\"\n" +
-        "    },\n" +
-        "    \"name\": {\n" +
-        "        \"first\": \"name:first\",\n" +
-        "        \"last\": \"name:last\",\n" +
-        "        \"middle\": \"name:middle\"\n" +
-        "    },\n" +
-        "    \"password\": \"user:password\",\n" +
-        "    \"schemas\": [\n" +
-        "        \"urn:pingidentity:schemas:FavoriteColor\",\n" +
-        "        \"urn:junit:CoreClass_User:Users\"\n" +
-        "    ],\n" +
-        "    \"urn:pingidentity:schemas:FavoriteColor\": {\n" +
-        "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
-        "    },\n" +
-        "    \"userName\": \"user:username\"\n" +
-        "}";
+    String jsonString = """
+        {
+            "externalId": "user:externalId",
+            "id": "user:id",
+            "meta": {
+                "created": "2015-02-27T14:00:04Z",
+                "lastModified": "2015-02-27T14:00:04Z",
+                "location": "https://here/user",
+                "resourceType": "some resource type",
+                "version": "1.0"
+            },
+            "name": {
+                "first": "name:first",
+                "last": "name:last",
+                "middle": "name:middle"
+            },
+            "password": "user:password",
+            "schemas": [
+                "urn:pingidentity:schemas:FavoriteColor",
+                "urn:junit:CoreClass_User:Users"
+            ],
+            "urn:pingidentity:schemas:FavoriteColor": {
+                "favoriteColor": "extension:favoritecolor"
+            },
+            "userName": "user:username"
+        }""";
 
     return JsonUtils.getObjectReader().forType(
         GenericScimResource.class).readValue(jsonString);

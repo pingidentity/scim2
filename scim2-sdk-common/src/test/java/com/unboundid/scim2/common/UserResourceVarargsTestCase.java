@@ -29,8 +29,7 @@ import com.unboundid.scim2.common.types.X509Certificate;
 import org.testng.annotations.Test;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
@@ -53,12 +52,12 @@ public class UserResourceVarargsTestCase
     user2.setUserName("Kratos");
 
     // Set a single email.
-    user1.setEmails(Collections.singletonList(new Email().setValue("kratos@example.com")));
+    user1.setEmails(List.of(new Email().setValue("kratos@example.com")));
     user2.setEmails(new Email().setValue("kratos@example.com"));
     assertEquals(user1, user2);
 
     // Set two values.
-    user1.setEmails(Arrays.asList(
+    user1.setEmails(List.of(
             new Email().setValue("kratos@example.com"),
             new Email().setValue("kratos2@example.com")
     ));
@@ -69,7 +68,7 @@ public class UserResourceVarargsTestCase
     assertEquals(user1, user2);
 
     // Set two values in a different order.
-    user1.setEmails(Arrays.asList(
+    user1.setEmails(List.of(
             new Email().setValue("kratos2@example.com"),
             new Email().setValue("kratos@example.com")
     ));
@@ -80,7 +79,7 @@ public class UserResourceVarargsTestCase
     assertNotEquals(user1, user2);
 
     // Set three values.
-    user1.setEmails(Arrays.asList(
+    user1.setEmails(List.of(
             new Email().setValue("kratos@example.com"),
             new Email().setValue("kratos2@example.com"),
             new Email().setValue("kratos3@example.com")
@@ -93,7 +92,7 @@ public class UserResourceVarargsTestCase
     assertEquals(user1, user2);
 
     // Set three values in a different order.
-    user1.setEmails(Arrays.asList(
+    user1.setEmails(List.of(
             new Email().setValue("kratos@example.com"),
             new Email().setValue("kratos2@example.com"),
             new Email().setValue("kratos3@example.com")
@@ -116,7 +115,7 @@ public class UserResourceVarargsTestCase
                     null);
     assertEquals(user2.getEmails().size(), 2);
 
-    user1.setEmails(Arrays.asList(
+    user1.setEmails(List.of(
             new Email().setValue("kratos@example.com"),
             new Email().setValue("kratos2@example.com")
     ));
@@ -141,27 +140,27 @@ public class UserResourceVarargsTestCase
     final PhoneNumber one = new PhoneNumber().setValue("+3 111-111-1111");
 
     // Set a single value.
-    user1.setPhoneNumbers(Collections.singletonList(pi));
+    user1.setPhoneNumbers(List.of(pi));
     user2.setPhoneNumbers(pi);
     assertEquals(user1, user2);
 
     // Set two values.
-    user1.setPhoneNumbers(Arrays.asList(pi, euler));
+    user1.setPhoneNumbers(List.of(pi, euler));
     user2.setPhoneNumbers(pi, euler);
     assertEquals(user1, user2);
 
     // Set two values in a different order.
-    user1.setPhoneNumbers(Arrays.asList(euler, pi));
+    user1.setPhoneNumbers(List.of(euler, pi));
     user2.setPhoneNumbers(pi, euler);
     assertNotEquals(user1, user2);
 
     // Set three values.
-    user1.setPhoneNumbers(Arrays.asList(pi, euler, one));
+    user1.setPhoneNumbers(List.of(pi, euler, one));
     user2.setPhoneNumbers(pi, euler, one);
     assertEquals(user1, user2);
 
     // Set three values in a different order.
-    user1.setPhoneNumbers(Arrays.asList(pi, euler, one));
+    user1.setPhoneNumbers(List.of(pi, euler, one));
     user2.setPhoneNumbers(pi, one, euler);
     assertNotEquals(user1, user2);
 
@@ -173,7 +172,7 @@ public class UserResourceVarargsTestCase
     user2.setPhoneNumbers(pi, null, one, null);
     assertEquals(user2.getPhoneNumbers().size(), 2);
 
-    user1.setPhoneNumbers(Arrays.asList(pi, euler));
+    user1.setPhoneNumbers(List.of(pi, euler));
     user2.setPhoneNumbers(pi, null, null, euler, null);
     assertEquals(user1, user2);
   }
@@ -197,27 +196,27 @@ public class UserResourceVarargsTestCase
             new InstantMessagingAddress().setValue("@head");
 
     // Set a single value.
-    user1.setIms(Collections.singletonList(ims1));
+    user1.setIms(List.of(ims1));
     user2.setIms(ims1);
     assertEquals(user1, user2);
 
     // Set two values.
-    user1.setIms(Arrays.asList(ims1, ims2));
+    user1.setIms(List.of(ims1, ims2));
     user2.setIms(ims1, ims2);
     assertEquals(user1, user2);
 
     // Set two values in a different order.
-    user1.setIms(Arrays.asList(ims2, ims1));
+    user1.setIms(List.of(ims2, ims1));
     user2.setIms(ims1, ims2);
     assertNotEquals(user1, user2);
 
     // Set three values.
-    user1.setIms(Arrays.asList(ims1, ims2, ims3));
+    user1.setIms(List.of(ims1, ims2, ims3));
     user2.setIms(ims1, ims2, ims3);
     assertEquals(user1, user2);
 
     // Set three values in a different order.
-    user1.setIms(Arrays.asList(ims1, ims2, ims3));
+    user1.setIms(List.of(ims1, ims2, ims3));
     user2.setIms(ims1, ims3, ims2);
     assertNotEquals(user1, user2);
 
@@ -229,7 +228,7 @@ public class UserResourceVarargsTestCase
     user2.setIms(ims1, null, ims2, null);
     assertEquals(user2.getIms().size(), 2);
 
-    user1.setIms(Arrays.asList(ims1, ims2));
+    user1.setIms(List.of(ims1, ims2));
     user2.setIms(ims1, null, null, ims2, null);
     assertEquals(user1, user2);
   }
@@ -253,27 +252,27 @@ public class UserResourceVarargsTestCase
             new Photo().setValue(URI.create("https://example.com/3.png"));
 
     // Set a single value.
-    user1.setPhotos(Collections.singletonList(photo1));
+    user1.setPhotos(List.of(photo1));
     user2.setPhotos(photo1);
     assertEquals(user1, user2);
 
     // Set two values.
-    user1.setPhotos(Arrays.asList(photo1, photo2));
+    user1.setPhotos(List.of(photo1, photo2));
     user2.setPhotos(photo1, photo2);
     assertEquals(user1, user2);
 
     // Set two values in a different order.
-    user1.setPhotos(Arrays.asList(photo2, photo1));
+    user1.setPhotos(List.of(photo2, photo1));
     user2.setPhotos(photo1, photo2);
     assertNotEquals(user1, user2);
 
     // Set three values.
-    user1.setPhotos(Arrays.asList(photo1, photo2, photo3));
+    user1.setPhotos(List.of(photo1, photo2, photo3));
     user2.setPhotos(photo1, photo2, photo3);
     assertEquals(user1, user2);
 
     // Set three values in a different order.
-    user1.setPhotos(Arrays.asList(photo1, photo2, photo3));
+    user1.setPhotos(List.of(photo1, photo2, photo3));
     user2.setPhotos(photo1, photo3, photo2);
     assertNotEquals(user1, user2);
 
@@ -285,7 +284,7 @@ public class UserResourceVarargsTestCase
     user2.setPhotos(photo1, null, photo2, null);
     assertEquals(user2.getPhotos().size(), 2);
 
-    user1.setPhotos(Arrays.asList(photo1, photo2));
+    user1.setPhotos(List.of(photo1, photo2));
     user2.setPhotos(photo1, null, null, photo2, null);
     assertEquals(user1, user2);
   }
@@ -309,27 +308,27 @@ public class UserResourceVarargsTestCase
             new Address().setStreetAddress("1234 Svartelfheim Ave.");
 
     // Set a single value.
-    user1.setAddresses(Collections.singletonList(address1));
+    user1.setAddresses(List.of(address1));
     user2.setAddresses(address1);
     assertEquals(user1, user2);
 
     // Set two values.
-    user1.setAddresses(Arrays.asList(address1, address2));
+    user1.setAddresses(List.of(address1, address2));
     user2.setAddresses(address1, address2);
     assertEquals(user1, user2);
 
     // Set two values in a different order.
-    user1.setAddresses(Arrays.asList(address2, address1));
+    user1.setAddresses(List.of(address2, address1));
     user2.setAddresses(address1, address2);
     assertNotEquals(user1, user2);
 
     // Set three values.
-    user1.setAddresses(Arrays.asList(address1, address2, address3));
+    user1.setAddresses(List.of(address1, address2, address3));
     user2.setAddresses(address1, address2, address3);
     assertEquals(user1, user2);
 
     // Set three values in a different order.
-    user1.setAddresses(Arrays.asList(address1, address2, address3));
+    user1.setAddresses(List.of(address1, address2, address3));
     user2.setAddresses(address1, address3, address2);
     assertNotEquals(user1, user2);
 
@@ -341,7 +340,7 @@ public class UserResourceVarargsTestCase
     user2.setAddresses(address1, null, address2, null);
     assertEquals(user2.getAddresses().size(), 2);
 
-    user1.setAddresses(Arrays.asList(address1, address2));
+    user1.setAddresses(List.of(address1, address2));
     user2.setAddresses(address1, null, null, address2, null);
     assertEquals(user1, user2);
   }
@@ -362,27 +361,27 @@ public class UserResourceVarargsTestCase
     final Group elves = new Group().setValue("Elves");
 
     // Set a single value.
-    user1.setGroups(Collections.singletonList(dwarves));
+    user1.setGroups(List.of(dwarves));
     user2.setGroups(dwarves);
     assertEquals(user1, user2);
 
     // Set two values.
-    user1.setGroups(Arrays.asList(dwarves, giants));
+    user1.setGroups(List.of(dwarves, giants));
     user2.setGroups(dwarves, giants);
     assertEquals(user1, user2);
 
     // Set two values in a different order.
-    user1.setGroups(Arrays.asList(giants, dwarves));
+    user1.setGroups(List.of(giants, dwarves));
     user2.setGroups(dwarves, giants);
     assertNotEquals(user1, user2);
 
     // Set three values.
-    user1.setGroups(Arrays.asList(dwarves, giants, elves));
+    user1.setGroups(List.of(dwarves, giants, elves));
     user2.setGroups(dwarves, giants, elves);
     assertEquals(user1, user2);
 
     // Set three values in a different order.
-    user1.setGroups(Arrays.asList(dwarves, giants, elves));
+    user1.setGroups(List.of(dwarves, giants, elves));
     user2.setGroups(dwarves, elves, giants);
     assertNotEquals(user1, user2);
 
@@ -394,7 +393,7 @@ public class UserResourceVarargsTestCase
     user2.setGroups(dwarves, null, elves, null);
     assertEquals(user2.getGroups().size(), 2);
 
-    user1.setGroups(Arrays.asList(dwarves, giants));
+    user1.setGroups(List.of(dwarves, giants));
     user2.setGroups(dwarves, null, null, giants, null);
     assertEquals(user1, user2);
   }
@@ -415,27 +414,27 @@ public class UserResourceVarargsTestCase
     final Entitlement healing = new Entitlement().setValue("Healing");
 
     // Set a single value.
-    user1.setEntitlements(Collections.singletonList(magic));
+    user1.setEntitlements(List.of(magic));
     user2.setEntitlements(magic);
     assertEquals(user1, user2);
 
     // Set two values.
-    user1.setEntitlements(Arrays.asList(magic, prophecy));
+    user1.setEntitlements(List.of(magic, prophecy));
     user2.setEntitlements(magic, prophecy);
     assertEquals(user1, user2);
 
     // Set two values in a different order.
-    user1.setEntitlements(Arrays.asList(prophecy, magic));
+    user1.setEntitlements(List.of(prophecy, magic));
     user2.setEntitlements(magic, prophecy);
     assertNotEquals(user1, user2);
 
     // Set three values.
-    user1.setEntitlements(Arrays.asList(magic, prophecy, healing));
+    user1.setEntitlements(List.of(magic, prophecy, healing));
     user2.setEntitlements(magic, prophecy, healing);
     assertEquals(user1, user2);
 
     // Set three values in a different order.
-    user1.setEntitlements(Arrays.asList(magic, prophecy, healing));
+    user1.setEntitlements(List.of(magic, prophecy, healing));
     user2.setEntitlements(magic, healing, prophecy);
     assertNotEquals(user1, user2);
 
@@ -447,7 +446,7 @@ public class UserResourceVarargsTestCase
     user2.setEntitlements(magic, null, prophecy, null);
     assertEquals(user2.getEntitlements().size(), 2);
 
-    user1.setEntitlements(Arrays.asList(magic, prophecy));
+    user1.setEntitlements(List.of(magic, prophecy));
     user2.setEntitlements(magic, null, null, prophecy, null);
     assertEquals(user1, user2);
   }
@@ -468,27 +467,27 @@ public class UserResourceVarargsTestCase
     final Role seeker = new Role().setValue("Knowledge seeker");
 
     // Set a single value.
-    user1.setRoles(Collections.singletonList(allFather));
+    user1.setRoles(List.of(allFather));
     user2.setRoles(allFather);
     assertEquals(user1, user2);
 
     // Set two values.
-    user1.setRoles(Arrays.asList(allFather, leader));
+    user1.setRoles(List.of(allFather, leader));
     user2.setRoles(allFather, leader);
     assertEquals(user1, user2);
 
     // Set two values in a different order.
-    user1.setRoles(Arrays.asList(leader, allFather));
+    user1.setRoles(List.of(leader, allFather));
     user2.setRoles(allFather, leader);
     assertNotEquals(user1, user2);
 
     // Set three values.
-    user1.setRoles(Arrays.asList(allFather, leader, seeker));
+    user1.setRoles(List.of(allFather, leader, seeker));
     user2.setRoles(allFather, leader, seeker);
     assertEquals(user1, user2);
 
     // Set three values in a different order.
-    user1.setRoles(Arrays.asList(allFather, leader, seeker));
+    user1.setRoles(List.of(allFather, leader, seeker));
     user2.setRoles(allFather, seeker, leader);
     assertNotEquals(user1, user2);
 
@@ -500,7 +499,7 @@ public class UserResourceVarargsTestCase
     user2.setRoles(allFather, null, seeker, null);
     assertEquals(user2.getRoles().size(), 2);
 
-    user1.setRoles(Arrays.asList(allFather, leader));
+    user1.setRoles(List.of(allFather, leader));
     user2.setRoles(allFather, null, null, leader, null);
     assertEquals(user1, user2);
   }
@@ -524,27 +523,27 @@ public class UserResourceVarargsTestCase
             new X509Certificate().setValue("cert3".getBytes());
 
     // Set a single value.
-    user1.setX509Certificates(Collections.singletonList(cert1));
+    user1.setX509Certificates(List.of(cert1));
     user2.setX509Certificates(cert1);
     assertEquals(user1, user2);
 
     // Set two values.
-    user1.setX509Certificates(Arrays.asList(cert1, cert2));
+    user1.setX509Certificates(List.of(cert1, cert2));
     user2.setX509Certificates(cert1, cert2);
     assertEquals(user1, user2);
 
     // Set two values in a different order.
-    user1.setX509Certificates(Arrays.asList(cert2, cert1));
+    user1.setX509Certificates(List.of(cert2, cert1));
     user2.setX509Certificates(cert1, cert2);
     assertNotEquals(user1, user2);
 
     // Set three values.
-    user1.setX509Certificates(Arrays.asList(cert1, cert2, cert3));
+    user1.setX509Certificates(List.of(cert1, cert2, cert3));
     user2.setX509Certificates(cert1, cert2, cert3);
     assertEquals(user1, user2);
 
     // Set three values in a different order.
-    user1.setX509Certificates(Arrays.asList(cert1, cert2, cert3));
+    user1.setX509Certificates(List.of(cert1, cert2, cert3));
     user2.setX509Certificates(cert1, cert3, cert2);
     assertNotEquals(user1, user2);
 
@@ -556,7 +555,7 @@ public class UserResourceVarargsTestCase
     user2.setX509Certificates(cert1, null, cert2, null);
     assertEquals(user2.getX509Certificates().size(), 2);
 
-    user1.setX509Certificates(Arrays.asList(cert1, cert2));
+    user1.setX509Certificates(List.of(cert1, cert2));
     user2.setX509Certificates(cert1, null, null, cert2, null);
     assertEquals(user1, user2);
   }

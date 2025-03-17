@@ -67,8 +67,7 @@ public abstract class AbstractServiceProviderConfigEndpoint
     ServiceProviderConfigResource serviceProviderConfig =
         getServiceProviderConfig();
     ResourcePreparer<GenericScimResource> resourcePreparer =
-        new ResourcePreparer<GenericScimResource>(
-            RESOURCE_TYPE_DEFINITION, uriInfo);
+        new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     GenericScimResource resource =
         serviceProviderConfig.asGenericScimResource();
     resourcePreparer.setResourceTypeAndLocation(resource);
