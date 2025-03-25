@@ -42,7 +42,7 @@ jobs:
         echo "This job was triggered by the '${{ github.event_name }}' event."
     - uses: actions/checkout@v4
     - name: Install JDK ${{ matrix.java-version }}
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: ${{ matrix.java-version }}
         distribution: 'temurin'
