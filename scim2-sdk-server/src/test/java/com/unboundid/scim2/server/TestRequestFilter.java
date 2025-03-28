@@ -41,9 +41,9 @@ import java.util.Map;
 class TestRequestFilter implements ContainerRequestFilter
 {
   private MultivaluedMap<String, String> expectedHeaders =
-      new MultivaluedHashMap<String, String>();
+      new MultivaluedHashMap<>();
   private MultivaluedMap<String, String> expectedQueryParams =
-      new MultivaluedHashMap<String, String>();
+      new MultivaluedHashMap<>();
 
   /** {@inheritDoc} */
   public void filter(ContainerRequestContext requestContext) throws IOException

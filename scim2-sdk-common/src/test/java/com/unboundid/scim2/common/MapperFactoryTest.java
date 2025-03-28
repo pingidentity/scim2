@@ -69,12 +69,13 @@ public class MapperFactoryTest
   {
     // A SCIM resource with the attributes (except 'schema') sorted
     // alphabetically.
-    final String rawJSONString = "{"
-        + "  \"schemas\" : [ \"urn:ietf:params:scim:schemas:core:2.0:User\" ],"
-        + "  \"displayName\" : \"Kendrick Lamar\","
-        + "  \"emails\" : [{ \"value\" : \"NLU@example.com\" }],"
-        + "  \"userName\" : \"K.Dot\""
-        + "}";
+    final String rawJSONString = """
+        {
+          "schemas" : [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+          "displayName" : "Kendrick Lamar",
+          "emails" : [{ "value" : "NLU@example.com" }],
+          "userName" : "K.Dot"
+        }""";
 
     // Reformat the string in a standardized form.
     final String expectedJSON = JsonUtils.getObjectReader()
@@ -113,13 +114,14 @@ public class MapperFactoryTest
   {
     // The JSON representing the 'name' field for a UserResource. The
     // 'stageName' field is not established by the SCIM standard.
-    final String rawJSONString = "{"
-        + "    \"familyName\": \"Duckworth\","
-        + "    \"givenName\": \"Kendrick\","
-        + "    \"middleName\": \"Lamar\","
-        + "    \"formatted\": \"Kendrick Lamar Duckworth\","
-        + "    \"stageName\": \"K.Dot\""
-        + "}";
+    final String rawJSONString = """
+        {
+            "familyName": "Duckworth",
+            "givenName": "Kendrick",
+            "middleName": "Lamar",
+            "formatted": "Kendrick Lamar Duckworth",
+            "stageName": "K.Dot"
+        }""";
 
     Name expectedPOJO = new Name().setFamilyName("Duckworth")
         .setGivenName("Kendrick")
@@ -155,10 +157,11 @@ public class MapperFactoryTest
   {
     // A SCIM resource with a 'schemas' field set to a string instead of an
     // array.
-    final String rawJSONString = "{"
-        + "    \"schemas\": \"urn:ietf:params:scim:schemas:core:2.0:User\","
-        + "    \"userName\": \"kendrick.lamar\""
-        + "}";
+    final String rawJSONString = """
+        {
+            "schemas": "urn:ietf:params:scim:schemas:core:2.0:User",
+            "userName": "kendrick.lamar"
+        }""";
 
     // Reformat the string in a standardized form.
     final String expectedJSON = JsonUtils.getObjectReader()

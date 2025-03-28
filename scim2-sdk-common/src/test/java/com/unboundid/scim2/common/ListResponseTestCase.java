@@ -44,17 +44,18 @@ import static org.testng.Assert.fail;
 public class ListResponseTestCase
 {
   // An example ListResponse in JSON form.
-  private static final String SINGLE_ELEMENT_LIST_RESPONSE = "{ "
-          + "  \"schemas\": ["
-          + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
-          + "  ],"
-          + "  \"totalResults\": 2,"
-          + "  \"itemsPerPage\": 1,"
-          + "  \"startIndex\": 1,"
-          + "  \"Resources\": ["
-          + "    \"stringValue\""
-          + "  ]"
-          + "}";
+  private static final String SINGLE_ELEMENT_LIST_RESPONSE = """
+      {
+        "schemas": [
+          "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+        ],
+        "totalResults": 2,
+        "itemsPerPage": 1,
+        "startIndex": 1,
+        "Resources": [
+          "stringValue"
+        ]
+      }""";
 
 
   /**
@@ -66,50 +67,51 @@ public class ListResponseTestCase
   public void testListResponse()
       throws Exception
   {
+    // Test required property case-insensitivity
     ListResponse<ObjectNode> listResponse =
         JsonUtils.getObjectReader().forType(
             new TypeReference<ListResponse<ObjectNode>>() {}).readValue(
-            "{  \n" +
-            "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n" +
-            "  ],\n" +
-                // Test required property case-insensitivity
-            "  \"totalresults\":2,\n" +
-            "  \"startIndex\":1,\n" +
-                // Test case-insensitivity
-            "  \"ItemsPerPage\":3,\n" +
-            "  \"Resources\":[  \n" +
-            "    {  \n" +
-            "      \"userName\":\"bjensen\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"userName\":\"jsmith\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}");
+            """
+                {
+                  "schemas":[
+                    "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+                  ],
+                  "totalresults":2,
+                  "startIndex":1,
+                  "ItemsPerPage":3,
+                  "Resources":[
+                    {
+                      "userName":"bjensen"
+                    },
+                    {
+                      "userName":"jsmith"
+                    }
+                  ]
+                }""");
 
     try
     {
+      // Test missing required property: totalResults
+      // Test case-insensitivity
       listResponse =
         JsonUtils.getObjectReader().forType(
           new TypeReference<ListResponse<ObjectNode>>() {}).readValue(
-          "{  \n" +
-            "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n" +
-            "  ],\n" +
-            // Test missing required property: totalResults
-            "  \"startIndex\":1,\n" +
-            // Test case-insensitivity
-            "  \"ItemsPerPage\":3,\n" +
-            "  \"Resources\":[  \n" +
-            "    {  \n" +
-            "      \"userName\":\"bjensen\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"userName\":\"jsmith\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}");
+            """
+                {
+                  "schemas":[
+                    "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+                  ],
+                  "startIndex":1,
+                  "ItemsPerPage":3,
+                  "Resources":[
+                    {
+                      "userName":"bjensen"
+                    },
+                    {
+                      "userName":"jsmith"
+                    }
+                  ]
+                }""");
       fail("Expected failure for missing required property 'totalResults'");
     }
     catch (final JsonMappingException je)
@@ -123,18 +125,17 @@ public class ListResponseTestCase
     assertEquals(listResponse.getItemsPerPage(), Integer.valueOf(3));
     assertEquals(listResponse.getResources().size(), 2);
 
-    ArrayList<ResourceTypeResource> resourceTypeList =
-        new ArrayList<ResourceTypeResource>();
+    ArrayList<ResourceTypeResource> resourceTypeList = new ArrayList<>();
     resourceTypeList.add(
         new ResourceTypeResource("urn:test", "test", "test", new URI("/test"),
             new URI("urn:test"),
-            Collections.<ResourceTypeResource.SchemaExtension>emptyList()));
+            Collections.emptyList()));
     resourceTypeList.add(
         new ResourceTypeResource("urn:test2", "test2", "test2",
             new URI("/test2"), new URI("urn:test2"),
-            Collections.<ResourceTypeResource.SchemaExtension>emptyList()));
+            Collections.emptyList()));
     ListResponse<ResourceTypeResource> response =
-        new ListResponse<ResourceTypeResource>(100, resourceTypeList, 1, 10);
+        new ListResponse<>(100, resourceTypeList, 1, 10);
 
     String serialized = JsonUtils.getObjectWriter().
         writeValueAsString(response);
@@ -183,13 +184,12 @@ public class ListResponseTestCase
 
     // When 'totalResults' is 0, a missing "Resources" property should be
     // permitted and translated into an empty list.
-    String noResource = "{ "
-        + "  \"schemas\": ["
-        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
-        + "  ],"
-        + "  \"totalResults\": 0,"
-        + "  \"itemsPerPage\": 0"
-        + "}";
+    String noResource = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 0,
+          "itemsPerPage": 0
+        }""";
     ListResponse<?> object = reader.readValue(noResource, ListResponse.class);
     assertThat(object.getTotalResults()).isEqualTo(0);
     assertThat(object.getItemsPerPage()).isEqualTo(0);
@@ -200,12 +200,11 @@ public class ListResponseTestCase
 
     // Test the emptiest possible valid ListResponse object. There should be no
     // problems with setting the other fields to null or empty.
-    String smallResponse = "{ "
-        + "  \"schemas\": ["
-        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
-        + "  ],"
-        + "  \"totalResults\": 0"
-        + "}";
+    String smallResponse = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 0
+        }""";
     ListResponse<?> small = reader.readValue(smallResponse, ListResponse.class);
     assertThat(small.getTotalResults()).isEqualTo(0);
     assertThat(small.getItemsPerPage()).isNull();
@@ -215,13 +214,12 @@ public class ListResponseTestCase
         .isEmpty();
 
     // An explicit empty array should still be permitted if totalResults == 0.
-    String emptyArray = "{ "
-        + "  \"schemas\": ["
-        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
-        + "  ],"
-        + "  \"totalResults\": 0,"
-        + "  \"Resources\": []"
-        + "}";
+    String emptyArray = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 0,
+          "Resources": []
+        }""";
     ListResponse<?> response = reader.readValue(emptyArray, ListResponse.class);
     assertThat(response.getTotalResults()).isEqualTo(0);
     assertThat(response.getItemsPerPage()).isNull();
@@ -232,27 +230,25 @@ public class ListResponseTestCase
 
     // This is illegal since the Resources array is missing when totalResults is
     // non-zero.
-    String invalidJSON = "{ "
-        + "  \"schemas\": ["
-        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
-        + "  ],"
-        + "  \"totalResults\": 1"
-        + "}";
-    assertThatThrownBy(()-> reader.readValue(invalidJSON, ListResponse.class))
+    String invalidJSON = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 1
+        }""";
+    assertThatThrownBy(() -> reader.readValue(invalidJSON, ListResponse.class))
         .isInstanceOf(JsonProcessingException.class)
         .hasMessageContaining("Failed to create the ListResponse since it is")
         .hasMessageContaining("missing the 'Resources' property");
 
     // The following is a valid list response since itemsPerPage restricts the
     // resource list size to 0.
-    String newObj = "{ "
-        + "  \"schemas\": ["
-        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
-        + "  ],"
-        + "  \"totalResults\": 100,"
-        + "  \"itemsPerPage\": 0,"
-        + "  \"Resources\": []"
-        + "}";
+    String newObj = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 100,
+          "itemsPerPage": 0,
+          "Resources": []
+        }""";
     ListResponse<?> response2 = reader.readValue(newObj, ListResponse.class);
     assertThat(response2.getTotalResults()).isEqualTo(100);
     assertThat(response2.getItemsPerPage()).isEqualTo(0);
@@ -265,13 +261,12 @@ public class ListResponseTestCase
     // However, if a SCIM service is willing to return null when totalResults is
     // 0, they might do the same for itemsPerPage. The SCIM SDK permits this
     // operation in order to make it easier to work with these SCIM services.
-    String itemsJSON = "{ "
-        + "  \"schemas\": ["
-        + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
-        + "  ],"
-        + "  \"totalResults\": 100,"
-        + "  \"itemsPerPage\": 0"
-        + "}";
+    String itemsJSON = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 100,
+          "itemsPerPage": 0
+        }""";
     ListResponse<?> response3 = reader.readValue(itemsJSON, ListResponse.class);
     assertThat(response3.getTotalResults()).isEqualTo(100);
     assertThat(response3.getItemsPerPage()).isEqualTo(0);

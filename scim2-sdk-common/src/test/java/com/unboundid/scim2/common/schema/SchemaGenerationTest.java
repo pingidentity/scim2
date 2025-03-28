@@ -27,7 +27,6 @@ import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -286,13 +285,13 @@ public class SchemaGenerationTest
     checkAttribute(attribute, "description:multiValuedString",
         Required.DEFAULT, CaseExact.DEFAULT, Multivalued.MULTIVALUED,
         AttributeDefinition.Type.COMPLEX, null, null, null,
-        new HashSet(makeModifiableList("one", "two", "three")), null);
+        new HashSet<>(makeModifiableList("one", "two", "three")), null);
 
     Collection<AttributeDefinition> subAttributes =
         attribute.getSubAttributes();
     Assert.assertTrue(subAttributes != null);
     Assert.assertTrue(subAttributes.size() > 0);
-    List<String> expectedAttributes = new LinkedList<String>();
+    List<String> expectedAttributes = new LinkedList<>();
     addSubAttributeFields(expectedAttributes);
 
     for (AttributeDefinition subAttribute : subAttributes)
@@ -308,8 +307,9 @@ public class SchemaGenerationTest
       Multivalued multivalued, AttributeDefinition.Type type,
       AttributeDefinition.Returned returned,
       AttributeDefinition.Mutability mutability,
-      AttributeDefinition.Uniqueness uniqueness, Set canonicalValues,
-      Set referenceType)
+      AttributeDefinition.Uniqueness uniqueness,
+      Set<?> canonicalValues,
+      Set<?> referenceType)
   {
     if (mutability == null)
     {
@@ -374,7 +374,7 @@ public class SchemaGenerationTest
 
   private void checkAllAttributesFound(List<String> expectedAttributes)
   {
-    if (expectedAttributes.size() > 0)
+    if (!expectedAttributes.isEmpty())
     {
       Assert.fail("Did not find all attributes : " + expectedAttributes);
     }
@@ -396,13 +396,13 @@ public class SchemaGenerationTest
 
   private List<String> makeModifiableList(String ... values)
   {
-    return new LinkedList<String>(Arrays.asList(values));
+    return new LinkedList<>(List.of(values));
   }
 
 
   private void addSubAttributeFields(List<String> expectedAttributes)
   {
-    expectedAttributes.addAll(Arrays.asList(
+    expectedAttributes.addAll(List.of(
         "type", "primary", "display", "value", "$ref"));
   }
 }

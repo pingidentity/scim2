@@ -33,35 +33,36 @@ public class ConsentTest
   public void testSerialization() throws Exception
   {
     String consentString =
-        "{  \n" +
-            "   \"client\":{  \n" +
-            "      \"name\":\"appName\",\n" +
-            "      \"description\":\"appDesc\",\n" +
-            "      \"iconUrl\":\"http://localhost:12345/app\",\n" +
-            "      \"emailAddress\":\"email@address.com\"\n" +
-            "   },\n" +
-            "   \"scopes\":[  \n" +
-            "      {  \n" +
-            "         \"name\":\"name1\",\n" +
-            "         \"description\":\"description1\",\n" +
-            "         \"consent\":\"granted\"\n" +
-            "      },\n" +
-            "      {  \n" +
-            "         \"name\":\"name2\",\n" +
-            "         \"description\":\"description2\",\n" +
-            "         \"consent\":\"denied\"\n" +
-            "      },\n" +
-            "      {  \n" +
-            "         \"name\":\"name3\",\n" +
-            "         \"description\":\"description3\",\n" +
-            "         \"consent\":\"revoked\"\n" +
-            "      }\n" +
-            "   ],\n" +
-            "   \"meta\":{  \n" +
-            "      \"lastModified\":\"2015-07-06T04:03:02.000Z\"\n" +
-            "   },\n" +
-            "   \"id\":\"ConsentId\"\n" +
-            "}";
+        """
+            {
+               "client":{
+                  "name":"appName",
+                  "description":"appDesc",
+                  "iconUrl":"http://localhost:12345/app",
+                  "emailAddress":"email@address.com"
+               },
+               "scopes":[
+                  {
+                     "name":"name1",
+                     "description":"description1",
+                     "consent":"granted"
+                  },
+                  {
+                     "name":"name2",
+                     "description":"description2",
+                     "consent":"denied"
+                  },
+                  {
+                     "name":"name3",
+                     "description":"description3",
+                     "consent":"revoked"
+                  }
+               ],
+               "meta":{
+                  "lastModified":"2015-07-06T04:03:02.000Z"
+               },
+               "id":"ConsentId"
+            }""";
 
     Consent consent = JsonUtils.getObjectReader().forType(Consent.class).
         readValue(consentString);

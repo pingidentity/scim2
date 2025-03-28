@@ -56,70 +56,69 @@ public class FilterEvaluatorTestCase
     date = new Date();
 
     node = JsonUtils.getObjectReader().
-        readTree("{\n" +
-            "    \"externalId\": \"user:externalId\",\n" +
-            "    \"id\": \"user:id\",\n" +
-            "    \"meta\": {\n" +
-            "        \"created\": \"" +
-            DateTimeUtils.format(date) + "\",\n" +
-            "        \"lastModified\": \"2015-02-27T11:29:39Z\",\n" +
-            "        \"location\": \"http://here/user\",\n" +
-            "        \"resourceType\": \"some resource type\",\n" +
-            "        \"version\": \"1.0\"\n" +
-            "    },\n" +
-            "    \"name\": {\n" +
-            "        \"first\": \"name:first\",\n" +
-            "        \"last\": \"name:last\",\n" +
-            "        \"middle\": \"name:middle\"\n" +
-            "    },\n" +
-            "    \"shoeSize\" : \"12W\",\n" +
-            "    \"weight\" : 175.6,\n" +
-            "    \"children\" : 5,\n" +
-            "    \"true\" : true,\n" +
-            "    \"false\" : false,\n" +
-            "    \"null\" : null,\n" +
-            "    \"empty\" : [],\n" +
-            "    \"addresses\": [\n" +
-            "      {\n" +
-            "        \"type\": \"work\",\n" +
-            "        \"streetAddress\": \"100 Universal City Plaza\",\n" +
-            "        \"locality\": \"Hollywood\",\n" +
-            "        \"region\": \"CA\",\n" +
-            "        \"postalCode\": \"91608\",\n" +
-            "        \"priority\": 0,\n" +
-            "        \"country\": \"USA\",\n" +
-            "        \"formatted\": \"100 Universal City Plaza\\n" +
-            "Hollywood, CA 91608 USA\",\n" +
-            "        \"primary\": true\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"type\": \"home\",\n" +
-            "        \"streetAddress\": \"456 Hollywood Blvd\",\n" +
-            "        \"locality\": \"Hollywood\",\n" +
-            "        \"region\": \"CA\",\n" +
-            "        \"postalCode\": \"91608\",\n" +
-            "        \"priority\": 10,\n" +
-            "        \"country\": \"USA\",\n" +
-            "        \"formatted\": \"456 Hollywood Blvd\\n" +
-            "Hollywood, CA 91608 USA\"\n" +
-            "      }\n" +
-            "    ],\n" +
-            "    \"password\": \"user:password\",\n" +
-            "    \"schemas\": [" +
-            "    \"urn:pingidentity:schemas:baseSchema\", " +
-            "    \"urn:pingidentity:schemas:favoriteColor\"" +
-            "    ],\n" +
-            "    \"urn:pingidentity:schemas:favoriteColor\": {\n" +
-            "        \"favoriteColor\": \"extension:favoritecolor\"\n" +
-            "    },\n" +
-            "    \"userName\": \"user:username\",\n" +
-            "    \"friends\":[\n" +
-            "      {\n" +
-            "        \"displayName\": \"Babs Jensen\",\n" +
-            "        \"$ref\": \"Users/BabsJensen\"\n" +
-            "      }\n" +
-            "    ]\n" +
-            "}");
+        readTree("""
+            {
+                "externalId": "user:externalId",
+                "id": "user:id",
+                "meta": {
+                    "created": "%s",
+                    "lastModified": "2015-02-27T11:29:39Z",
+                    "location": "https://here/user",
+                    "resourceType": "some resource type",
+                    "version": "1.0"
+                },
+                "name": {
+                    "first": "name:first",
+                    "last": "name:last",
+                    "middle": "name:middle"
+                },
+                "shoeSize" : "12W",
+                "weight" : 175.6,
+                "children" : 5,
+                "true" : true,
+                "false" : false,
+                "null" : null,
+                "empty" : [],
+                "addresses": [
+                  {
+                    "type": "work",
+                    "streetAddress": "100 Universal City Plaza",
+                    "locality": "Hollywood",
+                    "region": "CA",
+                    "postalCode": "91608",
+                    "priority": 0,
+                    "country": "USA",
+                    "formatted": "100 Universal City Plaza\\nHollywood,\
+            CA 91608 USA",
+                    "primary": true
+                  },
+                  {
+                    "type": "home",
+                    "streetAddress": "456 Hollywood Blvd",
+                    "locality": "Hollywood",
+                    "region": "CA",
+                    "postalCode": "91608",
+                    "priority": 10,
+                    "country": "USA",
+                    "formatted": "456 Hollywood Blvd\\nHollywood, CA 91608 USA"
+                  }
+                ],
+                "password": "user:password",
+                "schemas": [
+                    "urn:pingidentity:schemas:baseSchema",
+                    "urn:pingidentity:schemas:favoriteColor"
+                ],
+                "urn:pingidentity:schemas:favoriteColor": {
+                    "favoriteColor": "extension:favoritecolor"
+                },
+                "userName": "user:username",
+                "friends":[
+                  {
+                    "displayName": "Babs Jensen",
+                    "$ref": "Users/BabsJensen"
+                  }
+                ]
+            }""".formatted(DateTimeUtils.format(date)));
   }
 
   /**
@@ -399,6 +398,25 @@ public class FilterEvaluatorTestCase
     );
     assertThat(orFilter.equals(orFilterDifferentOrder)).isTrue();
     assertThat(orFilterDifferentOrder.equals(orFilter)).isTrue();
+
+    // Test nested AND/OR filters.
+    Filter filter1 = Filter.fromString(
+        "((email ew \"example.com\" or domain ew \"example.com\")"
+            + " and workAddress pr)");
+    Filter filter2 = Filter.fromString(
+        "((domain ew \"example.com\" or email ew \"example.com\")"
+            + " and workAddress pr)");
+    assertThat(filter1.equals(filter2)).isTrue();
+    assertThat(filter2.equals(filter1)).isTrue();
+
+    Filter filter3 = Filter.fromString(
+        "((email ew \"example.com\" and domain ew \"example.com\")"
+            + " or workAddress pr)");
+    Filter filter4 = Filter.fromString(
+        "((domain ew \"example.com\" and email ew \"example.com\")"
+            + " or workAddress pr)");
+    assertThat(filter3.equals(filter4)).isTrue();
+    assertThat(filter4.equals(filter3)).isTrue();
   }
 
 

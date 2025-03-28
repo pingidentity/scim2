@@ -67,20 +67,20 @@ public class TestResourceEndpoint
   @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   public Response getBadException()
   {
-    return Response.status(Response.Status.CONFLICT).
-        type(MediaType.APPLICATION_JSON).entity(
-            "{\n" +
-            "    \"Errors\": [\n" +
-            "        {\n" +
-            "            \"code\": 409, \n" +
-            "            \"description\": \"Insert failed. First exception on" +
-                " row 0; first error: FIELD_INTEGRITY_EXCEPTION, Salesforce " +
-                "CRM Content User is not allowed for this License Type.: " +
-                "__MISSING_LABEL_FOR_common.udd.impl.UddInfoImpl@4d7b688d: " +
-                "[UserPermissions]\"\n" +
-            "        }\n" +
-            "    ]\n" +
-            "}").build();
+    return Response.status(Response.Status.CONFLICT)
+        .type(MediaType.APPLICATION_JSON).entity("""
+            {
+              "Errors": [
+                {
+                  "code": 409,
+                  "description": "Insert failed. First exception on row 0; \
+            first error: FIELD_INTEGRITY_EXCEPTION, Salesforce CRM Content \
+            User is not allowed for this License Type.: \
+            __MISSING_LABEL_FOR_common.udd.impl.UddInfoImpl@4d7b688d: \
+            [UserPermissions]"
+                }
+              ]
+            }""").build();
   }
 
   /**
@@ -117,8 +117,7 @@ public class TestResourceEndpoint
     resource.setId("123");
 
     SimpleSearchResults<UserResource> results =
-        new SimpleSearchResults<UserResource>(
-            RESOURCE_TYPE_DEFINITION, uriInfo);
+        new SimpleSearchResults<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     results.add(resource);
 
     return results;
@@ -141,13 +140,12 @@ public class TestResourceEndpoint
   {
     if (id.equals("123"))
     {
-      UserResource resource = new UserResource().setUserName("test");
+      UserResource resource = new UserResource().setUserName("test")
+          .setDisplayName("UserDisplayName").setNickName("UserNickName");
       resource.setId("123");
-      resource.setDisplayName("UserDisplayName");
-      resource.setNickName("UserNickName");
 
       ResourcePreparer<UserResource> resourcePreparer =
-          new ResourcePreparer<UserResource>(RESOURCE_TYPE_DEFINITION, uriInfo);
+          new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
       return resourcePreparer.trimRetrievedResource(resource);
     }
     throw new ResourceNotFoundException("No resource with ID " + id);
@@ -167,17 +165,18 @@ public class TestResourceEndpoint
   {
     return Response.status(Response.Status.OK)
         .type(MEDIA_TYPE_SCIM)
-        .entity("{"
-            + "  \"SCHEMAS\": ["
-            + "    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\""
-            + "  ],"
-            + "  \"tOtAlReSuLtS\": 2,"
-            + "  \"ItemsPerPage\": 1,"
-            + "  \"resources\": ["
-            + "    {"
-            + "      \"userName\": \"k.dot\""
-            + "    }"
-            + "  ]"
-            + "}").build();
+        .entity("""
+            {
+              "SCHEMAS": [
+                "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+              ],
+              "tOtAlReSuLtS": 2,
+              "ItemsPerPage": 1,
+              "resources": [
+                {
+                  "userName": "k.dot"
+                }
+              ]
+            }""").build();
   }
 }

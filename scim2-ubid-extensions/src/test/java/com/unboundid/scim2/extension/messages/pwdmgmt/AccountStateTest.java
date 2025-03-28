@@ -21,6 +21,8 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  *
  */
@@ -35,61 +37,62 @@ public class AccountStateTest
   public void testAccountState() throws Exception
   {
     String accountStateString =
-        "{\n" +
-            "  \"accountDisabled\": false,\n" +
-            "  \"accountExpirationTime\": \"2015-07-06T04:03:02.000Z\",\n" +
-            "  \"secondsUntilAccountExpiration\": 10,\n" +
-            "  \"passwordChangedTime\": \"2015-07-06T04:04:02.000Z\",\n" +
-            "  \"passwordExpirationWarnedTime\": \"2015-07-06T04:05:02.000Z\",\n" +
-            "  \"secondsUntilPasswordExpiration\": 11,\n" +
-            "  \"secondsUntilPasswordExpirationWarning\": 12,\n" +
-            "  \"authenticationFailureTimes\": [\n" +
-            "    \"2015-07-06T04:10:02.000Z\",\n" +
-            "    \"2015-07-06T04:11:02.000Z\",\n" +
-            "    \"2015-07-06T04:12:02.000Z\"\n" +
-            "  ],\n" +
-            "  \"secondsUntilAuthenticationFailureUnlock\": 13,\n" +
-            "  \"remainingAuthenticationFailureCount\": 14,\n" +
-            "  \"lastLoginTime\": \"2015-07-06T04:06:02.000Z\",\n" +
-            "  \"secondsUntilIdleLockout\": 15,\n" +
-            "  \"mustChangePassword\": true,\n" +
-            "  \"graceLoginTimes\": [\n" +
-            "    \"2015-07-06T04:20:02.000Z\",\n" +
-            "    \"2015-07-06T04:21:02.000Z\",\n" +
-            "    \"2015-07-06T04:22:02.000Z\"\n" +
-            "  ],\n" +
-            "  \"remainingGraceLoginCount\": 17,\n" +
-            "  \"passwordChangedByRequiredTime\": \"2015-07-06T04:07:02.000Z\",\n" +
-            "  \"passwordHistory\": [\n" +
-            "    \"pw_one\",\n" +
-            "    \"pw_two\",\n" +
-            "    \"pw_three\"\n" +
-            "  ],\n" +
-            "  \"retiredPassword\": {\n" +
-            "    \"passwordRetiredTime\": \"2015-07-06T04:20:02.000Z\",\n" +
-            "    \"passwordExpirationTime\": \"2015-07-06T04:20:02.000Z\"\n" +
-            "  },\n" +
-            "  \"accountActivationTime\": \"2015-07-06T04:07:02.000Z\",\n" +
-            "  \"secondsUntilAccountActivation\": 18,\n" +
-            "  \"accountUsabilityNotices\": [\n" +
-            "    {\n" +
-            "      \"name\": \"test1\",\n" +
-            "      \"message\": \"test is a test\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"accountUsabilityWarnings\": [\n" +
-            "    {\n" +
-            "      \"name\": \"test1\",\n" +
-            "      \"message\": \"test is a test\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"accountUsabilityErrors\": [\n" +
-            "    {\n" +
-            "      \"name\": \"test1\",\n" +
-            "      \"message\": \"test is a test\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}";
+        """
+            {
+              "accountDisabled": false,
+              "accountExpirationTime": "2015-07-06T04:03:02.000Z",
+              "secondsUntilAccountExpiration": 10,
+              "passwordChangedTime": "2015-07-06T04:04:02.000Z",
+              "passwordExpirationWarnedTime": "2015-07-06T04:05:02.000Z",
+              "secondsUntilPasswordExpiration": 11,
+              "secondsUntilPasswordExpirationWarning": 12,
+              "authenticationFailureTimes": [
+                "2015-07-06T04:10:02.000Z",
+                "2015-07-06T04:11:02.000Z",
+                "2015-07-06T04:12:02.000Z"
+              ],
+              "secondsUntilAuthenticationFailureUnlock": 13,
+              "remainingAuthenticationFailureCount": 14,
+              "lastLoginTime": "2015-07-06T04:06:02.000Z",
+              "secondsUntilIdleLockout": 15,
+              "mustChangePassword": true,
+              "graceLoginTimes": [
+                "2015-07-06T04:20:02.000Z",
+                "2015-07-06T04:21:02.000Z",
+                "2015-07-06T04:22:02.000Z"
+              ],
+              "remainingGraceLoginCount": 17,
+              "passwordChangedByRequiredTime": "2015-07-06T04:07:02.000Z",
+              "passwordHistory": [
+                "pw_one",
+                "pw_two",
+                "pw_three"
+              ],
+              "retiredPassword": {
+                "passwordRetiredTime": "2015-07-06T04:20:02.000Z",
+                "passwordExpirationTime": "2015-07-06T04:20:02.000Z"
+              },
+              "accountActivationTime": "2015-07-06T04:07:02.000Z",
+              "secondsUntilAccountActivation": 18,
+              "accountUsabilityNotices": [
+                {
+                  "name": "test1",
+                  "message": "test is a test"
+                }
+              ],
+              "accountUsabilityWarnings": [
+                {
+                  "name": "test1",
+                  "message": "test is a test"
+                }
+              ],
+              "accountUsabilityErrors": [
+                {
+                  "name": "test1",
+                  "message": "test is a test"
+                }
+              ]
+            }""";
 
     AccountState accountState =
         JsonUtils.getObjectReader().forType(AccountState.class).
@@ -99,5 +102,62 @@ public class AccountStateTest
     AccountState deserializedAccountState = JsonUtils.getObjectReader().
         forType(AccountState.class).readValue(serializedConsent);
     Assert.assertEquals(accountState, deserializedAccountState);
+  }
+
+  /**
+   * Test expected values of null fields, whether initialized or explicitly set.
+   */
+  @Test
+  public void testNullFields()
+  {
+    // Newly-created account fields should all evaluate to null.
+    AccountState accountState = new AccountState();
+    assertAllFieldsNull(accountState);
+
+    // Set the public fields to a JsonReference containing null.
+    accountState.setAccountDisabled(null);
+    accountState.setAccountExpirationTime(null);
+    accountState.setPasswordChangedTime(null);
+    accountState.setPasswordExpirationWarnedTime(null);
+    accountState.setLastLoginTime(null);
+    accountState.setMustChangePassword(null);
+    accountState.setPasswordChangedByRequiredTime(null);
+    accountState.setAuthenticationFailureTimes(null);
+    accountState.setGraceLoginTimes(null);
+    accountState.clearPasswordHistory();
+    accountState.purgeRetiredPassword();
+    accountState.setAccountActivationTime(null);
+
+    // The fields should still effectively be null.
+    assertAllFieldsNull(accountState);
+  }
+
+  private void assertAllFieldsNull(AccountState accountState)
+  {
+    assertThat(accountState.isAccountDisabled()).isNull();
+    assertThat(accountState.getAccountExpirationTime()).isNull();
+    assertThat(accountState.getSecondsUntilAccountExpiration()).isNull();
+    assertThat(accountState.getPasswordChangedTime()).isNull();
+    assertThat(accountState.getPasswordExpirationWarnedTime()).isNull();
+    assertThat(accountState.getSecondsUntilPasswordExpiration()).isNull();
+    assertThat(accountState.getSecondsUntilPasswordExpirationWarning()).isNull();
+    assertThat(accountState.getSecondsUntilAuthenticationFailureUnlock()).isNull();
+    assertThat(accountState.getRemainingAuthenticationFailureCount()).isNull();
+    assertThat(accountState.getLastLoginTime()).isNull();
+    assertThat(accountState.getSecondsUntilIdleLockout()).isNull();
+    assertThat(accountState.isMustChangePassword()).isNull();
+    assertThat(accountState.getSecondsUntilPasswordResetLockout()).isNull();
+    assertThat(accountState.getRemainingGraceLoginCount()).isNull();
+    assertThat(accountState.getPasswordChangedByRequiredTime()).isNull();
+    assertThat(accountState.getSecondsUntilRequiredChangeTime()).isNull();
+    assertThat(accountState.getAuthenticationFailureTimes()).isNull();
+    assertThat(accountState.getGraceLoginTimes()).isNull();
+    assertThat(accountState.getPasswordHistory()).isNull();
+    assertThat(accountState.getRetiredPassword()).isNull();
+    assertThat(accountState.getAccountActivationTime()).isNull();
+    assertThat(accountState.getSecondsUntilAccountActivation()).isNull();
+    assertThat(accountState.getAccountUsabilityNotices()).isNull();
+    assertThat(accountState.getAccountUsabilityWarnings()).isNull();
+    assertThat(accountState.getAccountUsabilityErrors()).isNull();
   }
 }

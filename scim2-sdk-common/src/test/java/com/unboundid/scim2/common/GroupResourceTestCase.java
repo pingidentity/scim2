@@ -54,55 +54,57 @@ public class GroupResourceTestCase
   @BeforeMethod
   public void init()
   {
-    fullRepresentation = "{\n" +
-        "  \"schemas\": [\"urn:ietf:params:scim:schemas:core:2.0:Group\"],\n" +
-        "  \"id\": \"e9e30dba-f08f-4109-8486-d5c6a331660a\",\n" +
-        "  \"displayName\": \"Tour Guides\",\n" +
-        "  \"members\": [\n" +
-        "    {\n" +
-        "      \"value\": \"2819c223-7f76-453a-919d-413861904646\",\n" +
-        "      \"$ref\":\n" +
-        "\"https://example.com/v2/Users/2819c223-7f76-453a-919d-413861904646\",\n" +
-        "      \"display\": \"Babs Jensen\"\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"value\": \"902c246b-6245-4190-8e05-00816be7344a\",\n" +
-        "      \"$ref\":\n" +
-        "\"https://example.com/v2/Users/902c246b-6245-4190-8e05-00816be7344a\",\n" +
-        "      \"display\": \"Mandy Pepperidge\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"meta\": {\n" +
-        "    \"resourceType\": \"Group\",\n" +
-        "    \"created\": \"2010-01-23T04:56:22Z\",\n" +
-        "    \"lastModified\": \"2011-05-13T04:42:34Z\",\n" +
-        "    \"version\": \"W\\/\\\"3694e05e9dff592\\\"\",\n" +
-        "    \"location\":\n" +
-        "\"https://example.com/v2/Groups/e9e30dba-f08f-4109-8486-d5c6a331660a\"\n" +
-        "  }\n" +
-        "}";
+    fullRepresentation = """
+        {
+          "schemas": ["urn:ietf:params:scim:schemas:core:2.0:Group"],
+          "id": "e9e30dba-f08f-4109-8486-d5c6a331660a",
+          "displayName": "Tour Guides",
+          "members": [
+            {
+              "value": "2819c223-7f76-453a-919d-413861904646",
+              "$ref":
+        "https://example.com/v2/Users/2819c223-7f76-453a-919d-413861904646",
+              "display": "Babs Jensen"
+            },
+            {
+              "value": "902c246b-6245-4190-8e05-00816be7344a",
+              "$ref":
+        "https://example.com/v2/Users/902c246b-6245-4190-8e05-00816be7344a",
+              "display": "Mandy Pepperidge"
+            }
+          ],
+          "meta": {
+            "resourceType": "Group",
+            "created": "2010-01-23T04:56:22Z",
+            "lastModified": "2011-05-13T04:42:34Z",
+            "version": "W\\/\\"3694e05e9dff592\\"",
+            "location":
+        "https://example.com/v2/Groups/e9e30dba-f08f-4109-8486-d5c6a331660a"
+          }
+        }""";
 
-    membersWithType = "{" +
-        "  \"schemas\": [\"urn:ietf:params:scim:schemas:core:2.0:Group\"]," +
-        "  \"id\": \"c215de78-5c6a-407b-bea3-9a2a8f0f1202\"," +
-        "  \"displayName\": \"Not Basketball Players\"," +
-        "  \"members\": [" +
-        "    {" +
-        "      \"value\": \"03b5ae49-fa74-4f5c-8af4-12b363100a2b\"," +
-        "      \"type\": \"User\"," +
-        "      \"$ref\":\"https://example.com/v2/Users/" +
-                      "03b5ae49-fa74-4f5c-8af4-12b363100a2b\"," +
-        "      \"display\": \"Michael B. Jordan\"" +
-        "    }," +
-        "    {" +
-        "      \"value\": \"f9b62a62-abe8-430e-b802-9e84f0e06baa\"," +
-        "      \"type\": \"Group\"," +
-        "      \"$ref\": \"https://example.com/v2/Groups/" +
-                      "f9b62a62-abe8-430e-b802-9e84f0e06baa\"," +
-        "      \"display\": \"Wizards (of the Coast)\"" +
-        "    }" +
-        "  ]" +
-        "}";
+    membersWithType = """
+        {
+          "schemas": ["urn:ietf:params:scim:schemas:core:2.0:Group"],
+          "id": "c215de78-5c6a-407b-bea3-9a2a8f0f1202",
+          "displayName": "Not Basketball Players",
+          "members": [
+            {
+              "value": "03b5ae49-fa74-4f5c-8af4-12b363100a2b",
+              "type": "User",
+              "$ref":
+        "https://example.com/v2/Users/03b5ae49-fa74-4f5c-8af4-12b363100a2b",
+              "display": "Michael B. Jordan"
+            },
+            {
+              "value": "f9b62a62-abe8-430e-b802-9e84f0e06baa",
+              "type": "Group",
+              "$ref":
+        "https://example.com/v2/Groups/f9b62a62-abe8-430e-b802-9e84f0e06baa",
+              "display": "Wizards (of the Coast)"
+            }
+          ]
+        }""";
   }
 
   /**
