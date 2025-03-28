@@ -25,6 +25,7 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.Meta;
 
 import java.util.List;
+import java.util.Objects;
 
 @Schema(description = "Consent objects.  These represent a user giving" +
     "consent for a client to access identity data.",
@@ -113,16 +114,11 @@ public final class Consent extends BaseScimResource
     }
 
     Consent consent = (Consent) o;
-
-    if (client != null ? !client.equals(consent.client) :
-        consent.client != null)
+    if (!Objects.equals(client, consent.client))
     {
       return false;
     }
-
-    return !(scopes != null ? !scopes.equals(consent.scopes) :
-        consent.scopes != null);
-
+    return Objects.equals(scopes, consent.scopes);
   }
 
   /**
@@ -133,10 +129,7 @@ public final class Consent extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (client != null ? client.hashCode() : 0);
-    result = 31 * result + (scopes != null ? scopes.hashCode() : 0);
-    return result;
+    return Objects.hash(super.hashCode(), client, scopes);
   }
 }
 

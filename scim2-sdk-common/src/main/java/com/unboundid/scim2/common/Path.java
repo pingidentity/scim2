@@ -25,12 +25,14 @@ import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.Parser;
-import com.unboundid.scim2.common.utils.StaticUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+
+import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
 
 /**
  * This class represents a path to one or more JSON values that are the targets
@@ -116,18 +118,11 @@ public final class Path implements Iterable<Path.Element>
 
       Element element = (Element) o;
 
-      if (!StaticUtils.toLowerCase(attribute).equals(
-          StaticUtils.toLowerCase(element.attribute)))
+      if (!toLowerCase(attribute).equals(toLowerCase(element.attribute)))
       {
         return false;
       }
-      if (valueFilter != null ? !valueFilter.equals(element.valueFilter) :
-          element.valueFilter != null)
-      {
-        return false;
-      }
-
-      return true;
+      return Objects.equals(valueFilter, element.valueFilter);
     }
 
     /**
@@ -138,9 +133,7 @@ public final class Path implements Iterable<Path.Element>
     @Override
     public int hashCode()
     {
-      int result = StaticUtils.toLowerCase(attribute).hashCode();
-      result = 31 * result + (valueFilter != null ? valueFilter.hashCode() : 0);
-      return result;
+      return Objects.hash(toLowerCase(attribute), valueFilter);
     }
 
     /**
@@ -473,14 +466,12 @@ public final class Path implements Iterable<Path.Element>
     }
 
     Path path = (Path) o;
-
     if (schemaUrn != null ? !schemaUrn.equalsIgnoreCase(path.schemaUrn) :
         path.schemaUrn != null)
     {
       return false;
     }
     return elements.equals(path.elements);
-
   }
 
   /**
@@ -491,10 +482,7 @@ public final class Path implements Iterable<Path.Element>
   @Override
   public int hashCode()
   {
-    int result = schemaUrn != null ?
-        StaticUtils.toLowerCase(schemaUrn).hashCode() : 0;
-    result = 31 * result + elements.hashCode();
-    return result;
+    return Objects.hash(toLowerCase(schemaUrn), elements);
   }
 
   /**

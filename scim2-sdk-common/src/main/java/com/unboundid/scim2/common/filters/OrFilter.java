@@ -21,6 +21,7 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -100,18 +101,18 @@ public final class OrFilter extends CombiningFilter
     {
       return true;
     }
-    if (!(o instanceof OrFilter))
+    if (!(o instanceof OrFilter that))
     {
       return false;
     }
 
-    OrFilter that = (OrFilter) o;
     if (getCombinedFilters().size() != that.getCombinedFilters().size())
     {
       return false;
     }
 
-    return getCombinedFilters().containsAll(that.getCombinedFilters());
+    HashSet<Filter> filters = new HashSet<>(getCombinedFilters());
+    return filters.containsAll(that.getCombinedFilters());
   }
 
   /**

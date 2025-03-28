@@ -22,6 +22,7 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * Photo for the user.
@@ -188,23 +189,19 @@ public class Photo
     }
 
     Photo photo = (Photo) o;
-
-    if (value != null ? !value.equals(photo.value) : photo.value != null)
+    if (!Objects.equals(value, photo.value))
     {
       return false;
     }
-    if (display != null ? !display.equals(photo.display) :
-        photo.display != null)
+    if (!Objects.equals(display, photo.display))
     {
       return false;
     }
-    if (type != null ? !type.equals(photo.type) : photo.type != null)
+    if (!Objects.equals(type, photo.type))
     {
       return false;
     }
-    return !(primary != null ? !primary.equals(photo.primary) :
-        photo.primary != null);
-
+    return Objects.equals(primary, photo.primary);
   }
 
   /**
@@ -215,10 +212,6 @@ public class Photo
   @Override
   public int hashCode()
   {
-    int result = value != null ? value.hashCode() : 0;
-    result = 31 * result + (display != null ? display.hashCode() : 0);
-    result = 31 * result + (type != null ? type.hashCode() : 0);
-    result = 31 * result + (primary != null ? primary.hashCode() : 0);
-    return result;
+    return Objects.hash(value, display, type, primary);
   }
 }

@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * A complex type that specifies FILTER options.
  */
@@ -100,17 +102,11 @@ public class FilterConfig
     }
 
     FilterConfig that = (FilterConfig) o;
-
     if (maxResults != that.maxResults)
     {
       return false;
     }
-    if (supported != that.supported)
-    {
-      return false;
-    }
-
-    return true;
+    return supported == that.supported;
   }
 
   /**
@@ -121,8 +117,6 @@ public class FilterConfig
   @Override
   public int hashCode()
   {
-    int result = (supported ? 1 : 0);
-    result = 31 * result + maxResults;
-    return result;
+    return Objects.hash(supported, maxResults);
   }
 }

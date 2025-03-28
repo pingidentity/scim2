@@ -28,6 +28,7 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * This represents a SCIM schema.
@@ -137,23 +138,15 @@ public class SchemaResource extends BaseScimResource
     }
 
     SchemaResource that = (SchemaResource) o;
-
-    if (attributes != null ? !attributes.equals(that.attributes) :
-        that.attributes != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    if (description != null ? !description.equals(that.description) :
-        that.description != null)
+    if (!Objects.equals(description, that.description))
     {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null)
-    {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(attributes, that.attributes);
   }
 
   /**
@@ -164,10 +157,6 @@ public class SchemaResource extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (name != null ? name.hashCode() : 0);
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
-    return result;
+    return Objects.hash(name, description, attributes);
   }
 }

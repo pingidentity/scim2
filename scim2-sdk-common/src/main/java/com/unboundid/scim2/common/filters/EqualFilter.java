@@ -23,6 +23,8 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
+import java.util.Objects;
+
 /**
  * This class represents a SCIM {@code eq} filter. Equality filters are used to
  * determine if a SCIM resource's attribute value is identical to the provided
@@ -97,17 +99,11 @@ public final class EqualFilter extends ComparisonFilter
     }
 
     ComparisonFilter that = (ComparisonFilter) o;
-
     if (!getAttributePath().equals(that.getAttributePath()))
     {
       return false;
     }
-    if (!getComparisonValue().equals(that.getComparisonValue()))
-    {
-      return false;
-    }
-
-    return true;
+    return getComparisonValue().equals(that.getComparisonValue());
   }
 
   /**
@@ -118,8 +114,6 @@ public final class EqualFilter extends ComparisonFilter
   @Override
   public int hashCode()
   {
-    int result = getAttributePath().hashCode();
-    result = 31 * result + getComparisonValue().hashCode();
-    return result;
+    return Objects.hash(getAttributePath(), getComparisonValue());
   }
 }

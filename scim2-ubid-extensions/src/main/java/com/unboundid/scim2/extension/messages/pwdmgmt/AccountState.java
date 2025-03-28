@@ -28,6 +28,7 @@ import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This object contains all of the information about the account state.
@@ -801,183 +802,130 @@ public class AccountState extends BaseScimResource
     {
       return true;
     }
-
     if (o == null || getClass() != o.getClass())
     {
       return false;
     }
-
     if (!super.equals(o))
     {
       return false;
     }
 
     AccountState that = (AccountState) o;
-
-    if (accountDisabled != null ?
-        !accountDisabled.equals(that.accountDisabled) :
-        that.accountDisabled != null)
+    if (!Objects.equals(accountDisabled, that.accountDisabled))
     {
       return false;
     }
-
-    if (accountExpirationTime != null ?
-        !accountExpirationTime.equals(that.accountExpirationTime) :
-        that.accountExpirationTime != null)
+    if (!Objects.equals(accountExpirationTime, that.accountExpirationTime))
     {
       return false;
     }
-
-    if (secondsUntilAccountExpiration != null
-        ? !secondsUntilAccountExpiration.equals(
-        that.secondsUntilAccountExpiration) :
-        that.secondsUntilAccountExpiration != null)
+    if (!Objects.equals(secondsUntilAccountExpiration,
+        that.secondsUntilAccountExpiration))
     {
       return false;
     }
-    if (passwordChangedTime != null ?
-        !passwordChangedTime.equals(that.passwordChangedTime) :
-        that.passwordChangedTime != null)
+    if (!Objects.equals(passwordChangedTime, that.passwordChangedTime))
     {
       return false;
     }
-    if (passwordExpirationWarnedTime != null ?
-        !passwordExpirationWarnedTime.equals(that.passwordExpirationWarnedTime)
-        : that.passwordExpirationWarnedTime != null)
+    if (!Objects.equals(passwordExpirationWarnedTime,
+        that.passwordExpirationWarnedTime))
     {
       return false;
     }
-    if (secondsUntilPasswordExpiration != null
-        ? !secondsUntilPasswordExpiration.equals(
-        that.secondsUntilPasswordExpiration) :
-        that.secondsUntilPasswordExpiration != null)
+    if (!Objects.equals(secondsUntilPasswordExpiration,
+        that.secondsUntilPasswordExpiration))
     {
       return false;
     }
-    if (secondsUntilPasswordExpirationWarning != null ?
-        !secondsUntilPasswordExpirationWarning.equals(
-            that.secondsUntilPasswordExpirationWarning) :
-        that.secondsUntilPasswordExpirationWarning != null)
+    if (!Objects.equals(secondsUntilPasswordExpirationWarning,
+        that.secondsUntilPasswordExpirationWarning))
     {
       return false;
     }
-    if (authenticationFailureTimes != null ?
-        !authenticationFailureTimes.equals(that.authenticationFailureTimes) :
-        that.authenticationFailureTimes != null)
+    if (!Objects.equals(authenticationFailureTimes,
+        that.authenticationFailureTimes))
     {
       return false;
     }
-    if (secondsUntilAuthenticationFailureUnlock != null ?
-        !secondsUntilAuthenticationFailureUnlock.equals(
-            that.secondsUntilAuthenticationFailureUnlock) :
-        that.secondsUntilAuthenticationFailureUnlock != null)
+    if (!Objects.equals(secondsUntilAuthenticationFailureUnlock,
+        that.secondsUntilAuthenticationFailureUnlock))
     {
       return false;
     }
-    if (remainingAuthenticationFailureCount != null ?
-        !remainingAuthenticationFailureCount.equals(
-            that.remainingAuthenticationFailureCount) :
-        that.remainingAuthenticationFailureCount != null)
+    if (!Objects.equals(remainingAuthenticationFailureCount,
+        that.remainingAuthenticationFailureCount))
     {
       return false;
     }
-    if (lastLoginTime != null ?
-        !lastLoginTime.equals(that.lastLoginTime) : that.lastLoginTime != null)
+    if (!Objects.equals(lastLoginTime, that.lastLoginTime))
     {
       return false;
     }
-    if (secondsUntilIdleLockout != null ?
-        !secondsUntilIdleLockout.equals(that.secondsUntilIdleLockout)
-        : that.secondsUntilIdleLockout != null)
+    if (!Objects.equals(secondsUntilIdleLockout, that.secondsUntilIdleLockout))
     {
       return false;
     }
-    if (mustChangePassword != null ?
-        !mustChangePassword.equals(that.mustChangePassword) :
-        that.mustChangePassword != null)
+    if (!Objects.equals(mustChangePassword, that.mustChangePassword))
     {
       return false;
     }
-    if (secondsUntilPasswordResetLockout != null ?
-        !secondsUntilPasswordResetLockout.equals(
-            that.secondsUntilPasswordResetLockout) :
-        that.secondsUntilPasswordResetLockout != null)
+    if (!Objects.equals(secondsUntilPasswordResetLockout,
+        that.secondsUntilPasswordResetLockout))
     {
       return false;
     }
-    if (graceLoginTimes != null ?
-        !graceLoginTimes.equals(that.graceLoginTimes) :
-        that.graceLoginTimes != null)
+    if (!Objects.equals(graceLoginTimes, that.graceLoginTimes))
     {
       return false;
     }
-    if (remainingGraceLoginCount != null ?
-        !remainingGraceLoginCount.equals(that.remainingGraceLoginCount) :
-        that.remainingGraceLoginCount != null)
+    if (!Objects.equals(remainingGraceLoginCount,
+        that.remainingGraceLoginCount))
     {
       return false;
     }
-    if (passwordChangedByRequiredTime != null ?
-        !passwordChangedByRequiredTime.equals(
-            that.passwordChangedByRequiredTime) :
-        that.passwordChangedByRequiredTime != null)
+    if (!Objects.equals(passwordChangedByRequiredTime,
+        that.passwordChangedByRequiredTime))
     {
       return false;
     }
-    if (secondsUntilRequiredChangeTime != null ?
-        !secondsUntilRequiredChangeTime.equals(
-            that.secondsUntilRequiredChangeTime) :
-        that.secondsUntilRequiredChangeTime != null)
+    if (!Objects.equals(secondsUntilRequiredChangeTime,
+        that.secondsUntilRequiredChangeTime))
     {
       return false;
     }
-    if (passwordHistory != null ?
-        !passwordHistory.equals(that.passwordHistory) :
-        that.passwordHistory != null)
+    if (!Objects.equals(passwordHistory, that.passwordHistory))
     {
       return false;
     }
-    if (retiredPassword != null ?
-        !retiredPassword.equals(that.retiredPassword) :
-        that.retiredPassword != null)
+    if (!Objects.equals(retiredPassword, that.retiredPassword))
     {
       return false;
     }
-    if (accountActivationTime != null ?
-        !accountActivationTime.equals(that.accountActivationTime) :
-        that.accountActivationTime != null)
+    if (!Objects.equals(accountActivationTime, that.accountActivationTime))
     {
       return false;
     }
-    if (secondsUntilAccountActivation != null ?
-        !secondsUntilAccountActivation.equals(
-            that.secondsUntilAccountActivation) :
-        that.secondsUntilAccountActivation != null)
+    if (!Objects.equals(secondsUntilAccountActivation,
+        that.secondsUntilAccountActivation))
     {
       return false;
     }
-    if (lastLoginIpAddress != null ?
-        !lastLoginIpAddress.equals(that.lastLoginIpAddress) :
-        that.lastLoginIpAddress != null)
+    if (!Objects.equals(lastLoginIpAddress, that.lastLoginIpAddress))
     {
       return false;
     }
-    if (accountUsabilityNotices != null ?
-        !accountUsabilityNotices.equals(that.accountUsabilityNotices) :
-        that.accountUsabilityNotices != null)
+    if (!Objects.equals(accountUsabilityNotices, that.accountUsabilityNotices))
     {
       return false;
     }
-    if (accountUsabilityWarnings != null ?
-        !accountUsabilityWarnings.equals(that.accountUsabilityWarnings)
-        : that.accountUsabilityWarnings != null)
+    if (!Objects.equals(accountUsabilityWarnings,
+        that.accountUsabilityWarnings))
     {
       return false;
     }
-    return !(accountUsabilityErrors != null ?
-        !accountUsabilityErrors.equals(that.accountUsabilityErrors) :
-        that.accountUsabilityErrors != null);
-
+    return Objects.equals(accountUsabilityErrors, that.accountUsabilityErrors);
   }
 
   /**
@@ -988,59 +936,32 @@ public class AccountState extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (accountDisabled != null ?
-        accountDisabled.hashCode() : 0);
-    result = 31 * result + (accountExpirationTime != null ?
-        accountExpirationTime.hashCode() : 0);
-    result = 31 * result + (secondsUntilAccountExpiration != null ?
-        secondsUntilAccountExpiration.hashCode() : 0);
-    result = 31 * result + (passwordChangedTime != null ?
-        passwordChangedTime.hashCode() : 0);
-    result = 31 * result + (passwordExpirationWarnedTime != null ?
-        passwordExpirationWarnedTime.hashCode() : 0);
-    result = 31 * result + (secondsUntilPasswordExpiration != null ?
-        secondsUntilPasswordExpiration.hashCode() : 0);
-    result = 31 * result + (secondsUntilPasswordExpirationWarning != null ?
-        secondsUntilPasswordExpirationWarning.hashCode() : 0);
-    result = 31 * result + (authenticationFailureTimes != null ?
-        authenticationFailureTimes.hashCode() : 0);
-    result = 31 * result + (secondsUntilAuthenticationFailureUnlock != null ?
-        secondsUntilAuthenticationFailureUnlock.hashCode() : 0);
-    result = 31 * result + (remainingAuthenticationFailureCount != null ?
-        remainingAuthenticationFailureCount.hashCode() : 0);
-    result = 31 * result + (lastLoginTime != null ?
-        lastLoginTime.hashCode() : 0);
-    result = 31 * result + (secondsUntilIdleLockout != null ?
-        secondsUntilIdleLockout.hashCode() : 0);
-    result = 31 * result + (mustChangePassword != null ?
-        mustChangePassword.hashCode() : 0);
-    result = 31 * result + (secondsUntilPasswordResetLockout != null ?
-        secondsUntilPasswordResetLockout.hashCode() : 0);
-    result = 31 * result + (graceLoginTimes != null ?
-        graceLoginTimes.hashCode() : 0);
-    result = 31 * result + (remainingGraceLoginCount != null ?
-        remainingGraceLoginCount.hashCode() : 0);
-    result = 31 * result + (passwordChangedByRequiredTime != null ?
-        passwordChangedByRequiredTime.hashCode() : 0);
-    result = 31 * result + (secondsUntilRequiredChangeTime != null ?
-        secondsUntilRequiredChangeTime.hashCode() : 0);
-    result = 31 * result + (passwordHistory != null ?
-        passwordHistory.hashCode() : 0);
-    result = 31 * result + (retiredPassword != null ?
-        retiredPassword.hashCode() : 0);
-    result = 31 * result + (accountActivationTime != null ?
-        accountActivationTime.hashCode() : 0);
-    result = 31 * result + (secondsUntilAccountActivation != null ?
-        secondsUntilAccountActivation.hashCode() : 0);
-    result = 31 * result + (lastLoginIpAddress != null ?
-        lastLoginIpAddress.hashCode() : 0);
-    result = 31 * result + (accountUsabilityNotices != null ?
-        accountUsabilityNotices.hashCode() : 0);
-    result = 31 * result + (accountUsabilityWarnings != null ?
-        accountUsabilityWarnings.hashCode() : 0);
-    result = 31 * result + (accountUsabilityErrors != null ?
-        accountUsabilityErrors.hashCode() : 0);
-    return result;
+    return Objects.hash(super.hashCode(),
+        accountDisabled,
+        accountExpirationTime,
+        secondsUntilAccountExpiration,
+        passwordChangedTime,
+        passwordExpirationWarnedTime,
+        secondsUntilPasswordExpiration,
+        secondsUntilPasswordExpirationWarning,
+        authenticationFailureTimes,
+        secondsUntilAuthenticationFailureUnlock,
+        remainingAuthenticationFailureCount,
+        lastLoginTime,
+        secondsUntilIdleLockout,
+        mustChangePassword,
+        secondsUntilPasswordResetLockout,
+        graceLoginTimes,
+        remainingGraceLoginCount,
+        passwordChangedByRequiredTime,
+        secondsUntilRequiredChangeTime,
+        passwordHistory,
+        retiredPassword,
+        accountActivationTime,
+        secondsUntilAccountActivation,
+        lastLoginIpAddress,
+        accountUsabilityNotices,
+        accountUsabilityWarnings,
+        accountUsabilityErrors);
   }
 }

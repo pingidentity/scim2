@@ -22,6 +22,8 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
+import java.util.Objects;
+
 /**
  * Contains information about scopes.
  */
@@ -208,7 +210,7 @@ public final class Scope
    *
    * @param o   The object to compare.
    * @return    {@code true} if the provided object is equal to this scope, or
-   *            or {@code false} if not.
+   *            {@code false} if not.
    */
   @Override
   public boolean equals(@Nullable final Object o)
@@ -224,22 +226,15 @@ public final class Scope
     }
 
     Scope scope = (Scope) o;
-
-    if (name != null ? !name.equals(scope.name) :
-        scope.name != null)
+    if (!Objects.equals(name, scope.name))
     {
       return false;
     }
-
-    if (description != null ? !description.equals(scope.description) :
-        scope.description != null)
+    if (!Objects.equals(description, scope.description))
     {
       return false;
     }
-
-    return !(consent != null ? !consent.equals(scope.consent) :
-        scope.consent != null);
-
+    return Objects.equals(consent, scope.consent);
   }
 
   /**
@@ -250,9 +245,6 @@ public final class Scope
   @Override
   public int hashCode()
   {
-    int result = name != null ? name.hashCode() : 0;
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (consent != null ? consent.hashCode() : 0);
-    return result;
+    return Objects.hash(name, description, consent);
   }
 }

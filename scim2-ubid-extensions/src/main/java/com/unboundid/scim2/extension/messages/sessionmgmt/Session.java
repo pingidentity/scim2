@@ -28,6 +28,7 @@ import com.unboundid.scim2.extension.messages.consent.OAuth2Client;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 @Schema(description = "Session objects",
     id = "urn:pingidentity:scim:api:messages:2.0:session",
@@ -245,43 +246,32 @@ public class Session extends BaseScimResource
     }
 
     Session session = (Session) o;
-
-    if (lastLoginMethods != null ?
-        !lastLoginMethods.equals(session.lastLoginMethods)
-        : session.lastLoginMethods != null)
+    if (!Objects.equals(lastLoginMethods, session.lastLoginMethods))
     {
       return false;
     }
-    if (lastSecondFactorMethods != null
-        ? !lastSecondFactorMethods.equals(session.lastSecondFactorMethods)
-        : session.lastSecondFactorMethods != null)
+    if (!Objects.equals(lastSecondFactorMethods,
+        session.lastSecondFactorMethods))
     {
       return false;
     }
-    if (lastLogin != null ? !lastLogin.equals(session.lastLogin)
-        : session.lastLogin != null)
+    if (!Objects.equals(lastLogin, session.lastLogin))
     {
       return false;
     }
-    if (lastSecondFactor != null
-        ? !lastSecondFactor.equals(session.lastSecondFactor)
-        : session.lastSecondFactor != null)
+    if (!Objects.equals(lastSecondFactor, session.lastSecondFactor))
     {
       return false;
     }
-    if (ipAddress != null ? !ipAddress.equals(session.ipAddress)
-        : session.ipAddress != null)
+    if (!Objects.equals(ipAddress, session.ipAddress))
     {
       return false;
     }
-    if (userAgentString != null ?
-        !userAgentString.equals(session.userAgentString)
-        : session.userAgentString != null)
+    if (!Objects.equals(userAgentString, session.userAgentString))
     {
       return false;
     }
-    return clients != null ? clients.equals(session.clients)
-        : session.clients == null;
+    return Objects.equals(clients, session.clients);
   }
 
   /**
@@ -292,19 +282,8 @@ public class Session extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (lastLoginMethods != null
-        ? lastLoginMethods.hashCode() : 0);
-    result = 31 * result + (lastSecondFactorMethods != null
-        ? lastSecondFactorMethods.hashCode() : 0);
-    result = 31 * result + (lastLogin != null ? lastLogin.hashCode() : 0);
-    result = 31 * result + (lastSecondFactor != null
-        ? lastSecondFactor.hashCode() : 0);
-    result = 31 * result + (ipAddress != null ? ipAddress.hashCode() : 0);
-    result = 31 * result + (userAgentString != null
-        ? userAgentString.hashCode() : 0);
-    result = 31 * result + (clients != null ? clients.hashCode() : 0);
-    return result;
+    return Objects.hash(lastLoginMethods, lastSecondFactorMethods, lastLogin,
+        lastSecondFactor, ipAddress, userAgentString, clients);
   }
 }
 

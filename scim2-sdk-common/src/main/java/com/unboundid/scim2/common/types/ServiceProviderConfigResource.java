@@ -27,6 +27,7 @@ import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * SCIM provides a schema for representing the service provider's configuration
@@ -264,44 +265,35 @@ public class ServiceProviderConfigResource extends BaseScimResource
     }
 
     ServiceProviderConfigResource that = (ServiceProviderConfigResource) o;
-
-    if (authenticationSchemes != null ? !authenticationSchemes.equals(
-        that.authenticationSchemes) : that.authenticationSchemes != null)
+    if (!Objects.equals(authenticationSchemes, that.authenticationSchemes))
     {
       return false;
     }
-    if (bulk != null ? !bulk.equals(that.bulk) : that.bulk != null)
+    if (!Objects.equals(bulk, that.bulk))
     {
       return false;
     }
-    if (changePassword != null ? !changePassword.equals(that.changePassword) :
-        that.changePassword != null)
+    if (!Objects.equals(changePassword, that.changePassword))
     {
       return false;
     }
-    if (documentationUri != null ? !documentationUri.equals(
-        that.documentationUri) : that.documentationUri != null)
+    if (!Objects.equals(documentationUri, that.documentationUri))
     {
       return false;
     }
-    if (etag != null ? !etag.equals(that.etag) : that.etag != null)
+    if (!Objects.equals(etag, that.etag))
     {
       return false;
     }
-    if (filter != null ? !filter.equals(that.filter) : that.filter != null)
+    if (!Objects.equals(filter, that.filter))
     {
       return false;
     }
-    if (patch != null ? !patch.equals(that.patch) : that.patch != null)
+    if (!Objects.equals(patch, that.patch))
     {
       return false;
     }
-    if (sort != null ? !sort.equals(that.sort) : that.sort != null)
-    {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(sort, that.sort);
   }
 
   /**
@@ -312,18 +304,7 @@ public class ServiceProviderConfigResource extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (documentationUri != null ?
-        documentationUri.hashCode() : 0);
-    result = 31 * result + (patch != null ? patch.hashCode() : 0);
-    result = 31 * result + (bulk != null ? bulk.hashCode() : 0);
-    result = 31 * result + (filter != null ? filter.hashCode() : 0);
-    result = 31 * result + (changePassword != null ?
-        changePassword.hashCode() : 0);
-    result = 31 * result + (sort != null ? sort.hashCode() : 0);
-    result = 31 * result + (etag != null ? etag.hashCode() : 0);
-    result = 31 * result + (authenticationSchemes != null ?
-        authenticationSchemes.hashCode() : 0);
-    return result;
+    return Objects.hash(super.hashCode(), documentationUri, patch, bulk, filter,
+        changePassword, sort, etag, authenticationSchemes);
   }
 }

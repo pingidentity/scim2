@@ -21,6 +21,8 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * Role for the user.
  */
@@ -184,22 +186,19 @@ public class Role
     }
 
     Role role = (Role) o;
-
-    if (value != null ? !value.equals(role.value) : role.value != null)
+    if (!Objects.equals(value, role.value))
     {
       return false;
     }
-    if (display != null ? !display.equals(role.display) : role.display != null)
+    if (!Objects.equals(display, role.display))
     {
       return false;
     }
-    if (type != null ? !type.equals(role.type) : role.type != null)
+    if (!Objects.equals(type, role.type))
     {
       return false;
     }
-    return !(primary != null ? !primary.equals(role.primary) :
-        role.primary != null);
-
+    return Objects.equals(primary, role.primary);
   }
 
   /**
@@ -210,10 +209,6 @@ public class Role
   @Override
   public int hashCode()
   {
-    int result = value != null ? value.hashCode() : 0;
-    result = 31 * result + (display != null ? display.hashCode() : 0);
-    result = 31 * result + (type != null ? type.hashCode() : 0);
-    result = 31 * result + (primary != null ? primary.hashCode() : 0);
-    return result;
+    return Objects.hash(value, display, type, primary);
   }
 }
