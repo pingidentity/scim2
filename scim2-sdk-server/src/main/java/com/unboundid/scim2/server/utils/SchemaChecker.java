@@ -48,6 +48,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import static com.unboundid.scim2.common.utils.JsonUtils.isNullNodeOrEmptyArray;
+
 /**
  * Utility class used to validate and enforce the schema constraints of a
  * Resource Type on JSON objects representing SCIM resources.
@@ -60,16 +62,16 @@ public class SchemaChecker
   public static class Results
   {
     @NotNull
-    private final List<String> syntaxIssues = new LinkedList<String>();
+    private final List<String> syntaxIssues = new LinkedList<>();
 
     @NotNull
-    private final List<String> mutabilityIssues = new LinkedList<String>();
+    private final List<String> mutabilityIssues = new LinkedList<>();
 
     @NotNull
-    private final List<String> pathIssues = new LinkedList<String>();
+    private final List<String> pathIssues = new LinkedList<>();
 
     @NotNull
-    private final List<String> filterIssues = new LinkedList<String>();
+    private final List<String> filterIssues = new LinkedList<>();
 
     void addFilterIssue(@NotNull final String issue)
     {
@@ -132,22 +134,22 @@ public class SchemaChecker
     public void throwSchemaExceptions()
         throws BadRequestException
     {
-      if (syntaxIssues.size() > 0)
+      if (!syntaxIssues.isEmpty())
       {
         throw BadRequestException.invalidSyntax(getErrorString(syntaxIssues));
       }
 
-      if (mutabilityIssues.size() > 0)
+      if (!mutabilityIssues.isEmpty())
       {
         throw BadRequestException.mutability(getErrorString(mutabilityIssues));
       }
 
-      if (pathIssues.size() > 0)
+      if (!pathIssues.isEmpty())
       {
         throw BadRequestException.invalidPath(getErrorString(pathIssues));
       }
 
-      if (filterIssues.size() > 0)
+      if (!filterIssues.isEmpty())
       {
         throw BadRequestException.invalidFilter(getErrorString(filterIssues));
       }
@@ -183,7 +185,7 @@ public class SchemaChecker
      * Relax SCIM 2 standard schema requirements by allowing sub-attributes
      * that are not defined by the definition of the parent attribute.
      */
-    ALLOW_UNDEFINED_SUB_ATTRIBUTES;
+    ALLOW_UNDEFINED_SUB_ATTRIBUTES,
   }
 
   @NotNull
@@ -204,13 +206,13 @@ public class SchemaChecker
   public SchemaChecker(@NotNull final ResourceTypeDefinition resourceType)
   {
     this.resourceType = resourceType;
-    this.commonAndCoreAttributes = new LinkedHashSet<AttributeDefinition>(
+    this.commonAndCoreAttributes = new LinkedHashSet<>(
         resourceType.getCoreSchema().getAttributes().size() + 4);
     this.commonAndCoreAttributes.addAll(
         SchemaUtils.COMMON_ATTRIBUTE_DEFINITIONS);
     this.commonAndCoreAttributes.addAll(
         resourceType.getCoreSchema().getAttributes());
-    this.enabledOptions = new HashSet<Option>();
+    this.enabledOptions = new HashSet<>();
   }
 
   /**
@@ -235,31 +237,16 @@ public class SchemaChecker
 
   /**
    * Check a new SCIM resource against the schema.
-   *
    * The following checks will be performed:
    * <ul>
-   *   <li>
-   *     All schema URIs in the schemas attribute are defined.
-   *   </li>
-   *   <li>
-   *     All required schema extensions are present.
-   *   </li>
-   *   <li>
-   *     All required attributes are present.
-   *   </li>
-   *   <li>
-   *     All attributes are defined in schema.
-   *   </li>
-   *   <li>
-   *     All attribute values match the types defined in schema.
-   *   </li>
-   *   <li>
-   *     All canonical type values match one of the values defined in the
-   *     schema.
-   *   </li>
-   *   <li>
-   *     No attributes with values are read-only.
-   *   </li>
+   *   <li> All schema URIs in the schemas attribute are defined.
+   *   <li> All required schema extensions are present.
+   *   <li> All required attributes are present.
+   *   <li> All attributes are defined in schema.
+   *   <li> All attribute values match the types defined in schema.
+   *   <li> All canonical type values match one of the values defined in the
+   *        schema.
+   *   <li> No attributes with values are read-only.
    * </ul>
    *
    * @param objectNode The SCIM resource that will be created. Any read-only
@@ -282,41 +269,23 @@ public class SchemaChecker
    * Check a set of modify patch operations against the schema. The current
    * state of the SCIM resource may be provided to enable additional checks
    * for attributes that are immutable or required.
-   *
    * The following checks will be performed:
    * <ul>
-   *   <li>
-   *     Undefined schema URIs are not added to the schemas attribute.
-   *   </li>
-   *   <li>
-   *     Required schema extensions are not removed.
-   *   </li>
-   *   <li>
-   *     Required attributes are not removed.
-   *   </li>
-   *   <li>
-   *     Undefined attributes are not added.
-   *   </li>
-   *   <li>
-   *     New attribute values match the types defined in the schema.
-   *   </li>
-   *   <li>
-   *     New canonical values match one of the values defined in the schema.
-   *   </li>
-   *   <li>
-   *     Read-only attribute are not modified.
-   *   </li>
+   *   <li> Undefined schema URIs are not added to the schemas attribute.
+   *   <li> Required schema extensions are not removed.
+   *   <li> Required attributes are not removed.
+   *   <li> Undefined attributes are not added.
+   *   <li> New attribute values match the types defined in the schema.
+   *   <li> New canonical values match one of the values defined in the schema.
+   *   <li> Read-only attribute are not modified.
    * </ul>
    *
    * Additional checks if the current state of the SCIM resource is provided:
    * <ul>
-   *   <li>
-   *     The last value from a required multi-valued attribute is not removed.
-   *   </li>
-   *   <li>
-   *     Immutable attribute values are not modified if they already have a
-   *     value.
-   *   </li>
+   *   <li> The last value from a required multi-valued attribute is not
+   *        removed.
+   *   <li> Immutable attribute values are not modified if they already have a
+   *        value.
    * </ul>
    *
    * @param patchOperations The set of modify patch operations to check.
@@ -358,14 +327,14 @@ public class SchemaChecker
         addMessageForUndefinedAttr(path, prefix, results.pathIssues);
         continue;
       }
-      if (valueFilter != null && attribute != null && !attribute.isMultiValued())
+      if (valueFilter != null && !attribute.isMultiValued())
       {
         results.pathIssues.add(prefix +
             "Attribute " + path.getElement(0)+ " in path " +
-            path.toString() + " must not have a value selection filter " +
+            path + " must not have a value selection filter " +
             "because it is not multi-valued");
       }
-      if (valueFilter != null && attribute != null)
+      if (valueFilter != null)
       {
         SchemaCheckFilterVisitor.checkValueFilter(
             path.withoutFilters(), valueFilter, resourceType, this,
@@ -433,9 +402,8 @@ public class SchemaChecker
 
       if (appliedNode != null)
       {
-        // Apply the patch so we can later ensure these set of operations
-        // wont' be removing the all the values from a
-        // required multi-valued attribute.
+        // Apply the patch so we can later ensure these set of operations won't
+        // be removing all the values from a required multi-valued attribute.
         try
         {
           patchOp.apply(appliedNode);
@@ -468,36 +436,21 @@ public class SchemaChecker
    * Check a replacement SCIM resource against the schema. The current
    * state of the SCIM resource may be provided to enable additional checks
    * for attributes that are immutable.
-   *
    * The following checks will be performed:
    * <ul>
-   *   <li>
-   *     All schema URIs in the schemas attribute are defined.
-   *   </li>
-   *   <li>
-   *     All required schema extensions are present.
-   *   </li>
-   *   <li>
-   *     All attributes are defined in schema.
-   *   </li>
-   *   <li>
-   *     All attribute values match the types defined in schema.
-   *   </li>
-   *   <li>
-   *     All canonical type values match one of the values defined in the
-   *     schema.
-   *   </li>
-   *   <li>
-   *     No attributes with values are read-only.
-   *   </li>
+   *   <li> All schema URIs in the schemas attribute are defined.
+   *   <li> All required schema extensions are present.
+   *   <li> All attributes are defined in schema.
+   *   <li> All attribute values match the types defined in schema.
+   *   <li> All canonical type values match one of the values defined in the
+   *        schema.
+   *   <li> No attributes with values are read-only.
    * </ul>
    *
    * Additional checks if the current state of the SCIM resource is provided:
    * <ul>
-   *   <li>
-   *     Immutable attribute values are not replaced if they already have a
-   *     value.
-   *   </li>
+   *   <li> Immutable attribute values are not replaced if they already have a
+   *        value.
    * </ul>
    *
    * @param replacementObjectNode The replacement SCIM resource to check.
@@ -508,7 +461,7 @@ public class SchemaChecker
    */
   @NotNull
   public Results checkReplace(@NotNull final ObjectNode replacementObjectNode,
-                              @NotNull final ObjectNode currentObjectNode)
+                              @Nullable final ObjectNode currentObjectNode)
       throws ScimException
   {
     ObjectNode copyReplacementNode = replacementObjectNode.deepCopy();
@@ -595,7 +548,7 @@ public class SchemaChecker
         {
           messages.add(messagePrefix +
               "Attribute " + path.getElement(0)+ " in path " +
-              path.toString() + " is undefined");
+              path + " is undefined");
         }
       }
       else
@@ -606,7 +559,7 @@ public class SchemaChecker
         {
           messages.add(messagePrefix +
               "Sub-attribute " + path.getElement(1)+ " in path " +
-              path.toString() + " is undefined");
+              path + " is undefined");
         }
       }
     }
@@ -614,7 +567,7 @@ public class SchemaChecker
     {
       messages.add(messagePrefix +
           "Attribute " + path.getElement(0)+ " in path " +
-          path.toString() + " is undefined");
+          path + " is undefined");
     }
   }
 
@@ -733,7 +686,7 @@ public class SchemaChecker
    * @param objectNode The partial resource.
    * @param results The schema check results.
    * @param currentObjectNode The current resource.
-   * @param isReplace Whether this is a replace.
+   * @param isReplace Whether this is a replacement.
    * @throws ScimException If an error occurs.
    */
   private void checkResource(@NotNull final String prefix,
@@ -764,7 +717,7 @@ public class SchemaChecker
         if (extensionNode == null)
         {
           // Extension listed in schemas but no namespace in resource. Treat it
-          // as an empty namesapce to check for required attributes.
+          // as an empty namespace to check for required attributes.
           extensionNode = JsonUtils.getJsonNodeFactory().objectNode();
         }
         if (!extensionNode.isObject())
@@ -874,7 +827,7 @@ public class SchemaChecker
    * @param currentObjectNode The current resource.
    * @param isPartialReplace Whether this is a partial replace.
    * @param isPartialAdd Whether this is a partial add.
-   * @param isReplace Whether this is a replace.
+   * @param isReplace Whether this is a replacement.
    * @throws ScimException If an error occurs.
    */
   private void checkAttributeMutability(@NotNull final String prefix,
@@ -1242,7 +1195,7 @@ public class SchemaChecker
    * @param currentObjectNode The current resource.
    * @param isPartialReplace Whether this is a partial replace.
    * @param isPartialAdd Whether this is a partial add.
-   * @param isReplace Whether this is a replace.
+   * @param isReplace Whether this is a replacement.
    * @throws ScimException If an error occurs.
    */
   private void checkObjectNode(
@@ -1266,7 +1219,7 @@ public class SchemaChecker
       JsonNode node = objectNode.remove(attribute.getName());
       Path path = parentPath.attribute((attribute.getName()));
 
-      if (node == null || node.isNull() || (node.isArray() && node.size() == 0))
+      if (isNullNodeOrEmptyArray(node))
       {
         // From SCIM's perspective, these are the same thing.
         if (!isPartialAdd && !isPartialReplace)

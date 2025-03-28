@@ -378,27 +378,16 @@ public final class SchemaCheckFilterVisitor
         // Can't find the definition for the sub-attribute in a value filter.
         results.addFilterIssue(
             "Sub-attribute " + path.getElement(0) +
-            " in value filter for path " + parentPath.toString() +
+            " in value filter for path " + parentPath +
             " is undefined");
       }
     }
-    else
+    else if (resourceType.getAttributeDefinition(path) == null)
     {
-      final AttributeDefinition attribute =
-          resourceType.getAttributeDefinition(path);
-      if (attribute == null)
-      {
-        // Can't find the attribute definition for attribute in path.
-        final List<String> messages = new ArrayList<String>();
-        schemaChecker.addMessageForUndefinedAttr(path, "", messages);
-        if (!messages.isEmpty())
-        {
-          for (String m : messages)
-          {
-            results.addFilterIssue(m);
-          }
-        }
-      }
+      // Can't find the attribute definition for attribute in path.
+      final List<String> messages = new ArrayList<>();
+      schemaChecker.addMessageForUndefinedAttr(path, "", messages);
+      messages.forEach(results::addFilterIssue);
     }
   }
 }

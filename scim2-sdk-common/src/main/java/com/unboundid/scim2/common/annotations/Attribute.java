@@ -104,8 +104,7 @@ public @interface Attribute
       default AttributeDefinition.Mutability.READ_WRITE;
 
   /**
-   * If the attribute is multi-value, this holds the type of the
-   * child object.
+   * If the attribute is multi-valued, this holds the type of the child object.
    *
    * @return For a multi-valued attribute, the type of the child object.
    */

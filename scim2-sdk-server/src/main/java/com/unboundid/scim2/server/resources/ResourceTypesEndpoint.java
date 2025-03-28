@@ -96,11 +96,10 @@ public class ResourceTypesEndpoint
     // query params should be ignored for discovery endpoints so we can't use
     // SimpleSearchResults.
     ResourcePreparer<GenericScimResource> preparer =
-        new ResourcePreparer<GenericScimResource>(
-            RESOURCE_TYPE_DEFINITION, uriInfo);
+        new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     Collection<ResourceTypeResource> resourceTypes = getResourceTypes();
     Collection<GenericScimResource> preparedResources =
-        new ArrayList<GenericScimResource>(resourceTypes.size());
+        new ArrayList<>(resourceTypes.size());
     for (ResourceTypeResource resourceType : resourceTypes)
     {
       GenericScimResource preparedResource =
@@ -108,7 +107,7 @@ public class ResourceTypesEndpoint
       preparer.setResourceTypeAndLocation(preparedResource);
       preparedResources.add(preparedResource);
     }
-    return new ListResponse<GenericScimResource>(preparedResources);
+    return new ListResponse<>(preparedResources);
   }
 
   /**
@@ -131,8 +130,7 @@ public class ResourceTypesEndpoint
     SchemaAwareFilterEvaluator filterEvaluator =
         new SchemaAwareFilterEvaluator(RESOURCE_TYPE_DEFINITION);
     ResourcePreparer<GenericScimResource> resourcePreparer =
-        new ResourcePreparer<GenericScimResource>(
-            RESOURCE_TYPE_DEFINITION, uriInfo);
+        new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     for (ResourceTypeResource resourceType : getResourceTypes())
     {
       GenericScimResource resource = resourceType.asGenericScimResource();
@@ -159,8 +157,7 @@ public class ResourceTypesEndpoint
   public Collection<ResourceTypeResource> getResourceTypes()
       throws ScimException
   {
-    Set<ResourceTypeResource> resourceTypes =
-        new HashSet<ResourceTypeResource>();
+    Set<ResourceTypeResource> resourceTypes = new HashSet<>();
     for (Class<?> resourceClass : application.getClasses())
     {
       ResourceTypeDefinition resourceTypeDefinition =

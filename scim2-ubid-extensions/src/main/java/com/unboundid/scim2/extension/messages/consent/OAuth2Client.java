@@ -25,9 +25,14 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
 import java.util.Calendar;
 import java.util.Objects;
 
+/**
+ * This class represents an OAuth 2.0 client.
+ */
 public final class OAuth2Client
 {
-
+  /**
+   * Builder for creating an OAuth2Client.
+   */
   public static class Builder
   {
     @Nullable
@@ -111,8 +116,7 @@ public final class OAuth2Client
     }
 
     /**
-     * Builds an client with the parameters that have been
-     * set in the builder.
+     * Builds a client with the parameters that have been set in the builder.
      *
      * @return a newly created client.
      */

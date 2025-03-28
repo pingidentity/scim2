@@ -51,6 +51,9 @@ import com.unboundid.scim2.common.types.ETagConfig;
  */
 public class PreconditionFailedException extends ScimException
 {
+  /**
+   * Represents the ETag version value of the resource.
+   */
   @Nullable
   private final String version;
 

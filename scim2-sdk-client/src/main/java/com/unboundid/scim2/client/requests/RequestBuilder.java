@@ -33,6 +33,7 @@ import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 /**
  * Abstract SCIM request builder.
  */
-public class RequestBuilder<T extends RequestBuilder>
+public class RequestBuilder<T extends RequestBuilder<T>>
 {
   /**
    * The web target to send the request.
@@ -54,20 +55,20 @@ public class RequestBuilder<T extends RequestBuilder>
    */
   @NotNull
   protected final MultivaluedMap<String, Object> headers =
-      new MultivaluedHashMap<String, Object>();
+      new MultivaluedHashMap<>();
 
   /**
    * Arbitrary query parameters.
    */
   @NotNull
   protected final MultivaluedMap<String, Object> queryParams =
-      new MultivaluedHashMap<String, Object>();
+      new MultivaluedHashMap<>();
 
   @Nullable
   private String contentType = MEDIA_TYPE_SCIM;
 
   @NotNull
-  private List<String> accept = new ArrayList<String>();
+  private final List<String> accept = new ArrayList<>();
 
   /**
    * Create a new SCIM request builder.
@@ -107,6 +108,7 @@ public class RequestBuilder<T extends RequestBuilder>
   public T contentType(@Nullable final String contentType)
   {
     this.contentType = contentType;
+    //noinspection unchecked
     return (T) this;
   }
 
@@ -131,11 +133,9 @@ public class RequestBuilder<T extends RequestBuilder>
           "Accepted media types must not be null or empty");
     }
 
-    for (String acceptString : acceptStrings)
-    {
-      accept.add(acceptString);
-    }
+    accept.addAll(Arrays.asList(acceptStrings));
 
+    //noinspection unchecked
     return (T) this;
   }
 
@@ -156,12 +156,12 @@ public class RequestBuilder<T extends RequestBuilder>
   }
 
   /**
-   * Retrieve the meta.version attribute of the resource.
+   * Retrieve the {@code meta.version} attribute of the resource.
    *
    * @param resource The resource whose version to retrieve.
    * @return The resource version.
-   * @throws IllegalArgumentException if the resource does not contain a the
-   * meta.version attribute.
+   * @throws IllegalArgumentException if the resource does not contain the
+   * {@code meta.version} attribute.
    */
   @NotNull
   static String getResourceVersion(@NotNull final ScimResource resource)

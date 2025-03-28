@@ -97,18 +97,17 @@ public class SchemasEndpoint
     // query params should be ignored for discovery endpoints so we can't use
     // SimpleSearchResults.
     ResourcePreparer<GenericScimResource> preparer =
-        new ResourcePreparer<GenericScimResource>(
-            RESOURCE_TYPE_DEFINITION, uriInfo);
+        new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     Collection<SchemaResource> schemas = getSchemas();
     Collection<GenericScimResource> preparedResources =
-        new ArrayList<GenericScimResource>(schemas.size());
+        new ArrayList<>(schemas.size());
     for (SchemaResource schema : schemas)
     {
       GenericScimResource preparedResource = schema.asGenericScimResource();
       preparer.setResourceTypeAndLocation(preparedResource);
       preparedResources.add(preparedResource);
     }
-    return new ListResponse<GenericScimResource>(preparedResources);
+    return new ListResponse<>(preparedResources);
   }
 
   /**
@@ -131,8 +130,7 @@ public class SchemasEndpoint
     SchemaAwareFilterEvaluator filterEvaluator =
         new SchemaAwareFilterEvaluator(RESOURCE_TYPE_DEFINITION);
     ResourcePreparer<GenericScimResource> resourcePreparer =
-        new ResourcePreparer<GenericScimResource>(
-            RESOURCE_TYPE_DEFINITION, uriInfo);
+        new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     for (SchemaResource schema : getSchemas())
     {
       GenericScimResource resource = schema.asGenericScimResource();
@@ -157,8 +155,7 @@ public class SchemasEndpoint
   @NotNull
   public Collection<SchemaResource> getSchemas() throws ScimException
   {
-    Set<SchemaResource> schemas =
-        new HashSet<SchemaResource>();
+    Set<SchemaResource> schemas = new HashSet<>();
     for (Class<?> resourceClass : application.getClasses())
     {
       ResourceTypeDefinition resourceTypeDefinition =
@@ -170,11 +167,7 @@ public class SchemasEndpoint
         {
           schemas.add(resourceTypeDefinition.getCoreSchema());
         }
-        for (SchemaResource schemaExtension :
-            resourceTypeDefinition.getSchemaExtensions().keySet())
-        {
-          schemas.add(schemaExtension);
-        }
+        schemas.addAll(resourceTypeDefinition.getSchemaExtensions().keySet());
       }
     }
     for (Object resourceInstance : application.getSingletons())
@@ -188,11 +181,7 @@ public class SchemasEndpoint
         {
           schemas.add(resourceTypeDefinition.getCoreSchema());
         }
-        for (SchemaResource schemaExtension :
-            resourceTypeDefinition.getSchemaExtensions().keySet())
-        {
-          schemas.add(schemaExtension);
-        }
+        schemas.addAll(resourceTypeDefinition.getSchemaExtensions().keySet());
       }
     }
 

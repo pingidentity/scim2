@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
+import static com.unboundid.scim2.common.utils.JsonUtils.isNullNodeOrEmptyArray;
+
 
 /**
  * This class can be used to calculate the diffs between two SCIM/JSON
@@ -64,11 +66,11 @@ public class JsonDiff
     ObjectNode targetToAdd = target.deepCopy();
     ObjectNode targetToReplace = target.deepCopy();
     diff(Path.root(), source, targetToAdd, targetToReplace, ops, removeMissing);
-    if (targetToReplace.size() > 0)
+    if (!targetToReplace.isEmpty())
     {
       ops.add(PatchOperation.replace(targetToReplace));
     }
-    if (targetToAdd.size() > 0)
+    if (!targetToAdd.isEmpty())
     {
       ops.add(PatchOperation.add(targetToAdd));
     }
@@ -162,7 +164,7 @@ public class JsonDiff
     {
       // Value present in both but they are of different types.
       if (targetValueToAdd.isNull() ||
-          (targetValueToAdd.isArray() && targetValueToAdd.size() == 0))
+          (targetValueToAdd.isArray() && targetValueToAdd.isEmpty()))
       {
         // Explicitly clear attribute value.
         operations.add(PatchOperation.remove(path));
@@ -240,11 +242,9 @@ public class JsonDiff
       @NotNull final JsonNode targetValueToReplace,
       @NotNull final String sourceKey)
   {
-    if (targetValueToAdd.size() == 0)
+    if (targetValueToAdd.isEmpty())
     {
-      if ((sourceNode != null) &&
-          (sourceNode.isArray()) &&
-          (sourceNode.size() == 0))
+      if (sourceNode != null && sourceNode.isArray() && sourceNode.isEmpty())
       {
         return;
       }
@@ -256,8 +256,7 @@ public class JsonDiff
     {
       // Go through each value and try to individually patch them first
       // instead of replacing all values.
-      List<PatchOperation> targetOpToRemoveOrReplace =
-          new LinkedList<PatchOperation>();
+      List<PatchOperation> targetOpToRemoveOrReplace = new LinkedList<>();
       boolean replaceAllValues = false;
       for (JsonNode sv : sourceNode)
       {
@@ -271,7 +270,7 @@ public class JsonDiff
               "Performing full replace of target " +
                   "array node " + path + " since the it is not " +
                   "possible to generate a value filter to uniquely " +
-                  "identify the value " + sv.toString());
+                  "identify the value " + sv);
           break;
         }
         Path valuePath = parentPath.attribute(
@@ -284,7 +283,7 @@ public class JsonDiff
             // Recursively diff the object node.
             diff(valuePath, (ObjectNode) sv, (ObjectNode) tv,
                 (ObjectNode) tv, operations, removeMissing);
-            if (tv.size() > 0)
+            if (!tv.isEmpty())
             {
               targetOpToRemoveOrReplace.add(
                   PatchOperation.replace(valuePath, tv));
@@ -323,7 +322,7 @@ public class JsonDiff
         {
           operations.addAll(targetOpToRemoveOrReplace);
         }
-        if (targetValueToAdd.size() > 0)
+        if (!targetValueToAdd.isEmpty())
         {
           targetToAdd.set(sourceKey, targetValueToAdd);
         }
@@ -347,11 +346,11 @@ public class JsonDiff
         (ObjectNode) sourceNode, (ObjectNode) targetValueToAdd,
         (ObjectNode) targetValueToReplace, operations, removeMissing);
     // Include the object node if there are fields to add or replace.
-    if (targetValueToAdd.size() > 0)
+    if (!targetValueToAdd.isEmpty())
     {
       targetToAdd.set(sourceKey, targetValueToAdd);
     }
-    if (targetValueToReplace.size() > 0)
+    if (!targetValueToReplace.isEmpty())
     {
       targetToReplace.set(sourceKey, targetValueToReplace);
     }
@@ -386,8 +385,7 @@ public class JsonDiff
       // and have identical values. Common fields that are also one of the
       // SCIM standard multi-value sub-attributes (ie. type, value, etc...) have
       // a higher weight when determining the best matching value.
-      TreeMap<Integer, Integer> matchScoreToIndex =
-          new TreeMap<Integer, Integer>();
+      TreeMap<Integer, Integer> matchScoreToIndex = new TreeMap<>();
       for (int i = 0; i < targetValues.size(); i++)
       {
         JsonNode targetValue = targetValues.get(i);
@@ -400,25 +398,16 @@ public class JsonDiff
             String field = si.next();
             if (sourceValue.get(field).equals(targetValue.path(field)))
             {
-              if (field.equals("value") || field.equals("$ref"))
+              switch (field)
               {
                 // These fields have the highest chance of having unique values.
-                matchScore += 3;
-              }
-              else if (field.equals("type") || field.equals("display"))
-              {
+                case "value", "$ref" -> matchScore += 3;
                 // These fields should mostly be unique.
-                matchScore += 2;
-              }
-              else if (field.equals("primary"))
-              {
+                case "type", "display" -> matchScore += 2;
                 // This field will definitely not be unique.
-                matchScore += 0;
-              }
-              else
-              {
+                case "primary" -> matchScore += 0;
                 // Not one of the normative fields. Use the default weight.
-                matchScore += 1;
+                default -> matchScore += 1;
               }
             }
           }
@@ -469,7 +458,7 @@ public class JsonDiff
     }
     if (value.isObject())
     {
-      List<Filter> filters = new ArrayList<Filter>(value.size());
+      List<Filter> filters = new ArrayList<>(value.size());
       Iterator<Map.Entry<String, JsonNode>> fieldsIterator = value.fields();
       while (fieldsIterator.hasNext())
       {
@@ -483,7 +472,7 @@ public class JsonDiff
             (ValueNode) field.getValue()));
       }
 
-      if (filters.size() == 0)
+      if (filters.isEmpty())
       {
         return null;
       }
@@ -513,7 +502,7 @@ public class JsonDiff
     while (si.hasNext())
     {
       JsonNode field = si.next();
-      if (field.isNull() || field.isArray() && field.size() == 0)
+      if (isNullNodeOrEmptyArray(field))
       {
         si.remove();
       }

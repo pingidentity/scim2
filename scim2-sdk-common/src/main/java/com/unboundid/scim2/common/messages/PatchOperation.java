@@ -123,7 +123,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 public abstract class PatchOperation
 {
   // The attribute path that is targeted by the patch operation (i.e., the
-  // attribute that should be updated. Note that this is an optional field for
+  // attribute that should be updated). Note that this is an optional field for
   // add and replace operations, but it is mandatory for remove operations.
   @Nullable
   private final Path path;
@@ -199,7 +199,7 @@ public abstract class PatchOperation
     public <T> List<T> getValues(@NotNull final Class<T> cls)
         throws JsonProcessingException, ScimException
     {
-      ArrayList<T> objects = new ArrayList<T>(value.size());
+      ArrayList<T> objects = new ArrayList<>(value.size());
       for (JsonNode node : value)
       {
         objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
@@ -710,7 +710,7 @@ public abstract class PatchOperation
     public <T> List<T> getValues(@NotNull final Class<T> cls)
         throws JsonProcessingException, ScimException
     {
-      ArrayList<T> objects = new ArrayList<T>(value.size());
+      ArrayList<T> objects = new ArrayList<>(value.size());
       for (JsonNode node : value)
       {
         objects.add(JsonUtils.getObjectReader().treeToValue(node, cls));
@@ -2005,17 +2005,12 @@ public abstract class PatchOperation
                                       @NotNull final Path path,
                                       @NotNull final JsonNode value)
   {
-    switch (opType)
+    return switch (opType)
     {
-      case ADD:
-        return add(path, value);
-      case REPLACE:
-        return replace(path, value);
-      case REMOVE:
-        return remove(path);
-      default:
-        throw new IllegalArgumentException("Unknown patch op type " + opType);
-    }
+      case ADD -> add(path, value);
+      case REPLACE -> replace(path, value);
+      case REMOVE -> remove(path);
+    };
   }
 
 

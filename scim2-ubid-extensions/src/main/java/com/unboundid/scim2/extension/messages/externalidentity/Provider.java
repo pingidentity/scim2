@@ -34,7 +34,9 @@ import java.util.Objects;
     name = "Provider")
 public final class Provider
 {
-
+  /**
+   * Builder for creating a Provider.
+   */
   public static class Builder
   {
     @Nullable

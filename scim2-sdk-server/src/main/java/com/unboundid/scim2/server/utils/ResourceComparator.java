@@ -54,7 +54,7 @@ public class ResourceComparator<T extends ScimResource>
    *
    * @param sortBy The path to the attribute to sort by.
    * @param resourceType The resource type definition containing the schemas or
-   *                     {@code null} to compare using case insensitive matching
+   *                     {@code null} to compare using case-insensitive matching
    *                     for string values.
    */
   public ResourceComparator(@NotNull final Path sortBy,
@@ -69,7 +69,7 @@ public class ResourceComparator<T extends ScimResource>
    * @param sortBy The path to the attribute to sort by.
    * @param sortOrder The sort order.
    * @param resourceType The resource type definition containing the schemas or
-   *                     {@code null} to compare using case insensitive matching
+   *                     {@code null} to compare using case-insensitive matching
    *                     for string values.
    */
   public ResourceComparator(@NotNull final Path sortBy,
@@ -167,7 +167,7 @@ public class ResourceComparator<T extends ScimResource>
       return node;
     }
 
-    if (node.size() == 0)
+    if (node.isEmpty())
     {
       return null;
     }

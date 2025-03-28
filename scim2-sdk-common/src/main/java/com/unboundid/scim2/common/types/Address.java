@@ -363,12 +363,7 @@ public class Address
     {
       return false;
     }
-    if (!Objects.equals(primary, address.primary))
-    {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(primary, address.primary);
   }
 
   /**

@@ -81,9 +81,8 @@ public class SimpleSearchResults<T extends ScimResource>
       throws BadRequestException
   {
     this.filterEvaluator = new SchemaAwareFilterEvaluator(resourceType);
-    this.responsePreparer =
-        new ResourcePreparer<ScimResource>(resourceType, uriInfo);
-    this.resources = new LinkedList<ScimResource>();
+    this.responsePreparer = new ResourcePreparer<>(resourceType, uriInfo);
+    this.resources = new LinkedList<>();
 
     MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
     String filterString = queryParams.getFirst(QUERY_PARAMETER_FILTER);
@@ -104,9 +103,9 @@ public class SimpleSearchResults<T extends ScimResource>
 
     if (startIndexString != null)
     {
-      int i = Integer.valueOf(startIndexString);
-      // 3.4.2.4: A value less than 1 SHALL be interpreted as 1.
-      startIndex = i < 1 ? 1 : i;
+      // RFC 7644 3.4.2.4: A value less than 1 SHALL be interpreted as 1.
+      int i = Integer.parseInt(startIndexString);
+      startIndex = Math.max(i, 1);
     }
     else
     {
@@ -115,9 +114,9 @@ public class SimpleSearchResults<T extends ScimResource>
 
     if (countString != null)
     {
-      int i = Integer.valueOf(countString);
-      // 3.4.2.4: A negative value SHALL be interpreted as 0.
-      count = i < 0 ? 0 : i;
+      // RFC 7644 3.4.2.4: A negative value SHALL be interpreted as 0.
+      int i = Integer.parseInt(countString);
+      count = Math.max(i, 0);
     }
     else
     {
@@ -139,7 +138,7 @@ public class SimpleSearchResults<T extends ScimResource>
         SortOrder.ASCENDING : SortOrder.fromName(sortOrderString);
     if (sortBy != null)
     {
-      this.resourceComparator = new ResourceComparator<ScimResource>(
+      this.resourceComparator = new ResourceComparator<>(
           sortBy, sortOrder, resourceType);
     }
     else
@@ -157,15 +156,15 @@ public class SimpleSearchResults<T extends ScimResource>
    * meta attributes.
    */
   @NotNull
-  public SimpleSearchResults add(@NotNull final T resource) throws ScimException
+  public SimpleSearchResults<T> add(@NotNull final T resource)
+      throws ScimException
   {
     // Convert to GenericScimResource
     GenericScimResource genericResource;
-    if (resource instanceof GenericScimResource)
+    if (resource instanceof GenericScimResource g)
     {
       // Make a copy
-      genericResource = new GenericScimResource(
-          ((GenericScimResource) resource).getObjectNode().deepCopy());
+      genericResource = new GenericScimResource(g.getObjectNode().deepCopy());
     }
     else
     {
@@ -193,7 +192,7 @@ public class SimpleSearchResults<T extends ScimResource>
    * meta attributes.
    */
   @NotNull
-  public SimpleSearchResults addAll(@NotNull final Collection<T> resources)
+  public SimpleSearchResults<T> addAll(@NotNull final Collection<T> resources)
       throws ScimException
   {
     for (T resource : resources)
@@ -213,7 +212,7 @@ public class SimpleSearchResults<T extends ScimResource>
   {
     if (resourceComparator != null)
     {
-      Collections.sort(resources, resourceComparator);
+      resources.sort(resourceComparator);
     }
     List<ScimResource> resultsToReturn = resources;
     if (startIndex != null)

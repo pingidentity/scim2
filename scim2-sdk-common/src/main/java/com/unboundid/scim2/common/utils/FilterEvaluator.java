@@ -381,7 +381,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    *
    * @param path The path to the attribute whose definition to retrieve.
    * @return the attribute definition or {@code null} if not available, in which
-   *         case case insensitive string value matching will be performed.
+   *         case case-insensitive string value matching will be performed.
    */
   @Nullable
   protected AttributeDefinition getAttributeDefinition(@NotNull final Path path)
@@ -410,8 +410,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     {
       List<JsonNode> nodes =
           JsonUtils.findMatchingPaths(path, (ObjectNode) jsonNode);
-      ArrayList<JsonNode> flattenedNodes =
-          new ArrayList<JsonNode>(nodes.size());
+      ArrayList<JsonNode> flattenedNodes = new ArrayList<>(nodes.size());
       for (JsonNode node : nodes)
       {
         if (node.isArray())

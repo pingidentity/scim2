@@ -27,8 +27,11 @@ import com.unboundid.scim2.common.types.Meta;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This class represents a consent object provided by a user.
+ */
 @Schema(description = "Consent objects.  These represent a user giving" +
-    "consent for a client to access identity data.",
+    " consent for a client to access identity data.",
     id = "urn:pingidentity:scim:api:messages:2.0:consent",
     name = "Consent")
 public final class Consent extends BaseScimResource

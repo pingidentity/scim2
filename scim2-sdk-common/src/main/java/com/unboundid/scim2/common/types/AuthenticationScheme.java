@@ -249,12 +249,13 @@ public class AuthenticationScheme
     {
       return new AuthenticationScheme(
           "HTTP Basic",
-          "The HTTP Basic Access Authentication scheme. This scheme is not " +
-              "considered to be a secure method of user authentication " +
-              "(unless used in conjunction with some external secure system " +
-              "such as SSL), as the user name and password are passed over " +
-              "the network as cleartext.",
-          new URI("http://www.ietf.org/rfc/rfc2617.txt"),
+          """
+              The HTTP Basic Access Authentication scheme. This scheme is not \
+              considered to be a secure method of user authentication \
+              (unless used in conjunction with some external secure system \
+              such as SSL), as the user name and password are passed over \
+              the network as cleartext.""",
+          new URI("https://www.ietf.org/rfc/rfc2617.txt"),
           null,
           "httpbasic", primary);
     }
@@ -280,12 +281,13 @@ public class AuthenticationScheme
     {
       return new AuthenticationScheme(
           "OAuth 2.0 Bearer Token",
-          "The OAuth 2.0 Bearer Token Authentication scheme. OAuth enables " +
-              "clients to access protected resources by obtaining an access " +
-              "token, which is defined in RFC 6750 as \"a string " +
-              "representing an access authorization issued to the client\", " +
-              "rather than using the resource owner's credentials directly.",
-          new URI("http://tools.ietf.org/html/rfc6750"),
+          """
+              The OAuth 2.0 Bearer Token Authentication scheme. OAuth enables \
+              clients to access protected resources by obtaining an access \
+              token, which is defined in RFC 6750 as "a string \
+              representing an access authorization issued to the client", \
+              rather than using the resource owner's credentials directly.""",
+          new URI("https://tools.ietf.org/html/rfc6750"),
           null,
           "oauthbearertoken", primary);
     }

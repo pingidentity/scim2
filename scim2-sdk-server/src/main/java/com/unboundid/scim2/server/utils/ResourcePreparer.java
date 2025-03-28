@@ -56,8 +56,8 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
  *     resource as well as the attributes or excludedAttributes query parameter.
  *   </li>
  *   <li>
- *     Setting the meta.resourceType and meta.location attributes if not
- *     already set.
+ *     Setting the {@code meta.resourceType} and {@code meta.location}
+ *     attributes if not already set.
  *   </li>
  * </ul>
  */
@@ -102,7 +102,7 @@ public class ResourcePreparer<T extends ScimResource>
   private static Map<String, String> singleValuedMapFromMultivaluedMap(
       @NotNull final MultivaluedMap<String, String> multivaluedMap)
   {
-    final Map<String, String> returnMap = new LinkedHashMap<String, String>();
+    final Map<String, String> returnMap = new LinkedHashMap<>();
     for (String k : multivaluedMap.keySet())
     {
       returnMap.put(k, multivaluedMap.getFirst(k));
@@ -129,7 +129,7 @@ public class ResourcePreparer<T extends ScimResource>
     {
       Set<String> attributeSet = StaticUtils.arrayToSet(
           StaticUtils.splitCommaSeparatedString(attributesString));
-      this.queryAttributes = new LinkedHashSet<Path>(attributeSet.size());
+      this.queryAttributes = new LinkedHashSet<>(attributeSet.size());
       for (String attribute : attributeSet)
       {
         Path normalizedPath;
@@ -154,7 +154,7 @@ public class ResourcePreparer<T extends ScimResource>
     {
       Set<String> attributeSet = StaticUtils.arrayToSet(
           StaticUtils.splitCommaSeparatedString(excludedAttributesString));
-      this.queryAttributes = new LinkedHashSet<Path>(attributeSet.size());
+      this.queryAttributes = new LinkedHashSet<>(attributeSet.size());
       for (String attribute : attributeSet)
       {
         Path normalizedPath;
@@ -248,7 +248,8 @@ public class ResourcePreparer<T extends ScimResource>
   }
 
   /**
-   * Sets the meta.resourceType and meta.location metadata attribute values.
+   * Sets the {@code meta.resourceType} and {@code meta.location} metadata
+   * attribute values.
    *
    * @param returnedResource The resource to set the attributes.
    */
@@ -312,13 +313,13 @@ public class ResourcePreparer<T extends ScimResource>
     {
       ObjectNode requestObject =
           requestResource.asGenericScimResource().getObjectNode();
-      requestAttributes = new LinkedHashSet<Path>();
+      requestAttributes = new LinkedHashSet<>();
       collectAttributes(Path.root(), requestAttributes, requestObject);
     }
 
     if (patchOperations != null)
     {
-      requestAttributes = new LinkedHashSet<Path>();
+      requestAttributes = new LinkedHashSet<>();
       collectAttributes(requestAttributes, patchOperations);
     }
 
@@ -328,10 +329,9 @@ public class ResourcePreparer<T extends ScimResource>
     ScimResourceTrimmer trimmer =
         new ScimResourceTrimmer(resourceType, requestAttributes,
                                 queryAttributes, excluded);
-    GenericScimResource preparedResource =
-        new GenericScimResource(
-            trimmer.trimObjectNode(genericReturnedResource.getObjectNode()));
-    return preparedResource;
+
+    return new GenericScimResource(
+        trimmer.trimObjectNode(genericReturnedResource.getObjectNode()));
   }
 
   /**

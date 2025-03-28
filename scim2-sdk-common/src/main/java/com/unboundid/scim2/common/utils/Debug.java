@@ -20,6 +20,7 @@ package com.unboundid.scim2.common.utils;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Properties;
@@ -57,11 +58,12 @@ import static com.unboundid.scim2.common.utils.StaticUtils.*;
  *   Debug.setEnabled(true);
  *   Logger logger = Debug.getLogger();
  *
- *   FileHandler fileHandler = new FileHandler("{@code /tmp/test.log}");
+ *   FileHandler fileHandler = new FileHandler("/tmp/test.log");
  *   fileHandler.setLevel(Level.WARNING);
  *   logger.addHandler(fileHandler);
  * </PRE>
  */
+@SuppressWarnings("unused")
 public final class Debug
        implements Serializable
 {
@@ -139,6 +141,7 @@ public final class Debug
   /**
    * The serial version UID for this serializable class.
    */
+  @Serial
   private static final long serialVersionUID = 1481879450652966238L;
 
 
@@ -208,7 +211,7 @@ public final class Debug
     }
 
     final String enabledProp = properties.getProperty(PROPERTY_DEBUG_ENABLED);
-    if ((enabledProp != null) && (enabledProp.length() > 0))
+    if ((enabledProp != null) && (!enabledProp.isEmpty()))
     {
       if (enabledProp.equalsIgnoreCase("true"))
       {
@@ -230,7 +233,7 @@ public final class Debug
 
     final String stackProp =
          properties.getProperty(PROPERTY_INCLUDE_STACK_TRACE);
-    if ((stackProp != null) && (stackProp.length() > 0))
+    if ((stackProp != null) && (!stackProp.isEmpty()))
     {
       if (stackProp.equalsIgnoreCase("true"))
       {
@@ -251,7 +254,7 @@ public final class Debug
     }
 
     final String typesProp = properties.getProperty(PROPERTY_DEBUG_TYPE);
-    if ((typesProp != null) && (typesProp.length() > 0))
+    if ((typesProp != null) && (!typesProp.isEmpty()))
     {
       debugTypes = EnumSet.noneOf(DebugType.class);
       final StringTokenizer t = new StringTokenizer(typesProp, ", ");
@@ -276,7 +279,7 @@ public final class Debug
     }
 
     final String levelProp = properties.getProperty(PROPERTY_DEBUG_LEVEL);
-    if ((levelProp != null) && (levelProp.length() > 0))
+    if ((levelProp != null) && (!levelProp.isEmpty()))
     {
       logger.setLevel(Level.parse(levelProp));
     }

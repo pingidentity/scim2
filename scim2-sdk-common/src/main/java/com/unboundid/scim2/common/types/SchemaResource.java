@@ -25,9 +25,8 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -77,8 +76,7 @@ public class SchemaResource extends BaseScimResource
     super(id);
     this.name = name;
     this.description = description;
-    this.attributes = Collections.unmodifiableList(
-        new ArrayList<AttributeDefinition>(attributes));
+    this.attributes = List.copyOf(attributes);
   }
 
   /**

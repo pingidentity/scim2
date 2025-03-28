@@ -33,6 +33,7 @@ import java.util.Objects;
  * SCIM provides a schema for representing the service provider's configuration
  * identified using the following schema URI:
  * "{@code urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig}"
+ * <br><br>
  *
  * The Service Provider configuration resource enables a Service
  * Provider to discover SCIM specification features in a standardized
