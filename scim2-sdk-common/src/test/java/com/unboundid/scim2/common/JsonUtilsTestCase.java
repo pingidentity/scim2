@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
@@ -94,13 +93,7 @@ public class JsonUtilsTestCase
       }
 
       ArrayValue that = (ArrayValue) o;
-
-      if (!fields.equals(that.fields))
-      {
-        return false;
-      }
-
-      return true;
+      return fields.equals(that.fields);
     }
 
     /**
@@ -122,369 +115,314 @@ public class JsonUtilsTestCase
     @Override
     public String toString()
     {
-      final StringBuilder sb = new StringBuilder("ArrayValue{");
-      sb.append("fields=").append(fields);
-      sb.append('}');
-      return sb.toString();
+      return "ArrayValue{fields=%s}".formatted(fields);
     }
   }
 
   private ObjectNode getTestResource() throws IOException
   {
+    return (ObjectNode) JsonUtils.getObjectReader().readTree("""
+        {
+          "string":"string",
+          "integer":1,
+          "decimal":1.582,
+          "boolean":true,
+          "date":"2015-02-27T11:28:39Z",
+          "binary":"YmluYXJ5",
+          "null":null,
+          "empty":[],
+          "array":[
+            {
+              "id":"1",
+              "string":"string",
+              "integer":1,
+              "decimal":1.582,
+              "boolean":true,
+              "date":"2015-02-27T11:28:39Z",
+              "binary":"YmluYXJ5",
+              "null":null,
+              "empty":[],
+              "array":[
+                {
+                  "id":"1",
+                  "string":"string",
+                  "integer":1,
+                  "decimal":1.582,
+                  "boolean":true,
+                  "date":"2015-02-27T11:28:39Z",
+                  "binary":"YmluYXJ5",
+                  "null":null,
+                  "empty":[]
+                },
+                {
+                  "id":"2",
+                  "string":"string",
+                  "integer":1,
+                  "decimal":1.582,
+                  "boolean":true,
+                  "date":"2015-02-27T11:28:39Z",
+                  "binary":"YmluYXJ5",
+                  "null":null,
+                  "empty":[]
+                }
+              ],
+              "complex":{
+                "string":"string",
+                "integer":1,
+                "decimal":1.582,
+                "boolean":true,
+                "date":"2015-02-27T11:28:39Z",
+                "binary":"YmluYXJ5",
+                "null":null,
+                "empty":[],
+                "array":[
+                  {
+                    "id":"1",
+                    "string":"string",
+                    "integer":1,
+                    "decimal":1.582,
+                    "boolean":true,
+                    "date":"2015-02-27T11:28:39Z",
+                    "binary":"YmluYXJ5",
+                    "null":null,
+                    "empty":[]
+                  },
+                  {
+                    "id":"2",
+                    "string":"string",
+                    "integer":1,
+                    "decimal":1.582,
+                    "boolean":true,
+                    "date":"2015-02-27T11:28:39Z",
+                    "binary":"YmluYXJ5",
+                    "null":null,
+                    "empty":[]
+                  }
+                ]
+              }
+            },
+            {
+              "id":"2",
+              "string":"string",
+              "integer":1,
+              "decimal":1.582,
+              "boolean":true,
+              "date":"2015-02-27T11:28:39Z",
+              "binary":"YmluYXJ5",
+              "null":null,
+              "empty":[],
+              "array":[
+                {
+                  "id":"1",
+                  "string":"string",
+                  "integer":1,
+                  "decimal":1.582,
+                  "boolean":true,
+                  "date":"2015-02-27T11:28:39Z",
+                  "binary":"YmluYXJ5",
+                  "null":null,
+                  "empty":[]
+                },
+                {
+                  "id":"2",
+                  "string":"string",
+                  "integer":1,
+                  "decimal":1.582,
+                  "boolean":true,
+                  "date":"2015-02-27T11:28:39Z",
+                  "binary":"YmluYXJ5",
+                  "null":null,
+                  "empty":[]
+                }
+              ],
+              "complex":{
+                "string":"string",
+                "integer":1,
+                "decimal":1.582,
+                "boolean":true,
+                "date":"2015-02-27T11:28:39Z",
+                "binary":"YmluYXJ5",
+                "null":null,
+                "empty":[],
+                "array":[
+                  {
+                    "id":"1",
+                    "string":"string",
+                    "integer":1,
+                    "decimal":1.582,
+                    "boolean":true,
+                    "date":"2015-02-27T11:28:39Z",
+                    "binary":"YmluYXJ5",
+                    "null":null,
+                    "empty":[]
+                  },
+                  {
+                    "id":"2",
+                    "string":"string",
+                    "integer":1,
+                    "decimal":1.582,
+                    "boolean":true,
+                    "date":"2015-02-27T11:28:39Z",
+                    "binary":"YmluYXJ5",
+                    "null":null,
+                    "empty":[]
+                  }
+                ]
+              }
+            }
+          ],
+          "complex":{
+            "string":"string",
+            "integer":1,
+            "decimal":1.582,
+            "boolean":true,
+            "date":"2015-02-27T11:28:39Z",
+            "binary":"YmluYXJ5",
+            "null":null,
+            "empty":[],
+            "array":[
+              {
+                "id":"1",
+                "string":"string",
+                "integer":1,
+                "decimal":1.582,
+                "boolean":true,
+                "date":"2015-02-27T11:28:39Z",
+                "binary":"YmluYXJ5",
+                "null":null,
+                "empty":[],
+                "array":[
+                  {
+                    "id":"1",
+                    "string":"string",
+                    "integer":1,
+                    "decimal":1.582,
+                    "boolean":true,
+                    "date":"2015-02-27T11:28:39Z",
+                    "binary":"YmluYXJ5",
+                    "null":null,
+                    "empty":[]
+                  },
+                  {
+                    "id":"2",
+                    "string":"string",
+                    "integer":1,
+                    "decimal":1.582,
+                    "boolean":true,
+                    "date":"2015-02-27T11:28:39Z",
+                    "binary":"YmluYXJ5",
+                    "null":null,
+                    "empty":[]
+                  }
+                ],
+                "complex":{
+                  "string":"string",
+                  "integer":1,
+                  "decimal":1.582,
+                  "boolean":true,
+                  "date":"2015-02-27T11:28:39Z",
+                  "binary":"YmluYXJ5",
+                  "null":null,
+                  "empty":[],
+                  "array":[
+                    {
+                      "id":"1",
+                      "string":"string",
+                      "integer":1,
+                      "decimal":1.582,
+                      "boolean":true,
+                      "date":"2015-02-27T11:28:39Z",
+                      "binary":"YmluYXJ5",
+                      "null":null,
+                      "empty":[]
+                    },
+                    {
+                      "id":"2",
+                      "string":"string",
+                      "integer":1,
+                      "decimal":1.582,
+                      "boolean":true,
+                      "date":"2015-02-27T11:28:39Z",
+                      "binary":"YmluYXJ5",
+                      "null":null,
+                      "empty":[]
+                    }
+                  ]
+                }
+              },
+              {
+                "id":"2",
+                "string":"string",
+                "integer":1,
+                "decimal":1.582,
+                "boolean":true,
+                "date":"2015-02-27T11:28:39Z",
+                "binary":"YmluYXJ5",
+                "null":null,
+                "empty":[],
+                "array":[
+                  {
+                    "id":"1",
+                    "string":"string",
+                    "integer":1,
+                    "decimal":1.582,
+                    "boolean":true,
+                    "date":"2015-02-27T11:28:39Z",
+                    "binary":"YmluYXJ5",
+                    "null":null,
+                    "empty":[]
+                  },
+                  {
+                    "id":"2",
+                    "string":"string",
+                    "integer":1,
+                    "decimal":1.582,
+                    "boolean":true,
+                    "date":"2015-02-27T11:28:39Z",
+                    "binary":"YmluYXJ5",
+                    "null":null,
+                    "empty":[]
+                  }
+                ],
+                "complex":{
+                  "string":"string",
+                  "integer":1,
+                  "decimal":1.582,
+                  "boolean":true,
+                  "date":"2015-02-27T11:28:39Z",
+                  "binary":"YmluYXJ5",
+                  "null":null,
+                  "empty":[],
+                  "array":[
+                    {
+                      "id":"1",
+                      "string":"string",
+                      "integer":1,
+                      "decimal":1.582,
+                      "boolean":true,
+                      "date":"2015-02-27T11:28:39Z",
+                      "binary":"YmluYXJ5",
+                      "null":null,
+                      "empty":[]
+                    },
+                    {
+                      "id":"2",
+                      "string":"string",
+                      "integer":1,
+                      "decimal":1.582,
+                      "boolean":true,
+                      "date":"2015-02-27T11:28:39Z",
+                      "binary":"YmluYXJ5",
+                      "null":null,
+                      "empty":[]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }""");
 
-    return (ObjectNode) JsonUtils.getObjectReader().
-        readTree("{  \n" +
-            "  \"string\":\"string\",\n" +
-            "  \"integer\":1,\n" +
-            "  \"decimal\":1.582,\n" +
-            "  \"boolean\":true,\n" +
-            "  \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "  \"binary\":\"YmluYXJ5\",\n" +
-            "  \"null\":null,\n" +
-            "  \"empty\":[  \n" +
-            "\n" +
-            "  ],\n" +
-            "  \"array\":[  \n" +
-            "    {  \n" +
-            "      \"id\":\"1\",\n" +
-            "      \"string\":\"string\",\n" +
-            "      \"integer\":1,\n" +
-            "      \"decimal\":1.582,\n" +
-            "      \"boolean\":true,\n" +
-            "      \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "      \"binary\":\"YmluYXJ5\",\n" +
-            "      \"null\":null,\n" +
-            "      \"empty\":[  \n" +
-            "\n" +
-            "      ],\n" +
-            "      \"array\":[  \n" +
-            "        {  \n" +
-            "          \"id\":\"1\",\n" +
-            "          \"string\":\"string\",\n" +
-            "          \"integer\":1,\n" +
-            "          \"decimal\":1.582,\n" +
-            "          \"boolean\":true,\n" +
-            "          \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "          \"binary\":\"YmluYXJ5\",\n" +
-            "          \"null\":null,\n" +
-            "          \"empty\":[  \n" +
-            "\n" +
-            "          ]\n" +
-            "        },\n" +
-            "        {  \n" +
-            "          \"id\":\"2\",\n" +
-            "          \"string\":\"string\",\n" +
-            "          \"integer\":1,\n" +
-            "          \"decimal\":1.582,\n" +
-            "          \"boolean\":true,\n" +
-            "          \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "          \"binary\":\"YmluYXJ5\",\n" +
-            "          \"null\":null,\n" +
-            "          \"empty\":[  \n" +
-            "\n" +
-            "          ]\n" +
-            "        }\n" +
-            "      ],\n" +
-            "      \"complex\":{  \n" +
-            "        \"string\":\"string\",\n" +
-            "        \"integer\":1,\n" +
-            "        \"decimal\":1.582,\n" +
-            "        \"boolean\":true,\n" +
-            "        \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "        \"binary\":\"YmluYXJ5\",\n" +
-            "        \"null\":null,\n" +
-            "        \"empty\":[  \n" +
-            "\n" +
-            "        ],\n" +
-            "        \"array\":[  \n" +
-            "          {  \n" +
-            "            \"id\":\"1\",\n" +
-            "            \"string\":\"string\",\n" +
-            "            \"integer\":1,\n" +
-            "            \"decimal\":1.582,\n" +
-            "            \"boolean\":true,\n" +
-            "            \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "            \"binary\":\"YmluYXJ5\",\n" +
-            "            \"null\":null,\n" +
-            "            \"empty\":[  \n" +
-            "\n" +
-            "            ]\n" +
-            "          },\n" +
-            "          {  \n" +
-            "            \"id\":\"2\",\n" +
-            "            \"string\":\"string\",\n" +
-            "            \"integer\":1,\n" +
-            "            \"decimal\":1.582,\n" +
-            "            \"boolean\":true,\n" +
-            "            \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "            \"binary\":\"YmluYXJ5\",\n" +
-            "            \"null\":null,\n" +
-            "            \"empty\":[  \n" +
-            "\n" +
-            "            ]\n" +
-            "          }\n" +
-            "        ]\n" +
-            "      }\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"id\":\"2\",\n" +
-            "      \"string\":\"string\",\n" +
-            "      \"integer\":1,\n" +
-            "      \"decimal\":1.582,\n" +
-            "      \"boolean\":true,\n" +
-            "      \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "      \"binary\":\"YmluYXJ5\",\n" +
-            "      \"null\":null,\n" +
-            "      \"empty\":[  \n" +
-            "\n" +
-            "      ],\n" +
-            "      \"array\":[  \n" +
-            "        {  \n" +
-            "          \"id\":\"1\",\n" +
-            "          \"string\":\"string\",\n" +
-            "          \"integer\":1,\n" +
-            "          \"decimal\":1.582,\n" +
-            "          \"boolean\":true,\n" +
-            "          \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "          \"binary\":\"YmluYXJ5\",\n" +
-            "          \"null\":null,\n" +
-            "          \"empty\":[  \n" +
-            "\n" +
-            "          ]\n" +
-            "        },\n" +
-            "        {  \n" +
-            "          \"id\":\"2\",\n" +
-            "          \"string\":\"string\",\n" +
-            "          \"integer\":1,\n" +
-            "          \"decimal\":1.582,\n" +
-            "          \"boolean\":true,\n" +
-            "          \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "          \"binary\":\"YmluYXJ5\",\n" +
-            "          \"null\":null,\n" +
-            "          \"empty\":[  \n" +
-            "\n" +
-            "          ]\n" +
-            "        }\n" +
-            "      ],\n" +
-            "      \"complex\":{  \n" +
-            "        \"string\":\"string\",\n" +
-            "        \"integer\":1,\n" +
-            "        \"decimal\":1.582,\n" +
-            "        \"boolean\":true,\n" +
-            "        \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "        \"binary\":\"YmluYXJ5\",\n" +
-            "        \"null\":null,\n" +
-            "        \"empty\":[  \n" +
-            "\n" +
-            "        ],\n" +
-            "        \"array\":[  \n" +
-            "          {  \n" +
-            "            \"id\":\"1\",\n" +
-            "            \"string\":\"string\",\n" +
-            "            \"integer\":1,\n" +
-            "            \"decimal\":1.582,\n" +
-            "            \"boolean\":true,\n" +
-            "            \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "            \"binary\":\"YmluYXJ5\",\n" +
-            "            \"null\":null,\n" +
-            "            \"empty\":[  \n" +
-            "\n" +
-            "            ]\n" +
-            "          },\n" +
-            "          {  \n" +
-            "            \"id\":\"2\",\n" +
-            "            \"string\":\"string\",\n" +
-            "            \"integer\":1,\n" +
-            "            \"decimal\":1.582,\n" +
-            "            \"boolean\":true,\n" +
-            "            \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "            \"binary\":\"YmluYXJ5\",\n" +
-            "            \"null\":null,\n" +
-            "            \"empty\":[  \n" +
-            "\n" +
-            "            ]\n" +
-            "          }\n" +
-            "        ]\n" +
-            "      }\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"complex\":{  \n" +
-            "    \"string\":\"string\",\n" +
-            "    \"integer\":1,\n" +
-            "    \"decimal\":1.582,\n" +
-            "    \"boolean\":true,\n" +
-            "    \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "    \"binary\":\"YmluYXJ5\",\n" +
-            "    \"null\":null,\n" +
-            "    \"empty\":[  \n" +
-            "\n" +
-            "    ],\n" +
-            "    \"array\":[  \n" +
-            "      {  \n" +
-            "        \"id\":\"1\",\n" +
-            "        \"string\":\"string\",\n" +
-            "        \"integer\":1,\n" +
-            "        \"decimal\":1.582,\n" +
-            "        \"boolean\":true,\n" +
-            "        \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "        \"binary\":\"YmluYXJ5\",\n" +
-            "        \"null\":null,\n" +
-            "        \"empty\":[  \n" +
-            "\n" +
-            "        ],\n" +
-            "        \"array\":[  \n" +
-            "          {  \n" +
-            "            \"id\":\"1\",\n" +
-            "            \"string\":\"string\",\n" +
-            "            \"integer\":1,\n" +
-            "            \"decimal\":1.582,\n" +
-            "            \"boolean\":true,\n" +
-            "            \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "            \"binary\":\"YmluYXJ5\",\n" +
-            "            \"null\":null,\n" +
-            "            \"empty\":[  \n" +
-            "\n" +
-            "            ]\n" +
-            "          },\n" +
-            "          {  \n" +
-            "            \"id\":\"2\",\n" +
-            "            \"string\":\"string\",\n" +
-            "            \"integer\":1,\n" +
-            "            \"decimal\":1.582,\n" +
-            "            \"boolean\":true,\n" +
-            "            \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "            \"binary\":\"YmluYXJ5\",\n" +
-            "            \"null\":null,\n" +
-            "            \"empty\":[  \n" +
-            "\n" +
-            "            ]\n" +
-            "          }\n" +
-            "        ],\n" +
-            "        \"complex\":{  \n" +
-            "          \"string\":\"string\",\n" +
-            "          \"integer\":1,\n" +
-            "          \"decimal\":1.582,\n" +
-            "          \"boolean\":true,\n" +
-            "          \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "          \"binary\":\"YmluYXJ5\",\n" +
-            "          \"null\":null,\n" +
-            "          \"empty\":[  \n" +
-            "\n" +
-            "          ],\n" +
-            "          \"array\":[  \n" +
-            "            {  \n" +
-            "              \"id\":\"1\",\n" +
-            "              \"string\":\"string\",\n" +
-            "              \"integer\":1,\n" +
-            "              \"decimal\":1.582,\n" +
-            "              \"boolean\":true,\n" +
-            "              \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "              \"binary\":\"YmluYXJ5\",\n" +
-            "              \"null\":null,\n" +
-            "              \"empty\":[  \n" +
-            "\n" +
-            "              ]\n" +
-            "            },\n" +
-            "            {  \n" +
-            "              \"id\":\"2\",\n" +
-            "              \"string\":\"string\",\n" +
-            "              \"integer\":1,\n" +
-            "              \"decimal\":1.582,\n" +
-            "              \"boolean\":true,\n" +
-            "              \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "              \"binary\":\"YmluYXJ5\",\n" +
-            "              \"null\":null,\n" +
-            "              \"empty\":[  \n" +
-            "\n" +
-            "              ]\n" +
-            "            }\n" +
-            "          ]\n" +
-            "        }\n" +
-            "      },\n" +
-            "      {  \n" +
-            "        \"id\":\"2\",\n" +
-            "        \"string\":\"string\",\n" +
-            "        \"integer\":1,\n" +
-            "        \"decimal\":1.582,\n" +
-            "        \"boolean\":true,\n" +
-            "        \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "        \"binary\":\"YmluYXJ5\",\n" +
-            "        \"null\":null,\n" +
-            "        \"empty\":[  \n" +
-            "\n" +
-            "        ],\n" +
-            "        \"array\":[  \n" +
-            "          {  \n" +
-            "            \"id\":\"1\",\n" +
-            "            \"string\":\"string\",\n" +
-            "            \"integer\":1,\n" +
-            "            \"decimal\":1.582,\n" +
-            "            \"boolean\":true,\n" +
-            "            \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "            \"binary\":\"YmluYXJ5\",\n" +
-            "            \"null\":null,\n" +
-            "            \"empty\":[  \n" +
-            "\n" +
-            "            ]\n" +
-            "          },\n" +
-            "          {  \n" +
-            "            \"id\":\"2\",\n" +
-            "            \"string\":\"string\",\n" +
-            "            \"integer\":1,\n" +
-            "            \"decimal\":1.582,\n" +
-            "            \"boolean\":true,\n" +
-            "            \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "            \"binary\":\"YmluYXJ5\",\n" +
-            "            \"null\":null,\n" +
-            "            \"empty\":[  \n" +
-            "\n" +
-            "            ]\n" +
-            "          }\n" +
-            "        ],\n" +
-            "        \"complex\":{  \n" +
-            "          \"string\":\"string\",\n" +
-            "          \"integer\":1,\n" +
-            "          \"decimal\":1.582,\n" +
-            "          \"boolean\":true,\n" +
-            "          \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "          \"binary\":\"YmluYXJ5\",\n" +
-            "          \"null\":null,\n" +
-            "          \"empty\":[  \n" +
-            "\n" +
-            "          ],\n" +
-            "          \"array\":[  \n" +
-            "            {  \n" +
-            "              \"id\":\"1\",\n" +
-            "              \"string\":\"string\",\n" +
-            "              \"integer\":1,\n" +
-            "              \"decimal\":1.582,\n" +
-            "              \"boolean\":true,\n" +
-            "              \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "              \"binary\":\"YmluYXJ5\",\n" +
-            "              \"null\":null,\n" +
-            "              \"empty\":[  \n" +
-            "\n" +
-            "              ]\n" +
-            "            },\n" +
-            "            {  \n" +
-            "              \"id\":\"2\",\n" +
-            "              \"string\":\"string\",\n" +
-            "              \"integer\":1,\n" +
-            "              \"decimal\":1.582,\n" +
-            "              \"boolean\":true,\n" +
-            "              \"date\":\"2015-02-27T11:28:39Z\",\n" +
-            "              \"binary\":\"YmluYXJ5\",\n" +
-            "              \"null\":null,\n" +
-            "              \"empty\":[  \n" +
-            "\n" +
-            "              ]\n" +
-            "            }\n" +
-            "          ]\n" +
-            "        }\n" +
-            "      }\n" +
-            "    ]\n" +
-            "  }\n" +
-            "}");
   }
 
   /**
@@ -720,120 +658,124 @@ public class JsonUtilsTestCase
   public void testAddReplaceRoot() throws IOException, ScimException
   {
     ObjectNode resource = (ObjectNode) JsonUtils.getObjectReader().
-        readTree("{\n" +
-            "    \"old\" : \"old\",\n" +
-            "    \"existing\" : \"existing\",\n" +
-            "    \"null\" : null,\n" +
-            "    \"empty\" : [],\n" +
-            "    \"array\": [\n" +
-            "      {\n" +
-            "        \"value\": 1\n" +
-            "      }\n" +
-            "    ],\n" +
-            "    \"complex\": {\n" +
-            "      \"old\" : \"old\",\n" +
-            "      \"existing\" : \"existing\",\n" +
-            "      \"null\" : null,\n" +
-            "      \"empty\" : [],\n" +
-            "      \"array\": [\n" +
-            "        {\n" +
-            "          \"value\": 1\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"value\": 2\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    }\n" +
-            "}");
+        readTree("""
+            {
+                "old" : "old",
+                "existing" : "existing",
+                "null" : null,
+                "empty" : [],
+                "array": [
+                  {
+                    "value": 1
+                  }
+                ],
+                "complex": {
+                  "old" : "old",
+                  "existing" : "existing",
+                  "null" : null,
+                  "empty" : [],
+                  "array": [
+                    {
+                      "value": 1
+                    },
+                    {
+                      "value": 2
+                    }
+                  ]
+                }
+            }""");
 
     JsonNode value = JsonUtils.getObjectReader().
-        readTree("{\n" +
-            "    \"new\" : \"new\",\n" +
-            "    \"existing\" : \"newValue\",\n" +
-            "    \"null\" : \"newValue\",\n" +
-            "    \"empty\" : \"newValue\",\n" +
-            "    \"array\": [\n" +
-            "      {\n" +
-            "        \"value\": 2\n" +
-            "      }\n" +
-            "    ],\n" +
-            "    \"complex\": {\n" +
-            "      \"new\" : \"new\",\n" +
-            "      \"existing\" : \"newValue\",\n" +
-            "      \"null\" : \"newValue\",\n" +
-            "      \"empty\" : \"newValue\",\n" +
-            "      \"array\": [\n" +
-            "        {\n" +
-            "          \"value\": 3\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    }\n" +
-            "}");
+        readTree("""
+            {
+                "new" : "new",
+                "existing" : "newValue",
+                "null" : "newValue",
+                "empty" : "newValue",
+                "array": [
+                  {
+                    "value": 2
+                  }
+                ],
+                "complex": {
+                  "new" : "new",
+                  "existing" : "newValue",
+                  "null" : "newValue",
+                  "empty" : "newValue",
+                  "array": [
+                    {
+                      "value": 3
+                    }
+                  ]
+                }
+            }""");
 
     JsonNode expectedAddResult = JsonUtils.getObjectReader().
-        readTree("{\n" +
-            "    \"old\" : \"old\",\n" +
-            "    \"new\" : \"new\",\n" +
-            "    \"existing\" : \"newValue\",\n" +
-            "    \"null\" : \"newValue\",\n" +
-            "    \"empty\" : \"newValue\",\n" +
-            "    \"array\": [\n" +
-            "      {\n" +
-            "        \"value\": 1\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"value\": 2\n" +
-            "      }\n" +
-            "    ],\n" +
-            "    \"complex\": {\n" +
-            "      \"old\" : \"old\",\n" +
-            "      \"new\" : \"new\",\n" +
-            "      \"existing\" : \"newValue\",\n" +
-            "      \"null\" : \"newValue\",\n" +
-            "      \"empty\" : \"newValue\",\n" +
-            "      \"array\": [\n" +
-            "        {\n" +
-            "          \"value\": 1\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"value\": 2\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"value\": 3\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    }\n" +
-            "}");
+        readTree("""
+            {
+                "old" : "old",
+                "new" : "new",
+                "existing" : "newValue",
+                "null" : "newValue",
+                "empty" : "newValue",
+                "array": [
+                  {
+                    "value": 1
+                  },
+                  {
+                    "value": 2
+                  }
+                ],
+                "complex": {
+                  "old" : "old",
+                  "new" : "new",
+                  "existing" : "newValue",
+                  "null" : "newValue",
+                  "empty" : "newValue",
+                  "array": [
+                    {
+                      "value": 1
+                    },
+                    {
+                      "value": 2
+                    },
+                    {
+                      "value": 3
+                    }
+                  ]
+                }
+            }""");
 
     JsonUtils.addValue(Path.root(), resource, value);
 
     assertThat(resource).isEqualTo(expectedAddResult);
 
     JsonNode expectedReplaceResult = JsonUtils.getObjectReader().
-        readTree("{\n" +
-            "    \"old\" : \"old\",\n" +
-            "    \"new\" : \"new\",\n" +
-            "    \"existing\" : \"newValue\",\n" +
-            "    \"null\" : \"newValue\",\n" +
-            "    \"empty\" : \"newValue\",\n" +
-            "    \"array\": [\n" +
-            "      {\n" +
-            "        \"value\": 2\n" +
-            "      }\n" +
-            "    ],\n" +
-            "    \"complex\": {\n" +
-            "      \"old\" : \"old\",\n" +
-            "      \"new\" : \"new\",\n" +
-            "      \"existing\" : \"newValue\",\n" +
-            "      \"null\" : \"newValue\",\n" +
-            "      \"empty\" : \"newValue\",\n" +
-            "      \"array\": [\n" +
-            "        {\n" +
-            "          \"value\": 3\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    }\n" +
-            "}");
+        readTree("""
+            {
+                "old" : "old",
+                "new" : "new",
+                "existing" : "newValue",
+                "null" : "newValue",
+                "empty" : "newValue",
+                "array": [
+                  {
+                    "value": 2
+                  }
+                ],
+                "complex": {
+                  "old" : "old",
+                  "new" : "new",
+                  "existing" : "newValue",
+                  "null" : "newValue",
+                  "empty" : "newValue",
+                  "array": [
+                    {
+                      "value": 3
+                    }
+                  ]
+                }
+            }""");
 
     JsonUtils.replaceValue(Path.root(), resource, value);
 
@@ -1010,7 +952,7 @@ public class JsonUtilsTestCase
     ArrayValue meta2 = new ArrayValue();
     meta2.set("version", "2");
     ArrayValue[] metas = new ArrayValue[] { meta1, meta2 };
-    gso.addValues("array", (ArrayNode) JsonUtils.valueToNode(metas));
+    gso.addValues("array", JsonUtils.valueToNode(metas));
 
     assertNotEquals(JsonUtils.nodeToValue(JsonUtils.findMatchingPaths(
         Path.fromString("array"), gso.getObjectNode()).get(0),
@@ -1025,8 +967,7 @@ public class JsonUtilsTestCase
         Path.fromString("array"), gso.getObjectNode()).get(0),
         ArrayValue[].class)[3], meta2);
 
-    gso.addValues("complex.array[id eq \"2\"]",
-        (ArrayNode) JsonUtils.valueToNode(metas));
+    gso.addValues("complex.array[id eq \"2\"]", JsonUtils.valueToNode(metas));
 
     // There should now be 4 values. The original values where id is 1 and 2 as
     // well as the two new meta values.
@@ -1077,44 +1018,45 @@ public class JsonUtilsTestCase
   public Object[][] getPathExistsParams() throws Exception
   {
     String jsonString =
-        "{  \n" +
-        "   \"list\":[  \n" +
-        "      {  \n" +
-        "         \"id\":1,\n" +
-        "         \"address\":{  \n" +
-        "            \"l1\":\"Id 1, Line 1\",\n" +
-        "            \"l2\":\"Id 1, Line 2\",\n" +
-        "            \"l3\":\"Id 1, Line 3\"\n" +
-        "         }\n" +
-        "      },\n" +
-        "      {  \n" +
-        "         \"id\":2,\n" +
-        "         \"address\":{  \n" +
-        "            \"l1\":\"Id 2, Line 1\",\n" +
-        "            \"l2\":\"Id 2, Line 2\",\n" +
-        "            \"l3\":\"Id 2, Line 3\"\n" +
-        "         }\n" +
-        "      },\n" +
-        "      {  \n" +
-        "         \"id\":3,\n" +
-        "         \"address\":{  \n" +
-        "            \"l1\":\"Id 3, Line 1\", \n" +
-        "            \"l2\":\"Id 3, Line 2\", \n" +
-        "            \"nullValue\":null \n " +
-        "         }\n" +
-        "      }\n" +
-        "   ],\n" +
-        "   \"simpleString\":\"present\", \n" +
-        "   \"nullValue\":null, \n" +
-        "   \"singleComplex\":{ \n" +
-        "         \"id\":3,\n" +
-        "         \"address\":{  \n" +
-        "            \"l1\":\"Id 3, Line 1\", \n " +
-        "            \"l2\":\"Id 3, Line 2\", \n " +
-        "            \"nullValue\":null \n " +
-        "         }\n" +
-        "      }\n" +
-        "}";
+        """
+            {
+               "list":[
+                  {
+                     "id":1,
+                     "address":{
+                        "l1":"Id 1, Line 1",
+                        "l2":"Id 1, Line 2",
+                        "l3":"Id 1, Line 3"
+                     }
+                  },
+                  {
+                     "id":2,
+                     "address":{
+                        "l1":"Id 2, Line 1",
+                        "l2":"Id 2, Line 2",
+                        "l3":"Id 2, Line 3"
+                     }
+                  },
+                  {
+                     "id":3,
+                     "address":{
+                        "l1":"Id 3, Line 1",
+                        "l2":"Id 3, Line 2",
+                        "nullValue":null
+                     }
+                  }
+               ],
+               "simpleString":"present",
+               "nullValue":null,
+               "singleComplex":{
+                     "id":3,
+                     "address":{
+                        "l1":"Id 3, Line 1",
+                        "l2":"Id 3, Line 2",
+                        "nullValue":null
+                     }
+                  }
+            }""";
 
     return new Object[][] {
         {

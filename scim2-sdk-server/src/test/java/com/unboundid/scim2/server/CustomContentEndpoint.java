@@ -68,7 +68,6 @@ public class CustomContentEndpoint
    * @param userResource user resource.
    *
    * @return user resource with a location set
-   * @throws URISyntaxException error condition
    */
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -82,13 +81,11 @@ public class CustomContentEndpoint
    * Test case endpoint method for testing custom media types.
    *
    * @param patchRequest user resource.
-   * @throws URISyntaxException error condition
    */
   @Consumes(MediaType.APPLICATION_JSON)
   @PATCH
   public void patchResource(PatchRequest patchRequest)
   {
-    return;
   }
 
 
@@ -97,15 +94,12 @@ public class CustomContentEndpoint
    *
    * @param id string id, not used.
    * @return a byte array
-   * @throws URISyntaxException error condition
    */
   @Path("{id}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   @GET
   public byte[] getTextResource(@PathParam("id") String id)
-      throws URISyntaxException
   {
-    return new String("TextPlainReturn:" + id).getBytes();
+    return ("TextPlainReturn:" + id).getBytes();
   }
-
 }

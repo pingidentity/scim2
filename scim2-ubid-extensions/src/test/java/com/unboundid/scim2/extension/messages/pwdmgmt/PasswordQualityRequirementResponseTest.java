@@ -32,26 +32,27 @@ public class PasswordQualityRequirementResponseTest
   @Test
   public void testSerialization() throws Exception
   {
-    String pqrString = "{  \n" +
-        "   \"currentPasswordRequired\":true," + "\n" +
-        "   \"mustChangePassword\":true," + "\n" +
-        "   \"secondsUntilPasswordExpiration\":12," + "\n" +
-        "   \"passwordRequirements\":" + "\n" +
-        "   [" + "\n" +
-        "     {" + "\n" +
-        "       \"type\":\"Type One\"," + "\n" +
-        "       \"requirementSatisfied\":true," + "\n" +
-        "       \"description\":\"Description One\"," + "\n" +
-        "       \"additionalInfo\":\"Additional Info One\"" + "\n" +
-        "     }," + "\n" +
-        "     {" + "\n" +
-        "       \"type\":\"Type Two\"," + "\n" +
-        "       \"requirementSatisfied\":true," + "\n" +
-        "       \"description\":\"Description Two\"," + "\n" +
-        "       \"additionalInfo\":\"Additional Info Two\"" + "\n" +
-        "     }" + "\n" +
-        "   ]" + "\n" +
-        "}";
+    String pqrString = """
+        {
+           "currentPasswordRequired":true,
+           "mustChangePassword":true,
+           "secondsUntilPasswordExpiration":12,
+           "passwordRequirements":
+           [
+             {
+               "type":"Type One",
+               "requirementSatisfied":true,
+               "description":"Description One",
+               "additionalInfo":"Additional Info One"
+             },
+             {
+               "type":"Type Two",
+               "requirementSatisfied":true,
+               "description":"Description Two",
+               "additionalInfo":"Additional Info Two"
+             }
+           ]
+        }""";
 
     PasswordQualityRequirementResponse pqrResponse =
         JsonUtils.getObjectReader().forType(

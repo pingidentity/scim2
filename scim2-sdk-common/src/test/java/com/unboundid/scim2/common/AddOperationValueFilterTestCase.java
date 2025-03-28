@@ -19,7 +19,6 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.google.common.collect.ImmutableList;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
@@ -74,7 +73,7 @@ public class AddOperationValueFilterTestCase
   @Test
   public void testAddOpValueFilterTypes() throws Exception
   {
-    List<Filter> filterList = ImmutableList.of(
+    List<Filter> filterList = List.of(
         Filter.ne("attr", "value"),
         Filter.co("attr", "value"),
         Filter.sw("attr", "value"),
@@ -281,16 +280,20 @@ public class AddOperationValueFilterTestCase
   @Test
   public void testDeserializedObject() throws Exception
   {
-    final String rawExpectedResult = "{"
-        + "  \"schemas\" : [ \"urn:ietf:params:scim:schemas:core:2.0:User\" ],"
-        + "  \"emails\" : [ {"
-        + "    \"value\" : \"sissel@example.com\","
-        + "    \"type\" : \"work\""
-        + "  }, {"
-        + "    \"value\" : \"yomiel@example.com\","
-        + "    \"type\" : \"home\""
-        + "  } ]"
-        + "}";
+    final String rawExpectedResult = """
+        {
+          "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+          "emails": [
+            {
+              "value": "sissel@example.com",
+              "type": "work"
+            },
+            {
+              "value": "yomiel@example.com",
+              "type": "home"
+            }
+          ]
+        }""";
 
     String expected = JsonUtils.getObjectReader()
         .readTree(rawExpectedResult).toString();

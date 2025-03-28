@@ -34,44 +34,41 @@ public class SessionTest
   @Test
   public void testSerialization() throws Exception
   {
-    String sessionString =
-        "{  \n" +
-            "   \"lastLoginMethods\": \n" +
-            "    [ \"Method One\", \"Method Two\", \"Method Three\" ], \n" +
-            "   \"lastSecondFactorMethods\": \n" +
-            "    [ \"SF Method One\", \"SF Method Two\" ], \n" +
-            "   \"lastLogin\":\"2015-07-06T04:03:02.000Z\", \n" +
-            "   \"lastSecondFactor\":\"2015-07-07T04:03:02.000Z\", \n" +
-            "   \"ipAddress\":\"192.168.10.34\", \n" +
-            "   \"userAgentString\":\"User Agent String\", \n" +
-            "   \"clients\": \n" +
-            "    [ \n" +
-            "    { \n" +
-            "       \"name\":\"Client 1\", \n" +
-            "       \"description\":\"Description 1\", \n" +
-            "       \"url\":\"http://localhost:8080/myUrl1\", \n" +
-            "       \"iconUrl\":\"http://localhost:8080/myUrl1/icon.png\", \n" +
-            "       \"emailAddress\":\"someone1@somewhere.com\", \n" +
-            "       \"lastAuthorization\":\"2015-07-08T04:03:02.000Z\" \n" +
-            "    }, \n" +
-            "    { \n" +
-            "       \"name\":\"Client 2\", \n" +
-            "       \"description\":\"Description 2\", \n" +
-            "       \"url\":\"http://localhost:8080/myUrl2\", \n" +
-            "       \"iconUrl\":\"http://localhost:8080/myUrl2/icon.png\", \n" +
-            "       \"emailAddress\":\"someone2@somewhere.com\", \n" +
-            "       \"lastAuthorization\":\"2015-07-09T04:03:02.000Z\" \n" +
-            "    }, \n" +
-            "    { \n" +
-            "       \"name\":\"Client 3\", \n" +
-            "       \"description\":\"Description 3\", \n" +
-            "       \"url\":\"http://localhost:8080/myUrl3\", \n" +
-            "       \"iconUrl\":\"http://localhost:8080/myUrl3/icon.png\", \n" +
-            "       \"emailAddress\":\"someone3@somewhere.com\", \n" +
-            "       \"lastAuthorization\":\"2015-07-10T04:03:02.000Z\" \n" +
-            "    } \n" +
-            "    ] \n" +
-            "}";
+    String sessionString = """
+        {
+           "lastLoginMethods":[ "Method One", "Method Two", "Method Three" ],
+           "lastSecondFactorMethods":[ "SF Method One", "SF Method Two" ],
+           "lastLogin":"2015-07-06T04:03:02.000Z",
+           "lastSecondFactor":"2015-07-07T04:03:02.000Z",
+           "ipAddress":"192.168.10.34",
+           "userAgentString":"User Agent String",
+           "clients":[
+            {
+               "name":"Client 1",
+               "description":"Description 1",
+               "url":"http://localhost:8080/myUrl1",
+               "iconUrl":"http://localhost:8080/myUrl1/icon.png",
+               "emailAddress":"someone1@somewhere.com",
+               "lastAuthorization":"2015-07-08T04:03:02.000Z"
+            },
+            {
+               "name":"Client 2",
+               "description":"Description 2",
+               "url":"http://localhost:8080/myUrl2",
+               "iconUrl":"http://localhost:8080/myUrl2/icon.png",
+               "emailAddress":"someone2@somewhere.com",
+               "lastAuthorization":"2015-07-09T04:03:02.000Z"
+            },
+            {
+               "name":"Client 3",
+               "description":"Description 3",
+               "url":"http://localhost:8080/myUrl3",
+               "iconUrl":"http://localhost:8080/myUrl3/icon.png",
+               "emailAddress":"someone3@somewhere.com",
+               "lastAuthorization":"2015-07-10T04:03:02.000Z"
+            }
+            ]
+        }""";
 
     Session session = JsonUtils.getObjectReader().forType(Session.class).
         readValue(sessionString);

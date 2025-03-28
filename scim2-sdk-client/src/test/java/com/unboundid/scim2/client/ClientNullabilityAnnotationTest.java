@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.fail;
 
@@ -111,7 +110,7 @@ public class ClientNullabilityAnnotationTest
       {
         if (f.isDirectory())
         {
-          if (p.length() == 0)
+          if (p.isEmpty())
           {
             findClasses(f.getName(), f, l);
           }
@@ -131,8 +130,7 @@ public class ClientNullabilityAnnotationTest
           Class<?> baseClass = Class.forName(className);
           l.add(baseClass);
           var classes = Arrays.stream(baseClass.getClasses()).filter(c ->
-              c.getCanonicalName().contains("com.unboundid.scim2")
-          ).collect(Collectors.toList());
+              c.getCanonicalName().contains("com.unboundid.scim2")).toList();
           l.addAll(classes);
         }
       }

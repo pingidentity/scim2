@@ -58,8 +58,7 @@ public class ResourcePreparerTestCase
   @BeforeClass
   public void setUp() throws Exception
   {
-    List<AttributeDefinition> attributeDefinitions =
-        new ArrayList<AttributeDefinition>(4);
+    List<AttributeDefinition> attributeDefinitions = new ArrayList<>();
 
     AttributeDefinition.Builder builder = new AttributeDefinition.Builder();
     builder.setName("always");
@@ -78,12 +77,10 @@ public class ResourcePreparerTestCase
     builder.setName("request");
     builder.setReturned(AttributeDefinition.Returned.REQUEST);
     attributeDefinitions.add(builder.build());
-
     AttributeDefinition[] attributeDefinitionsArray =
-        attributeDefinitions.toArray(
-            new AttributeDefinition[attributeDefinitions.size()]);
-    List<AttributeDefinition> complexAttributeDefinitions =
-        new ArrayList<AttributeDefinition>(4);
+        attributeDefinitions.toArray(new AttributeDefinition[0]);
+
+    List<AttributeDefinition> complexAttributeDefinitions = new ArrayList<>();
     builder = new AttributeDefinition.Builder();
     builder.setName("always");
     builder.setType(AttributeDefinition.Type.COMPLEX);
@@ -115,73 +112,72 @@ public class ResourcePreparerTestCase
         "test", "test").setCoreSchema(schema).addOptionalSchemaExtension(
         extensionSchema).build();
 
-    ObjectNode node =
-        (ObjectNode) JsonUtils.getObjectReader().readTree(
-            "{  \n" +
-            "  \"id\":\"test\",\n" +
-            "  \"always\":\n" +
-            "  {\n" +
-            "    \"always\":\"here\",\n" +
-            "    \"neVEr\":\"here\",\n" +
-            "    \"default\":\"here\",\n" +
-            "    \"rEquest\":\"here\"\n" +
-            "  },\n" +
-            "  \"neVEr\":\n" +
-            "  {\n" +
-            "    \"always\":\"here\",\n" +
-            "    \"neVEr\":\"here\",\n" +
-            "    \"default\":\"here\",\n" +
-            "    \"rEquest\":\"here\"\n" +
-            "  },\n" +
-            "  \"default\":\n" +
-            "  {\n" +
-            "    \"always\":\"here\",\n" +
-            "    \"neVEr\":\"here\",\n" +
-            "    \"default\":\"here\",\n" +
-            "    \"notDeclared\":\"here\",\n" +
-            "    \"rEquest\":\"here\"\n" +
-            "  },\n" +
-            "  \"rEquest\":\n" +
-            "  {\n" +
-            "    \"always\":\"here\",\n" +
-            "    \"neVEr\":\"here\",\n" +
-            "    \"default\":\"here\",\n" +
-            "    \"rEquest\":\"here\"\n" +
-            "  },\n" +
-            "  \"urn:ext:1\":\n" +
-            "  {\n" +
-            "    \"always\":\n" +
-            "    {\n" +
-            "      \"always\":\"here\",\n" +
-            "      \"neVEr\":\"here\",\n" +
-            "      \"default\":\"here\",\n" +
-            "      \"rEquest\":\"here\"\n" +
-            "    },\n" +
-            "    \"neVEr\":\n" +
-            "    {\n" +
-            "      \"always\":\"here\",\n" +
-            "      \"neVEr\":\"here\",\n" +
-            "      \"default\":\"here\",\n" +
-            "      \"rEquest\":\"here\"\n" +
-            "    },\n" +
-            "    \"default\":\n" +
-            "    {\n" +
-            "      \"always\":\"here\",\n" +
-            "      \"neVEr\":\"here\",\n" +
-            "      \"default\":\"here\",\n" +
-            "      \"rEquest\":\"here\"\n" +
-            "    },\n" +
-            "    \"rEquest\":\n" +
-            "    {\n" +
-            "      \"always\":\"here\",\n" +
-            "      \"neVEr\":\"here\",\n" +
-            "      \"default\":\"here\",\n" +
-            "      \"rEquest\":\"here\"\n" +
-            "    }\n" +
-            "  }\n" +
-            "}");
+    ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().readTree("""
+            {
+              "id":"test",
+              "always":
+              {
+                "always":"here",
+                "neVEr":"here",
+                "default":"here",
+                "rEquest":"here"
+              },
+              "neVEr":
+              {
+                "always":"here",
+                "neVEr":"here",
+                "default":"here",
+                "rEquest":"here"
+              },
+              "default":
+              {
+                "always":"here",
+                "neVEr":"here",
+                "default":"here",
+                "notDeclared":"here",
+                "rEquest":"here"
+              },
+              "rEquest":
+              {
+                "always":"here",
+                "neVEr":"here",
+                "default":"here",
+                "rEquest":"here"
+              },
+              "urn:ext:1":
+              {
+                "always":
+                {
+                  "always":"here",
+                  "neVEr":"here",
+                  "default":"here",
+                  "rEquest":"here"
+                },
+                "neVEr":
+                {
+                  "always":"here",
+                  "neVEr":"here",
+                  "default":"here",
+                  "rEquest":"here"
+                },
+                "default":
+                {
+                  "always":"here",
+                  "neVEr":"here",
+                  "default":"here",
+                  "rEquest":"here"
+                },
+                "rEquest":
+                {
+                  "always":"here",
+                  "neVEr":"here",
+                  "default":"here",
+                  "rEquest":"here"
+                }
+              }
+            }""");
     testResource = new GenericScimResource(node);
-    testPatch = new ArrayList<PatchOperation>(4);
+    testPatch = new ArrayList<>();
     testPatch.add(PatchOperation.add(Path.fromString("alWays"),
         new TextNode("test")));
     testPatch.add(PatchOperation.add(Path.fromString("neveR"),
@@ -237,7 +233,7 @@ public class ResourcePreparerTestCase
       throws BadRequestException
   {
     ResourcePreparer<ScimResource> preparer =
-        new ResourcePreparer<ScimResource>(resourceTypeDefinition,
+        new ResourcePreparer<>(resourceTypeDefinition,
             attributes, excludedAttributes, testBaseUri);
 
     GenericScimResource prepared = preparer.trimRetrievedResource(testResource);
@@ -344,7 +340,7 @@ public class ResourcePreparerTestCase
       throws BadRequestException
   {
     ResourcePreparer<ScimResource> preparer =
-        new ResourcePreparer<ScimResource>(resourceTypeDefinition,
+        new ResourcePreparer<>(resourceTypeDefinition,
             attributes, excludedAttributes, testBaseUri);
 
     GenericScimResource prepared =
@@ -463,7 +459,7 @@ public class ResourcePreparerTestCase
       throws BadRequestException
   {
     ResourcePreparer<ScimResource> preparer =
-        new ResourcePreparer<ScimResource>(resourceTypeDefinition,
+        new ResourcePreparer<>(resourceTypeDefinition,
             attributes, excludedAttributes, testBaseUri);
 
     GenericScimResource prepared =
@@ -583,7 +579,7 @@ public class ResourcePreparerTestCase
       throws BadRequestException
   {
     ResourcePreparer<ScimResource> preparer =
-        new ResourcePreparer<ScimResource>(resourceTypeDefinition,
+        new ResourcePreparer<>(resourceTypeDefinition,
             attributes, excludedAttributes, testBaseUri);
 
     GenericScimResource prepared =
@@ -698,34 +694,32 @@ public class ResourcePreparerTestCase
   public void testEmptyContainer()
       throws Exception
   {
-    ResourcePreparer<ScimResource> preparer =
-        new ResourcePreparer<ScimResource>(resourceTypeDefinition,
-            "default", null, testBaseUri);
+    ResourcePreparer<ScimResource> preparer = new ResourcePreparer<>(
+        resourceTypeDefinition, "default", null, testBaseUri);
 
-    ObjectNode node =
-        (ObjectNode) JsonUtils.getObjectReader().readTree(
-            "{\n" +
-                "  \"default\": {\n" +
-                "    \"never\": \"here\"\n" +
-                "  }\n" +
-                "}");
+    ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().readTree("""
+            {
+              "default": {
+                "never": "here"
+              }
+            }""");
 
     GenericScimResource prepared = preparer.trimRetrievedResource(
         new GenericScimResource(node));
     assertFalse(prepared.getObjectNode().has("default"));
 
-    node =
-        (ObjectNode) JsonUtils.getObjectReader().readTree(
-            "{\n" +
-                "  \"default\": [\n" +
-                "    {\n" +
-                "      \"never\": \"here\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"always\": \"here\"\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}");
+    node = (ObjectNode) JsonUtils.getObjectReader().readTree(
+        """
+            {
+              "default": [
+                {
+                  "never": "here"
+                },
+                {
+                  "always": "here"
+                }
+              ]
+            }""");
 
     prepared = preparer.trimRetrievedResource(
         new GenericScimResource(node));
@@ -733,30 +727,28 @@ public class ResourcePreparerTestCase
     assertEquals(prepared.getObjectNode().get("default").size(), 1);
 
 
-    node =
-        (ObjectNode) JsonUtils.getObjectReader().readTree(
-            "{\n" +
-                "  \"default\": [\n" +
-                "    {\n" +
-                "      \"never\": \"here\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"never\": \"here\"\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}");
+    node = (ObjectNode) JsonUtils.getObjectReader().readTree("""
+            {
+              "default": [
+                {
+                  "never": "here"
+                },
+                {
+                  "never": "here"
+                }
+              ]
+            }""");
 
     prepared = preparer.trimRetrievedResource(
         new GenericScimResource(node));
     assertFalse(prepared.getObjectNode().has("default"));
 
-    node =
-        (ObjectNode) JsonUtils.getObjectReader().readTree(
-            "{\n" +
-                "  \"urn:ext:1\": {\n" +
-                "    \"never\": \"here\"\n" +
-                "  }\n" +
-                "}");
+    node = (ObjectNode) JsonUtils.getObjectReader().readTree("""
+            {
+              "urn:ext:1": {
+                "never": "here"
+              }
+            }""");
 
     prepared = preparer.trimRetrievedResource(
         new GenericScimResource(node));

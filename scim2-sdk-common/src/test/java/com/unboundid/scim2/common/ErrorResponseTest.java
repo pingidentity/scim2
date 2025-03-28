@@ -48,12 +48,13 @@ public class ErrorResponseTest
       throws Exception
   {
     final ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().readTree(
-        "{\n" +
-        "  \"schemas\": [\"" + SCHEMA + "\"],\n" +
-        "  \"scimType\":\"" + SCIM_TYPE + "\",\n" +
-        "  \"detail\":\"" + DETAIL + "\",\n" +
-        "  \"status\": \"" + STATUS + "\"\n" +
-        "}"
+        """
+            {
+              "schemas": ["%s"],
+              "scimType":"%s",
+              "detail":"%s",
+              "status": "%d"
+            }""".formatted(SCHEMA, SCIM_TYPE, DETAIL, STATUS)
     );
 
     final ErrorResponse errorResponse =

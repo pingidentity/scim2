@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchOpType;
@@ -42,6 +41,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -70,281 +70,273 @@ public class PatchOpTestCase
   {
     PatchRequest patchOp = JsonUtils.getObjectReader().
         forType(PatchRequest.class).
-        readValue("{  \n" +
-            "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
-            "  ],\n" +
-            "  \"Operations\":[  \n" +
-            "    {  \n" +
-            "      \"op\":\"add\",\n" +
-            "      \"value\":{  \n" +
-            "        \"emails\":[  \n" +
-            "          {  \n" +
-            "            \"value\":\"babs@jensen.org\",\n" +
-            "            \"type\":\"home\"\n" +
-            "          }\n" +
-            "        ],\n" +
-            "        \"nickname\":\"Babs\"\n" +
-            "      }\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"op\":\"remove\",\n" +
-            "      \"path\":\"emails[type eq \\\"work\\\" and " +
-            "value ew \\\"example.com\\\"]\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"op\":\"remove\",\n" +
-            "      \"path\":\"meta\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"op\":\"add\",\n" +
-            "      \"path\":\"members\",\n" +
-            "      \"value\":[  \n" +
-            "        {  \n" +
-            "          \"display\":\"Babs Jensen\",\n" +
-            "          \"$ref\":\"https://example.com/v2/Users/2819c223..." +
-            "413861904646\",\n" +
-            "          \"value\":\"2819c223-7f76-453a-919d-413861904646\"\n" +
-            "        },\n" +
-            "        {  \n" +
-            "          \"display\":\"James Smith\",\n" +
-            "          \"$ref\":\"https://example.com/v2/Users/08e1d05d..." +
-            "473d93df9210\",\n" +
-            "          \"value\":\"08e1d05d-121c-4561-8b96-473d93df9210\"\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"op\":\"replace\",\n" +
-            "      \"path\":\"members2\",\n" +
-            "      \"value\":[  \n" +
-            "        {  \n" +
-            "          \"display\":\"Babs Jensen\",\n" +
-            "          \"$ref\":\"https://example.com/v2/Users/2819c223..." +
-            "413861904646\",\n" +
-            "          \"value\":\"2819c223...413861904646\"\n" +
-            "        },\n" +
-            "        {  \n" +
-            "          \"display\":\"James Smith\",\n" +
-            "          \"$ref\":\"https://example.com/v2/Users/08e1d05d..." +
-            "473d93df9210\",\n" +
-            "          \"value\":\"08e1d05d...473d93df9210\"\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"op\":\"replace\",\n" +
-            "      \"path\":\"addresses[type eq \\\"work\\\"]\",\n" +
-            "      \"value\":{  \n" +
-            "        \"type\":\"work\",\n" +
-            "        \"streetAddress\":\"911 Universal City Plaza\",\n" +
-            "        \"locality\":\"Hollywood\",\n" +
-            "        \"region\":\"CA\",\n" +
-            "        \"postalCode\":\"91608\",\n" +
-            "        \"country\":\"US\",\n" +
-            "        \"formatted\":\"911 Universal City Plaza\\nHollywood, " +
-            "CA 91608 US\",\n" +
-            "        \"primary\":true\n" +
-            "      }\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"op\":\"replace\",\n" +
-            "      \"path\":\"addresses[type eq \\\"home\\\"]." +
-            "streetAddress\",\n" +
-            "      \"value\":\"1010 Broadway Ave\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"op\":\"replace\",\n" +
-            "      \"value\":{  \n" +
-            "        \"emails2\":[  \n" +
-            "          {  \n" +
-            "            \"value\":\"bjensen@example.com\",\n" +
-            "            \"type\":\"work\",\n" +
-            "            \"primary\":true\n" +
-            "          },\n" +
-            "          {  \n" +
-            "            \"value\":\"babs@jensen.org\",\n" +
-            "            \"type\":\"home\"\n" +
-            "          }\n" +
-            "        ],\n" +
-            "        \"nickname2\":\"Babs\"\n" +
-            "      }\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"op\":\"remove\",\n" +
-            "      \"path\":\"schemas[" +
-            "value eq \\\"urn:ubid:custom:schema1\\\"]\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"op\":\"replace\",\n" +
-            "      \"path\":\"schemas[" +
-            "value eq \\\"urn:ubid:custom:schema2\\\"]\",\n" +
-            "      \"value\":\"urn:ubid:custom:schema3\"\n" +
-            "    }," +
-            "    {  \n" +
-            "      \"op\":\"add\",\n" +
-            "      \"path\":\"urn:ubid:custom:schema4:attr\",\n" +
-            "      \"value\":\"somevalue\"\n" +
-            "    }" +
-            "  ]\n" +
-            "}");
+        readValue("""
+            {
+              "schemas":[ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+              "Operations":[
+                {
+                  "op":"add",
+                  "value":{
+                    "emails":[
+                      {
+                        "value":"babs@jensen.org",
+                        "type":"home"
+                      }
+                    ],
+                    "nickname":"Babs"
+                  }
+                },
+                {
+                  "op":"remove",
+                  "path": \
+                  "emails[type eq \\"work\\" and value ew \\"example.com\\"]"
+                },
+                {
+                  "op":"remove",
+                  "path":"meta"
+                },
+                {
+                  "op":"add",
+                  "path":"members",
+                  "value":[
+                    {
+                      "display":"Babs Jensen",
+                      "$ref": \
+                      "https://example.com/v2/Users/2819c223...413861904646",
+                      "value":"2819c223-7f76-453a-919d-413861904646"
+                    },
+                    {
+                      "display":"James Smith",
+                      "$ref": \
+                      "https://example.com/v2/Users/08e1d05d...473d93df9210",
+                      "value":"08e1d05d-121c-4561-8b96-473d93df9210"
+                    }
+                  ]
+                },
+                {
+                  "op":"replace",
+                  "path":"members2",
+                  "value":[
+                    {
+                      "display":"Babs Jensen",
+                      "$ref": \
+                      "https://example.com/v2/Users/2819c223...413861904646",
+                      "value":"2819c223...413861904646"
+                    },
+                    {
+                      "display":"James Smith",
+                      "$ref": \
+                      "https://example.com/v2/Users/08e1d05d...473d93df9210",
+                      "value":"08e1d05d...473d93df9210"
+                    }
+                  ]
+                },
+                {
+                  "op":"replace",
+                  "path":"addresses[type eq \\"work\\"]",
+                  "value":{
+                    "type":"work",
+                    "streetAddress":"911 Universal City Plaza",
+                    "locality":"Hollywood",
+                    "region":"CA",
+                    "postalCode":"91608",
+                    "country":"US",
+                    "formatted": \
+                    "911 Universal City Plaza\\nHollywood, CA 91608 US",
+                    "primary":true
+                  }
+                },
+                {
+                  "op":"replace",
+                  "path":"addresses[type eq \\"home\\"].streetAddress",
+                  "value":"1010 Broadway Ave"
+                },
+                {
+                  "op":"replace",
+                  "value":{
+                    "emails2":[
+                      {
+                        "value":"bjensen@example.com",
+                        "type":"work",
+                        "primary":true
+                      },
+                      {
+                        "value":"babs@jensen.org",
+                        "type":"home"
+                      }
+                    ],
+                    "nickname2":"Babs"
+                  }
+                },
+                {
+                  "op":"remove",
+                  "path":"schemas[value eq \\"urn:ubid:custom:schema1\\"]"
+                },
+                {
+                  "op":"replace",
+                  "path":"schemas[value eq \\"urn:ubid:custom:schema2\\"]",
+                  "value":"urn:ubid:custom:schema3"
+                },
+                {
+                  "op":"add",
+                  "path":"urn:ubid:custom:schema4:attr",
+                  "value":"somevalue"
+                }
+              ]
+            }""");
 
-    JsonNode prePatchResource = JsonUtils.getObjectReader().
-        readTree("{  \n" +
-            "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
-            "    \"urn:ubid:custom:schema1\",\n" +
-            "    \"urn:ubid:custom:schema2\"\n" +
-            "  ],\n" +
-            "  \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
-            "  \"userName\":\"bjensen@example.com\",\n" +
-            "  \"nickname2\":\"nickname\",\n" +
-            "  \"emails\":[  \n" +
-            "    {  \n" +
-            "      \"value\":\"bjensen@example.com\",\n" +
-            "      \"type\":\"work\",\n" +
-            "      \"primary\":true\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"value\":\"babs@jensen.org\",\n" +
-            "      \"type\":\"home\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"emails2\":[  \n" +
-            "    {  \n" +
-            "      \"value\":\"someone@somewhere.com\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"members2\":[  \n" +
-            "    {  \n" +
-            "      \"value\":\"e9e30dba-f08f-4109-8486-d5c6a331660a\",\n" +
-            "      \"$ref\":\"https://example.com/v2/Groups/" +
-            "e9e30dba-f08f-4109-8486-d5c6a331660a\",\n" +
-            "      \"display\":\"Tour Guides\"\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"value\":\"fc348aa8-3835-40eb-a20b-c726e15c55b5\",\n" +
-            "      \"$ref\":\"https://example.com/v2/Groups/" +
-            "fc348aa8-3835-40eb-a20b-c726e15c55b5\",\n" +
-            "      \"display\":\"Employees\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"addresses\":[  \n" +
-            "    {  \n" +
-            "      \"type\":\"work\",\n" +
-            "      \"streetAddress\":\"13809 Research Blvd\",\n" +
-            "      \"locality\":\"Austin\",\n" +
-            "      \"region\":\"TX\",\n" +
-            "      \"postalCode\":\"78750\",\n" +
-            "      \"country\":\"USA\",\n" +
-            "      \"formatted\":\"13809 Research Blvd\\nAustin, " +
-            "TX 78750 USA\",\n" +
-            "      \"primary\":true\n" +
-            "    },\n" +
-            "    {  \n" +
-            "      \"type\":\"home\",\n" +
-            "      \"streetAddress\":\"456 Hollywood Blvd\",\n" +
-            "      \"locality\":\"Hollywood\",\n" +
-            "      \"region\":\"CA\",\n" +
-            "      \"postalCode\":\"91608\",\n" +
-            "      \"country\":\"USA\",\n" +
-            "      \"formatted\":\"456 Hollywood Blvd\\nHollywood, " +
-            "CA 91608 USA\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"meta\":{  \n" +
-            "    \"resourceType\":\"User\",\n" +
-            "    \"created\":\"2010-01-23T04:56:22Z\",\n" +
-            "    \"lastModified\":\"2011-05-13T04:42:34Z\",\n" +
-            "    \"version\":\"W\\/\\\"3694e05e9dff590\\\"\",\n" +
-            "    \"location\":\"https://example.com/v2/Users/" +
-            "2819c223-7f76-453a-919d-413861904646\"\n" +
-            "  }\n" +
-            "}");
+    JsonNode prePatchResource = JsonUtils.getObjectReader().readTree(
+            """
+            {
+              "schemas":[
+                "urn:ietf:params:scim:schemas:core:2.0:User",
+                "urn:ubid:custom:schema1",
+                "urn:ubid:custom:schema2"
+              ],
+              "id":"2819c223-7f76-453a-919d-413861904646",
+              "userName":"bjensen@example.com",
+              "nickname2":"nickname",
+              "emails":[
+                {
+                  "value":"bjensen@example.com",
+                  "type":"work",
+                  "primary":true
+                },
+                {
+                  "value":"babs@jensen.org",
+                  "type":"home"
+                }
+              ],
+              "emails2":[
+                {
+                  "value":"someone@somewhere.com"
+                }
+              ],
+              "members2":[
+                {
+                  "value":"e9e30dba-f08f-4109-8486-d5c6a331660a",
+                  "$ref":
+            "https://example.com/v2/Groups/e9e30dba-f08f-4109-8486-d5c6a331660a",
+                  "display":"Tour Guides"
+                },
+                {
+                  "value":"fc348aa8-3835-40eb-a20b-c726e15c55b5",
+                  "$ref":
+            "https://example.com/v2/Groups/fc348aa8-3835-40eb-a20b-c726e15c55b5",
+                  "display":"Employees"
+                }
+              ],
+              "addresses":[
+                {
+                  "type":"work",
+                  "streetAddress":"13809 Research Blvd",
+                  "locality":"Austin",
+                  "region":"TX",
+                  "postalCode":"78750",
+                  "country":"USA",
+                  "formatted":"13809 Research Blvd\\nAustin, TX 78750 USA",
+                  "primary":true
+                },
+                {
+                  "type":"home",
+                  "streetAddress":"456 Hollywood Blvd",
+                  "locality":"Hollywood",
+                  "region":"CA",
+                  "postalCode":"91608",
+                  "country":"USA",
+                  "formatted":"456 Hollywood Blvd\\nHollywood, CA 91608 USA"
+                }
+              ],
+              "meta":{
+                "resourceType":"User",
+                "created":"2010-01-23T04:56:22Z",
+                "lastModified":"2011-05-13T04:42:34Z",
+                "version":"W\\/\\"3694e05e9dff590\\"",
+                "location":
+            "https://example.com/v2/Users/2819c223-7f76-453a-919d-413861904646"
+              }
+            }""");
 
     JsonNode postPatchResource = JsonUtils.getObjectReader().
-        readTree("{  \n" +
-            "   \"schemas\":[  \n" +
-            "      \"urn:ietf:params:scim:schemas:core:2.0:User\",\n" +
-            "      \"urn:ubid:custom:schema3\",\n" +
-            "      \"urn:ubid:custom:schema4\"\n" +
-            "   ],\n" +
-            "   \"id\":\"2819c223-7f76-453a-919d-413861904646\",\n" +
-            "   \"userName\":\"bjensen@example.com\",\n" +
-            "   \"nickname2\":\"Babs\",\n" +
-            "   \"emails\":[  \n" +
-            "      {  \n" +
-            "         \"value\":\"babs@jensen.org\",\n" +
-            "         \"type\":\"home\"\n" +
-            "      }\n" +
-            "   ],\n" +
-            "   \"emails2\":[  \n" +
-            "      {  \n" +
-            "         \"value\":\"bjensen@example.com\",\n" +
-            "         \"type\":\"work\",\n" +
-            "         \"primary\":true\n" +
-            "      },\n" +
-            "      {  \n" +
-            "         \"value\":\"babs@jensen.org\",\n" +
-            "         \"type\":\"home\"\n" +
-            "      }\n" +
-            "   ],\n" +
-            "   \"members2\":[  \n" +
-            "      {  \n" +
-            "         \"display\":\"Babs Jensen\",\n" +
-            "         \"$ref\":" +
-            "\"https://example.com/v2/Users/2819c223...413861904646\",\n" +
-            "         \"value\":\"2819c223...413861904646\"\n" +
-            "      },\n" +
-            "      {  \n" +
-            "         \"display\":\"James Smith\",\n" +
-            "         \"$ref\":" +
-            "\"https://example.com/v2/Users/08e1d05d...473d93df9210\",\n" +
-            "         \"value\":\"08e1d05d...473d93df9210\"\n" +
-            "      }\n" +
-            "   ],\n" +
-            "   \"addresses\":[  \n" +
-            "      {  \n" +
-            "         \"type\":\"work\",\n" +
-            "         \"streetAddress\":\"911 Universal City Plaza\",\n" +
-            "         \"locality\":\"Hollywood\",\n" +
-            "         \"region\":\"CA\",\n" +
-            "         \"postalCode\":\"91608\",\n" +
-            "         \"country\":\"US\",\n" +
-            "         \"formatted\":" +
-            "\"911 Universal City Plaza\\nHollywood, CA 91608 US\",\n" +
-            "         \"primary\":true\n" +
-            "      },\n" +
-            "      {  \n" +
-            "         \"type\":\"home\",\n" +
-            "         \"streetAddress\":\"1010 Broadway Ave\",\n" +
-            "         \"locality\":\"Hollywood\",\n" +
-            "         \"region\":\"CA\",\n" +
-            "         \"postalCode\":\"91608\",\n" +
-            "         \"country\":\"USA\",\n" +
-            "         \"formatted\":" +
-            "\"456 Hollywood Blvd\\nHollywood, CA 91608 USA\"\n" +
-            "      }\n" +
-            "   ],\n" +
-            "   \"nickname\":\"Babs\",\n" +
-            "   \"members\":[  \n" +
-            "      {  \n" +
-            "         \"display\":\"Babs Jensen\",\n" +
-            "         \"$ref\":" +
-            "\"https://example.com/v2/Users/2819c223...413861904646\",\n" +
-            "         \"value\":\"2819c223-7f76-453a-919d-413861904646\"\n" +
-            "      },\n" +
-            "      {  \n" +
-            "         \"display\":\"James Smith\",\n" +
-            "         \"$ref\":" +
-            "\"https://example.com/v2/Users/08e1d05d...473d93df9210\",\n" +
-            "         \"value\":\"08e1d05d-121c-4561-8b96-473d93df9210\"\n" +
-            "      }\n" +
-            "   ],\n" +
-            "   \"urn:ubid:custom:schema4\":{  \n" +
-            "      \"attr\":\"somevalue\"\n" +
-            "   }\n" +
-            "}");
+        readTree("""
+            {
+              "schemas":[
+                "urn:ietf:params:scim:schemas:core:2.0:User",
+                "urn:ubid:custom:schema3",
+                "urn:ubid:custom:schema4"
+              ],
+              "id":"2819c223-7f76-453a-919d-413861904646",
+              "userName":"bjensen@example.com",
+              "nickname2":"Babs",
+              "emails":[
+                {
+                  "value":"babs@jensen.org",
+                  "type":"home"
+                }
+              ],
+              "emails2":[
+                {
+                  "value":"bjensen@example.com",
+                  "type":"work",
+                  "primary":true
+                },
+                {
+                  "value":"babs@jensen.org",
+                  "type":"home"
+                }
+              ],
+              "members2":[
+                {
+                  "display":"Babs Jensen",
+                  "$ref":"https://example.com/v2/Users/2819c223...413861904646",
+                  "value":"2819c223...413861904646"
+                },
+                {
+                  "display":"James Smith",
+                  "$ref":"https://example.com/v2/Users/08e1d05d...473d93df9210",
+                  "value":"08e1d05d...473d93df9210"
+                }
+              ],
+              "addresses":[
+                {
+                  "type":"work",
+                  "streetAddress":"911 Universal City Plaza",
+                  "locality":"Hollywood",
+                  "region":"CA",
+                  "postalCode":"91608",
+                  "country":"US",
+                  "formatted":
+            "911 Universal City Plaza\\nHollywood, CA 91608 US",
+                  "primary":true
+                },
+                {
+                  "type":"home",
+                  "streetAddress":"1010 Broadway Ave",
+                  "locality":"Hollywood",
+                  "region":"CA",
+                  "postalCode":"91608",
+                  "country":"USA",
+                  "formatted":
+            "456 Hollywood Blvd\\nHollywood, CA 91608 USA"
+                }
+              ],
+              "nickname":"Babs",
+              "members":[
+                {
+                  "display":"Babs Jensen",
+                  "$ref":"https://example.com/v2/Users/2819c223...413861904646",
+                  "value":"2819c223-7f76-453a-919d-413861904646"
+                },
+                {
+                  "display":"James Smith",
+                  "$ref":"https://example.com/v2/Users/08e1d05d...473d93df9210",
+                  "value":"08e1d05d-121c-4561-8b96-473d93df9210"
+                }
+              ],
+              "urn:ubid:custom:schema4":{
+                "attr": "somevalue"
+              }
+            }""");
 
     GenericScimResource scimResource =
         new GenericScimResource((ObjectNode) prePatchResource);
@@ -359,7 +351,6 @@ public class PatchOpTestCase
         writeValueAsString(constructed);
     assertEquals(JsonUtils.getObjectReader().forType(PatchRequest.class).
         readValue(serialized), constructed);
-
   }
 
   /**
@@ -372,20 +363,17 @@ public class PatchOpTestCase
   {
     try
     {
-      JsonUtils.getObjectReader().
-          forType(PatchRequest.class).
-          readValue("{  \n" +
-              "  \"schemas\":[  \n" +
-              "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
-              "  ],\n" +
-              "  \"Operations\":[  \n" +
-              "    {  \n" +
-              "      \"op\":\"remove\",\n" +
-              "      \"path\":\"emails[type eq \\\"work\\\" and " +
-              "value ew \\\"example.com\\\"].too.deep\"\n" +
-              "    }\n" +
-              "  ]\n" +
-              "}");
+      JsonUtils.getObjectReader().forType(PatchRequest.class).readValue("""
+              {
+                "schemas":[ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+                "Operations":[
+                  {
+                    "op":"remove",
+                    "path":"emails[type eq \\"work\\" and \
+              value ew \\"example.com\\"].too.deep"
+                  }
+                ]
+              }""");
     }
     catch (JsonMappingException e)
     {
@@ -396,20 +384,17 @@ public class PatchOpTestCase
 
     try
     {
-    JsonUtils.getObjectReader().
-        forType(PatchRequest.class).
-        readValue("{  \n" +
-            "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
-            "  ],\n" +
-            "  \"Operations\":[  \n" +
-            "    {  \n" +
-            "      \"op\":\"remove\",\n" +
-            "      \"path\":\"emails[type eq \\\"work\\\" and " +
-            "value ew \\\"example.com\\\"].sub[something eq 2]\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}");
+    JsonUtils.getObjectReader().forType(PatchRequest.class).readValue("""
+        {
+          "schemas":[ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations":[
+            {
+              "op":"remove",
+              "path":"emails[type eq \\"work\\" and \
+        value ew \\"example.com\\"].sub[something eq 2]"
+            }
+          ]
+        }""");
     }
     catch (JsonMappingException e)
     {
@@ -420,21 +405,20 @@ public class PatchOpTestCase
 
     try
     {
-    JsonUtils.getObjectReader().
-        forType(PatchRequest.class).
-        readValue("{  \n" +
-            "  \"schemas\":[  \n" +
-            "    \"urn:ietf:params:scim:api:messages:2.0:PatchOp\"\n" +
-            "  ],\n" +
-            "  \"Operations\":[  \n" +
-            "    {  \n" +
-            "      \"op\":\"add\",\n" +
-            "      \"path\":\"emails[type eq \\\"work\\\" and " +
-            "value ew \\\"example.com\\\"],\"\n" +
-            "      \"value\":\"value\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}");
+    JsonUtils.getObjectReader().forType(PatchRequest.class).readValue("""
+        {
+          "schemas":[
+            "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+          ],
+          "Operations":[
+            {
+              "op":"add",
+              "path":"emails[type eq \\"work\\" and \
+        value ew \\"example.com\\"],"
+              "value":"value"
+            }
+          ]
+        }""");
     }
     catch (JsonMappingException e)
     {
@@ -452,7 +436,7 @@ public class PatchOpTestCase
   public void testStringPatchOps() throws Exception
   {
     PatchOperation patchOp = PatchOperation.addStringValues("path1",
-        Lists.newArrayList("value1", "value2"));
+        List.of("value1", "value2"));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -462,7 +446,7 @@ public class PatchOpTestCase
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     patchOp = PatchOperation.addStringValues(Path.fromString("path1"),
-        Lists.newArrayList("value1", "value2"));
+        List.of("value1", "value2"));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -510,7 +494,7 @@ public class PatchOpTestCase
   public void testDoublePatchOps() throws Exception
   {
     PatchOperation patchOp = PatchOperation.addDoubleValues("path1",
-        Lists.newArrayList(1.1, 1.2));
+        List.of(1.1, 1.2));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -520,7 +504,7 @@ public class PatchOpTestCase
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     patchOp = PatchOperation.addDoubleValues(Path.fromString("path1"),
-        Lists.newArrayList(2.1, 2.2));
+        List.of(2.1, 2.2));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -549,7 +533,7 @@ public class PatchOpTestCase
   public void testIntegerPatchOps() throws Exception
   {
     PatchOperation patchOp = PatchOperation.addIntegerValues("path1",
-        Lists.newArrayList(1, 2));
+        List.of(1, 2));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -559,7 +543,7 @@ public class PatchOpTestCase
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     patchOp = PatchOperation.addIntegerValues(Path.fromString("path1"),
-        Lists.newArrayList(3, 4));
+        List.of(3, 4));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -588,7 +572,7 @@ public class PatchOpTestCase
   public void testLongPatchOps() throws Exception
   {
     PatchOperation patchOp = PatchOperation.addLongValues("path1",
-        Lists.newArrayList(1L, 2L));
+        List.of(1L, 2L));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -598,7 +582,7 @@ public class PatchOpTestCase
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     patchOp = PatchOperation.addIntegerValues(Path.fromString("path1"),
-        Lists.newArrayList(3, 4));
+        List.of(3, 4));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -629,7 +613,7 @@ public class PatchOpTestCase
     Date d1 = new Date(89233675234L);
     Date d2 = new Date(89233675235L);
     PatchOperation patchOp = PatchOperation.addDateValues(
-        "path1", Lists.newArrayList(d1, d2));
+        "path1", List.of(d1, d2));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -642,7 +626,7 @@ public class PatchOpTestCase
     Date d3 = new Date(89233675236L);
     Date d4 = new Date(89233675237L);
     patchOp = PatchOperation.addDateValues(
-        Path.fromString("path1"), Lists.newArrayList(d3, d4));
+        Path.fromString("path1"), List.of(d3, d4));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -678,7 +662,7 @@ public class PatchOpTestCase
     byte[] ba1 = new byte[] {0x00, 0x01, 0x02};
     byte[] ba2 = new byte[] {0x02, 0x01, 0x00};
     PatchOperation patchOp = PatchOperation.addBinaryValues(
-        "path1", Lists.newArrayList(ba1, ba2));
+        "path1", List.of(ba1, ba2));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -691,7 +675,7 @@ public class PatchOpTestCase
     byte[] ba3 = new byte[] {0x03, 0x04, 0x05};
     byte[] ba4 = new byte[] {0x05, 0x04, 0x03};
     patchOp = PatchOperation.addBinaryValues(
-        Path.fromString("path1"), Lists.newArrayList(ba3, ba4));
+        Path.fromString("path1"), List.of(ba3, ba4));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -725,7 +709,7 @@ public class PatchOpTestCase
     URI uri1 = new URI("http://localhost:8080/apps/app1");
     URI uri2 = new URI("Users/1dd6d752-1744-47e5-a4a8-5f5670aa8905");
     PatchOperation patchOp = PatchOperation.addURIValues("path1",
-        Lists.newArrayList(uri1, uri2));
+        List.of(uri1, uri2));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
@@ -737,7 +721,7 @@ public class PatchOpTestCase
     URI uri3 = new URI("http://localhost:8080/apps/app2");
     URI uri4 = new URI("Users/1dd6d752-1744-47e5-a4a8-5f5670aa8998");
     patchOp = PatchOperation.addURIValues(Path.fromString("path1"),
-        Lists.newArrayList(uri3, uri4));
+        List.of(uri3, uri4));
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.ADD);
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
