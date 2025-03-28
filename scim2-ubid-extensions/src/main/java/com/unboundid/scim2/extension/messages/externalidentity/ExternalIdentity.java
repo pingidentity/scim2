@@ -24,6 +24,8 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
+import java.util.Objects;
+
 /**
  * External identity provider information.
  */
@@ -273,42 +275,31 @@ public final class ExternalIdentity extends BaseScimResource
     }
 
     ExternalIdentity that = (ExternalIdentity) o;
-
-    if (provider != null ? !provider.equals(that.provider) :
-        that.provider != null)
+    if (!Objects.equals(provider, that.provider))
     {
       return false;
     }
-    if (providerUserId != null ? !providerUserId.equals(that.providerUserId) :
-        that.providerUserId != null)
+    if (!Objects.equals(providerUserId, that.providerUserId))
     {
       return false;
     }
-    if (accessToken != null ? !accessToken.equals(that.accessToken) :
-        that.accessToken != null)
+    if (!Objects.equals(accessToken, that.accessToken))
     {
       return false;
     }
-    if (refreshToken != null ? !refreshToken.equals(that.refreshToken) :
-        that.refreshToken != null)
+    if (!Objects.equals(refreshToken, that.refreshToken))
     {
       return false;
     }
-    if (providerRedirectUrl != null ?
-        !providerRedirectUrl.equals(that.providerRedirectUrl) :
-        that.providerRedirectUrl != null)
+    if (!Objects.equals(providerRedirectUrl, that.providerRedirectUrl))
     {
       return false;
     }
-    if (callbackUrl != null ? !callbackUrl.equals(that.callbackUrl) :
-        that.callbackUrl != null)
+    if (!Objects.equals(callbackUrl, that.callbackUrl))
     {
       return false;
     }
-    return callbackParameters != null ?
-        callbackParameters.equals(that.callbackParameters) :
-        that.callbackParameters == null;
-
+    return Objects.equals(callbackParameters, that.callbackParameters);
   }
 
   /**
@@ -319,17 +310,7 @@ public final class ExternalIdentity extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (provider != null ? provider.hashCode() : 0);
-    result = 31 * result +
-        (providerUserId != null ? providerUserId.hashCode() : 0);
-    result = 31 * result + (accessToken != null ? accessToken.hashCode() : 0);
-    result = 31 * result + (refreshToken != null ? refreshToken.hashCode() : 0);
-    result = 31 * result +
-        (providerRedirectUrl != null ? providerRedirectUrl.hashCode() : 0);
-    result = 31 * result + (callbackUrl != null ? callbackUrl.hashCode() : 0);
-    result = 31 * result +
-        (callbackParameters != null ? callbackParameters.hashCode() : 0);
-    return result;
+    return Objects.hash(provider, providerUserId, accessToken, refreshToken,
+        providerRedirectUrl, callbackUrl, callbackParameters);
   }
 }

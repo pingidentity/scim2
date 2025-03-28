@@ -24,6 +24,7 @@ import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 /**
  * A complex type that specifies supported Authentication Scheme properties.
@@ -198,36 +199,27 @@ public class AuthenticationScheme
     }
 
     AuthenticationScheme that = (AuthenticationScheme) o;
-
     if (primary != that.primary)
     {
       return false;
     }
-    if (description != null ? !description.equals(that.description) :
-        that.description != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    if (documentationUri != null ? !documentationUri.equals(
-        that.documentationUri) : that.documentationUri != null)
+    if (!Objects.equals(description, that.description))
     {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null)
+    if (!Objects.equals(specUri, that.specUri))
     {
       return false;
     }
-    if (specUri != null ? !specUri.equals(that.specUri) :
-        that.specUri != null)
+    if (!Objects.equals(documentationUri, that.documentationUri))
     {
       return false;
     }
-    if (type != null ? !type.equals(that.type) : that.type != null)
-    {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(type, that.type);
   }
 
   /**
@@ -238,14 +230,8 @@ public class AuthenticationScheme
   @Override
   public int hashCode()
   {
-    int result = name != null ? name.hashCode() : 0;
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (specUri != null ? specUri.hashCode() : 0);
-    result = 31 * result + (documentationUri != null ?
-        documentationUri.hashCode() : 0);
-    result = 31 * result + (type != null ? type.hashCode() : 0);
-    result = 31 * result + (primary ? 1 : 0);
-    return result;
+    return Objects.hash(primary, name, description, specUri, documentationUri,
+        type);
   }
 
   /**

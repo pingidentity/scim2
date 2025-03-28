@@ -25,6 +25,7 @@ import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
@@ -958,101 +959,87 @@ public class UserResource extends BaseScimResource
     }
 
     UserResource that = (UserResource) o;
-
-    if (userName != null ? !userName.equals(that.userName) :
-        that.userName != null)
+    if (!Objects.equals(userName, that.userName))
     {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    if (displayName != null ? !displayName.equals(that.displayName) :
-        that.displayName != null)
+    if (!Objects.equals(displayName, that.displayName))
     {
       return false;
     }
-    if (nickName != null ? !nickName.equals(that.nickName) :
-        that.nickName != null)
+    if (!Objects.equals(nickName, that.nickName))
     {
       return false;
     }
-    if (profileUrl != null ? !profileUrl.equals(that.profileUrl) :
-        that.profileUrl != null)
+    if (!Objects.equals(profileUrl, that.profileUrl))
     {
       return false;
     }
-    if (title != null ? !title.equals(that.title) : that.title != null)
+    if (!Objects.equals(title, that.title))
     {
       return false;
     }
-    if (userType != null ? !userType.equals(that.userType) :
-        that.userType != null)
+    if (!Objects.equals(userType, that.userType))
     {
       return false;
     }
-    if (preferredLanguage != null ? !preferredLanguage.equals(
-        that.preferredLanguage) : that.preferredLanguage != null)
+    if (!Objects.equals(preferredLanguage, that.preferredLanguage))
     {
       return false;
     }
-    if (locale != null ? !locale.equals(that.locale) : that.locale != null)
+    if (!Objects.equals(locale, that.locale))
     {
       return false;
     }
-    if (timezone != null ? !timezone.equals(that.timezone) :
-        that.timezone != null)
+    if (!Objects.equals(timezone, that.timezone))
     {
       return false;
     }
-    if (active != null ? !active.equals(that.active) : that.active != null)
+    if (!Objects.equals(active, that.active))
     {
       return false;
     }
-    if (password != null ? !password.equals(that.password) :
-        that.password != null)
+    if (!Objects.equals(password, that.password))
     {
       return false;
     }
-    if (emails != null ? !emails.equals(that.emails) : that.emails != null)
+    if (!Objects.equals(emails, that.emails))
     {
       return false;
     }
-    if (phoneNumbers != null ? !phoneNumbers.equals(that.phoneNumbers) :
-        that.phoneNumbers != null)
+    if (!Objects.equals(phoneNumbers, that.phoneNumbers))
     {
       return false;
     }
-    if (ims != null ? !ims.equals(that.ims) : that.ims != null)
+    if (!Objects.equals(ims, that.ims))
     {
       return false;
     }
-    if (photos != null ? !photos.equals(that.photos) : that.photos != null)
+    if (!Objects.equals(photos, that.photos))
     {
       return false;
     }
-    if (addresses != null ? !addresses.equals(that.addresses) :
-        that.addresses != null)
+    if (!Objects.equals(addresses, that.addresses))
     {
       return false;
     }
-    if (groups != null ? !groups.equals(that.groups) : that.groups != null)
+    if (!Objects.equals(groups, that.groups))
     {
       return false;
     }
-    if (entitlements != null ? !entitlements.equals(that.entitlements) :
-        that.entitlements != null)
+    if (!Objects.equals(entitlements, that.entitlements))
     {
       return false;
     }
-    if (roles != null ? !roles.equals(that.roles) : that.roles != null)
+    if (!Objects.equals(roles, that.roles))
     {
       return false;
     }
-    return !(x509Certificates != null ? !x509Certificates.equals(
-        that.x509Certificates) : that.x509Certificates != null);
-
+    return Objects.equals(x509Certificates, that.x509Certificates);
   }
 
   /**
@@ -1063,30 +1050,9 @@ public class UserResource extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (userName != null ? userName.hashCode() : 0);
-    result = 31 * result + (name != null ? name.hashCode() : 0);
-    result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
-    result = 31 * result + (nickName != null ? nickName.hashCode() : 0);
-    result = 31 * result + (profileUrl != null ? profileUrl.hashCode() : 0);
-    result = 31 * result + (title != null ? title.hashCode() : 0);
-    result = 31 * result + (userType != null ? userType.hashCode() : 0);
-    result = 31 * result + (preferredLanguage != null ?
-        preferredLanguage.hashCode() : 0);
-    result = 31 * result + (locale != null ? locale.hashCode() : 0);
-    result = 31 * result + (timezone != null ? timezone.hashCode() : 0);
-    result = 31 * result + (active != null ? active.hashCode() : 0);
-    result = 31 * result + (password != null ? password.hashCode() : 0);
-    result = 31 * result + (emails != null ? emails.hashCode() : 0);
-    result = 31 * result + (phoneNumbers != null ? phoneNumbers.hashCode() : 0);
-    result = 31 * result + (ims != null ? ims.hashCode() : 0);
-    result = 31 * result + (photos != null ? photos.hashCode() : 0);
-    result = 31 * result + (addresses != null ? addresses.hashCode() : 0);
-    result = 31 * result + (groups != null ? groups.hashCode() : 0);
-    result = 31 * result + (entitlements != null ? entitlements.hashCode() : 0);
-    result = 31 * result + (roles != null ? roles.hashCode() : 0);
-    result = 31 * result + (x509Certificates != null ?
-        x509Certificates.hashCode() : 0);
-    return result;
+    return Objects.hash(super.hashCode(), userName, name, displayName, nickName,
+        profileUrl, title, userType, preferredLanguage, locale, timezone,
+        active, password, emails, phoneNumbers, ims, photos, addresses, groups,
+        entitlements, roles, x509Certificates);
   }
 }

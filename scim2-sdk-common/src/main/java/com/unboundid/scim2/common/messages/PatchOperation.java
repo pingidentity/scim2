@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
@@ -187,8 +188,7 @@ public abstract class PatchOperation
         throw new IllegalArgumentException("Patch operation contains " +
             "multiple values");
       }
-      return JsonUtils.getObjectReader().treeToValue(
-          value, cls);
+      return JsonUtils.getObjectReader().treeToValue(value, cls);
     }
 
     /**
@@ -545,17 +545,11 @@ public abstract class PatchOperation
       }
 
       AddOperation that = (AddOperation) o;
-      if (getPath() != null ? !getPath().equals(that.getPath()) :
-          that.getPath() != null)
+      if (!Objects.equals(getPath(), that.getPath()))
       {
         return false;
       }
-      if (!value.equals(that.value))
-      {
-        return false;
-      }
-
-      return true;
+      return value.equals(that.value);
     }
 
     /**
@@ -566,9 +560,7 @@ public abstract class PatchOperation
     @Override
     public int hashCode()
     {
-      int result = getPath() != null ? getPath().hashCode() : 0;
-      result = 31 * result + value.hashCode();
-      return result;
+      return Objects.hash(getPath(), value);
     }
 
   }
@@ -633,14 +625,7 @@ public abstract class PatchOperation
       }
 
       RemoveOperation that = (RemoveOperation) o;
-
-      if (getPath() != null ? !getPath().equals(that.getPath()) :
-          that.getPath() != null)
-      {
-        return false;
-      }
-
-      return true;
+      return Objects.equals(getPath(), that.getPath());
     }
 
     /**
@@ -651,7 +636,7 @@ public abstract class PatchOperation
     @Override
     public int hashCode()
     {
-      return getPath() != null ? getPath().hashCode() : 0;
+      return Objects.hash(getPath());
     }
   }
 
@@ -764,18 +749,11 @@ public abstract class PatchOperation
       }
 
       ReplaceOperation that = (ReplaceOperation) o;
-
-      if (getPath() != null ? !getPath().equals(that.getPath()) :
-          that.getPath() != null)
+      if (!Objects.equals(getPath(), that.getPath()))
       {
         return false;
       }
-      if (!value.equals(that.value))
-      {
-        return false;
-      }
-
-      return true;
+      return value.equals(that.value);
     }
 
     /**
@@ -786,9 +764,7 @@ public abstract class PatchOperation
     @Override
     public int hashCode()
     {
-      int result = getPath() != null ? getPath().hashCode() : 0;
-      result = 31 * result + value.hashCode();
-      return result;
+      return Objects.hash(getPath(), value);
     }
   }
 

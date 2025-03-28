@@ -25,6 +25,7 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.filters.Filter;
 
+import java.util.Objects;
 import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.*;
@@ -288,27 +289,19 @@ public final class SearchRequest extends BaseScimResource
     }
 
     SearchRequest that = (SearchRequest) o;
-
-    if (attributes != null ? !attributes.equals(that.attributes) :
-        that.attributes != null)
+    if (!Objects.equals(attributes, that.attributes))
     {
       return false;
     }
-    if (count != null ? !count.equals(that.count) : that.count != null)
+    if (!Objects.equals(excludedAttributes, that.excludedAttributes))
     {
       return false;
     }
-    if (excludedAttributes != null ?
-        !excludedAttributes.equals(that.excludedAttributes) :
-        that.excludedAttributes != null)
+    if (!Objects.equals(filter, that.filter))
     {
       return false;
     }
-    if (filter != null ? !filter.equals(that.filter) : that.filter != null)
-    {
-      return false;
-    }
-    if (sortBy != null ? !sortBy.equals(that.sortBy) : that.sortBy != null)
+    if (!Objects.equals(sortBy, that.sortBy))
     {
       return false;
     }
@@ -316,13 +309,11 @@ public final class SearchRequest extends BaseScimResource
     {
       return false;
     }
-    if (startIndex != null ? !startIndex.equals(that.startIndex) :
-        that.startIndex != null)
+    if (!Objects.equals(startIndex, that.startIndex))
     {
       return false;
     }
-
-    return true;
+    return Objects.equals(count, that.count);
   }
 
   /**
@@ -333,15 +324,7 @@ public final class SearchRequest extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
-    result = 31 * result + (excludedAttributes != null ?
-        excludedAttributes.hashCode() : 0);
-    result = 31 * result + (filter != null ? filter.hashCode() : 0);
-    result = 31 * result + (sortBy != null ? sortBy.hashCode() : 0);
-    result = 31 * result + (sortOrder != null ? sortOrder.hashCode() : 0);
-    result = 31 * result + (startIndex != null ? startIndex.hashCode() : 0);
-    result = 31 * result + (count != null ? count.hashCode() : 0);
-    return result;
+    return Objects.hash(super.hashCode(), attributes, excludedAttributes,
+        filter, sortBy, sortOrder, startIndex, count);
   }
 }

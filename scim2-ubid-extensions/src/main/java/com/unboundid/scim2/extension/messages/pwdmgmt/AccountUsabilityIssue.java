@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * Model class for an account usability issues.
  */
@@ -94,14 +96,11 @@ public class AccountUsabilityIssue
     }
 
     AccountUsabilityIssue that = (AccountUsabilityIssue) o;
-
-    if (name != null ? !name.equals(that.name) : that.name != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    return !(message != null ? !message.equals(that.message) :
-        that.message != null);
-
+    return Objects.equals(message, that.message);
   }
 
   /**
@@ -112,8 +111,6 @@ public class AccountUsabilityIssue
   @Override
   public int hashCode()
   {
-    int result = name != null ? name.hashCode() : 0;
-    result = 31 * result + (message != null ? message.hashCode() : 0);
-    return result;
+    return Objects.hash(name, message);
   }
 }

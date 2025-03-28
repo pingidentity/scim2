@@ -23,6 +23,7 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 public final class OAuth2Client
 {
@@ -268,32 +269,27 @@ public final class OAuth2Client
     }
 
     OAuth2Client that = (OAuth2Client) o;
-
-    if (name != null ? !name.equals(that.name) : that.name != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    if (description != null ? !description.equals(that.description) :
-        that.description != null)
+    if (!Objects.equals(description, that.description))
     {
       return false;
     }
-    if (url != null ? !url.equals(that.url) : that.url != null)
+    if (!Objects.equals(url, that.url))
     {
       return false;
     }
-    if (iconUrl != null ? !iconUrl.equals(that.iconUrl) : that.iconUrl != null)
+    if (!Objects.equals(iconUrl, that.iconUrl))
     {
       return false;
     }
-    if (emailAddress != null ? !emailAddress.equals(that.emailAddress) :
-        that.emailAddress != null)
+    if (!Objects.equals(emailAddress, that.emailAddress))
     {
       return false;
     }
-    return lastAuthorization != null ?
-        lastAuthorization.equals(that.lastAuthorization) :
-        that.lastAuthorization == null;
+    return Objects.equals(lastAuthorization, that.lastAuthorization);
   }
 
   /**
@@ -304,13 +300,7 @@ public final class OAuth2Client
   @Override
   public int hashCode()
   {
-    int result = name != null ? name.hashCode() : 0;
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (url != null ? url.hashCode() : 0);
-    result = 31 * result + (iconUrl != null ? iconUrl.hashCode() : 0);
-    result = 31 * result + (emailAddress != null ? emailAddress.hashCode() : 0);
-    result = 31 * result +
-        (lastAuthorization != null ? lastAuthorization.hashCode() : 0);
-    return result;
+    return Objects.hash(name, description, url, iconUrl, emailAddress,
+        lastAuthorization);
   }
 }

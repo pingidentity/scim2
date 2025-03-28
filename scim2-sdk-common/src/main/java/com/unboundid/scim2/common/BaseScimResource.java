@@ -540,32 +540,23 @@ public abstract class BaseScimResource
     }
 
     BaseScimResource that = (BaseScimResource) o;
-
-    if (extensionObjectNode != null ?
-        !extensionObjectNode.equals(that.extensionObjectNode) :
-        that.extensionObjectNode != null)
-    {
-      return false;
-    }
-    if (externalId != null ? !externalId.equals(that.externalId) :
-        that.externalId != null)
-    {
-      return false;
-    }
-    if (id != null ? !id.equals(that.id) : that.id != null)
-    {
-      return false;
-    }
-    if (meta != null ? !meta.equals(that.meta) : that.meta != null)
-    {
-      return false;
-    }
     if (!schemaUrns.equals(that.schemaUrns))
     {
       return false;
     }
-
-    return true;
+    if (!Objects.equals(id, that.id))
+    {
+      return false;
+    }
+    if (!Objects.equals(externalId, that.externalId))
+    {
+      return false;
+    }
+    if (!Objects.equals(meta, that.meta))
+    {
+      return false;
+    }
+    return Objects.equals(extensionObjectNode, that.extensionObjectNode);
   }
 
   /**
@@ -576,13 +567,7 @@ public abstract class BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + (externalId != null ? externalId.hashCode() : 0);
-    result = 31 * result + (meta != null ? meta.hashCode() : 0);
-    result = 31 * result + (schemaUrns != null ? schemaUrns.hashCode() : 0);
-    result = 31 * result + (extensionObjectNode != null ?
-        extensionObjectNode.hashCode() : 0);
-    return result;
+    return Objects.hash(schemaUrns, id, externalId, meta, extensionObjectNode);
   }
 
   /**

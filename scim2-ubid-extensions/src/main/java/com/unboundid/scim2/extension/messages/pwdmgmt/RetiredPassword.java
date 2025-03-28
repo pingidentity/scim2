@@ -22,6 +22,7 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * This class represents information about retired passwords.
@@ -102,18 +103,11 @@ public class RetiredPassword
     }
 
     RetiredPassword that = (RetiredPassword) o;
-
-    if (passwordRetiredTime != null ?
-        !passwordRetiredTime.equals(that.passwordRetiredTime) :
-        that.passwordRetiredTime != null)
+    if (!Objects.equals(passwordRetiredTime, that.passwordRetiredTime))
     {
       return false;
     }
-
-    return !(passwordExpirationTime != null ?
-        !passwordExpirationTime.equals(that.passwordExpirationTime) :
-        that.passwordExpirationTime != null);
-
+    return Objects.equals(passwordExpirationTime, that.passwordExpirationTime);
   }
 
   /**
@@ -124,10 +118,6 @@ public class RetiredPassword
   @Override
   public int hashCode()
   {
-    int result =
-        passwordRetiredTime != null ? passwordRetiredTime.hashCode() : 0;
-    result = 31 * result + (passwordExpirationTime != null ?
-        passwordExpirationTime.hashCode() : 0);
-    return result;
+    return Objects.hash(passwordRetiredTime, passwordExpirationTime);
   }
 }

@@ -23,6 +23,8 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
+import java.util.Objects;
+
 /**
  * Provider information.  This class will contain information about
  * external identity providers.
@@ -253,28 +255,23 @@ public final class Provider
     }
 
     final Provider provider = (Provider) o;
-
-    if (name != null ? !name.equals(provider.name) : provider.name != null)
+    if (!Objects.equals(name, provider.name))
     {
       return false;
     }
-    if (description != null ? !description.equals(provider.description) :
-        provider.description != null)
+    if (!Objects.equals(description, provider.description))
     {
       return false;
     }
-    if (iconUrl != null ? !iconUrl.equals(provider.iconUrl) :
-        provider.iconUrl != null)
+    if (!Objects.equals(iconUrl, provider.iconUrl))
     {
       return false;
     }
-    if (type != null ? !type.equals(provider.type) : provider.type != null)
+    if (!Objects.equals(type, provider.type))
     {
       return false;
     }
-    return samlResponseBinding != null ? samlResponseBinding.equals(
-        provider.samlResponseBinding) : provider.samlResponseBinding == null;
-
+    return Objects.equals(samlResponseBinding, provider.samlResponseBinding);
   }
 
 
@@ -287,12 +284,6 @@ public final class Provider
   @Override
   public int hashCode()
   {
-    int result = name != null ? name.hashCode() : 0;
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (iconUrl != null ? iconUrl.hashCode() : 0);
-    result = 31 * result + (type != null ? type.hashCode() : 0);
-    result = 31 * result + (samlResponseBinding != null ?
-                            samlResponseBinding.hashCode() : 0);
-    return result;
+    return Objects.hash(name, description, iconUrl, type, samlResponseBinding);
   }
 }

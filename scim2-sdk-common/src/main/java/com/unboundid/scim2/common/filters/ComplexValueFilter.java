@@ -22,6 +22,8 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
+import java.util.Objects;
+
 /**
  * This class represents a complex attribute value filter. This filter type is
  * used to match specific values on multi-valued attributes. This is generally
@@ -159,17 +161,11 @@ public final class ComplexValueFilter extends Filter
     }
 
     ComplexValueFilter that = (ComplexValueFilter) o;
-
     if (!filterAttribute.equals(that.filterAttribute))
     {
       return false;
     }
-    if (!valueFilter.equals(that.valueFilter))
-    {
-      return false;
-    }
-
-    return true;
+    return valueFilter.equals(that.valueFilter);
   }
 
   /**
@@ -180,8 +176,6 @@ public final class ComplexValueFilter extends Filter
   @Override
   public int hashCode()
   {
-    int result = filterAttribute.hashCode();
-    result = 31 * result + valueFilter.hashCode();
-    return result;
+    return Objects.hash(filterAttribute, valueFilter);
   }
 }

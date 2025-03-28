@@ -134,13 +134,7 @@ public final class NotFilter extends Filter
     }
 
     NotFilter notFilter = (NotFilter) o;
-
-    if (!filterComponent.equals(notFilter.filterComponent))
-    {
-      return false;
-    }
-
-    return true;
+    return filterComponent.equals(notFilter.filterComponent);
   }
 
   /**

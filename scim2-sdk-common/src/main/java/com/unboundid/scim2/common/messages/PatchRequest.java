@@ -30,6 +30,7 @@ import com.unboundid.scim2.common.GenericScimResource;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
@@ -167,13 +168,7 @@ public final class PatchRequest
     }
 
     PatchRequest that = (PatchRequest) o;
-
-    if (!operations.equals(that.operations))
-    {
-      return false;
-    }
-
-    return true;
+    return operations.equals(that.operations);
   }
 
   /**
@@ -184,8 +179,6 @@ public final class PatchRequest
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + operations.hashCode();
-    return result;
+    return Objects.hash(super.hashCode(), operations);
   }
 }

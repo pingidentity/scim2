@@ -81,7 +81,6 @@ public class ChangePasswordConfig
     }
 
     ChangePasswordConfig that = (ChangePasswordConfig) o;
-
     if (supported != that.supported)
     {
       return false;

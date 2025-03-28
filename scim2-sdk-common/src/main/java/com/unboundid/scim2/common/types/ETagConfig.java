@@ -109,7 +109,6 @@ public class ETagConfig
     }
 
     ETagConfig that = (ETagConfig) o;
-
     if (supported != that.supported)
     {
       return false;

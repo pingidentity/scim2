@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * A complex type that specifies Bulk configuration options.
  */
@@ -120,7 +122,6 @@ public class BulkConfig
     }
 
     BulkConfig that = (BulkConfig) o;
-
     if (maxOperations != that.maxOperations)
     {
       return false;
@@ -129,12 +130,7 @@ public class BulkConfig
     {
       return false;
     }
-    if (supported != that.supported)
-    {
-      return false;
-    }
-
-    return true;
+    return supported == that.supported;
   }
 
   /**
@@ -145,9 +141,6 @@ public class BulkConfig
   @Override
   public int hashCode()
   {
-    int result = (supported ? 1 : 0);
-    result = 31 * result + maxOperations;
-    result = 31 * result + maxPayloadSize;
-    return result;
+    return Objects.hash(maxOperations, maxPayloadSize, supported);
   }
 }

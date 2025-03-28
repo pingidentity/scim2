@@ -25,6 +25,7 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.Meta;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Contains information about a consent history record.
@@ -115,14 +116,11 @@ public final class ConsentHistory extends BaseScimResource
     }
 
     ConsentHistory that = (ConsentHistory) o;
-
-    if (client != null ?
-        !client.equals(that.client) : that.client != null)
+    if (!Objects.equals(client, that.client))
     {
       return false;
     }
-    return !(scopes != null ?
-        !scopes.equals(that.scopes) : that.scopes != null);
+    return Objects.equals(scopes, that.scopes);
   }
 
   /**
@@ -133,9 +131,6 @@ public final class ConsentHistory extends BaseScimResource
   @Override
   public int hashCode()
   {
-    int result = super.hashCode();
-    result = 31 * result + (client != null ? client.hashCode() : 0);
-    result = 31 * result + (scopes != null ? scopes.hashCode() : 0);
-    return result;
+    return Objects.hash(super.hashCode(), client, scopes);
   }
 }

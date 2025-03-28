@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  * An attribute in a schema for a SCIM Object.
@@ -1078,7 +1079,6 @@ public class AttributeDefinition
     }
 
     AttributeDefinition that = (AttributeDefinition) o;
-
     if (caseExact != that.caseExact)
     {
       return false;
@@ -1091,52 +1091,39 @@ public class AttributeDefinition
     {
       return false;
     }
-    if (canonicalValues != null ?
-        !canonicalValues.equals(that.canonicalValues) :
-        that.canonicalValues != null)
+    if (!Objects.equals(canonicalValues, that.canonicalValues))
     {
       return false;
     }
-    if (description != null ? !description.equals(that.description) :
-        that.description != null)
+    if (!Objects.equals(description, that.description))
     {
       return false;
     }
-    if (mutability != null ? !mutability.equals(that.mutability) :
-        that.mutability != null)
+    if (!Objects.equals(mutability, that.mutability))
     {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null)
+    if (!Objects.equals(name, that.name))
     {
       return false;
     }
-    if (referenceTypes != null ? !referenceTypes.equals(that.referenceTypes) :
-        that.referenceTypes != null)
+    if (!Objects.equals(referenceTypes, that.referenceTypes))
     {
       return false;
     }
-    if (returned != null ? !returned.equals(that.returned) :
-        that.returned != null)
+    if (!Objects.equals(returned, that.returned))
     {
       return false;
     }
-    if (subAttributes != null ? !subAttributes.equals(that.subAttributes) :
-        that.subAttributes != null)
+    if (!Objects.equals(subAttributes, that.subAttributes))
     {
       return false;
     }
-    if (type != null ? !type.equals(that.type) : that.type != null)
+    if (!Objects.equals(type, that.type))
     {
       return false;
     }
-    if (uniqueness != null ? !uniqueness.equals(that.uniqueness) :
-        that.uniqueness != null)
-    {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(uniqueness, that.uniqueness);
   }
 
   /**
@@ -1147,21 +1134,8 @@ public class AttributeDefinition
   @Override
   public int hashCode()
   {
-    int result = name != null ? name.hashCode() : 0;
-    result = 31 * result + (type != null ? type.hashCode() : 0);
-    result = 31 * result + (subAttributes != null ?
-        subAttributes.hashCode() : 0);
-    result = 31 * result + (multiValued ? 1 : 0);
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (required ? 1 : 0);
-    result = 31 * result + (canonicalValues != null ?
-        canonicalValues.hashCode() : 0);
-    result = 31 * result + (caseExact ? 1 : 0);
-    result = 31 * result + (mutability != null ? mutability.hashCode() : 0);
-    result = 31 * result + (returned != null ? returned.hashCode() : 0);
-    result = 31 * result + (uniqueness != null ? uniqueness.hashCode() : 0);
-    result = 31 * result + (referenceTypes != null ?
-        referenceTypes.hashCode() : 0);
-    return result;
+    return Objects.hash(caseExact, multiValued, required, canonicalValues,
+        description, mutability, name, referenceTypes, returned, subAttributes,
+        type, uniqueness);
   }
 }
