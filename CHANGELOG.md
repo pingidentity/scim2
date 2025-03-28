@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v4.0.0 - TBD
+Removed support for Java 11. The UnboundID SCIM 2 SDK now requires Java 17 or a later release.
+
+Updated the following dependencies:
+* Jackson: 2.18.3
+* Jakarta RS: 4.0.0
+* Jersey: 3.1.10
+
 Updated the default behavior for ADD patch requests with value filters (e.g.,
 `emails[type eq "work"].display`). The SCIM SDK will now target existing values within the
 multi-valued attribute. For more background on this type of patch request, see the release notes for
