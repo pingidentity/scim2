@@ -25,7 +25,7 @@ import java.util.Objects;
  * This class can be used in a bean that is converted to json.  If
  * used with the JsonReferenceBeanSerializer, the json that is created
  * will not contain a field of this type if it has never been set.  If
- * however it has been set explicitly to "{@code null}", then "{@code null}" will
+ * however it has been set explicitly to {@code null}, then {@code null} will
  * be serialized.
  *
  * @param <T> The type of object referred to.
@@ -85,15 +85,40 @@ public class JsonReference<T>
   }
 
   /**
-   * Returns the object that this reference if it has been set, or null
-   * if the reference was never set.
+   * Returns the object that this instance references if it has been set, or
+   * {@code null} if the reference was never set.
+   * <br><br>
+   * If the JsonReference instance itself might be null, then use the static
+   * {@link #getObject(JsonReference)} method.
    *
-   * @return the object referred to, or null.
+   * @return The object referred to, or {@code null}.
    */
   @Nullable
   public T getObj()
   {
     return set ? obj : null;
+  }
+
+  /**
+   * Static version of {@link #getObj} that accepts a reference which is
+   * possibly {@code null}. This method is a null-safe way to obtain the value
+   * of {@link #getObj}, and is a shortcut for:
+   *
+   * <pre><code>
+   *   var object = (jsonReference == null) ? null : jsonReference.getObj();
+   * </code></pre>
+   *
+   * @param <T>             The Java type of the referenced object.
+   * @param jsonReference   The JsonReference instance.
+   * @return                The object referenced by {@code jsonReference}. If
+   *                        the reference is {@code null}, the object is unset,
+   *                        or the object is set to {@code null}, then this
+   *                        method will return {@code null}.
+   */
+  @Nullable
+  public static <T> T getObject(@Nullable final JsonReference<T> jsonReference)
+  {
+    return (jsonReference == null) ? null : jsonReference.getObj();
   }
 
   /**

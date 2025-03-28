@@ -52,8 +52,8 @@ public class PasswordQualityRequirementResponse extends BaseScimResource
   @Attribute(
       description = "A list of password requirements that must be met.",
       multiValueClass = PasswordRequirementResult.class)
-  private List<PasswordRequirementResult> passwordRequirements =
-      new ArrayList<PasswordRequirementResult>();
+  private final List<PasswordRequirementResult> passwordRequirements =
+      new ArrayList<>();
 
   /**
    * Returns a boolean that is true if the current password is required,

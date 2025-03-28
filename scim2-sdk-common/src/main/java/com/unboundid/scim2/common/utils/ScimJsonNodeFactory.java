@@ -22,10 +22,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 
 /**
- * Created by boli on 7/29/15.
+ * This class represents a Jackson {@link JsonNodeFactory} implementation that
+ * treats JSON attribute names as case-insensitive.
  */
 public class ScimJsonNodeFactory extends JsonNodeFactory
 {
+  /**
+   * {@inheritDoc}
+   */
   @Override
   @NotNull
   public ObjectNode objectNode()

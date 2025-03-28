@@ -81,7 +81,7 @@ public abstract class ResourceTrimmer
         {
           ArrayNode trimmedNode = trimArrayNode(
               (ArrayNode) field.getValue(), path);
-          if (trimmedNode.size() > 0)
+          if (!trimmedNode.isEmpty())
           {
             objectToReturn.set(field.getKey(), trimmedNode);
           }
@@ -90,7 +90,7 @@ public abstract class ResourceTrimmer
         {
           ObjectNode trimmedNode = trimObjectNode(
               (ObjectNode) field.getValue(), path);
-          if (trimmedNode.size() > 0)
+          if (!trimmedNode.isEmpty())
           {
             objectToReturn.set(field.getKey(), trimmedNode);
           }
@@ -121,16 +121,15 @@ public abstract class ResourceTrimmer
       if (value.isArray())
       {
         ArrayNode trimmedNode = trimArrayNode((ArrayNode) value, parentPath);
-        if (trimmedNode.size() > 0)
+        if (!trimmedNode.isEmpty())
         {
           arrayToReturn.add(trimmedNode);
         }
       }
       else if (value.isObject())
       {
-        ObjectNode trimmedNode = trimObjectNode(
-            (ObjectNode) value, parentPath);
-        if (trimmedNode.size() > 0)
+        ObjectNode trimmedNode = trimObjectNode((ObjectNode) value, parentPath);
+        if (!trimmedNode.isEmpty())
         {
           arrayToReturn.add(trimmedNode);
         }

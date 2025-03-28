@@ -47,6 +47,9 @@ import com.unboundid.scim2.common.types.ETagConfig;
  */
 public class NotModifiedException extends ScimException
 {
+  /**
+   * Represents the ETag version value of the resource.
+   */
   @Nullable
   private final String version;
 

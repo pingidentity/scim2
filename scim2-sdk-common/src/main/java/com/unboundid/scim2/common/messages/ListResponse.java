@@ -222,7 +222,7 @@ public final class ListResponse<T> extends BaseScimResource
   public ListResponse(@NotNull final Collection<T> resources)
   {
     this.totalResults = resources.size();
-    this.resources = new ArrayList<T>(resources);
+    this.resources = new ArrayList<>(resources);
     this.startIndex = null;
     this.itemsPerPage = null;
   }

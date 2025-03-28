@@ -29,10 +29,11 @@ import java.util.Objects;
 public class Email
 {
   @Nullable
-  @Attribute(description = "E-mail addresses for the user. The value\n" +
-      "SHOULD be canonicalized by the Service Provider, e.g.\n" +
-      "bjensen@example.com instead of bjensen@EXAMPLE.COM. Canonical Type\n" +
-      "values of work, home, and other.",
+  @Attribute(description = """
+      E-mail addresses for the user. The value
+      SHOULD be canonicalized by the Service Provider, e.g.
+      bjensen@example.com instead of bjensen@EXAMPLE.COM. Canonical Type
+      values of work, home, and other.""",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,

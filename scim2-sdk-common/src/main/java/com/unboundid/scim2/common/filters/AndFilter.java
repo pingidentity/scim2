@@ -22,7 +22,6 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.UserResource;
 
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -112,8 +111,7 @@ public final class AndFilter extends CombiningFilter
       return false;
     }
 
-    HashSet<Filter> filters = new HashSet<>(getCombinedFilters());
-    return filters.containsAll(that.getCombinedFilters());
+    return getCombinedFilters().containsAll(that.getCombinedFilters());
   }
 
   /**

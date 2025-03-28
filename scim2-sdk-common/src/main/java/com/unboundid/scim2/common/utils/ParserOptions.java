@@ -47,10 +47,7 @@ public class ParserOptions
   public ParserOptions addExtendedAttributeNameCharacters(
       @NotNull final Character... extendedChars)
   {
-    for (Character extendedChar : extendedChars)
-    {
-      this.extendedAttributeNameCharacters.add(extendedChar);
-    }
+    Collections.addAll(this.extendedAttributeNameCharacters, extendedChars);
     return this;
   }
 

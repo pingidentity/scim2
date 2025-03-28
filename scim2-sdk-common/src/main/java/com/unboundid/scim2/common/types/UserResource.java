@@ -34,7 +34,6 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * for "{@code User}" is identified using the URI:
  * "{@code urn:ietf:params:scim:schemas:core:2.0:User}".
  */
-@SuppressWarnings("UnusedReturnValue")
 @Schema(id="urn:ietf:params:scim:schemas:core:2.0:User",
     name="User", description = "User Account")
 public class UserResource extends BaseScimResource

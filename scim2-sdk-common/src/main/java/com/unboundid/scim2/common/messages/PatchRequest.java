@@ -115,7 +115,7 @@ public final class PatchRequest
   @NotNull
   public List<PatchOperation> getOperations()
   {
-    return Collections.unmodifiableList(operations);
+    return List.copyOf(operations);
   }
 
   /**

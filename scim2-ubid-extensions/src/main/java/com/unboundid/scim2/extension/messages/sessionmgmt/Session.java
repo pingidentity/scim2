@@ -30,6 +30,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This class represents a login/authentication session.
+ */
 @Schema(description = "Session objects",
     id = "urn:pingidentity:scim:api:messages:2.0:session",
     name = "Session")
@@ -83,9 +86,9 @@ public class Session extends BaseScimResource
    */
   public Session()
   {
-    this.clients = new ArrayList<OAuth2Client>();
-    this.lastLoginMethods = new ArrayList<String>();
-    this.lastSecondFactorMethods = new ArrayList<String>();
+    this.clients = new ArrayList<>();
+    this.lastLoginMethods = new ArrayList<>();
+    this.lastSecondFactorMethods = new ArrayList<>();
   }
 
   /**

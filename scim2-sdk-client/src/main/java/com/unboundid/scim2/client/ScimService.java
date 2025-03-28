@@ -311,7 +311,7 @@ public class ScimService implements ScimInterface
       @NotNull final String endpoint,
       @NotNull final T resource)
   {
-    return new CreateRequestBuilder<T>(baseTarget.path(endpoint), resource);
+    return new CreateRequestBuilder<>(baseTarget.path(endpoint), resource);
   }
 
   /**
@@ -360,7 +360,7 @@ public class ScimService implements ScimInterface
   public <T extends ScimResource> RetrieveRequestBuilder.Generic<T>
       retrieveRequest(@NotNull final T resource)
   {
-    return new RetrieveRequestBuilder.Generic<T>(
+    return new RetrieveRequestBuilder.Generic<>(
         resolveWebTarget(checkAndGetLocation(resource)), resource);
   }
 
@@ -394,7 +394,7 @@ public class ScimService implements ScimInterface
       @NotNull final URI uri,
       @NotNull final T resource)
   {
-    return new ReplaceRequestBuilder<T>(resolveWebTarget(uri), resource);
+    return new ReplaceRequestBuilder<>(resolveWebTarget(uri), resource);
   }
 
   /**
@@ -410,7 +410,7 @@ public class ScimService implements ScimInterface
   public <T extends ScimResource> ReplaceRequestBuilder<T> replaceRequest(
       @NotNull final T resource)
   {
-    return new ReplaceRequestBuilder<T>(
+    return new ReplaceRequestBuilder<>(
         resolveWebTarget(checkAndGetLocation(resource)), resource);
   }
 
@@ -486,7 +486,7 @@ public class ScimService implements ScimInterface
           throws ScimException
   {
     ModifyRequestBuilder.Generic<T> requestBuilder =
-        new ModifyRequestBuilder.Generic<T>(resolveWebTarget(
+        new ModifyRequestBuilder.Generic<>(resolveWebTarget(
             checkAndGetLocation(resource)), resource);
 
     for (PatchOperation op : patchRequest.getOperations())
@@ -511,7 +511,7 @@ public class ScimService implements ScimInterface
   public <T extends ScimResource> ModifyRequestBuilder.Generic<T> modifyRequest(
       @NotNull final T resource)
   {
-    return new ModifyRequestBuilder.Generic<T>(
+    return new ModifyRequestBuilder.Generic<>(
         resolveWebTarget(checkAndGetLocation(resource)), resource);
   }
 
@@ -597,12 +597,12 @@ public class ScimService implements ScimInterface
   }
 
   /**
-   * Get the meta.location attribute value of the SCIM resource.
+   * Get the {@code meta.location} attribute value of the SCIM resource.
    *
    * @param resource The SCIM resource.
-   * @return The meta.location attribute value.
+   * @return The {@code meta.location} attribute value.
    * @throws IllegalArgumentException if the resource does not contain the
-   * meta.location attribute value.
+   * {@code meta.location} attribute value.
    */
   @NotNull
   private URI checkAndGetLocation(@NotNull final ScimResource resource)

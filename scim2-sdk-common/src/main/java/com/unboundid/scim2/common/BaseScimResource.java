@@ -242,8 +242,7 @@ public abstract class BaseScimResource
   @NotNull
   protected Map<String, Object> getAny()
   {
-    HashMap<String, Object> map =
-        new HashMap<String, Object>(extensionObjectNode.size());
+    HashMap<String, Object> map = new HashMap<>(extensionObjectNode.size());
     Iterator<Map.Entry<String, JsonNode>> i = extensionObjectNode.fields();
     while (i.hasNext())
     {
@@ -270,10 +269,8 @@ public abstract class BaseScimResource
 
   /**
    * Retrieve all JSON nodes of the extension attribute referenced by the
-   * provided path. Equivalent to using the
-   * {@link JsonUtils#findMatchingPaths(Path, ObjectNode)}
-   * method: JsonUtils.getValues(Path.fromString(path),
-   * getExtensionObjectNode()).
+   * provided path.
+   * <br><br>
    *
    * The {@link JsonUtils#nodeToValue(JsonNode, Class)} method may be used to
    * bind the retrieved JSON node into specific value type instances.
@@ -292,9 +289,8 @@ public abstract class BaseScimResource
 
   /**
    * Retrieve all JSON nodes of the extension attribute referenced by the
-   * provided path. Equivalent to using the
-   * {@link JsonUtils#findMatchingPaths(Path, ObjectNode)}
-   * method: JsonUtils.getValues(path, getExtensionObjectNode()).
+   * provided path.
+   * <br><br>
    *
    * The {@link JsonUtils#nodeToValue(JsonNode, Class)} method may be used to
    * bind the retrieved JSON node into specific value type instances.
@@ -333,9 +329,7 @@ public abstract class BaseScimResource
 
   /**
    * Update the value of the extension attribute at the provided path.
-   * Equivalent to using the {@link JsonUtils#replaceValue(Path, ObjectNode,
-   * JsonNode)} method: JsonUtils.replaceValues(path, getExtensionObjectNode(),
-   * value).
+   * <br><br>
    *
    * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
    * the given value instance to a JSON node.
@@ -440,10 +434,8 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Add new values for the extension attribute at the provided path. Equivalent
-   * to using the {@link JsonUtils#addValue(Path, ObjectNode, JsonNode)} method:
-   * JsonUtils.addValue(Path.fromString(path), getExtensionObjectNode(),
-   * values).
+   * Add new values for the extension attribute at the provided path.
+   * <br><br>
    *
    * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
    * the given value instance to a JSON node.
@@ -460,9 +452,8 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Add new values to the extension attribute at the provided path. Equivalent
-   * to using the {@link JsonUtils#addValue(Path, ObjectNode, JsonNode)} method:
-   * JsonUtils.addValue(path, getObjectNode(), values).
+   * Add new values to the extension attribute at the provided path.
+   * <br><br>
    *
    * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
    * the given value instance to a JSON node.

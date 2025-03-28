@@ -47,6 +47,9 @@ public final class Scope
   @NotNull
   public static final String CONSENT_REVOKED = "revoked";
 
+  /**
+   * Builder for creating a Scope.
+   */
   public static class Builder
   {
     @Nullable

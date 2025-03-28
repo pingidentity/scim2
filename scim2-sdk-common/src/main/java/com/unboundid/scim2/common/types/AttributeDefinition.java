@@ -25,12 +25,11 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -216,8 +215,8 @@ public class AttributeDefinition
   }
 
   /**
-   * This enum is used to describe the when an attribute is returned
-   * from scim methods.
+   * This enum is used to describe the times that an attribute is returned
+   * from SCIM methods.
    */
   public enum Returned
   {
@@ -295,6 +294,10 @@ public class AttributeDefinition
 
   }
 
+  /**
+   * This enumeration is used to describe any uniqueness constraints on an
+   * attribute.
+   */
   public enum Uniqueness
   {
     /**
@@ -433,7 +436,7 @@ public class AttributeDefinition
   private final Collection<String> canonicalValues;
 
   @Attribute(description = "A Boolean value that specifies if the " +
-      "String attribute is case sensitive.",
+      "String attribute is case-sensitive.",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_ONLY,
@@ -623,7 +626,7 @@ public class AttributeDefinition
       {
         if (this.subAttributes == null)
         {
-          this.subAttributes = new LinkedList<AttributeDefinition>();
+          this.subAttributes = new LinkedList<>();
         }
         this.subAttributes.addAll(Arrays.asList(subAttributes));
       }
@@ -683,7 +686,7 @@ public class AttributeDefinition
       {
         if (this.canonicalValues == null)
         {
-          this.canonicalValues = new HashSet<String>();
+          this.canonicalValues = new HashSet<>();
         }
         this.canonicalValues.addAll(Arrays.asList(canonicalValues));
       }
@@ -692,11 +695,10 @@ public class AttributeDefinition
 
     /**
      * Sets a boolean indicating if the value of the attribute should be
-     * treated as case sensitive.  If true, the attribute's value should be
-     * treated as case sensitive.
+     * treated as case-sensitive.
      *
      * @param caseExact a boolean indicating if the value of the attribute
-     *     should be treated as case sensitive.
+     *     should be treated as case-sensitive.
      * @return this.
      */
     @NotNull
@@ -707,9 +709,9 @@ public class AttributeDefinition
     }
 
     /**
-     * Sets the mutablity constraint for the attribute.
+     * Sets the mutability constraint for the attribute.
      *
-     * @param mutability the mutablity constraint for the attribute.
+     * @param mutability the mutability constraint for the attribute.
      * @return this.
      */
     @NotNull
@@ -758,7 +760,7 @@ public class AttributeDefinition
       {
         if (this.referenceTypes == null)
         {
-          this.referenceTypes = new HashSet<String>();
+          this.referenceTypes = new HashSet<>();
         }
         this.referenceTypes.addAll(Arrays.asList(referenceTypes));
       }
@@ -828,8 +830,8 @@ public class AttributeDefinition
    *                  object will be case exact.
    * @param mutability This value indicates the mutability constraints of this
    *                   attribute.
-   * @param returned Indicates the when this attribute will be returned as part
-   *                 of a scim object.
+   * @param returned Indicates when this attribute will be returned as part
+   *                 of a SCIM object.
    * @param uniqueness This field represents the uniqueness constraints of this
    *                   attribute.
    * @param referenceTypes The reference type of this attribute.
@@ -863,29 +865,25 @@ public class AttributeDefinition
   {
     this.name = name;
     this.type = type;
-    this.subAttributes = subAttributes == null ?
-        null : Collections.unmodifiableList(
-        new ArrayList<AttributeDefinition>(subAttributes));
+    this.subAttributes =
+        subAttributes == null ? null : List.copyOf(subAttributes);
     this.multiValued = multiValued;
     this.description = description;
     this.required = required;
-    this.canonicalValues = canonicalValues == null ?
-        null : Collections.unmodifiableList(
-        new ArrayList<String>(canonicalValues));
+    this.canonicalValues =
+        canonicalValues == null ? null : List.copyOf(canonicalValues);
     this.caseExact = caseExact;
     this.mutability = mutability;
     this.returned = returned;
     this.uniqueness = uniqueness;
-    this.referenceTypes = referenceTypes == null ?
-        null : Collections.unmodifiableList(
-        new ArrayList<String>(referenceTypes));
+    this.referenceTypes =
+        referenceTypes == null ? null : List.copyOf(referenceTypes);
   }
 
   /**
    * Determines if the attribute allows multiple values.
    *
-   * @return true if the attribute is multivalues, or false
-   *    if it is not.
+   * @return true if the attribute is multivalued, or false if it is not.
    */
   public boolean isMultiValued()
   {
@@ -914,9 +912,9 @@ public class AttributeDefinition
   }
 
   /**
-   * Is the attribute's value case sensitive.
+   * Determines if the attribute value is case-sensitive.
    *
-   * @return true if the attributes value is case sensitive, or false
+   * @return true if the attributes value is case-sensitive, or false
    *          if it is not.
    */
   public boolean isCaseExact()

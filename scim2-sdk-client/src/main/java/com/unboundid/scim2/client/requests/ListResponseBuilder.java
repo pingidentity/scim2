@@ -39,7 +39,7 @@ public class ListResponseBuilder<T>
   private Integer totalResults;
 
   @NotNull
-  private List<T> resources = new LinkedList<T>();
+  private final List<T> resources = new LinkedList<>();
 
   @Nullable
   private Integer startIndex;
@@ -99,12 +99,12 @@ public class ListResponseBuilder<T>
   @NotNull
   public ListResponse<T> build()
   {
-    final Map<String, Object> properties = new LinkedHashMap<String, Object>();
+    final Map<String, Object> properties = new LinkedHashMap<>();
     properties.put("totalResults", totalResults == null ?
       resources.size() : totalResults);
     properties.put("resources", resources);
     properties.put("startIndex", startIndex);
     properties.put("itemsPerPage", itemsPerPage);
-    return new ListResponse<T>(properties);
+    return new ListResponse<>(properties);
   }
 }

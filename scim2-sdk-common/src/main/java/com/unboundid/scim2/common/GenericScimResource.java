@@ -529,23 +529,14 @@ public final class GenericScimResource implements ScimResource
   @Override
   public boolean equals(@Nullable final Object o)
   {
-    if (!(o instanceof GenericScimResource))
+    if (!(o instanceof GenericScimResource resource))
     {
       return false;
     }
 
-    ObjectNode otherNode = ((GenericScimResource) o).getObjectNode();
-
-    // This should not ever be the case, but we should be defensive about this
+    // Null nodes should not occur, but we should be defensive about this
     // possibility.
-    //
-    //noinspection ConstantValue
-    if (objectNode == null)
-    {
-      return (otherNode == null);
-    }
-
-    return objectNode.equals(otherNode);
+    return Objects.equals(objectNode, resource.getObjectNode());
   }
 
   /**
@@ -1512,6 +1503,8 @@ public final class GenericScimResource implements ScimResource
    *               resource.
    * @param values A list containing the new values.
    * @return       The updated generic SCIM resource (this object).
+   *
+   * @throws ScimException  If the path is invalid.
    */
   @NotNull
   public GenericScimResource addLongValues(@NotNull final String path,

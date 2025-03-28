@@ -51,7 +51,7 @@ public class ListResponseWriter<T extends ScimResource>
   private final AtomicInteger resultsSent = new AtomicInteger();
 
   @NotNull
-  private ObjectNode deferredFields;
+  private final ObjectNode deferredFields;
 
   /**
    * Create a new ListResponseOutputStream that will write to the provided

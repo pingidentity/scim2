@@ -191,8 +191,7 @@ public class SchemaUtils
 
     Collection<PropertyDescriptor> propertyDescriptors =
         getPropertyDescriptors(cls);
-    Collection<AttributeDefinition> attributes =
-        new ArrayList<AttributeDefinition>();
+    Collection<AttributeDefinition> attributes = new ArrayList<>();
 
     for (PropertyDescriptor propertyDescriptor : propertyDescriptors)
     {
@@ -241,7 +240,7 @@ public class SchemaUtils
       addMultiValued(attributeBuilder, propertyDescriptor, schemaProperty);
       addCanonicalValues(attributeBuilder, schemaProperty);
 
-      Class propertyCls = propertyDescriptor.getPropertyType();
+      Class<?> propertyCls = propertyDescriptor.getPropertyType();
 
       // if this is a multivalued attribute the real sub attribute class is the
       // the one specified in the annotation, not the list, set, array, etc.
@@ -260,7 +259,7 @@ public class SchemaUtils
         Collection<AttributeDefinition> subAttributes =
             getAttributes(classesProcessed, propertyCls);
         attributeBuilder.addSubAttributes(subAttributes.toArray(
-            new AttributeDefinition[subAttributes.size()]));
+            new AttributeDefinition[0]));
         classesProcessed.pop();
       }
 
@@ -300,7 +299,7 @@ public class SchemaUtils
   }
 
   /**
-   * This method will determine if this attribute can have multieple
+   * This method will determine if this attribute can have multiple
    * values, and set that in the builder.
    *
    * @param attributeBuilder builder for a scim attribute.
@@ -689,7 +688,7 @@ public class SchemaUtils
   @Nullable
   public static String getNameFromSchemaAnnotation(@NotNull final Class<?> cls)
   {
-    Schema schema = (Schema) cls.getAnnotation(Schema.class);
+    Schema schema = cls.getAnnotation(Schema.class);
     return SchemaUtils.getNameFromSchemaAnnotation(schema);
   }
 
@@ -737,12 +736,12 @@ public class SchemaUtils
 
 
   /**
-   * Returns true if the string passed in appears to be a urn.
+   * Returns true if the string passed in appears to be an urn.
    * That determination is made by looking to see if the string
    * starts with "{@code urn:}".
    *
    * @param string the string to check.
-   * @return true if it's a urn, or false if not.
+   * @return true if it's an urn, or false if not.
    */
   public static boolean isUrn(@NotNull final String string)
   {
@@ -751,15 +750,15 @@ public class SchemaUtils
   }
 
   /**
-   * Will force the string passed in to look like a urn.  If the
+   * Will force the string passed in to look like an urn.  If the
    * string starts with "{@code urn:}" it will be returned as is, however
    * if the string starts with anything else, this method will
    * prepend "{@code urn:}".  This is mainly so that if we have a class that
    * will be used as an extension schema, we will ensure that its
-   * schema will be a urn and distinguishable from all other unmmapped
+   * schema will be an urn and distinguishable from all other unmapped
    * values.
    *
-   * @param string the string to force to be a urn.
+   * @param string the string to force to be an urn.
    * @return the urn.
    */
   @NotNull
