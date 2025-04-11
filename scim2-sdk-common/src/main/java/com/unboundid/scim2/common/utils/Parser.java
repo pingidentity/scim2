@@ -710,42 +710,43 @@ public class Parser
                 "Unexpected end of filter string");
           }
 
-          if (op.equalsIgnoreCase(FilterType.EQUAL.getStringValue()))
+          if (equalsIgnoreCase(op, FilterType.EQUAL))
           {
             outputStack.push(Filter.eq(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(
-              FilterType.NOT_EQUAL.getStringValue()))
+          }
+          else if (equalsIgnoreCase(op, FilterType.NOT_EQUAL))
           {
             outputStack.push(Filter.ne(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(
-              FilterType.CONTAINS.getStringValue()))
+          }
+          else if (equalsIgnoreCase(op, FilterType.CONTAINS))
           {
             outputStack.push(Filter.co(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(
-              FilterType.STARTS_WITH.getStringValue()))
+          }
+          else if (equalsIgnoreCase(op, FilterType.STARTS_WITH))
           {
             outputStack.push(Filter.sw(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(
-              FilterType.ENDS_WITH.getStringValue()))
+          }
+          else if (equalsIgnoreCase(op, FilterType.ENDS_WITH))
           {
             outputStack.push(Filter.ew(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(
-              FilterType.GREATER_THAN.getStringValue()))
+          }
+          else if (equalsIgnoreCase(op, FilterType.GREATER_THAN))
           {
             outputStack.push(Filter.gt(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(
-              FilterType.GREATER_OR_EQUAL.getStringValue()))
+          }
+          else if (equalsIgnoreCase(op, FilterType.GREATER_OR_EQUAL))
           {
             outputStack.push(Filter.ge(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(
-              FilterType.LESS_THAN.getStringValue()))
+          }
+          else if (equalsIgnoreCase(op, FilterType.LESS_THAN))
           {
             outputStack.push(Filter.lt(filterAttribute, valueNode));
-          } else if (op.equalsIgnoreCase(
-              FilterType.LESS_OR_EQUAL.getStringValue()))
+          }
+          else if (equalsIgnoreCase(op, FilterType.LESS_OR_EQUAL))
           {
             outputStack.push(Filter.le(filterAttribute, valueNode));
-          } else
+          }
+          else
           {
             final String msg = String.format(
                 "Unrecognized attribute operator '%s' at position %d. " +
@@ -873,5 +874,15 @@ public class Parser
         previousToken.equalsIgnoreCase(FilterType.NOT.getStringValue()) ||
         previousToken.equalsIgnoreCase(FilterType.AND.getStringValue()) ||
         previousToken.equalsIgnoreCase(FilterType.OR.getStringValue());
+  }
+
+  /**
+   * Evaluates whether a string value is equivalent to the provided filter type
+   * in a case-insensitive manner.
+   */
+  private static boolean equalsIgnoreCase(@Nullable final String operator,
+                                          @NotNull final FilterType filterType)
+  {
+    return filterType.toString().equalsIgnoreCase(operator);
   }
 }

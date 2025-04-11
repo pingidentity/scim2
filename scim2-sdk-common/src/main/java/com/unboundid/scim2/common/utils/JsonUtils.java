@@ -531,7 +531,8 @@ public class JsonUtils
         {
           setPathPresent();
         }
-      } else if (! node.isMissingNode())
+      }
+      else if (! node.isMissingNode())
       {
         setPathPresent();
       }
@@ -1130,7 +1131,8 @@ public class JsonUtils
     {
       return SDK_OBJECT_MAPPER.readValue(
           SDK_OBJECT_MAPPER.treeAsTokens(fromNode), collectionType);
-    } catch (JsonProcessingException e)
+    }
+    catch (JsonProcessingException e)
     {
       throw e;
     }

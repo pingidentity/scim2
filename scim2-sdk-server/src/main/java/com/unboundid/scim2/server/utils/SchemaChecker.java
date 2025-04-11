@@ -597,7 +597,8 @@ public class SchemaChecker
         {
           removeReadOnlyAttributes(attribute.getSubAttributes(),
               (ObjectNode) node);
-        } else if (node.isArray())
+        }
+        else if (node.isArray())
         {
           for (JsonNode value : node)
           {
@@ -735,7 +736,8 @@ public class SchemaChecker
           // Skip the core schema.
           coreFound = true;
           continue;
-        } else
+        }
+        else
         {
           for (Map.Entry<SchemaResource, Boolean> schemaExtension :
               resourceType.getSchemaExtensions().entrySet())

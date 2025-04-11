@@ -450,7 +450,8 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
     if (node.isArray())
     {
       Iterator<JsonNode> iterator = node.elements();
-      while (iterator.hasNext()) {
+      while (iterator.hasNext())
+      {
         if (!isEmpty(iterator.next()))
         {
           return false;
@@ -473,8 +474,10 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    */
   private boolean isEmpty(@NotNull final Iterable<JsonNode> nodes)
   {
-    for (JsonNode node : nodes) {
-      if (!isEmpty(node)) {
+    for (JsonNode node : nodes)
+    {
+      if (!isEmpty(node))
+      {
         return false;
       }
     }

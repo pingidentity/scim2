@@ -140,7 +140,7 @@ public class ListResponseTestCase
     String serialized = JsonUtils.getObjectWriter().
         writeValueAsString(response);
     assertEquals(JsonUtils.getObjectReader().forType(
-            new TypeReference<ListResponse<ResourceTypeResource>>() { }).
+            new TypeReference<ListResponse<ResourceTypeResource>>() {}).
             readValue(serialized),
         response);
   }
