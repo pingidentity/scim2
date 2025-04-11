@@ -79,9 +79,11 @@ public final class StaticUtils
                                     @Nullable final String separator)
   {
     StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < list.size(); i++) {
+    for (int i = 0; i < list.size(); i++)
+    {
       sb.append(list.get(i));
-      if (i < list.size() - 1) {
+      if (i < list.size() - 1)
+      {
         sb.append(separator);
       }
     }
@@ -105,9 +107,11 @@ public final class StaticUtils
       @Nullable final String separator)
   {
     StringBuilder sb = new StringBuilder();
-    for (Iterator<?> iter = collection.iterator(); iter.hasNext();) {
+    for (Iterator<?> iter = collection.iterator(); iter.hasNext();)
+    {
       sb.append(iter.next());
-      if (iter.hasNext()) {
+      if (iter.hasNext())
+      {
         sb.append(separator);
       }
     }
