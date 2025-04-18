@@ -72,6 +72,28 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 public abstract class BaseScimResource
     implements ScimResource
 {
+  /**
+   * This field specifies customizable behavior when converting JSON data into
+   * subclasses of BaseScimResource.
+   * <br><br>
+   *
+   * By default, the SCIM SDK can throw a {@code JsonMappingException} during
+   * the Jackson deserialization process if it is converting an object to a
+   * BaseScimResource or one of its subclasses. This occurs if the source JSON
+   * contains fields that are not defined on the Java object, and the field is
+   * also not a schema extension such as
+   * {@code urn:ietf:params:scim:schemas:extension:enterprise:2.0:User}.
+   * <br><br>
+   *
+   * If a SCIM service includes additional non-standard fields in their
+   * responses, it can cause these exceptions to be thrown when they are likely
+   * undesired. To avoid this problem, this property may be set to {@code true}
+   * so that unknown fields are ignored instead of causing exceptions.
+   *
+   * @since 4.0.0
+   */
+  public static boolean IGNORE_UNKNOWN_FIELDS = false;
+
   @Nullable
   private String id;
 
@@ -107,7 +129,7 @@ public abstract class BaseScimResource
   public BaseScimResource(@Nullable final String id)
   {
     this.id = id;
-    addMyUrn();
+    addClassDefinedUrn();
   }
 
   /**
@@ -201,15 +223,24 @@ public abstract class BaseScimResource
   }
 
   /**
-   * This method is used during json deserialization.  It will be called
-   * in the event that a value is given for a field that is not defined
-   * in the class.
+   * This method is used by Jackson when deserializing JSON data into a Java
+   * object. This will be called for schema extensions and any unknown fields
+   * (i.e., any fields in the JSON that are not defined in the Java class). If
+   * the unknown field is not a schema extension, then an exception will be
+   * thrown by default, indicating that the JSON representation of a resource
+   * could not be properly mapped to the schema defined by the Java object.
+   * <br><br>
    *
-   * @param key name of the field.
-   * @param value value of the field.
+   * If it is better for your application to ignore unknown fields instead of
+   * throwing exceptions, set the {@link #IGNORE_UNKNOWN_FIELDS} flag to
+   * {@code true}. This is helpful when working with SCIM services that include
+   * additional non-standard fields in their responses.
    *
-   * @throws ScimException if the key is not an extension attribute namespace
-   * (the key name doesn't start with "{@code urn:}").
+   * @param key    The name of the unknown field.
+   * @param value  The value of the field.
+   *
+   * @throws ScimException  If the key is not an extension attribute namespace
+   *                        (i.e., the key name doesn't start with "urn:").
    */
   @JsonAnySetter
   protected void setAny(@NotNull final String key,
@@ -220,8 +251,10 @@ public abstract class BaseScimResource
     {
       extensionObjectNode.set(key, value);
     }
-    else
+    else if (!BaseScimResource.IGNORE_UNKNOWN_FIELDS)
     {
+      // If the field is not an extension attribute, then it is an unexpected
+      // attribute that cannot be mapped to a field on the Java object.
       String message = "Core attribute " + key +  " is undefined";
       Schema schemaAnnotation = this.getClass().getAnnotation(Schema.class);
       if (schemaAnnotation != null)
@@ -233,10 +266,10 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Used to get values that were deserialized from json where there was
-   * no matching field in the class.
+   * This method is used by Jackson when serializing class data into JSON to
+   * ensure that any stored schema extensions are included in the JSON output.
    *
-   * @return the value of the field.
+   * @return  A map of all extension attributes and their values.
    */
   @JsonAnyGetter
   @NotNull
@@ -253,18 +286,13 @@ public abstract class BaseScimResource
   }
 
   /**
-   * Adds the urn of this class to the list of schemas for this object.
-   * This is taken from the schema annotation of a class that extends
-   * this class.  If the class has no schema annotation, no schema urn
-   * will be added.
+   * Adds the URN of this class to the list of schemas for this object. This is
+   * taken from the {@link Schema} annotation of the subclass.
    */
-  private void addMyUrn()
+  private void addClassDefinedUrn()
   {
-    String mySchema = SchemaUtils.getSchemaUrn(this.getClass());
-    if ((mySchema != null) && (!mySchema.isEmpty()))
-    {
-      getSchemaUrns().add(mySchema);
-    }
+    String urn = SchemaUtils.getSchemaUrn(this.getClass());
+    getSchemaUrns().add(urn);
   }
 
   /**
@@ -281,10 +309,10 @@ public abstract class BaseScimResource
    * @throws ScimException If the path is invalid.
    */
   @NotNull
-  public List<JsonNode> getExtensionValues(@Nullable final String path)
+  public List<JsonNode> getExtensionValues(@NotNull final String path)
       throws ScimException
   {
-    return getExtensionValues(Path.fromString(path));
+    return getExtensionValues(Path.root(path));
   }
 
   /**
@@ -310,21 +338,17 @@ public abstract class BaseScimResource
   /**
    * Update the value of the extension attribute at the provided path.
    * Equivalent to using the {@link JsonUtils#replaceValue(Path, ObjectNode,
-   * JsonNode)} method: JsonUtils.replaceValues(Path.fromString(path),
-   * getExtensionObjectNode(), value).
-   * <p>
-   * The {@link JsonUtils#valueToNode(Object)} method may be used to convert
-   * the given value instance to a JSON node.
+   * JsonNode)} method.
    *
    * @param path The path to the attribute whose value to set.
    * @param value The value(s) to set.
    * @throws ScimException If the path is invalid.
    */
-  public void replaceExtensionValue(@Nullable final String path,
+  public void replaceExtensionValue(@NotNull final String path,
                                     @NotNull final JsonNode value)
       throws ScimException
   {
-    replaceExtensionValue(Path.fromString(path), value);
+    replaceExtensionValue(Path.root(path), value);
   }
 
   /**
@@ -481,7 +505,7 @@ public abstract class BaseScimResource
   public boolean removeExtensionValues(@Nullable final String path)
       throws ScimException
   {
-    return removeExtensionValues(Path.fromString(path));
+    return removeExtensionValues(Path.root(path));
   }
 
   /**
@@ -506,8 +530,7 @@ public abstract class BaseScimResource
   @NotNull
   public GenericScimResource asGenericScimResource()
   {
-    ObjectNode object =
-        JsonUtils.valueToNode(this);
+    ObjectNode object = JsonUtils.valueToNode(this);
     return new GenericScimResource(object);
   }
 
