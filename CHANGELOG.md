@@ -25,6 +25,19 @@ casing (e.g., if a response includes a `"resources"` array instead of `"Resource
 Updated the class-level documentation of `SearchRequest` to provide more background about how
 searches are performed in the SCIM standard.
 
+Added a new property that allows ignoring unknown fields when converting JSON text to Java objects
+that inherit from `BaseScimResource`. This behaves similarly to the `FAIL_ON_UNKNOWN_PROPERTIES`
+setting from the Jackson library, and allows for easier integration with SCIM service providers
+that include additional non-standard data in their responses. To enable this setting, set the
+following property in your application code:
+```
+BaseScimResource.IGNORE_UNKNOWN_FIELDS = true;
+```
+
+Fixed an issue with methods that interface with schema extensions such as
+`BaseScimResource.getExtensionValues(String)`. These accepted paths as a string, but previously
+performed updates to the extension data incorrectly.
+
 ## v3.2.0 - 2024-Dec-04
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
 true.

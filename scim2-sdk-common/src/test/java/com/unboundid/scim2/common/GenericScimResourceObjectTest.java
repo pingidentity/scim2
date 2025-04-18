@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 
@@ -183,6 +184,44 @@ public class GenericScimResourceObjectTest
     Assert.assertTrue(gsr.getStringValueList("bogusPath").isEmpty());
     Assert.assertTrue(gsr.getStringValueList(
         Path.fromString("bogusPath")).isEmpty());
+  }
+
+
+  /**
+   * Test {@link GenericScimResource#setSchemaUrns}.
+   */
+  @Test
+  public void testGenericScimResourceSchemaUrns()
+  {
+    GenericScimResource genericObject = new GenericScimResource();
+    GenericScimResource genericObject2 = new GenericScimResource();
+
+    // Set a single value.
+    List<String> singleUrn = List.of("urn:pingidentity:specialObject");
+    genericObject.setSchemaUrns(singleUrn);
+    genericObject2.setSchemaUrns("urn:pingidentity:specialObject");
+    assertThat(genericObject).isEqualTo(genericObject2);
+
+    // Set two values.
+    List<String> twoUrns = List.of(
+        "urn:pingidentity:proprietaryObject",
+        "urn:pingidentity:specialObject"
+    );
+    genericObject.setSchemaUrns(twoUrns);
+    genericObject2.setSchemaUrns("urn:pingidentity:proprietaryObject",
+        "urn:pingidentity:specialObject"
+    );
+    assertThat(genericObject).isEqualTo(genericObject2);
+
+    // The first parameter of the method should not accept null.
+    assertThatThrownBy(() ->
+        genericObject.setSchemaUrns(null, "urn:pingidentity:specialObject"))
+        .isInstanceOf(NullPointerException.class);
+
+    // Null arguments in the varargs method should be ignored.
+    genericObject.setSchemaUrns(
+        "urn:pingidentity:proprietaryObject", null, null);
+    assertThat(genericObject.getSchemaUrns().size()).isEqualTo(1);
   }
 
   /**
