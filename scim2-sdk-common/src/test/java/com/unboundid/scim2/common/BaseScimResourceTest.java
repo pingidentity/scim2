@@ -21,19 +21,17 @@ package com.unboundid.scim2.common;
 import com.unboundid.scim2.common.types.UserResource;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 /**
  * Ensures that setting schema URNs on a SCIM object behaves identically,
  * regardless of the version of {@link ScimResource#setSchemaUrns} that is used.
  */
-public class SetSchemaTest
+public class BaseScimResourceTest
 {
   /**
    * Test {@link BaseScimResource#setSchemaUrns}.
@@ -45,14 +43,13 @@ public class SetSchemaTest
     BaseScimResource scimObject2 = new UserResource();
 
     // Set a single value.
-    List<String> singleUrn =
-            Collections.singletonList("urn:pingidentity:specialObject");
+    List<String> singleUrn = List.of("urn:pingidentity:specialObject");
     scimObject.setSchemaUrns(singleUrn);
     scimObject2.setSchemaUrns("urn:pingidentity:specialObject");
-    assertEquals(scimObject, scimObject2);
+    assertThat(scimObject).isEqualTo(scimObject2);
 
     // Set two values.
-    List<String> schemaArray = Arrays.asList(
+    List<String> schemaArray = List.of(
             "urn:pingidentity:proprietaryObject",
             "urn:pingidentity:specialObject"
     );
@@ -60,65 +57,28 @@ public class SetSchemaTest
     scimObject2.setSchemaUrns("urn:pingidentity:proprietaryObject",
             "urn:pingidentity:specialObject"
     );
-    assertEquals(scimObject, scimObject2);
+    assertThat(scimObject).isEqualTo(scimObject2);
 
     // On a BaseScimResource, the objects should be considered equivalent
     // regardless of the order of the parameters.
     scimObject2.setSchemaUrns("urn:pingidentity:specialObject",
             "urn:pingidentity:proprietaryObject");
-    assertEquals(scimObject, scimObject2);
+    assertThat(scimObject).isEqualTo(scimObject2);
 
     // Setting schema URNs to null should not be allowed.
-    assertThrows(NullPointerException.class, () -> scimObject.setSchemaUrns(null));
+    assertThatThrownBy(() -> scimObject.setSchemaUrns(null))
+        .isInstanceOf(NullPointerException.class);
 
     // The first parameter of the method should not accept null.
-    assertThrows(NullPointerException.class,
-            () -> scimObject.setSchemaUrns(null, "urn:pingidentity:specialObject"));
+    assertThatThrownBy(() ->
+        scimObject.setSchemaUrns(null, "urn:pingidentity:specialObject"))
+        .isInstanceOf(NullPointerException.class);
 
     // Null arguments in the varargs method should be ignored.
     scimObject.setSchemaUrns(
             "urn:pingidentity:proprietaryObject", null, null);
-    assertEquals(scimObject.getSchemaUrns().size(), 1);
+    assertThat(scimObject.getSchemaUrns().size()).isEqualTo(1);
   }
-
-
-  /**
-   * Test {@link GenericScimResource#setSchemaUrns}.
-   */
-  @Test
-  public void testGenericScimResourceSchemaUrns()
-  {
-    GenericScimResource genericObject = new GenericScimResource();
-    GenericScimResource genericObject2 = new GenericScimResource();
-
-    // Set a single value.
-    List<String> singleUrn =
-            Collections.singletonList("urn:pingidentity:specialObject");
-    genericObject.setSchemaUrns(singleUrn);
-    genericObject2.setSchemaUrns("urn:pingidentity:specialObject");
-    assertEquals(genericObject, genericObject2);
-
-    // Set two values.
-    List<String> twoUrns = Arrays.asList(
-            "urn:pingidentity:proprietaryObject",
-            "urn:pingidentity:specialObject"
-    );
-    genericObject.setSchemaUrns(twoUrns);
-    genericObject2.setSchemaUrns("urn:pingidentity:proprietaryObject",
-            "urn:pingidentity:specialObject"
-    );
-    assertEquals(genericObject, genericObject2);
-
-    // The first parameter of the method should not accept null.
-    assertThrows(NullPointerException.class,
-            () -> genericObject.setSchemaUrns(null, "urn:pingidentity:specialObject"));
-
-    // Null arguments in the varargs method should be ignored.
-    genericObject.setSchemaUrns(
-            "urn:pingidentity:proprietaryObject", null, null);
-    assertEquals(genericObject.getSchemaUrns().size(), 1);
-  }
-
 
   /**
    * Ensure that the requested order is preserved when an ordered Collection is
@@ -133,18 +93,18 @@ public class SetSchemaTest
     final String urn3 = "urn:pingidentity:specialObject";
     final String urn4 = "urn:pingidentity:veryParticularObject";
     final String urn5 = "urn:pingidentity:aVeryVeryParticularObject";
-    final List<String> urns = Arrays.asList(urn0, urn1, urn2, urn3, urn4, urn5);
+    final List<String> urns = List.of(urn0, urn1, urn2, urn3, urn4, urn5);
     BaseScimResource resource = new UserResource();
     resource.setSchemaUrns(urns);
 
-    String[] resourceSchemaUrns = resource.getSchemaUrns().toArray(new String[0]);
-    assertEquals(resourceSchemaUrns.length, 6);
+    assertThat(resource.getSchemaUrns())
+        .hasSize(6)
+        .containsExactly(urn0, urn1, urn2, urn3, urn4, urn5);
 
-    assertEquals(resourceSchemaUrns[0], urn0);
-    assertEquals(resourceSchemaUrns[1], urn1);
-    assertEquals(resourceSchemaUrns[2], urn2);
-    assertEquals(resourceSchemaUrns[3], urn3);
-    assertEquals(resourceSchemaUrns[4], urn4);
-    assertEquals(resourceSchemaUrns[5], urn5);
+    // Re-order the urns and ensure the ordering is still preserved.
+    resource.setSchemaUrns(urn5, urn4, urn3, urn2, urn1, urn0);
+    assertThat(resource.getSchemaUrns())
+        .hasSize(6)
+        .containsExactly(urn5, urn4, urn3, urn2, urn1, urn0);
   }
 }
