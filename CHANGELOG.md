@@ -38,6 +38,12 @@ Fixed an issue with methods that interface with schema extensions such as
 `BaseScimResource.getExtensionValues(String)`. These accepted paths as a string, but previously
 performed updates to the extension data incorrectly.
 
+Simplified the implementation of the StaticUtils#toLowerCase method. This had an optimization for
+Java versions before JDK 9 that was especially beneficial for the most common case of handling ASCII
+characters. Since JDK 9, however, the String class has been updated so that the class is backed by a
+byte array as opposed to a character array, so it is more optimal to use the JDK's implementation
+directly while handling null values.
+
 ## v3.2.0 - 2024-Dec-04
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
 true.
