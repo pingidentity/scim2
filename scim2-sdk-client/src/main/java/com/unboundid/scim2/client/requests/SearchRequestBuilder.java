@@ -59,7 +59,7 @@ import static jakarta.ws.rs.core.Response.Status.Family.SUCCESSFUL;
  * This class provides a builder for SCIM 2.0 search requests. For more
  * information, see the documentation in {@link SearchRequest}.
  */
-public final class SearchRequestBuilder
+public class SearchRequestBuilder
     extends ResourceReturningRequestBuilder<SearchRequestBuilder>
 {
   @Nullable

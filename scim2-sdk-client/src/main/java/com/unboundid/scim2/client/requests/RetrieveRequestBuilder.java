@@ -56,7 +56,7 @@ public abstract class RetrieveRequestBuilder
    */
   @Override
   @NotNull
-  Invocation.Builder buildRequest()
+  protected Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();
     if (version != null)

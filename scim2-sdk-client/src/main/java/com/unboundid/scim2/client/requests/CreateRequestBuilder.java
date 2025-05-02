@@ -29,7 +29,7 @@ import jakarta.ws.rs.core.Response;
 /**
  * A builder for SCIM create requests.
  */
-public final class CreateRequestBuilder<T extends ScimResource>
+public class CreateRequestBuilder<T extends ScimResource>
     extends ResourceReturningRequestBuilder<CreateRequestBuilder<T>>
 {
   @NotNull

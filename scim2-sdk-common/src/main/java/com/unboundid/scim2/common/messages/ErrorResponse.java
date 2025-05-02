@@ -70,7 +70,7 @@ import java.util.Objects;
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:Error",
     name="Error Response", description = "SCIM 2.0 Error Response")
-public final class ErrorResponse extends BaseScimResource
+public class ErrorResponse extends BaseScimResource
 {
   @Nullable
   @Attribute(description = "A SCIM detailed error keyword.",

@@ -264,7 +264,7 @@ public class RequestBuilder<T extends RequestBuilder<T>>
    * @return The Invocation.Builder for the request.
    */
   @NotNull
-  Invocation.Builder buildRequest()
+  protected Invocation.Builder buildRequest()
   {
     Invocation.Builder builder =
         buildTarget().request(accept.toArray(new String[0]));
