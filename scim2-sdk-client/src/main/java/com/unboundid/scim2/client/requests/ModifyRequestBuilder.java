@@ -72,7 +72,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    */
   @Override
   @NotNull
-  Invocation.Builder buildRequest()
+  protected Invocation.Builder buildRequest()
   {
     Invocation.Builder request = super.buildRequest();
     if (version != null)

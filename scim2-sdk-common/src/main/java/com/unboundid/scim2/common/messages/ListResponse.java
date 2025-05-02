@@ -116,7 +116,7 @@ import java.util.TreeMap;
     name="List Response", description = "SCIM 2.0 List Response")
 @JsonPropertyOrder({ "schemas", "totalResults", "itemsPerPage", "startIndex",
         "Resources" })
-public final class ListResponse<T> extends BaseScimResource
+public class ListResponse<T> extends BaseScimResource
     implements Iterable<T>
 {
   @Attribute(description = "The total number of results returned by the " +

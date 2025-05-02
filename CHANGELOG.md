@@ -44,6 +44,22 @@ characters. Since JDK 9, however, the String class has been updated so that the 
 byte array as opposed to a character array, so it is more optimal to use the JDK's implementation
 directly while handling null values.
 
+Previous releases of the SCIM SDK set many classes as `final` to encourage applications to follow
+strict compliance to the SCIM standard. However, this also makes it difficult to integrate with
+services that violate the standard. An example of this is a SCIM error response that contains extra
+fields in the JSON body. To help accommodate these integrations, the SCIM SDK has been updated so
+that several model classes are no longer `final`, allowing applications to `extend` them if needed.
+The following classes were updated:
+* scim2-sdk-client builder classes such as `CreateRequestBuilder.java`
+* `ErrorResponse.java`
+* `ListResponse.java`
+* `Meta.java`
+* `SearchRequest.java`
+
+Updated the `Meta` class so that its setters may be chained together with the builder pattern (e.g.,
+`new Meta().setResourceType("User").setVersion("version")`). A new class-level Javadoc describing
+this attribute has been added, and explains how the new pattern may be used.
+
 ## v3.2.0 - 2024-Dec-04
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
 true.

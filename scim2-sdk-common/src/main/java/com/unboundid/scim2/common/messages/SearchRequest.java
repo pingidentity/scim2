@@ -91,7 +91,7 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
 @SuppressWarnings("JavadocLinkAsPlainText")
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:SearchRequest",
     name="Search Operation", description = "SCIM 2.0 Search Request")
-public final class SearchRequest extends BaseScimResource
+public class SearchRequest extends BaseScimResource
 {
   @Nullable
   @Attribute(description = "A multi-valued list of strings indicating " +

@@ -18,6 +18,7 @@
 package com.unboundid.scim2.common.types;
 
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.net.URI;
@@ -25,9 +26,53 @@ import java.util.Calendar;
 import java.util.Objects;
 
 /**
- * Stores metadata about a SCIM object.
+ * This class represents the {@code meta} attribute that stores additional
+ * metadata about SCIM resources. For example, the following JSON represents a
+ * minimal user resource with metadata:
+ * <pre>
+ *  {
+ *    "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+ *    "id": "fa1afe1",
+ *    "meta": {
+ *      "resourceType": "User",
+ *      "created": "1970-01-01T11:00:00.00Z",
+ *      "lastModified": "1970-01-01T11:00:00.00Z",
+ *      "location": "https://example.com/v2/Users/fa1afe1",
+ *      "version": "W/\"e180ee84f0671b1\""
+ *    }
+ *  }
+ * </pre>
+ *
+ * Here, the user with ID {@code fa1afe1} provides data on:
+ * <ul>
+ *   <li> Its resource type.
+ *   <li> The timestamp indicating when it was created.
+ *   <li> The timestamp indicating the last time it was updated.
+ *   <li> The URI representing its location.
+ *   <li> The ETag indicating the resource version.
+ * </ul>
+ * <br><br>
+ *
+ * To create a resource with the above data, use the {@code setMeta()} method of
+ * any {@link com.unboundid.scim2.common.ScimResource} object:
+ * <pre><code>
+ *  // Represents January 1st at 11:00 AM.
+ *  final Calendar calendar = Calendar.getInstance();
+ *  calendar.set(getCurrentYear(), Calendar.JANUARY, 1, 11, 0);
+ *
+ *  UserResource user = new UserResource();
+ *  user.setId("fa1afe1");
+ *  user.setMeta(new Meta()
+ *      .setResourceType("User")
+ *      .setCreated(calendar)
+ *      .setLastModified(calendar)
+ *      .setLocation(new URI("https://example.com/v2/Users/fa1afe1"))
+ *      .setVersion("W/\"e180ee84f0671b1\"")
+ *  );
+ * </code></pre>
  */
-public final class Meta
+@SuppressWarnings("JavadocLinkAsPlainText")
+public class Meta
 {
   @Nullable
   @Attribute(description = "The resource Type",
@@ -74,10 +119,13 @@ public final class Meta
    * Sets the timestamp of when the SCIM object was created.
    *
    * @param created the date and time the SCIM object was created.
+   * @return  This {@code Meta} object.
    */
-  public void setCreated(@Nullable final Calendar created)
+  @NotNull
+  public Meta setCreated(@Nullable final Calendar created)
   {
     this.created = created;
+    return this;
   }
 
   /**
@@ -95,10 +143,13 @@ public final class Meta
    * Sets the timestamp of the last modification.
    *
    * @param lastModified the timestamp of the last modification.
+   * @return  This {@code Meta} object.
    */
-  public void setLastModified(@Nullable final Calendar lastModified)
+  @NotNull
+  public Meta setLastModified(@Nullable final Calendar lastModified)
   {
     this.lastModified = lastModified;
+    return this;
   }
 
   /**
@@ -116,10 +167,13 @@ public final class Meta
    * Sets the location URI of the SCIM object.
    *
    * @param location the location URI of the SCIM object.
+   * @return  This {@code Meta} object.
    */
-  public void setLocation(@Nullable final URI location)
+  @NotNull
+  public Meta setLocation(@Nullable final URI location)
   {
     this.location = location;
+    return this;
   }
 
   /**
@@ -137,10 +191,13 @@ public final class Meta
    * Sets the version of the SCIM object.
    *
    * @param version the version of the SCIM object.
+   * @return  This {@code Meta} object.
    */
-  public void setVersion(@Nullable final String version)
+  @NotNull
+  public Meta setVersion(@Nullable final String version)
   {
     this.version = version;
+    return this;
   }
 
   /**
@@ -158,10 +215,13 @@ public final class Meta
    * Sets the resource type of the SCIM object.
    *
    * @param resourceType the resource type of the SCIM object.
+   * @return  This {@code Meta} object.
    */
-  public void setResourceType(@Nullable final String resourceType)
+  @NotNull
+  public Meta setResourceType(@Nullable final String resourceType)
   {
     this.resourceType = resourceType;
+    return this;
   }
 
   /**
