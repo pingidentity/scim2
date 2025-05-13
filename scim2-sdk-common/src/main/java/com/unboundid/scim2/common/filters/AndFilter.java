@@ -29,6 +29,7 @@ import java.util.List;
  * SCIM client to specify multiple filter criteria, where all criteria must
  * match a resource.
  * <br><br>
+ *
  * For instance, consider the following filter. Parentheses have been added for
  * clarity.
  * <pre>
@@ -40,19 +41,23 @@ import java.util.List;
  * filter that matches {@code User} resources. As an example, this filter would
  * match a {@link UserResource} whose {@code userName} is {@code "wind"}.
  * <br><br>
+ *
  * This example filter can be represented with the following Java code:
- * <pre>
+ * <pre><code>
  *   Filter andFilter = Filter.and(
  *           Filter.sw("userName", "win"),
  *           Filter.eq("meta.resourceType", "User")
  *   );
- * </pre>
+ * </code></pre>
+ *
+ * It is also possible to create an AND filter from the contents of a list:
+ * <pre><code>
+ *   List&lt;Filter&gt; existingList = getExistingFilters();
+ *   Filter andFilter = Filter.and(existingList);
+ * </code></pre>
  *
  * A SCIM resource will match an AND filter if all of its subordinate filters
  * (also referred to as "filter components") match the resource.
- * <br><br>
- * This class allows for the use of multiple filter components, but {@code and}
- * filters generally only have two components.
  */
 public final class AndFilter extends CombiningFilter
 {

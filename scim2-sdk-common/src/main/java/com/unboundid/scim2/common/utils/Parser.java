@@ -616,7 +616,7 @@ public class Parser
           throw BadRequestException.invalidFilter(msg);
         }
 
-        outputStack.push(Filter.hasComplexValue(
+        outputStack.push(Filter.complex(
             filterAttribute, readFilter(reader, true)));
       }
       else if (isValueFilter && token.equals("]") &&

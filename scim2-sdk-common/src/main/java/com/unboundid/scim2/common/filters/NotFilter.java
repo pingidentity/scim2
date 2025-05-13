@@ -28,19 +28,21 @@ import com.unboundid.scim2.common.exceptions.ScimException;
  * <pre>
  *   not (type eq "Rabbit")
  * </pre>
+ *
  * A SCIM resource will match this filter if the resource does not have a
  * {@code type} attribute with a value of {@code "Rabbit"}. This example filter
  * can be represented with the following Java code:
- * <pre>
+ * <pre><code>
  *   Filter notFilter = Filter.not(
  *           Filter.eq("type", "Rabbit")
  *   );
- * </pre>
+ * </code></pre>
  *
  * Similar to a {@link CombiningFilter}, NOT filters store the original filter
  * that is inverted. This original filter can be obtained by invoking the
- * {@link #getInvertedFilter()} method.
+ * {@link Filter#getInvertedFilter()} method.
  * <br><br>
+ *
  * To determine whether any Filter is a NOT filter, use the
  * {@link Filter#isNotFilter()} method.
  */

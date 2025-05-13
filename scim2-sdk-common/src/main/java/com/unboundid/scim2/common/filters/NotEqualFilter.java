@@ -30,6 +30,7 @@ import java.util.Objects;
  * to determine if a SCIM resource's attribute value is not equivalent to the
  * provided filter value.
  * <br><br>
+ *
  * For instance, consider the following filter:
  * <pre>
  *   name.familyName ne "Traffic"
@@ -41,10 +42,11 @@ import java.util.Objects;
  * of {@code "Neighbors"}. This would also match a resource that does not have a
  * value for {@code name.familyName}.
  * <br><br>
+ *
  * This example filter can be represented with the following Java code:
- * <pre>
+ * <pre><code>
  *   Filter notEqualFilter = Filter.ne("name.familyName", "Traffic");
- * </pre>
+ * </code></pre>
  */
 public final class NotEqualFilter extends ComparisonFilter
 {

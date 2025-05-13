@@ -33,11 +33,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This class represents a SCIM 2 filter expression. A filter can be used by a
- * SCIM client to request a subset of SCIM resources that match a criteria. For
- * example, the SCIM filter {@code nickName eq "Alice"} would match all
- * resources whose {@code nickName} field equals "Alice".
+ * This class represents a SCIM 2 filter expression as defined by
+ * <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.4.2.2">
+ * RFC 7644 Section 3.4.2.2</a>. A filter can be used by a SCIM client to
+ * request a subset of SCIM resources that match a criteria. For example, the
+ * SCIM filter {@code nickName eq "Alice"} would match all resources whose
+ * {@code nickName} field equals "Alice".
  * <br><br>
+ *
  * In general, filters are comprised of up to three parts. For the
  * {@code nickName eq "Alice"} filter expression, these are:
  * <ul>
@@ -47,6 +50,7 @@ import java.util.List;
  * </ul>
  * Attribute paths and filter operators are not case-sensitive.
  * <br><br>
+ *
  * The following filter operator types are defined:
  * <ul>
  *   <li> {@code eq}:
@@ -92,42 +96,54 @@ import java.util.List;
  *   <li> {@code not}:
  *        A {@link NotFilter} inverts another filter. It will match a SCIM
  *        resource if the other filter is not a match.
+ *   <li> {@code []}:
+ *        A {@link ComplexValueFilter} (e.g., {@code emails[primary eq true]})
+ *        will match a subset of values within a multi-valued attribute.
  * </ul>
  * <br><br>
+ *
  * To create a new SCIM filter, use the static methods defined on this parent
  * Filter class. For example, to create an equality filter, use:
- * <pre>
+ * <pre><code>
  *   Filter equalFilter = Filter.eq("nickName", "Alice");
- * </pre>
+ * </code></pre>
  *
  * A Filter Java object can also be created from a string. This method is most
  * useful when a SCIM filter is received as a string, such as if a filter was
  * provided by a client. Note that creating a filter from a hard-coded string
  * in code is generally discouraged, since it can be easy to cause errors with
  * typos.
- * <pre>
+ * <pre><code>
  *   Filter filterObject = Filter.fromString("nickName eq \"Alice\");
- * </pre>
+ * </code></pre>
+ *
  * Similarly, to retrieve the string representation of a Filter object, use
  * {@link Filter#toString()}.
- * <pre>
+ * <pre><code>
  *   String stringRepresentation = filterObject.toString();
- * </pre>
+ * </code></pre>
  *
- * A Filter object must be one of the following types (except for
- * {@link PresentFilter}).
+ * All Filter objects are one of the following types. To determine the type for
+ * a particular filter object, use the corresponding helper function:
  * <ul>
- *   <li> {@link CombiningFilter} ({@code and}, {@code or})
- *   <li> {@link ComparisonFilter} ({@code eq}, {@code gt}, {@code le}, etc.)
- *   <li> {@link ComplexValueFilter} (used to signify a specific value within a
- *                                    multi-valued attribute)
- *   <li> {@link NotFilter} ({@code not})
+ * <li> {@link CombiningFilter} (and, or): {@link #isCombiningFilter()}
+ * <li> {@link ComparisonFilter} (eq, gt, etc.): {@link #isComparisonFilter()}
+ * <li> {@link ComplexValueFilter} ({@code []}): {@link #isComplexValueFilter()}
+ * <li> {@link NotFilter} (not): {@link #isNotFilter()}
+ * <li> {@link PresentFilter} (pr): {@link #isPresentFilter()}
  * </ul>
- * To determine whether a filter is one of these types, use methods like
- * {@link Filter#isCombiningFilter()} and {@link Filter#isNotFilter()}.
- * <br><br>
- * For more information on a particular filter type, see the class-level Javadoc
- * representing the filter type (e.g., {@link EqualFilter}).
+ *
+ * For example:
+ * <pre><code>
+ *   Filter clientFilter = getClientFilter();
+ *   if (clientFilter.isCombiningFilter())
+ *   {
+ *     // Logic that is specific to AND/OR filter types.
+ *   }
+ * </code></pre>
+ *
+ * For more information on a particular filter type, see its class-level Javadoc
+ * (e.g., {@link EqualFilter}).
  */
 public abstract class Filter
 {
@@ -272,6 +288,19 @@ public abstract class Filter
   }
 
   /**
+   * Whether this filter instance is a {@link PresentFilter}.
+   *
+   * @return {@code true} if this is a presence filter or {@code false}
+   * otherwise.
+   *
+   * @since 4.0.0
+   */
+  public boolean isPresentFilter()
+  {
+    return false;
+  }
+
+  /**
    * Retrieves a string representation of this filter.
    *
    * @return  A string representation of this filter.
@@ -286,7 +315,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code equal} filter.
+   * Create a new {@link EqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -300,7 +329,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code equal} filter.
+   * Create a new {@link EqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -317,7 +346,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code equal} filter.
+   * Create a new {@link EqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -334,7 +363,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code equal} filter.
+   * Create a new {@link EqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -351,7 +380,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code equal} filter.
+   * Create a new {@link EqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -368,7 +397,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code equal} filter.
+   * Create a new {@link EqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -385,7 +414,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code equal} filter.
+   * Create a new {@link EqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -402,7 +431,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code equal} filter.
+   * Create a new {@link EqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -419,7 +448,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code equal} filter.
+   * Create a new {@link EqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -437,7 +466,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not equal} filter.
+   * Create a new {@link NotEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -451,7 +480,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not equal} filter.
+   * Create a new {@link NotEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -468,7 +497,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not equal} filter.
+   * Create a new {@link NotEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -485,7 +514,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not equal} filter.
+   * Create a new {@link NotEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -502,7 +531,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not equal} filter.
+   * Create a new {@link NotEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -519,7 +548,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not equal} filter.
+   * Create a new {@link NotEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -536,7 +565,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not equal} filter.
+   * Create a new {@link NotEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -553,7 +582,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not equal} filter.
+   * Create a new {@link NotEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -570,7 +599,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not equal} filter.
+   * Create a new {@link NotEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -588,7 +617,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code contains} filter.
+   * Create a new {@link ContainsFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -602,7 +631,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code contains} filter.
+   * Create a new {@link ContainsFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -619,7 +648,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code starts with} filter.
+   * Create a new {@link StartsWithFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -633,7 +662,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code starts with} filter.
+   * Create a new {@link StartsWithFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -650,7 +679,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code ends with} filter.
+   * Create a new {@link EndsWithFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -664,7 +693,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code ends with} filter.
+   * Create a new {@link EndsWithFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -681,7 +710,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code present} filter.
+   * Create a new {@link PresentFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @return A new {@code present} filter.
@@ -693,7 +722,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code present} filter.
+   * Create a new {@link PresentFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @return A new {@code present} filter.
@@ -707,7 +736,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than} filter.
+   * Create a new {@link GreaterThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -721,7 +750,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than} filter.
+   * Create a new {@link GreaterThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -738,7 +767,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than} filter.
+   * Create a new {@link GreaterThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -755,7 +784,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than} filter.
+   * Create a new {@link GreaterThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -772,7 +801,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than} filter.
+   * Create a new {@link GreaterThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -789,7 +818,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than} filter.
+   * Create a new {@link GreaterThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -806,7 +835,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than} filter.
+   * Create a new {@link GreaterThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -824,7 +853,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than or equal} filter.
+   * Create a new {@link GreaterThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -838,7 +867,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than or equal} filter.
+   * Create a new {@link GreaterThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -855,7 +884,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than or equal} filter.
+   * Create a new {@link GreaterThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -872,7 +901,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than or equal} filter.
+   * Create a new {@link GreaterThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -889,7 +918,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than or equal} filter.
+   * Create a new {@link GreaterThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -906,7 +935,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than or equal} filter.
+   * Create a new {@link GreaterThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -923,7 +952,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code greater than or equal} filter.
+   * Create a new {@link GreaterThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -941,7 +970,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than} filter.
+   * Create a new {@link LessThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -955,7 +984,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than} filter.
+   * Create a new {@link LessThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -972,7 +1001,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than} filter.
+   * Create a new {@link LessThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -989,7 +1018,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than} filter.
+   * Create a new {@link LessThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1006,7 +1035,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than} filter.
+   * Create a new {@link LessThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1023,7 +1052,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than} filter.
+   * Create a new {@link LessThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1040,7 +1069,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than} filter.
+   * Create a new {@link LessThanFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1058,7 +1087,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than or equal} filter.
+   * Create a new {@link LessThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1072,7 +1101,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than or equal} filter.
+   * Create a new {@link LessThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1089,7 +1118,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than or equal} filter.
+   * Create a new {@link LessThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1106,7 +1135,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than or equal} filter.
+   * Create a new {@link LessThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1123,7 +1152,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than or equal} filter.
+   * Create a new {@link LessThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1140,7 +1169,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than or equal} filter.
+   * Create a new {@link LessThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1157,7 +1186,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code less than or equal} filter.
+   * Create a new {@link LessThanOrEqualFilter}.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param filterValue   The filter attribute value.
@@ -1175,7 +1204,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code and} filter.
+   * Create a new {@link AndFilter}.
    *
    * @param filter1 The first filter.
    * @param filter2 The second filter.
@@ -1199,7 +1228,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code and} filter.
+   * Create a new {@link AndFilter}.
    *
    * @param filter1 The first filter.
    * @param filter2 The second filter.
@@ -1228,7 +1257,24 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code or} filter.
+   * Create a new {@link AndFilter}.
+   *
+   * @param filters The filter components.
+   * @return A new {@code and} filter.
+   */
+  @NotNull
+  public static Filter and(@NotNull final List<Filter> filters)
+  {
+    if (filters.size() < 2)
+    {
+      throw new IllegalArgumentException(
+          "and logical filter must combine at least 2 filters");
+    }
+    return new AndFilter(new ArrayList<>(filters));
+  }
+
+  /**
+   * Create a new {@link OrFilter}.
    *
    * @param filter1 The first filter.
    * @param filter2 The second filter.
@@ -1252,7 +1298,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code or} filter.
+   * Create a new {@link OrFilter}.
    *
    * @param filter1 The first filter.
    * @param filter2 The second filter.
@@ -1281,24 +1327,7 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code and} filter.
-   *
-   * @param filters The filter components.
-   * @return A new {@code and} filter.
-   */
-  @NotNull
-  public static Filter and(@NotNull final List<Filter> filters)
-  {
-    if (filters.size() < 2)
-    {
-      throw new IllegalArgumentException(
-          "and logical filter must combine at least 2 filters");
-    }
-    return new AndFilter(new ArrayList<>(filters));
-  }
-
-  /**
-   * Create a new {@code or} filter.
+   * Create a new {@link OrFilter}.
    *
    * @param filters The filter components.
    * @return A new {@code or} filter.
@@ -1315,9 +1344,9 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not} filter.
+   * Create a new {@link NotFilter}.
    *
-   * @param filter The inverted filter.
+   * @param filter The filter that should be inverted.
    * @return A new {@code not} filter.
    */
   @NotNull
@@ -1327,9 +1356,9 @@ public abstract class Filter
   }
 
   /**
-   * Create a new {@code not} filter.
+   * Create a new {@link NotFilter}.
    *
-   * @param filter The inverted filter.
+   * @param filter The filter that should be inverted.
    * @return A new {@code not} filter.
    * @throws BadRequestException If the filter could not be parsed.
    */
@@ -1341,7 +1370,9 @@ public abstract class Filter
   }
 
   /**
-   * Create a new complex multi-valued attribute value filter.
+   * Identical to the {@link #complex(Path, Filter)} method, which creates a
+   * {@link ComplexValueFilter}. It is encouraged to use the other method, but
+   * this one may still be used.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param valueFilter   The value filter.
@@ -1351,11 +1382,13 @@ public abstract class Filter
   public static Filter hasComplexValue(@NotNull final Path attributePath,
                                        @Nullable final Filter valueFilter)
   {
-    return new ComplexValueFilter(attributePath, valueFilter);
+    return Filter.complex(attributePath, valueFilter);
   }
 
   /**
-   * Create a new complex multi-valued attribute value filter.
+   * Identical to the {@link #complex(String, Filter)} method, which creates a
+   * {@link ComplexValueFilter}. It is encouraged to use the other method, but
+   * this one may still be used.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param valueFilter   The value filter.
@@ -1367,11 +1400,13 @@ public abstract class Filter
                                        @Nullable final Filter valueFilter)
       throws BadRequestException
   {
-    return new ComplexValueFilter(Path.fromString(attributePath), valueFilter);
+    return Filter.complex(attributePath, valueFilter);
   }
 
   /**
-   * Create a new complex multi-valued attribute value filter.
+   * Identical to the {@link #complex(String, String)} method, which creates a
+   * {@link ComplexValueFilter}. It is encouraged to use the other method, but
+   * this one may still be used.
    *
    * @param attributePath The path to the attribute to filter by.
    * @param valueFilter   The value filter.
@@ -1381,6 +1416,79 @@ public abstract class Filter
   @NotNull
   public static Filter hasComplexValue(@NotNull final String attributePath,
                                        @Nullable final String valueFilter)
+      throws BadRequestException
+  {
+    return Filter.complex(attributePath, valueFilter);
+  }
+
+  /**
+   * Create a new complex multi-valued attribute value filter (i.e., a
+   * {@link ComplexValueFilter}). For example, to create a filter representing
+   * {@code addresses[postalCode eq \"12345\"]}, use the following Java code:
+   *
+   * <pre><code>
+   *   Filter complexFilter =
+   *       Filter.complex("addresses", Filter.eq("postalCode", "12345"));
+   * </code></pre>
+   *
+   * @param attributePath The path to the attribute to filter by.
+   * @param valueFilter   The value filter.
+   * @return A new complex multi-valued attribute value filter.
+   *
+   * @since 4.0.0
+   */
+  @NotNull
+  public static Filter complex(@NotNull final Path attributePath,
+                               @Nullable final Filter valueFilter)
+  {
+    return new ComplexValueFilter(attributePath, valueFilter);
+  }
+
+  /**
+   * Create a new complex multi-valued attribute value filter (i.e., a
+   * {@link ComplexValueFilter}). For example, to create a filter representing
+   * {@code addresses[postalCode eq \"12345\"]}, use the following Java code:
+   *
+   * <pre><code>
+   *   Filter complexFilter =
+   *       Filter.complex("addresses", Filter.eq("postalCode", "12345"));
+   * </code></pre>
+   *
+   * @param attributePath The path to the attribute to filter by.
+   * @param valueFilter   The value filter.
+   * @return A new complex multi-valued attribute value filter.
+   *
+   * @since 4.0.0
+   * @throws BadRequestException  If the path could not be parsed.
+   */
+  @NotNull
+  public static Filter complex(@NotNull final String attributePath,
+                               @Nullable final Filter valueFilter)
+      throws BadRequestException
+  {
+    return new ComplexValueFilter(Path.fromString(attributePath), valueFilter);
+  }
+
+  /**
+   * Create a new complex multi-valued attribute value filter (i.e., a
+   * {@link ComplexValueFilter}). For example, to create a filter representing
+   * {@code addresses[postalCode eq \"12345\"]}, use the following Java code:
+   *
+   * <pre><code>
+   *   Filter complexFilter =
+   *       Filter.complex("addresses", Filter.eq("postalCode", "12345"));
+   * </code></pre>
+   *
+   * @param attributePath The path to the attribute to filter by.
+   * @param valueFilter   The value filter.
+   * @return A new complex multi-valued attribute value filter.
+   *
+   * @since 4.0.0
+   * @throws BadRequestException  If the path or filter could not be parsed.
+   */
+  @NotNull
+  public static Filter complex(@NotNull final String attributePath,
+                               @Nullable final String valueFilter)
       throws BadRequestException
   {
     return new ComplexValueFilter(Path.fromString(attributePath),

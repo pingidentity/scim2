@@ -30,6 +30,7 @@ import java.util.Objects;
  * used to determine if a SCIM resource's attribute value begins with the
  * provided filter value.
  * <br><br>
+ *
  * For instance, consider the following filter:
  * <pre>
  *   title sw "New"
@@ -40,10 +41,11 @@ import java.util.Objects;
  * {@code "New"}. As an example, it would match a resource with a {@code title}
  * value of {@code "Newspaperman"}.
  * <br><br>
+ *
  * This example filter can be represented with the following Java code:
- * <pre>
+ * <pre><code>
  *   Filter swFilter = Filter.sw("title", "New");
- * </pre>
+ * </code></pre>
  */
 public final class StartsWithFilter extends ComparisonFilter
 {
