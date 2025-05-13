@@ -29,6 +29,7 @@ import com.unboundid.scim2.common.types.UserResource;
  * exists on a SCIM resource, and that the attribute value is both non-null and
  * non-empty. Unlike most filters, presence filters do not contain a value.
  * <br><br>
+ *
  * Consider the following filter:
  * <pre>
  *   profileUrl pr
@@ -39,10 +40,11 @@ import com.unboundid.scim2.common.types.UserResource;
  * words, it requests any resource (likely a {@link UserResource}) that has a
  * profile picture.
  * <br><br>
+ *
  * This example filter can be represented with the following Java code:
- * <pre>
+ * <pre><code>
  *   Filter presentFilter = Filter.pr("profileUrl");
- * </pre>
+ * </code></pre>
  */
 public final class PresentFilter extends Filter
 {
@@ -67,6 +69,15 @@ public final class PresentFilter extends Filter
   public Path getAttributePath()
   {
     return filterAttribute;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean isPresentFilter()
+  {
+    return true;
   }
 
   /**

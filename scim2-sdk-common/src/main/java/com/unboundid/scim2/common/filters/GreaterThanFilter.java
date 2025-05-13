@@ -30,6 +30,7 @@ import java.util.Objects;
  * "Greater Than" filters are used to match SCIM resources that contain a larger
  * value than the provided filter value.
  * <br><br>
+ *
  * For instance, consider the following filter:
  * <pre>
  *   meta.created gt "2023-07-25T08:00:00.000Z"
@@ -40,12 +41,13 @@ import java.util.Objects;
  * value. In other words, it matches any resource that was created after the
  * provided timestamp.
  * <br><br>
+ *
  * This example filter can be represented with the following Java code:
- * <pre>
+ * <pre><code>
  *   Calendar calendar = Calendar.getInstance();
  *   calendar.set(2023, Calendar.JULY, 25, 8, 0);
  *   Filter gtFilter = Filter.gt("meta.created", calendar.getTime());
- * </pre>
+ * </code></pre>
  */
 public final class GreaterThanFilter extends ComparisonFilter
 {

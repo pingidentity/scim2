@@ -26,14 +26,16 @@ import java.util.List;
  * This class is the superclass of filter types that contains two filters. There
  * are two types of combining filters:
  * <ul>
- *   <li>{@link AndFilter}
- *   <li>{@link OrFilter}
+ *   <li> {@link AndFilter}
+ *   <li> {@link OrFilter}
  * </ul>
  * <br><br>
+ *
  * "Combining" filters contain subordinate filters, which are also referred to
  * as "filter components". To obtain the filter components that comprise a
  * combining filter, use the {@link #getCombinedFilters()} method.
  * <br><br>
+ *
  * For more information, see the class-level documentation of the subclasses of
  * CombiningFilter.
  */

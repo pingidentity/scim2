@@ -65,6 +65,15 @@ simplifies calls such as `builder.filter(filterObj.toString())` to `builder.filt
 you have any calls that pass in the `null` keyword, they may be updated to `filter((String) null)`
 to address compilation errors.
 
+Updated the filter documentation to provide more details, particularly with regard to AND, OR, and
+complex filters. The method Javadocs have also been updated to point to relevant classes for more
+information. For example, the documentation for `Filter.eq()` now includes a link to the
+`EqualFilter` class documentation.
+
+Created new `Filter.complex()` methods that will create a complex value filter. This is equivalent
+to the existing `Filter.hasComplexValue()` methods, but with a less ambiguous name. The existing
+`hasComplexValue` methods are not deprecated and may still be used.
+
 ## v3.2.0 - 2024-Dec-04
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
 true.

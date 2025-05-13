@@ -30,6 +30,7 @@ import java.util.Objects;
  * determine if a SCIM resource's attribute value is identical to the provided
  * filter value.
  * <br><br>
+ *
  * For instance, consider the following filter:
  * <pre>
  *   displayName eq "Static"
@@ -39,10 +40,11 @@ import java.util.Objects;
  * resources that have a {@code displayName} attribute value that equals
  * {@code "Static"}.
  * <br><br>
+ *
  * This example filter can be represented with the following Java code:
- * <pre>
+ * <pre><code>
  *   Filter displayNameFilter = Filter.eq("displayName", "Static");
- * </pre>
+ * </code></pre>
  */
 public final class EqualFilter extends ComparisonFilter
 {

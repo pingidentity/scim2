@@ -30,6 +30,7 @@ import java.util.Objects;
  * to determine if a SCIM resource's attribute value ends with the provided
  * filter value.
  * <br><br>
+ *
  * For instance, consider the following filter:
  * <pre>
  *   displayName ew "alice"
@@ -40,10 +41,11 @@ import java.util.Objects;
  * example, it would match a SCIM resource with a {@code displayName} attribute
  * value of {@code "malice"}.
  * <br><br>
+ *
  * This example filter can be represented with the following Java code:
- * <pre>
+ * <pre><code>
  *   Filter ewFilter = Filter.ew("displayName", "alice");
- * </pre>
+ * </code></pre>
  */
 public final class EndsWithFilter extends ComparisonFilter
 {

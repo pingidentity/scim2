@@ -30,6 +30,7 @@ import java.util.Objects;
  * to determine if the provided filter value is a substring of a SCIM resource's
  * attribute value.
  * <br><br>
+ *
  * For instance, consider the following filter:
  * <pre>
  *   displayName co "eet"
@@ -40,10 +41,11 @@ import java.util.Objects;
  * {@code "eet"} substring within it. As an example, it would match a
  * resource with a {@code displayName} attribute value of {@code "meeting"}.
  * <br><br>
+ *
  * This example filter can be represented with the following Java code:
- * <pre>
+ * <pre><code>
  *   Filter containsFilter = Filter.co("displayName", "eet");
- * </pre>
+ * </code></pre>
  */
 public final class ContainsFilter extends ComparisonFilter
 {

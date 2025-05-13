@@ -19,6 +19,7 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.filters.ComparisonFilter;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.filters.FilterType;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
@@ -30,6 +31,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -420,9 +422,8 @@ public class FilterEvaluatorTestCase
   }
 
 
-
   /**
-   * Test that filters matching.
+   * Test filter parsing.
    *
    * @param filter The filter string to evaluate.
    * @param result The expected result.
@@ -434,5 +435,140 @@ public class FilterEvaluatorTestCase
   {
     assertEquals(FilterEvaluator.evaluate(Filter.fromString(filter), node),
         result);
+  }
+
+
+  /**
+   * Tests the helper methods defined on the base Filter class that determine
+   * the filter type (e.g., {@link Filter#isCombiningFilter()}.
+   */
+  @Test
+  public void testTypeMethods() throws Exception
+  {
+    List<Filter> allTypes = List.of(
+        Filter.eq("attr", "value"),
+        Filter.ne("attr", "value"),
+        Filter.co("attr", "value"),
+        Filter.sw("attr", "val"),
+        Filter.ew("attr", "ue"),
+        Filter.pr("attr"),
+        Filter.gt("num", 1),
+        Filter.ge("num", 1),
+        Filter.lt("num", 1),
+        Filter.le("num", 1),
+        Filter.and(Filter.eq("attr", "value"), Filter.eq("attr2", "VALUE")),
+        Filter.or(Filter.eq("attr", "value"), Filter.eq("attr2", "VALUE")),
+        Filter.not(Filter.pr("attr")),
+        Filter.complex("emails", Filter.eq("primary", true))
+    );
+
+    // Test return values of isCombiningFilter().
+    List<Filter> combiningResults =
+        allTypes.stream().filter(Filter::isCombiningFilter).toList();
+    assertThat(combiningResults)
+        .hasSize(2)
+        .containsExactlyInAnyOrder(
+            Filter.and(Filter.eq("attr", "value"), Filter.eq("attr2", "VALUE")),
+            Filter.or(Filter.eq("attr", "value"), Filter.eq("attr2", "VALUE"))
+    );
+
+    // Ensure that all instances that inherit from ComparisonFilter return
+    // "true" for isComparisonFilter().
+    List<Filter> comparisonFilterInstances = allTypes.stream()
+        .filter(scimFilter -> scimFilter instanceof ComparisonFilter)
+        .toList();
+    List<Filter> comparisonResults =
+        allTypes.stream().filter(Filter::isComparisonFilter).toList();
+    assertThat(comparisonResults).isEqualTo(comparisonFilterInstances);
+
+    // Test isComplexValueFilter().
+    List<Filter> complexResults =
+        allTypes.stream().filter(Filter::isComplexValueFilter).toList();
+    assertThat(complexResults)
+        .hasSize(1)
+        .containsOnly(Filter.complex("emails", Filter.eq("primary", true)));
+
+    // Test isNotFilter(). Note that this should not match Filter.ne().
+    List<Filter> notResults =
+        allTypes.stream().filter(Filter::isNotFilter).toList();
+    assertThat(notResults)
+        .hasSize(1)
+        .containsOnly(Filter.not(Filter.pr("attr")));
+
+    // Test isPresentFilter().
+    List<Filter> presentResults =
+        allTypes.stream().filter(Filter::isPresentFilter).toList();
+    assertThat(presentResults)
+        .hasSize(1)
+        .containsOnly(Filter.pr("attr"));
+  }
+
+  /**
+   * Test the complex filter creation methods.
+   */
+  @Test
+  public void testComplexFilters() throws Exception
+  {
+    // Filters instantiated with Filter.complex().
+    Filter complexFilter;
+
+    // Filters instantiated with Filter.hasComplexValue().
+    Filter alternateFilter;
+
+    JsonNode matching = JsonUtils.getObjectReader().readTree("""
+        {
+            "addresses": [
+                {
+                    "streetAddress": "1000 Main St.",
+                    "postalCode": "12345",
+                    "type": "home"
+                }
+            ]
+        }""");
+    JsonNode invalid = JsonUtils.getObjectReader().readTree("""
+        {
+            "addresses": [
+                {
+                    "streetAddress": "2000 Main St.",
+                    "postalCode": "54321",
+                    "primary": true
+                }
+            ]
+        }""");
+
+    // Test the variant that takes Path and Filter objects.
+    complexFilter = Filter.complex(Path.root().attribute("addresses"),
+        Filter.eq("postalCode", "12345"));
+    alternateFilter = Filter.hasComplexValue(Path.root().attribute("addresses"),
+        Filter.eq("postalCode", "12345"));
+
+    // The filters should be equivalent, and both should match only the
+    // "matching" node.
+    assertThat(complexFilter).isEqualTo(alternateFilter);
+    assertThat(FilterEvaluator.evaluate(complexFilter, matching)).isTrue();
+    assertThat(FilterEvaluator.evaluate(complexFilter, invalid)).isFalse();
+    assertThat(FilterEvaluator.evaluate(alternateFilter, matching)).isTrue();
+    assertThat(FilterEvaluator.evaluate(alternateFilter, invalid)).isFalse();
+
+    // Test the variant that takes a Filter object and a string path.
+    complexFilter = Filter.complex("addresses",
+        Filter.eq("postalCode", "12345"));
+    alternateFilter = Filter.hasComplexValue("addresses",
+        Filter.eq("postalCode", "12345"));
+    assertThat(complexFilter).isEqualTo(alternateFilter);
+    assertThat(FilterEvaluator.evaluate(complexFilter, matching)).isTrue();
+    assertThat(FilterEvaluator.evaluate(complexFilter, invalid)).isFalse();
+    assertThat(FilterEvaluator.evaluate(alternateFilter, matching)).isTrue();
+    assertThat(FilterEvaluator.evaluate(alternateFilter, invalid)).isFalse();
+
+    // Test the variant that accepts strings.
+    complexFilter = Filter.complex("addresses", "postalCode eq \"12345\"");
+    alternateFilter = Filter.hasComplexValue("addresses",
+        "postalCode eq \"12345\"");
+    assertThat(complexFilter).isEqualTo(alternateFilter);
+    assertThat(FilterEvaluator.evaluate(complexFilter, matching)).isTrue();
+    assertThat(FilterEvaluator.evaluate(complexFilter, invalid)).isFalse();
+    assertThat(FilterEvaluator.evaluate(alternateFilter, matching)).isTrue();
+    assertThat(FilterEvaluator.evaluate(alternateFilter, invalid)).isFalse();
   }
 }

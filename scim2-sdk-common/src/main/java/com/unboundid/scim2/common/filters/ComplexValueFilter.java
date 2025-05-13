@@ -29,29 +29,29 @@ import java.util.Objects;
  * used to match specific values on multi-valued attributes. This is generally
  * used to filter based on a sub-attribute (e.g., {@code addresses.type}).
  * <br><br>
- * For example, consider the case where a SCIM client wants to find all users
- * whose work email uses the {@code example.com} domain. Since the
- * {@code emails} attribute can contain multiple emails, the {@code type} field
- * must be explicitly specified. This can be represented by the following SCIM
- * filter:
+ *
+ * For example, consider the case where a SCIM client wants to find emails
+ * explicitly listed as "work" emails. This value is stored in the
+ * {@code emails.type} attribute. This request can be represented by the
+ * following SCIM filter:
  * <pre>
- *   emails[type eq "work" and value ew "@example.com"]
+ *   emails[type eq "work"]
  * </pre>
  *
- * Since other email types (e.g., "home") should be ignored, this filter
- * requests {@code work} emails that end with {@code "@example.com"}. This
- * example filter can be represented with the following Java code:
- * <pre>
- *   Filter complexFilter = Filter.hasComplexValue("emails",
- *           Filter.and(
- *               Filter.eq("type", "work"),
- *               Filter.ew("value", "@example.com")
- *           )
- *   );
- * </pre>
+ * This example filter can be represented with the following Java code:
+ * <pre><code>
+ *   Filter complexFilter = Filter.complex("emails", Filter.eq("type", "work"));
+ * </code></pre>
  *
- * To determine whether a filter is a ComplexValueFilter, use the
- * {@link Filter#isComplexValueFilter()} method.
+ * The following utility methods can be used for complex filters:
+ * <ul>
+ *   <li> {@link Filter#isComplexValueFilter()}: Determines whether a filter
+ *        object is a complex value filter.
+ *   <li> {@link Filter#getAttributePath()}: Fetches the filter attribute. In
+ *        the example above, this is the {@code emails} field.
+ *   <li> {@link Filter#getValueFilter()}: Fetches the inner filter of a complex
+ *        value filter, or {@code null} if the filter is a different type.
+ * </ul>
  */
 public final class ComplexValueFilter extends Filter
 {

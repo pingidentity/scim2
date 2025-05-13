@@ -86,10 +86,10 @@ public class FilterParsingTestCase
             new Object[] { "urn:extension:isActive eq false",
                 eq("urn:extension:isActive", false) },
             new Object[] { "addresses[zipcode eq 88283 and city ne \"Austin\"]",
-                hasComplexValue("addresses",
+                Filter.complex("addresses",
                     and(eq("zipcode", 88283), ne("city", "Austin"))) },
             new Object[] { "not(addresses[city ne \"Austin\"])",
-                not(hasComplexValue("addresses", ne("city", "Austin"))) },
+                not(Filter.complex("addresses", ne("city", "Austin"))) },
 
             // Precedence tests
             new Object[] { "title pr and email pr or userType pr",
