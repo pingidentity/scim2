@@ -26,6 +26,7 @@ import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
@@ -88,7 +89,8 @@ public class SearchRequestBuilder
   }
 
   /**
-   * Request filtering of resources.
+   * Request filtering of resources from a string representation of a
+   * {@link Filter}.
    *
    * @param filter the filter string used to request a subset of resources.
    * @return This builder.
@@ -98,6 +100,19 @@ public class SearchRequestBuilder
   {
     this.filter = filter;
     return this;
+  }
+
+  /**
+   * Request filtering of resources from a {@link Filter} object.
+   *
+   * @param filter the filter object used to request a subset of resources.
+   * @return This builder.
+   */
+  @NotNull
+  public SearchRequestBuilder filter(@Nullable final Filter filter)
+  {
+    String stringFilter = (filter == null) ? null : filter.toString();
+    return filter(stringFilter);
   }
 
   /**

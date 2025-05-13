@@ -106,7 +106,7 @@ scimService.modifyRequest("Users", user.getId())
 // Search for users with the same last name as our user
 ListResponse<UserResource> searchResponse =
   scimService.searchRequest("Users")
-        .filter(Filter.eq("name.familyName", user.getName().getFamilyName()).toString())
+        .filter(Filter.eq("name.familyName", user.getName().getFamilyName()))
         .page(1, 5)
         .attributes("name")
         .invoke(UserResource.class);

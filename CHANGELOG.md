@@ -60,6 +60,11 @@ Updated the `Meta` class so that its setters may be chained together with the bu
 `new Meta().setResourceType("User").setVersion("version")`). A new class-level Javadoc describing
 this attribute has been added, and explains how the new pattern may be used.
 
+Added a new variant of `SearchRequestBuilder.filter()` that accepts a `Filter` object directly. This
+simplifies calls such as `builder.filter(filterObj.toString())` to `builder.filter(filterObj)`. If
+you have any calls that pass in the `null` keyword, they may be updated to `filter((String) null)`
+to address compilation errors.
+
 ## v3.2.0 - 2024-Dec-04
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
 true.
