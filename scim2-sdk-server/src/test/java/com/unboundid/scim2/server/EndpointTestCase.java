@@ -31,6 +31,7 @@ import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.MethodNotAllowedException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.messages.PatchOperation;
@@ -1035,12 +1036,12 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
           invoke();
 
       service.searchRequest("Users").
-          filter("meta.resourceType eq \"User\"").
+          filter(Filter.eq("meta.resourceType", "User")).
           header(expectedKey, expectedValue).
           invoke(UserResource.class);
 
       service.searchRequest("Users").
-          filter("meta.resourceType eq \"User\"").
+          filter(Filter.eq("meta.resourceType", "User")).
           header(expectedKey, expectedValue).
           invokePost(UserResource.class);
 
