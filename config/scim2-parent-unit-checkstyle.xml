@@ -43,11 +43,8 @@
     </module>
     <module name="MissingJavadocMethod"/>
 
-    <!-- Enforce ordering of Javadoc clauses. Ignore @deprecated clauses. -->
-    <module name="AtclauseOrder">
-      <property name="tagOrder" value="@author, @exception, @param, @return,
-          @see, @serial, @serialData, @serialField, @since, @throws, @version" />
-    </module>
+    <!-- Enforce ordering of Javadoc clauses. -->
+    <module name="AtclauseOrder"/>
 
     <!-- Ensure that Javadocs are placed before any method annotations. -->
     <module name="InvalidJavadocPosition"/>
