@@ -74,6 +74,10 @@ Created new `Filter.complex()` methods that will create a complex value filter. 
 to the existing `Filter.hasComplexValue()` methods, but with a less ambiguous name. The existing
 `hasComplexValue` methods are not deprecated and may still be used.
 
+Removed the deprecated `ScimDateFormat` class, which makes use of deprecated Jackson APIs. The
+`DateTimeUtils` class has been responsible for timestamp conversions between JSON strings and Java
+objects from 2.3.0 onwards.
+
 ## v3.2.0 - 2024-Dec-04
 Fixed an issue where `AndFilter.equals()` and `OrFilter.equals()` could incorrectly evaluate to
 true.

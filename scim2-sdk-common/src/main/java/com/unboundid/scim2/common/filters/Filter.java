@@ -1458,8 +1458,8 @@ public abstract class Filter
    * @param valueFilter   The value filter.
    * @return A new complex multi-valued attribute value filter.
    *
-   * @since 4.0.0
    * @throws BadRequestException  If the path could not be parsed.
+   * @since 4.0.0
    */
   @NotNull
   public static Filter complex(@NotNull final String attributePath,
@@ -1483,8 +1483,8 @@ public abstract class Filter
    * @param valueFilter   The value filter.
    * @return A new complex multi-valued attribute value filter.
    *
-   * @since 4.0.0
    * @throws BadRequestException  If the path or filter could not be parsed.
+   * @since 4.0.0
    */
   @NotNull
   public static Filter complex(@NotNull final String attributePath,
