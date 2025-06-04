@@ -25,9 +25,10 @@
     <packaging>jar</packaging>
     <name>UnboundID SCIM2 SDK Common</name>
     <description>
-      The UnboundID SCIM2 SDK is a library that may be used to interact with various
-      types of SCIM-enabled endpoints (such as the Ping Identity server products) to
-      perform lightweight, cloud-based identity management via the SCIM Protocol.
+      The UnboundID SCIM 2 SDK is a comprehensive Java library that supports the
+      SCIM protocol and communication with SCIM services. This SDK assists with
+      managing requests, responses, and errors, and it also offers support for
+      SCIM filter expressions, attribute paths, and CRUD operations on SCIM data.
       See https://simplecloud.info for more information.
     </description>
     <inceptionYear>2015</inceptionYear>
@@ -75,7 +76,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
         <executions>
           <execution>
             <id>gen-sources</id>
@@ -85,7 +85,7 @@
             </goals>
             <configuration>
               <target>
-                <echo message="create version class" />
+                <!-- Generate the Version.java file. -->
                 <copy todir="target/java-gen">
                   <fileset dir="src/main/stubs" />
                   <globmapper from="*.java.stub" to="*.java" />
@@ -153,7 +153,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>3.2.1</version>
         <executions>
           <execution>
             <id>create-revision-number</id>
@@ -182,7 +181,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.6.0</version>
         <executions>
           <execution>
             <id>add-generated-source</id>
@@ -217,11 +215,6 @@
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
       <artifactId>jakarta.xml.bind-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testng</groupId>

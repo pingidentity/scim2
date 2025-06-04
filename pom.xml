@@ -22,9 +22,10 @@
   <packaging>pom</packaging>
   <name>UnboundID SCIM2 SDK Parent</name>
   <description>
-    The UnboundID SCIM2 SDK is a library that may be used to interact with various
-    types of SCIM-enabled endpoints (such as the Ping Identity server products) to
-    perform lightweight, cloud-based identity management via the SCIM Protocol.
+    The UnboundID SCIM 2 SDK is a comprehensive Java library that supports the
+    SCIM protocol and communication with SCIM services. This SDK assists with
+    managing requests, responses, and errors, and it also offers support for SCIM
+    filter expressions, attribute paths, CRUD operations on SCIM data, and more.
     See https://simplecloud.info for more information.
   </description>
   <inceptionYear>2015</inceptionYear>
@@ -69,7 +70,6 @@
     <jaxb.version>4.0.2</jaxb.version>
     <jakarta-rs.version>4.0.0</jakarta-rs.version>
     <jersey.version>3.1.10</jersey.version>
-    <guava.version>33.4.0-jre</guava.version>
     <testng.version>7.11.0</testng.version>
     <assertj.version>3.27.3</assertj.version>
     <maven.surefire.version>3.5.2</maven.surefire.version>
@@ -191,6 +191,16 @@
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>buildnumber-maven-plugin</artifactId>
+          <version>3.2.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>3.6.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -415,11 +425,6 @@
         <groupId>org.testng</groupId>
         <artifactId>testng</artifactId>
         <version>${testng.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>${guava.version}</version>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>
