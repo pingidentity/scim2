@@ -52,6 +52,7 @@ that several model classes are no longer `final`, allowing applications to `exte
 The following classes were updated:
 * scim2-sdk-client builder classes such as `CreateRequestBuilder.java`
 * `ErrorResponse.java`
+* `GenericScimResource.java`
 * `ListResponse.java`
 * `Meta.java`
 * `SearchRequest.java`

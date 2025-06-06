@@ -94,7 +94,7 @@ import java.util.Objects;
  */
 @JsonDeserialize(using = GenericScimObjectDeserializer.class)
 @JsonSerialize(using = GenericScimObjectSerializer.class)
-public final class GenericScimResource implements ScimResource
+public class GenericScimResource implements ScimResource
 {
   @NotNull
   private static final Path SCHEMAS = Path.root().attribute("schemas");
