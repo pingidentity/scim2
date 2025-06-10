@@ -46,7 +46,8 @@ For clients using UnboundID-specific features:
 You may also download SCIM 2 SDK builds from the [Releases](https://github.com/pingidentity/scim2/releases) page.
 
 # How to use it
-The UnboundID SCIM 2 SDK requires Java 11 or greater.
+As of version 4.0.0, the UnboundID SCIM 2 SDK requires Java SE 17 or greater.
+As of version 3.0.0, the UnboundID SCIM 2 SDK requires Java SE 11 or greater.
 
 The primary point of entry for a client is the `ScimService` class, which represents a SCIM service provider, such as the PingDirectory Server. This class acts as a wrapper for a [JAX-RS](https://github.com/jax-rs) client instance, providing methods for building and making requests.
 
