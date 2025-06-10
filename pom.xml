@@ -18,7 +18,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.unboundid.product.scim2</groupId>
   <artifactId>scim2-parent</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
+  <version>4.0.0</version>
   <packaging>pom</packaging>
   <name>UnboundID SCIM2 SDK Parent</name>
   <description>
