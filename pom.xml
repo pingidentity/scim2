@@ -66,7 +66,7 @@
     <compileSource>17</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
     <ignore.test.failures>false</ignore.test.failures>
-    <jackson.version>2.18.3</jackson.version>
+    <jackson.version>2.19.1</jackson.version>
     <jaxb.version>4.0.2</jaxb.version>
     <jakarta-rs.version>4.0.0</jakarta-rs.version>
     <jersey.version>3.1.10</jersey.version>
