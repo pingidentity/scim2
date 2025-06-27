@@ -204,7 +204,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     @NotNull
     public <T> T invoke(@NotNull final Class<T> cls) throws ScimException
     {
-      PatchRequest patchRequest = new PatchRequest(operations);
+      var patchRequest = new PatchRequest(operations).asGenericScimResource();
       try (Response response = buildRequest().method("PATCH",
           Entity.entity(patchRequest, getContentType())))
       {
