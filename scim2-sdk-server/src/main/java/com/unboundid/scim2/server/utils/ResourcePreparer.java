@@ -35,7 +35,6 @@ import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -120,7 +119,7 @@ public class ResourcePreparer<T extends ScimResource>
    * @param baseUri The resource type base URI.
    */
   ResourcePreparer(@NotNull final ResourceTypeDefinition resourceType,
-                   @NotNull final String attributesString,
+                   @Nullable final String attributesString,
                    @Nullable final String excludedAttributesString,
                    @NotNull final URI baseUri)
       throws BadRequestException
@@ -345,23 +344,21 @@ public class ResourcePreparer<T extends ScimResource>
                                  @NotNull final Set<Path> paths,
                                  @NotNull final ObjectNode objectNode)
   {
-    Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while (i.hasNext())
+    for (Map.Entry<String, JsonNode> field : objectNode.properties())
     {
-      Map.Entry<String, JsonNode> field = i.next();
       Path path = parentPath.attribute(field.getKey());
       if (path.size() > 1 || path.getSchemaUrn() == null)
       {
         // Don't add a path for the extension schema object itself.
         paths.add(path);
       }
-      if (field.getValue().isArray())
+      if (field.getValue() instanceof ArrayNode valueArray)
       {
-        collectAttributes(path, paths, (ArrayNode) field.getValue());
+        collectAttributes(path, paths, valueArray);
       }
-      else if (field.getValue().isObject())
+      else if (field.getValue() instanceof ObjectNode valueObject)
       {
-        collectAttributes(path, paths, (ObjectNode) field.getValue());
+        collectAttributes(path, paths, valueObject);
       }
     }
   }
@@ -379,13 +376,13 @@ public class ResourcePreparer<T extends ScimResource>
   {
     for (JsonNode value : arrayNode)
     {
-      if (value.isArray())
+      if (value instanceof ArrayNode valueArray)
       {
-        collectAttributes(parentPath, paths, (ArrayNode) value);
+        collectAttributes(parentPath, paths, valueArray);
       }
-      else if (value.isObject())
+      else if (value instanceof ObjectNode valueObject)
       {
-        collectAttributes(parentPath, paths, (ObjectNode) value);
+        collectAttributes(parentPath, paths, valueObject);
       }
     }
   }
@@ -399,7 +396,6 @@ public class ResourcePreparer<T extends ScimResource>
   private void collectAttributes(
       @NotNull final Set<Path> paths,
       @NotNull final Iterable<PatchOperation> patchOperations)
-
   {
     for (PatchOperation patchOperation : patchOperations)
     {
@@ -410,18 +406,13 @@ public class ResourcePreparer<T extends ScimResource>
             withoutFilters();
         paths.add(path);
       }
-      if (patchOperation.getJsonNode() != null)
+      if (patchOperation.getJsonNode() instanceof ArrayNode valueArray)
       {
-        if (patchOperation.getJsonNode().isArray())
-        {
-          collectAttributes(
-              path, paths, (ArrayNode) patchOperation.getJsonNode());
-        }
-        else if (patchOperation.getJsonNode().isObject())
-        {
-          collectAttributes(
-              path, paths, (ObjectNode) patchOperation.getJsonNode());
-        }
+        collectAttributes(path, paths, valueArray);
+      }
+      else if (patchOperation.getJsonNode() instanceof ObjectNode valueObject)
+      {
+        collectAttributes(path, paths, valueObject);
       }
     }
   }

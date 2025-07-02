@@ -74,7 +74,7 @@ public class JsonUtils
     @NotNull
     abstract JsonNode visitInnerNode(@NotNull final ObjectNode parent,
                                      @Nullable final String field,
-                                     @NotNull final Filter valueFilter)
+                                     @Nullable final Filter valueFilter)
         throws ScimException;
 
     /**
@@ -154,9 +154,9 @@ public class JsonUtils
         throws ScimException
     {
       JsonNode node = parent.path(field);
-      if (node.isArray() && valueFilter != null)
+      if (node instanceof ArrayNode arrayNode && valueFilter != null)
       {
-        return filterArray((ArrayNode) node, valueFilter, false);
+        return filterArray(arrayNode, valueFilter, false);
       }
       return node;
     }
@@ -170,14 +170,11 @@ public class JsonUtils
         throws ScimException
     {
       JsonNode node = parent.path(field);
-      if (node.isArray())
+      if (node instanceof ArrayNode arrayNode)
       {
-        ArrayNode arrayNode = (ArrayNode) node;
-
         if (valueFilter != null)
         {
-          arrayNode = filterArray((ArrayNode) node, valueFilter,
-              removeValues);
+          arrayNode = filterArray(arrayNode, valueFilter, removeValues);
         }
         if (!arrayNode.isEmpty())
         {
@@ -257,9 +254,8 @@ public class JsonUtils
         parent.set(field, newObjectNode);
         return newObjectNode;
       }
-      else if (node.isArray())
+      else if (node instanceof ArrayNode arrayNode)
       {
-        ArrayNode arrayNode = (ArrayNode) node;
         if (valueFilter != null)
         {
           arrayNode = filterArray(arrayNode, valueFilter, false);
@@ -303,9 +299,8 @@ public class JsonUtils
       // in replace mode, a value filter requires that the target node
       // be an array and that we can find matching value(s)
       JsonNode node = parent.path(field);
-      if (node.isArray())
+      if (node instanceof ArrayNode array)
       {
-        var array = (ArrayNode) node;
         matchesFound = processArrayReplace(parent, field, array, valueFilter);
       }
       // exception: this allows filters on singular values if
@@ -370,9 +365,9 @@ public class JsonUtils
         nodeUpdated = true;
 
 
-        if (attributeValue.isObject() && value.isObject())
+        if (attributeValue instanceof ObjectNode attribute && value.isObject())
         {
-          updateNode((ObjectNode) attributeValue, null, value);
+          updateNode(attribute, null, value);
         }
         else if (isDelete && attributeValue.isObject())
         {
@@ -436,17 +431,13 @@ public class JsonUtils
 
       // When key is null, the node to update is the parent itself.
       JsonNode node = key == null ? parent : parent.path(key);
-      if (node.isObject())
+      if (node instanceof ObjectNode targetObject)
       {
-        if (value.isObject())
+        if (value instanceof ObjectNode valueObject)
         {
           // Go through the fields of both objects and merge them.
-          ObjectNode targetObject = (ObjectNode) node;
-          ObjectNode valueObject = (ObjectNode) value;
-          Iterator<Map.Entry<String, JsonNode>> i = valueObject.fields();
-          while (i.hasNext())
+          for (Map.Entry<String, JsonNode> field : valueObject.properties())
           {
-            Map.Entry<String, JsonNode> field = i.next();
             updateNode(targetObject, field.getKey(), field.getValue());
           }
         }
@@ -456,13 +447,11 @@ public class JsonUtils
           parent.set(key, value);
         }
       }
-      else if (node.isArray())
+      else if (node instanceof ArrayNode targetArray)
       {
-        if (value.isArray() && appendValues)
+        if (appendValues && value instanceof ArrayNode valueArray)
         {
           // Append the new values to the existing ones.
-          ArrayNode targetArray = (ArrayNode) node;
-          ArrayNode valueArray = (ArrayNode) value;
           for (JsonNode valueNode : valueArray)
           {
             boolean valueFound = false;
@@ -506,9 +495,9 @@ public class JsonUtils
         throws ScimException
     {
       JsonNode node = parent.path(field);
-      if (node.isArray() && valueFilter != null)
+      if (node instanceof ArrayNode arrayNode && valueFilter != null)
       {
-        return filterArray((ArrayNode) node, valueFilter, false);
+        return filterArray(arrayNode, valueFilter, false);
       }
       return node;
     }
@@ -520,9 +509,9 @@ public class JsonUtils
         throws ScimException
     {
       JsonNode node = parent.path(field);
-      if (node.isArray() && valueFilter != null)
+      if (node instanceof ArrayNode arrayNode && valueFilter != null)
       {
-        node = filterArray((ArrayNode) node, valueFilter, false);
+        node = filterArray(arrayNode, valueFilter, false);
       }
 
       if (node.isArray())
@@ -1019,15 +1008,15 @@ public class JsonUtils
       {
         for (JsonNode value : child)
         {
-          if (value.isObject())
+          if (value instanceof ObjectNode valueObject)
           {
-            traverseValues(nodeVisitor, (ObjectNode) value, index + 1, path);
+            traverseValues(nodeVisitor, valueObject, index + 1, path);
           }
         }
       }
-      else if (child.isObject())
+      else if (child instanceof ObjectNode childObject)
       {
-        traverseValues(nodeVisitor, (ObjectNode) child, index + 1, path);
+        traverseValues(nodeVisitor, childObject, index + 1, path);
       }
     }
     else

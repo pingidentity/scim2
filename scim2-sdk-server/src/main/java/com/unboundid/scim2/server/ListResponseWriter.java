@@ -27,7 +27,6 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -103,10 +102,8 @@ public class ListResponseWriter<T extends ScimResource>
       jsonGenerator.writeEndArray();
     }
 
-    Iterator<Map.Entry<String, JsonNode>> i = deferredFields.fields();
-    while (i.hasNext())
+    for (Map.Entry<String, JsonNode> field : deferredFields.properties())
     {
-      Map.Entry<String, JsonNode> field = i.next();
       jsonGenerator.writeObjectField(field.getKey(), field.getValue());
     }
     jsonGenerator.writeEndObject();
