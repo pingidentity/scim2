@@ -37,7 +37,6 @@ import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -276,10 +275,8 @@ public abstract class BaseScimResource
   protected Map<String, Object> getAny()
   {
     HashMap<String, Object> map = new HashMap<>(extensionObjectNode.size());
-    Iterator<Map.Entry<String, JsonNode>> i = extensionObjectNode.fields();
-    while (i.hasNext())
+    for (Map.Entry<String, JsonNode> field : extensionObjectNode.properties())
     {
-      Map.Entry<String, JsonNode> field = i.next();
       map.put(field.getKey(), field.getValue());
     }
     return map;

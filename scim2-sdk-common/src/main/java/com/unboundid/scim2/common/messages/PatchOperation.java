@@ -418,7 +418,7 @@ public abstract class PatchOperation
         // prepare to add this value ourselves.
         jsonAttribute = JsonUtils.getJsonNodeFactory().arrayNode(1);
       }
-      if (!jsonAttribute.isArray())
+      if (!(jsonAttribute instanceof ArrayNode attr))
       {
         throw BadRequestException.invalidSyntax(
             "The patch operation could not be processed because a complex"
@@ -426,7 +426,6 @@ public abstract class PatchOperation
                 + "' is single-valued"
         );
       }
-      ArrayNode attribute = (ArrayNode) jsonAttribute;
 
       // When operations with a value filter add data, we can either append
       // the data to a new value in the multi-valued attribute, or we can update
@@ -440,7 +439,7 @@ public abstract class PatchOperation
       ObjectNode matchedValue = null;
       if (!APPEND_NEW_PATCH_VALUES_PROPERTY)
       {
-        matchedValue = fetchExistingValue(attribute, valueFilter, attributeName);
+        matchedValue = fetchExistingValue(attr, valueFilter, attributeName);
       }
 
       // If there are no existing values that match the filter, or if no values
@@ -453,8 +452,8 @@ public abstract class PatchOperation
         newValue.set(subAttributeName, value);
         newValue.set(filterAttributeName, filterValue);
 
-        attribute.add(newValue);
-        existingResource.replace(attributeName, attribute);
+        attr.add(newValue);
+        existingResource.replace(attributeName, attr);
         return;
       }
 
@@ -918,9 +917,8 @@ public abstract class PatchOperation
     // schemas attribute.
     JsonNode schemasNode =
         node.path(SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION.getName());
-    if (schemasNode.isArray())
+    if (schemasNode instanceof ArrayNode schemas)
     {
-      ArrayNode schemas = (ArrayNode) schemasNode;
       if (getPath() == null)
       {
         Iterator<String> i = getJsonNode().fieldNames();

@@ -25,7 +25,6 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
-import java.util.Iterator;
 import java.util.Map;
 
 
@@ -60,10 +59,8 @@ public abstract class ResourceTrimmer
                                     @NotNull final Path parentPath)
   {
     ObjectNode objectToReturn = JsonUtils.getJsonNodeFactory().objectNode();
-    Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while (i.hasNext())
+    for (Map.Entry<String, JsonNode> field : objectNode.properties())
     {
-      Map.Entry<String, JsonNode> field = i.next();
       final Path path;
       if (parentPath.isRoot() && parentPath.getSchemaUrn() == null &&
           SchemaUtils.isUrn(field.getKey()))
@@ -77,19 +74,17 @@ public abstract class ResourceTrimmer
 
       if (path.isRoot() || shouldReturn(path))
       {
-        if (field.getValue().isArray())
+        if (field.getValue() instanceof ArrayNode valueArray)
         {
-          ArrayNode trimmedNode = trimArrayNode(
-              (ArrayNode) field.getValue(), path);
+          ArrayNode trimmedNode = trimArrayNode(valueArray, path);
           if (!trimmedNode.isEmpty())
           {
             objectToReturn.set(field.getKey(), trimmedNode);
           }
         }
-        else if (field.getValue().isObject())
+        else if (field.getValue() instanceof ObjectNode valueObject)
         {
-          ObjectNode trimmedNode = trimObjectNode(
-              (ObjectNode) field.getValue(), path);
+          ObjectNode trimmedNode = trimObjectNode(valueObject, path);
           if (!trimmedNode.isEmpty())
           {
             objectToReturn.set(field.getKey(), trimmedNode);
@@ -118,17 +113,17 @@ public abstract class ResourceTrimmer
     ArrayNode arrayToReturn = JsonUtils.getJsonNodeFactory().arrayNode();
     for (JsonNode value : arrayNode)
     {
-      if (value.isArray())
+      if (value instanceof ArrayNode valueArray)
       {
-        ArrayNode trimmedNode = trimArrayNode((ArrayNode) value, parentPath);
+        ArrayNode trimmedNode = trimArrayNode(valueArray, parentPath);
         if (!trimmedNode.isEmpty())
         {
           arrayToReturn.add(trimmedNode);
         }
       }
-      else if (value.isObject())
+      else if (value instanceof ObjectNode valueObject)
       {
-        ObjectNode trimmedNode = trimObjectNode((ObjectNode) value, parentPath);
+        ObjectNode trimmedNode = trimObjectNode(valueObject, parentPath);
         if (!trimmedNode.isEmpty())
         {
           arrayToReturn.add(trimmedNode);
