@@ -100,11 +100,10 @@ public class JsonDiff
                     final boolean removeMissing)
   {
     // First iterate through the source fields and compare it to the target
-    Iterator<Map.Entry<String, JsonNode>> si = source.fields();
-    while (si.hasNext())
+    for (Map.Entry<String, JsonNode> field : source.properties())
     {
       processEntry(parentPath, targetToAdd, targetToReplace,
-          operations, removeMissing, si.next());
+          operations, removeMissing, field);
     }
 
     if (targetToAdd != targetToReplace)
@@ -190,9 +189,9 @@ public class JsonDiff
       @NotNull final String sourceKey)
   {
     // Value present in both and they are of the same type.
-    if (sourceNode.isObject())
+    if (sourceNode instanceof ObjectNode s)
     {
-      computeObjectNodeDiffs(path, sourceNode, targetValueToAdd, targetValueToReplace,
+      computeObjectNodeDiffs(path, s, targetValueToAdd, targetValueToReplace,
           operations, removeMissing, targetToAdd, targetToReplace, sourceKey);
     }
     else if (sourceNode.isArray())
@@ -251,81 +250,77 @@ public class JsonDiff
 
       // Explicitly clear all attribute values.
       operations.add(PatchOperation.remove(path));
+      return;
     }
-    else
+
+    // Go through each value and try to individually patch them first
+    // instead of replacing all values.
+    List<PatchOperation> targetOpToRemoveOrReplace = new LinkedList<>();
+    boolean replaceAllValues = false;
+    for (JsonNode sv : sourceNode)
     {
-      // Go through each value and try to individually patch them first
-      // instead of replacing all values.
-      List<PatchOperation> targetOpToRemoveOrReplace = new LinkedList<>();
-      boolean replaceAllValues = false;
-      for (JsonNode sv : sourceNode)
+      JsonNode tv = removeMatchingValue(sv, (ArrayNode) targetValueToAdd);
+      Filter valueFilter = generateValueFilter(sv);
+      if (valueFilter == null)
       {
-        JsonNode tv = removeMatchingValue(sv,
-            (ArrayNode) targetValueToAdd);
-        Filter valueFilter = generateValueFilter(sv);
-        if (valueFilter == null)
+        replaceAllValues = true;
+        Debug.debug(Level.WARNING, DebugType.OTHER,
+            "Performing full replace of target " +
+                "array node " + path + " since the it is not " +
+                "possible to generate a value filter to uniquely " +
+                "identify the value " + sv);
+        break;
+      }
+      Path valuePath = parentPath.attribute(sourceKey, valueFilter);
+      if (tv != null)
+      {
+        // The value is in both source and target arrays.
+        if (sv instanceof ObjectNode source && tv instanceof ObjectNode target)
         {
-          replaceAllValues = true;
-          Debug.debug(Level.WARNING, DebugType.OTHER,
-              "Performing full replace of target " +
-                  "array node " + path + " since the it is not " +
-                  "possible to generate a value filter to uniquely " +
-                  "identify the value " + sv);
-          break;
-        }
-        Path valuePath = parentPath.attribute(
-            sourceKey, valueFilter);
-        if (tv != null)
-        {
-          // The value is in both source and target arrays.
-          if (sv.isObject() && tv.isObject())
+          // Recursively diff the object node.
+          diff(valuePath, source, target, target, operations, removeMissing);
+          if (!tv.isEmpty())
           {
-            // Recursively diff the object node.
-            diff(valuePath, (ObjectNode) sv, (ObjectNode) tv,
-                (ObjectNode) tv, operations, removeMissing);
-            if (!tv.isEmpty())
-            {
-              targetOpToRemoveOrReplace.add(
-                  PatchOperation.replace(valuePath, tv));
-            }
+            targetOpToRemoveOrReplace.add(
+                PatchOperation.replace(valuePath, tv));
           }
         }
-        else
-        {
-          targetOpToRemoveOrReplace.add(
-              PatchOperation.remove(valuePath));
-        }
-      }
-      if (!replaceAllValues && targetValueToReplace.size() <=
-          targetValueToAdd.size() + targetOpToRemoveOrReplace.size())
-      {
-        // We are better off replacing the entire array.
-        Debug.debug(Level.INFO, DebugType.OTHER,
-            "Performing full replace of target " +
-                "array node " + path + " since the " +
-                "array (" + targetValueToReplace.size() + ") " +
-                "is smaller than removing and " +
-                "replacing (" + targetOpToRemoveOrReplace.size() + ") " +
-                "then adding (" + targetValueToAdd.size() + ")  " +
-                "the values individually");
-        replaceAllValues = true;
-        targetToReplace.set(sourceKey, targetValueToReplace);
-
-      }
-      if (replaceAllValues)
-      {
-        targetToReplace.set(sourceKey, targetValueToReplace);
       }
       else
       {
-        if (!targetOpToRemoveOrReplace.isEmpty())
-        {
-          operations.addAll(targetOpToRemoveOrReplace);
-        }
-        if (!targetValueToAdd.isEmpty())
-        {
-          targetToAdd.set(sourceKey, targetValueToAdd);
-        }
+        targetOpToRemoveOrReplace.add(
+            PatchOperation.remove(valuePath));
+      }
+    }
+    if (!replaceAllValues && targetValueToReplace.size() <=
+        targetValueToAdd.size() + targetOpToRemoveOrReplace.size())
+    {
+      // We are better off replacing the entire array.
+      Debug.debug(Level.INFO, DebugType.OTHER,
+          "Performing full replace of target " +
+              "array node " + path + " since the " +
+              "array (" + targetValueToReplace.size() + ") " +
+              "is smaller than removing and " +
+              "replacing (" + targetOpToRemoveOrReplace.size() + ") " +
+              "then adding (" + targetValueToAdd.size() + ")  " +
+              "the values individually");
+      replaceAllValues = true;
+      targetToReplace.set(sourceKey, targetValueToReplace);
+
+    }
+    if (replaceAllValues)
+    {
+      targetToReplace.set(sourceKey, targetValueToReplace);
+    }
+    else
+    {
+      if (!targetOpToRemoveOrReplace.isEmpty())
+      {
+        operations.addAll(targetOpToRemoveOrReplace);
+      }
+      if (!targetValueToAdd.isEmpty())
+      {
+        targetToAdd.set(sourceKey, targetValueToAdd);
       }
     }
   }
@@ -459,10 +454,8 @@ public class JsonDiff
     if (value.isObject())
     {
       List<Filter> filters = new ArrayList<>(value.size());
-      Iterator<Map.Entry<String, JsonNode>> fieldsIterator = value.fields();
-      while (fieldsIterator.hasNext())
+      for (Map.Entry<String, JsonNode> field : value.properties())
       {
-        Map.Entry<String, JsonNode> field = fieldsIterator.next();
         if (!field.getValue().isValueNode())
         {
           // We can't nest value filters.

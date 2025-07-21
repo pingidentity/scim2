@@ -229,7 +229,7 @@ public class GenericScimResource implements ScimResource
     try
     {
       JsonNode value = JsonUtils.getValue(SCHEMAS, objectNode);
-      if (value.isNull() || !value.isArray())
+      if (!(value instanceof ArrayNode valueArray))
       {
         return Collections.emptyList();
       }
@@ -237,7 +237,7 @@ public class GenericScimResource implements ScimResource
       // This will not return null since the input value is non-null.
       //
       //noinspection DataFlowIssue
-      return JsonUtils.nodeToValues((ArrayNode) value, String.class);
+      return JsonUtils.nodeToValues(valueArray, String.class);
     }
     catch (Exception e)
     {

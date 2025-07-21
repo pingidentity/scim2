@@ -493,10 +493,9 @@ public class SchemaChecker
         resourceType.getSchemaExtensions().keySet())
     {
       JsonNode extension = copyNode.get(schemaExtension.getId());
-      if (extension != null && extension.isObject())
+      if (extension instanceof ObjectNode extensionObj)
       {
-        removeReadOnlyAttributes(schemaExtension.getAttributes(),
-            (ObjectNode) extension);
+        removeReadOnlyAttributes(schemaExtension.getAttributes(), extensionObj);
       }
     }
     removeReadOnlyAttributes(commonAndCoreAttributes, copyNode);
@@ -593,19 +592,17 @@ public class SchemaChecker
       if (attribute.getSubAttributes() != null)
       {
         JsonNode node = objectNode.path(attribute.getName());
-        if (node.isObject())
+        if (node instanceof ObjectNode nodeObject)
         {
-          removeReadOnlyAttributes(attribute.getSubAttributes(),
-              (ObjectNode) node);
+          removeReadOnlyAttributes(attribute.getSubAttributes(), nodeObject);
         }
         else if (node.isArray())
         {
           for (JsonNode value : node)
           {
-            if (value.isObject())
+            if (value instanceof ObjectNode valueObj)
             {
-              removeReadOnlyAttributes(attribute.getSubAttributes(),
-                  (ObjectNode) value);
+              removeReadOnlyAttributes(attribute.getSubAttributes(), valueObj);
             }
           }
         }
@@ -634,9 +631,8 @@ public class SchemaChecker
       final boolean isPartialAdd)
           throws ScimException
   {
-
-    Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while (i.hasNext())
+    Iterator<Map.Entry<String, JsonNode>> i;
+    for (i = objectNode.properties().iterator(); i.hasNext();)
     {
       Map.Entry<String, JsonNode> field = i.next();
       if (SchemaUtils.isUrn(field.getKey()))
@@ -800,8 +796,8 @@ public class SchemaChecker
     // All defined schema extensions should be removed.
     // Remove any additional extended attribute namespaces not included in
     // the schemas attribute.
-    Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while (i.hasNext())
+    Iterator<Map.Entry<String, JsonNode>> i;
+    for (i = objectNode.properties().iterator(); i.hasNext();)
     {
       String fieldName = i.next().getKey();
       if (SchemaUtils.isUrn(fieldName))
@@ -1241,8 +1237,8 @@ public class SchemaChecker
 
     // All defined attributes should be removed. Remove any additional
     // undefined attributes.
-    Iterator<Map.Entry<String, JsonNode>> i = objectNode.fields();
-    while (i.hasNext())
+    Iterator<Map.Entry<String, JsonNode>> i;
+    for (i = objectNode.properties().iterator(); i.hasNext();)
     {
       String undefinedAttribute = i.next().getKey();
       if (parentPath.size() == 0)
@@ -1254,8 +1250,7 @@ public class SchemaChecker
               resourceType.getCoreSchema().getId());
         }
       }
-      else if (parentPath.isRoot() &&
-          parentPath.getSchemaUrn() != null)
+      else if (parentPath.isRoot() && parentPath.getSchemaUrn() != null)
       {
         if (!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
         {
