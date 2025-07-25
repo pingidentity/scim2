@@ -26,6 +26,8 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
+import static jakarta.ws.rs.core.Response.Status.Family.SUCCESSFUL;
+
 /**
  * A builder for SCIM create requests.
  */
@@ -74,11 +76,10 @@ public class CreateRequestBuilder<T extends ScimResource>
   @NotNull
   public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
   {
-    try (Response response = buildRequest().post(
-        Entity.entity(resource, getContentType())))
+    var entity = Entity.entity(generify(resource), getContentType());
+    try (Response response = buildRequest().post(entity))
     {
-      if (response.getStatusInfo().getFamily() ==
-          Response.Status.Family.SUCCESSFUL)
+      if (response.getStatusInfo().getFamily() == SUCCESSFUL)
       {
         return response.readEntity(cls);
       }
