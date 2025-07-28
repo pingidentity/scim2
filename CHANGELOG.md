@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v4.0.1 - TBD
+Simplified integration with the `scim2-sdk-client` library by updating subclasses of
+`RequestBuilder` to always provide `GenericScimResource` objects for JSON payloads. In previous
+releases, applications needed to use the right JSON properties in the environment so that the client
+library would send proper JSON when issuing HTTP requests. This update to the client library places
+the responsibility for serialization on the SCIM SDK itself, and reduces the number of HTTP client
+configuration properties to set within your application. If you have added custom HTTP configuration
+to your project specifically for the SCIM SDK, you may be able to remove some properties.
 
 ## v4.0.0 - 2025-Jun-10
 Removed support for Java 11. The UnboundID SCIM 2 SDK now requires Java 17 or a later release.

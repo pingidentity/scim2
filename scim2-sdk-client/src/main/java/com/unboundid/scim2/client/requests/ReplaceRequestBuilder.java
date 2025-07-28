@@ -29,8 +29,10 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 
+import static jakarta.ws.rs.core.Response.Status.Family.SUCCESSFUL;
+
 /**
- * A builder for SCIM replace requests.
+ * A builder for SCIM PUT requests.
  */
 public class ReplaceRequestBuilder<T extends ScimResource>
     extends ResourceReturningRequestBuilder<ReplaceRequestBuilder<T>>
@@ -83,10 +85,10 @@ public class ReplaceRequestBuilder<T extends ScimResource>
   }
 
   /**
-   * Invoke the SCIM replace request.
+   * Invoke the SCIM replace request with an HTTP PUT.
    *
    * @return The successfully replaced SCIM resource.
-   * @throws ScimException If an error occurred.
+   * @throws ScimException If the SCIM service provider responded with an error.
    */
   @NotNull
   @SuppressWarnings("unchecked")
@@ -96,7 +98,7 @@ public class ReplaceRequestBuilder<T extends ScimResource>
   }
 
   /**
-   * Invoke the SCIM modify request.
+   * Invoke the SCIM replace request with an HTTP PUT.
    *
    * @param <C> The type of object to return.
    * @param cls The Java class object used to determine the type to return.
@@ -107,11 +109,10 @@ public class ReplaceRequestBuilder<T extends ScimResource>
   @NotNull
   public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
   {
-    try (Response response = buildRequest().put(
-        Entity.entity(resource, getContentType())))
+    var entity = Entity.entity(generify(resource), getContentType());
+    try (Response response = buildRequest().put(entity))
     {
-      if (response.getStatusInfo().getFamily() ==
-          Response.Status.Family.SUCCESSFUL)
+      if (response.getStatusInfo().getFamily() == SUCCESSFUL)
       {
         return response.readEntity(cls);
       }

@@ -27,6 +27,7 @@ import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
+import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
@@ -38,8 +39,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import static jakarta.ws.rs.core.Response.Status.Family.SUCCESSFUL;
+
 /**
- * A builder for SCIM modify requests.
+ * A builder for SCIM PATCH requests.
  */
 public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     extends ResourceReturningRequestBuilder<T>
@@ -119,7 +122,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     }
 
     /**
-     * Invoke the SCIM modify request.
+     * Invoke the SCIM PATCH request.
      *
      * @return The successfully modified SCIM resource.
      * @throws ProcessingException If a JAX-RS runtime exception occurred.
@@ -133,7 +136,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     }
 
     /**
-     * Invoke the SCIM modify request.
+     * Invoke the SCIM PATCH request.
      *
      * @param <C> The type of object to return.
      * @param cls The Java class object used to determine the type to return.
@@ -144,20 +147,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     @NotNull
     public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
     {
-      PatchRequest patchRequest = new PatchRequest(operations);
-      try (Response response = buildRequest().method("PATCH",
-          Entity.entity(patchRequest, getContentType())))
-      {
-        if (response.getStatusInfo().getFamily() ==
-            Response.Status.Family.SUCCESSFUL)
-        {
-          return response.readEntity(cls);
-        }
-        else
-        {
-          throw toScimException(response);
-        }
-      }
+      return invokeInternal(cls);
     }
   }
 
@@ -204,19 +194,35 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
     @NotNull
     public <T> T invoke(@NotNull final Class<T> cls) throws ScimException
     {
-      PatchRequest patchRequest = new PatchRequest(operations);
-      try (Response response = buildRequest().method("PATCH",
-          Entity.entity(patchRequest, getContentType())))
+      return invokeInternal(cls);
+    }
+  }
+
+  /**
+   * Core method for invoking a SCIM PATCH request and returning the response as
+   * the provided class.
+   *
+   * @param <G> The Java tpe that should be returned.
+   * @param cls The Java class object used to determine the type to return.
+   * @return The successfully modified SCIM resource.
+   * @throws ProcessingException If a JAX-RS runtime exception occurred.
+   * @throws ScimException If the SCIM service provider responded with an error.
+   */
+  @NotNull
+  protected <G> G invokeInternal(@NotNull final Class<G> cls)
+      throws ScimException
+  {
+    PatchRequest patchRequest = new PatchRequest(operations);
+    var entity = Entity.entity(generify(patchRequest), getContentType());
+    try (Response response = buildRequest().method(HttpMethod.PATCH, entity))
+    {
+      if (response.getStatusInfo().getFamily() == SUCCESSFUL)
       {
-        if (response.getStatusInfo().getFamily() ==
-            Response.Status.Family.SUCCESSFUL)
-        {
-          return response.readEntity(cls);
-        }
-        else
-        {
-          throw toScimException(response);
-        }
+        return response.readEntity(cls);
+      }
+      else
+      {
+        throw toScimException(response);
       }
     }
   }
@@ -306,7 +312,6 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
       throws ScimException
   {
     return replaceValues(Path.fromString(path), objects);
-
   }
 
   /**
@@ -374,8 +379,6 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
       throws ScimException
   {
     return addValues(Path.fromString(path), objects);
-
-
   }
 
   /**
@@ -407,7 +410,6 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
       throws ScimException
   {
     return removeValues(Path.fromString(path));
-
   }
 
   /**

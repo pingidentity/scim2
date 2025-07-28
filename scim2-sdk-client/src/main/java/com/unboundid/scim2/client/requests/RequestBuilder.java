@@ -18,6 +18,7 @@
 package com.unboundid.scim2.client.requests;
 
 import com.unboundid.scim2.client.ScimServiceException;
+import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -32,6 +33,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -126,13 +128,13 @@ public class RequestBuilder<T extends RequestBuilder<T>>
   @NotNull
   public T accept(@NotNull final String... acceptStrings)
   {
-    this.accept.clear();
     if ((acceptStrings == null) || (acceptStrings.length == 0))
     {
       throw new IllegalArgumentException(
           "Accepted media types must not be null or empty");
     }
 
+    this.accept.clear();
     accept.addAll(Arrays.asList(acceptStrings));
 
     //noinspection unchecked
@@ -258,6 +260,7 @@ public class RequestBuilder<T extends RequestBuilder<T>>
   {
     return accept;
   }
+
   /**
    * Build the Invocation.Builder for the request.
    *
@@ -274,5 +277,41 @@ public class RequestBuilder<T extends RequestBuilder<T>>
       builder = builder.header(header.getKey(), stringValue);
     }
     return builder;
+  }
+
+  /**
+   * This method is equivalent to calling {@code asGenericScimResource()}. This
+   * is used by the request builders as a halfway step toward converting an
+   * object into a JSON payload. This minimizes the likelihood for improper JSON
+   * conversions, such as {@code null} fields being included in the JSON.
+   * <br><br>
+   *
+   * Before sending a request to a SCIM service, the Java object representing a
+   * SCIM resource must be converted into a string JSON payload. It's possible
+   * to simply pass in the Java object and rely on other libraries to serialize
+   * it into JSON later, but this approach requires projects to perform manual
+   * tuning of Jackson settings in the environment so that other libraries will
+   * serialize the data correctly. This can be burdensome to configure, and can
+   * result in problems with the HTTP request that are difficult to resolve.
+   * <br><br>
+   *
+   * Since any object may be used as the JSON payload, it is valuable to convert
+   * these SCIM resources into a JSON-like form before sending an HTTP request.
+   * GenericScimResource is well-suited for this, as it is a wrapper around a
+   * JSON ObjectNode that is more likely to result in a proper JSON string.
+   * <br><br>
+   *
+   * The behavior of the SCIM SDK's object mapper can be customized by updating
+   * fields in the {@link com.unboundid.scim2.common.utils.MapperFactory} class.
+   *
+   * @param resource  The SCIM resource that will be serialized into JSON.
+   * @return  An equivalent GenericScimResource.
+   *
+   * @since 4.0.1
+   */
+  @NotNull
+  protected GenericScimResource generify(@NotNull final ScimResource resource)
+  {
+    return resource.asGenericScimResource();
   }
 }
