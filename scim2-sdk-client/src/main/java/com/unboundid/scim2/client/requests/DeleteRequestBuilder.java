@@ -27,6 +27,8 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 
+import static jakarta.ws.rs.core.Response.Status.Family.SUCCESSFUL;
+
 /**
  * A builder for SCIM delete requests.
  */
@@ -84,8 +86,7 @@ public class DeleteRequestBuilder extends RequestBuilder<DeleteRequestBuilder>
   {
     try (Response response = buildRequest().delete())
     {
-      if (response.getStatusInfo().getFamily() !=
-          Response.Status.Family.SUCCESSFUL)
+      if (response.getStatusInfo().getFamily() != SUCCESSFUL)
       {
         throw toScimException(response);
       }

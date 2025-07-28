@@ -358,6 +358,7 @@ public class SearchRequestBuilder
       builder = builder.header(header.getKey(), stringValue);
     }
 
-    return builder.post(Entity.entity(searchRequest, getContentType()));
+    var entity = Entity.entity(generify(searchRequest), getContentType());
+    return builder.post(entity);
   }
 }

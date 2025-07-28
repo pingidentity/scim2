@@ -49,7 +49,7 @@ public class DefaultContentTypeFilter implements ContainerRequestFilter
   {
     if ((requestContext.getMethod().equals(HttpMethod.POST) ||
         requestContext.getMethod().equals(HttpMethod.PUT) ||
-        requestContext.getMethod().equals("PATCH")) &&
+        requestContext.getMethod().equals(HttpMethod.PATCH)) &&
         requestContext.getMediaType() == null)
     {
       requestContext.getHeaders().put(HttpHeaders.CONTENT_TYPE,
