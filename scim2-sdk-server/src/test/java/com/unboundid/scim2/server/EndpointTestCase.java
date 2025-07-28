@@ -373,14 +373,14 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     final ListResponse<UserResource> returnedUsers =
         service.searchRequest("Users").
             filter("meta.resourceType eq \"User\"").
-            page(1, 10).
+            page(1, 1000).
             sort("id", SortOrder.ASCENDING).
             attributes("id", "name", "Meta").
             invoke(UserResource.class);
 
-    assertEquals(returnedUsers.getTotalResults(), 1);
+    assertEquals(returnedUsers.getTotalResults(), 100);
     assertEquals(returnedUsers.getStartIndex(), Integer.valueOf(1));
-    assertEquals(returnedUsers.getItemsPerPage(), Integer.valueOf(1));
+    assertEquals(returnedUsers.getItemsPerPage(), Integer.valueOf(10));
 
     final UserResource r = returnedUsers.getResources().get(0);
     service.retrieve(r);
@@ -397,14 +397,14 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     final ListResponse<UserResource> returnedUsers =
         new ScimService(target()).searchRequest("Users").
             filter("meta.resourceType eq \"User\"").
-            page(1, 10).
+            page(1, 5).
             sort("id", SortOrder.DESCENDING).
             excludedAttributes("addresses", "phoneNumbers").
             invokePost(UserResource.class);
 
-    assertEquals(returnedUsers.getTotalResults(), 1);
+    assertEquals(returnedUsers.getTotalResults(), 100);
     assertEquals(returnedUsers.getStartIndex(), Integer.valueOf(1));
-    assertEquals(returnedUsers.getItemsPerPage(), Integer.valueOf(1));
+    assertEquals(returnedUsers.getItemsPerPage(), Integer.valueOf(5));
 
     // Now with application/json
     WebTarget target = target().register(

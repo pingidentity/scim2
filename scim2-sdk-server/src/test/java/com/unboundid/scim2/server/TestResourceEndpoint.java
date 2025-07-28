@@ -36,6 +36,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
+import java.util.Random;
+
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 
 /**
@@ -117,8 +119,16 @@ public class TestResourceEndpoint
     resource.setId("123");
 
     SimpleSearchResults<UserResource> results =
-        new SimpleSearchResults<>(RESOURCE_TYPE_DEFINITION, uriInfo);
+        new SimpleSearchResults<>(RESOURCE_TYPE_DEFINITION, uriInfo, 10);
     results.add(resource);
+
+    Random random = new Random();
+    for (int i = 0; i < 99; i++)
+    {
+      resource = new UserResource().setUserName(String.format("test_%d", i));
+      resource.setId(random.ints().findFirst().toString());
+      results.add(resource);
+    }
 
     return results;
   }

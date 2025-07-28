@@ -73,12 +73,13 @@ public class SimpleSearchResults<T extends ScimResource>
    *
    * @param resourceType The resource type definition of result resources.
    * @param uriInfo The UriInfo from the search operation.
+   * @param maxResults The maximum number of resources returned in a response.
    * @throws BadRequestException if the filter or paths in the search operation
    * is invalid.
    */
   public SimpleSearchResults(@NotNull final ResourceTypeDefinition resourceType,
-                             @NotNull final UriInfo uriInfo)
-      throws BadRequestException
+                             @NotNull final UriInfo uriInfo, @Nullable final Integer maxResults)
+          throws BadRequestException
   {
     this.filterEvaluator = new SchemaAwareFilterEvaluator(resourceType);
     this.responsePreparer = new ResourcePreparer<>(resourceType, uriInfo);
@@ -87,7 +88,7 @@ public class SimpleSearchResults<T extends ScimResource>
     MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
     String filterString = queryParams.getFirst(QUERY_PARAMETER_FILTER);
     String startIndexString = queryParams.getFirst(
-        QUERY_PARAMETER_PAGE_START_INDEX);
+            QUERY_PARAMETER_PAGE_START_INDEX);
     String countString = queryParams.getFirst(QUERY_PARAMETER_PAGE_SIZE);
     String sortByString = queryParams.getFirst(QUERY_PARAMETER_SORT_BY);
     String  sortOrderString = queryParams.getFirst(QUERY_PARAMETER_SORT_ORDER);
@@ -116,11 +117,11 @@ public class SimpleSearchResults<T extends ScimResource>
     {
       // RFC 7644 3.4.2.4: A negative value SHALL be interpreted as 0.
       int i = Integer.parseInt(countString);
-      count = Math.max(i, 0);
+      count = Math.min(Math.max(i, 0), maxResults != null ? maxResults : Integer.MAX_VALUE);
     }
     else
     {
-      count = null;
+      count = maxResults;
     }
 
     Path sortBy;
@@ -131,20 +132,35 @@ public class SimpleSearchResults<T extends ScimResource>
     catch (BadRequestException e)
     {
       throw BadRequestException.invalidValue("'" + sortByString +
-          "' is not a valid value for the sortBy parameter: " +
-          e.getMessage());
+              "' is not a valid value for the sortBy parameter: " +
+              e.getMessage());
     }
     SortOrder sortOrder = sortOrderString == null ?
-        SortOrder.ASCENDING : SortOrder.fromName(sortOrderString);
+            SortOrder.ASCENDING : SortOrder.fromName(sortOrderString);
     if (sortBy != null)
     {
       this.resourceComparator = new ResourceComparator<>(
-          sortBy, sortOrder, resourceType);
+              sortBy, sortOrder, resourceType);
     }
     else
     {
       this.resourceComparator = null;
     }
+  }
+
+  /**
+   * Create a new SimpleSearchResults for results from a search operation.
+   *
+   * @param resourceType The resource type definition of result resources.
+   * @param uriInfo The UriInfo from the search operation.
+   * @throws BadRequestException if the filter or paths in the search operation
+   * is invalid.
+   */
+  public SimpleSearchResults(@NotNull final ResourceTypeDefinition resourceType,
+                             @NotNull final UriInfo uriInfo)
+      throws BadRequestException
+  {
+    this(resourceType, uriInfo, null);
   }
 
   /**
