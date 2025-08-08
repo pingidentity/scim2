@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v4.0.1 - TBD
+Added new methods to the Path class to simplify certain usages and make interaction, especially
+instantiation, less verbose. These include:
+* Creation of simple attributes (e.g., `username`) previously had to be performed with
+  `Path.root().attribute("userName")`, but can now be done with `Path.of("userName")`. Note that
+  this may only be used for simple, top-level attributes that are typically hard-coded.
+* For fetching the last element in a path, library calls such as
+  `path.getElement(path.size() - 1)` can now be shortened to `path.getLastElement()`.
+
+Updated the documentation of the Path class to elaborate on the definition of an attribute path, as
+well as provide examples for how to interface with the class.
+
 Simplified integration with the `scim2-sdk-client` library by updating subclasses of
 `RequestBuilder` to always provide `GenericScimResource` objects for JSON payloads. In previous
 releases, applications needed to use the right JSON properties in the environment so that the client

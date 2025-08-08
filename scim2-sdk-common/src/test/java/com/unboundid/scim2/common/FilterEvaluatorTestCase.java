@@ -537,9 +537,9 @@ public class FilterEvaluatorTestCase
         }""");
 
     // Test the variant that takes Path and Filter objects.
-    complexFilter = Filter.complex(Path.root().attribute("addresses"),
+    complexFilter = Filter.complex(Path.of("addresses"),
         Filter.eq("postalCode", "12345"));
-    alternateFilter = Filter.hasComplexValue(Path.root().attribute("addresses"),
+    alternateFilter = Filter.hasComplexValue(Path.of("addresses"),
         Filter.eq("postalCode", "12345"));
 
     // The filters should be equivalent, and both should match only the

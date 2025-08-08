@@ -97,16 +97,16 @@ import java.util.Objects;
 public class GenericScimResource implements ScimResource
 {
   @NotNull
-  private static final Path SCHEMAS = Path.root().attribute("schemas");
+  private static final Path SCHEMAS = Path.of("schemas");
 
   @NotNull
-  private static final Path ID = Path.root().attribute("id");
+  private static final Path ID = Path.of("id");
 
   @NotNull
-  private static final Path EXTERNAL_ID = Path.root().attribute("externalId");
+  private static final Path EXTERNAL_ID = Path.of("externalId");
 
   @NotNull
-  private static final Path META = Path.root().attribute("meta");
+  private static final Path META = Path.of("meta");
 
   @NotNull
   private final ObjectNode objectNode;

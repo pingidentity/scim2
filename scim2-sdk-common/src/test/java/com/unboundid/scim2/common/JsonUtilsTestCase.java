@@ -1060,31 +1060,28 @@ public class JsonUtilsTestCase
 
     return new Object[][] {
         {
-            "{}", Path.root().attribute("simpleString"), false
+            "{}", Path.of("simpleString"), false
         },
         {
-            jsonString, Path.root().attribute("simpleString"), true
+            jsonString, Path.of("simpleString"), true
         },
         {
-            jsonString, Path.root().attribute("nullValue"), true
-        },
-        {
-            jsonString,
-            Path.root().attribute("singleComplex").attribute("address").
-                attribute("l1"), true
+            jsonString, Path.of("nullValue"), true
         },
         {
             jsonString,
-            Path.root().attribute("singleComplex").attribute("address").
-                attribute("l3"), false
+            Path.of("singleComplex").attribute("address").attribute("l1"), true
         },
         {
             jsonString,
-            Path.root().attribute("missing"), false
+            Path.of("singleComplex").attribute("address").attribute("l3"), false
+        },
+        {
+            jsonString, Path.of("missing"), false
         },
         {
             jsonString,
-            Path.root().attribute("singleComplex").attribute("address").
+            Path.of("singleComplex").attribute("address").
                 attribute("nullValue"),
             true
         },

@@ -57,7 +57,7 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
   private static final FilterEvaluator SINGLETON = new FilterEvaluator();
 
   @NotNull
-  private static final Path VALUE_PATH = Path.root().attribute("value");
+  private static final Path VALUE_PATH = Path.of("value");
 
   /**
    * Evaluate the provided filter against the provided JsonNode.
