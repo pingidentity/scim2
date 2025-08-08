@@ -35,10 +35,135 @@ import java.util.Objects;
 import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
 
 /**
- * This class represents a path to one or more JSON values that are the targets
- * of a SCIM PATCH operation. A path may also be used to describe which JSON
- * values to get or set when manipulating SCIM resources using the
- * {@link GenericScimResource} class.
+ * This class represents an attribute path to JSON data. A path is described as
+ * a collection of {@link Element} instances, where each element contains an
+ * attribute name and an optional filter.
+ * <br><br>
+ *
+ * The simplest example of a path is an attribute name such as {@code userName},
+ * which points to simple single-valued data. However, paths can also target
+ * specific fields for data stored in other forms, namely complex and
+ * multi-valued attributes. In essence, a path describes one or more JSON values
+ * stored within a resource. Paths are used for operations like fetches (via
+ * filtering) and modifies (via SCIM PATCH requests).
+ * <br><br>
+ *
+ * As an example, consider the following JSON representing a SCIM resource:
+ * <pre>
+ * {
+ *   "schemas": [
+ *     "urn:ietf:params:scim:schemas:core:2.0:User",
+ *     "urn:ietf:ext:example:2.0:User"
+ *   ],
+ *   "userName": "ClarkK",
+ *   "addresses": [
+ *     {
+ *       "type": "work",
+ *       "streetAddress": "911 Universal City Plaza",
+ *       "locality": "Hollywood",
+ *       "region": "CA",
+ *       "postalCode": "91608",
+ *       "country": "US"
+ *     },
+ *     {
+ *       "type": "home",
+ *       "streetAddress": "1000 Small Farm Road",
+ *       "postalCode": "54321",
+ *       "country": "US"
+ *     }
+ *   ],
+ *   "name": {
+ *     "givenName": "Clark",
+ *     "familyName": "K"
+ *   },
+ *   "urn:ietf:ext:example:2.0:User": {
+ *     "employeeNumber": "1938",
+ *     "manager": {
+ *       "name": "Mr. Manager"
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * The following strings represent some examples of valid paths that target a
+ * field on this resource:
+ * <ul>
+ *   <li> {@code userName}: Targets the "userName" attribute. This is a path
+ *        with a single element and no filter.
+ *   <li> {@code addresses[postalCode eq "54321"]}: Targets an address with a
+ *        specific postal code value. This is a path with a single element that
+ *        also contains a filter value. For this example, the filter only
+ *        matches the last address in the array.
+ *   <li> {@code name.givenName}: Targets the "givenName" sub-attribute that is
+ *        nested beneath the complex "name" attribute. This is a path with two
+ *        elements and no filter values.
+ *   <li> {@code urn:ietf:ext:example:2.0:User.manager.name}: Targets the "name"
+ *        sub-attribute stored within the schema extension. Note that schema
+ *        extensions are not accounted for path sizes, so this is a path with
+ *        two elements ({@code manager} and {@code name}).
+ * </ul>
+ * <br><br>
+ *
+ * To create paths, the following methods may be used:
+ * <ul>
+ *   <li> {@link #root()}: Creates a "root" object to begin construction of an
+ *        attribute path.
+ *   <li> {@link #root(String)}: Constructs an attribute path that targets the
+ *        base of a schema extension.
+ *   <li> {@link #attribute}: Appends an attribute and an optional filter to the
+ *        path object.
+ *   <li> {@link #fromString(String)}: Creates a path object from a string.
+ *   <li> {@link #of(String)}: Equal to {@code Path.root().attribute(String)}.
+ *        This should only be used to target simple top-level attributes (e.g.,
+ *        "userName", but not "name.givenName" or "addresses[...]").
+ * </ul>
+ * <br><br>
+ *
+ * The following Java code represents ways to target fields in the example
+ * resource shown above:
+ * <pre><code>
+ *  // These are equivalent, and both target the 'userName' attribute.
+ *  Path.root().attribute("userName");
+ *  Path.of("userName");
+ *
+ *  // Target values within the 'addresses' array with postal code values that
+ *  // equal "54321".
+ *  Path.root().attribute("addresses", Filter.eq("postalCode", "54321"));
+ *
+ *  // Target the 'givenName' sub-attribute that is nested within the complex
+ *  // 'name' attribute.
+ *  Path.of("name").attribute("givenName");
+ *
+ *  // Target a schema extension object. Schema extension URNs are considered
+ *  // part of the root.
+ *  Path.root("urn:ietf:example:2.0:User");
+ *
+ *  // Target fields within a schema extension.
+ *  Path.root("urn:ietf:example:2.0:User").attribute("manager");
+ *  Path.root("urn:ietf:example:2.0:User")
+ *      .attribute("manager").attribute("name");
+ *
+ *  // For general string conversions, use fromString().
+ *  try
+ *  {
+ *    String orig = "attribute.nested.veryNestedArray[value eq \"matryoshka\"]";
+ *    Path convertedPath = Path.fromString(orig);
+ *  }
+ *  catch (BadRequestException e)
+ *  {
+ *    // The fromString() method requires exception handling, but this handling
+ *    // defends against malformed client paths.
+ *  }
+ * </code></pre>
+ *
+ * The following utility functions are helpful when working with paths:
+ * <ul>
+ *   <li> {@link #getElement(int)}: Fetches a specific element within the path.
+ *   <li> {@link #getLastElement()}: Fetches the last element within the path.
+ *   <li> {@link #replace}: Updates a specific element within the path.
+ *   <li> {@link #subPath}: Removes elements at and after the provided index.
+ *   <li> {@link #withoutFilters()}: Returns the path with all filters removed.
+ * </ul>
  */
 public final class Path implements Iterable<Path.Element>
 {
@@ -321,10 +446,25 @@ public final class Path implements Iterable<Path.Element>
    * @throws IndexOutOfBoundsException if the index is out of range
    *         ({@code index < 0 || index >= size()})
    */
-  @Nullable
+  @NotNull
   public Element getElement(final int index) throws IndexOutOfBoundsException
   {
     return elements.get(index);
+  }
+
+  /**
+   * Retrieves the path element of the last attribute.
+   *
+   * @return  The path element at the last index in the list of elements.
+   * @throws IndexOutOfBoundsException  If this path is the root attribute
+   *                                    (i.e., the element list size is 0).
+   *
+   * @since 4.0.1
+   */
+  @NotNull
+  public Element getLastElement() throws IndexOutOfBoundsException
+  {
+    return getElement(elements.size() - 1);
   }
 
   /**
@@ -379,6 +519,61 @@ public final class Path implements Iterable<Path.Element>
       throws BadRequestException
   {
     return Parser.parsePath(pathString);
+  }
+
+  /**
+   * Create a new top-level attribute. This is typically used for hard-coded
+   * values, since this method is shorthand for:
+   * <pre><code>
+   *   Path.root().attribute("attributeName");
+   * </code></pre>
+   *
+   * For all other uses, {@link #fromString} is encouraged, especially in cases
+   * where the path is provided by an external client. See the class-level
+   * Javadoc for more details. As an example, consider the following resource:
+   * <pre>
+   *   {
+   *     "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+   *     "id": "0xdeadbeef",
+   *     "name": {
+   *       "givenName": "Clark"
+   *     }
+   *   }
+   * </pre>
+   *
+   * This method may be used to construct the following paths:
+   * <pre><code>
+   *   // Target the top-level attributes.
+   *   Path schemas = Path.of("schemas");
+   *   Path id = Path.of("id");
+   *   Path name = Path.of("name");
+   *
+   *   // Target the 'givenName' sub-attribute. Note that 'name.givenName' is
+   *   // not permitted as an input.
+   *   Path familyPath = Path.of("name").attribute("givenName");
+   * </code></pre>
+   *
+   * @param attribute The name of the top-level attribute. It should not be a
+   *                  sub-attribute or extension, and it may not use a filter.
+   * @return  The path representation of the simple attribute.
+   *
+   * @throws IllegalArgumentException  If the attribute name is a sub-attribute
+   * (e.g., "name.familyName"), schema extension, or contains a filter.
+   *
+   * @since 4.0.1
+   */
+  @NotNull
+  public static Path of(@NotNull final String attribute)
+      throws IllegalArgumentException
+  {
+    if (attribute.contains(".") || attribute.contains(":")
+        || attribute.contains("[") || attribute.contains("]"))
+    {
+      throw new IllegalArgumentException("Attempted creating a top-level Path"
+          + " with invalid '.', ':', or '[]' characters.");
+    }
+
+    return Path.root().attribute(attribute);
   }
 
   /**
@@ -453,7 +648,7 @@ public final class Path implements Iterable<Path.Element>
    *            path, or {@code false} if not.
    */
   @Override
-  public boolean equals(@NotNull final Object o)
+  public boolean equals(@Nullable final Object o)
   {
     if (this == o)
     {
