@@ -234,7 +234,6 @@ public abstract class PatchOperation
     {
       return path != null
           && path.size() > 0
-          && path.getElement(0) != null
           && path.getElement(0).getValueFilter() != null;
     }
 

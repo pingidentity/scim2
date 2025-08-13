@@ -446,10 +446,10 @@ public class JsonDiff
   @Nullable
   private Filter generateValueFilter(@NotNull final JsonNode value)
   {
-    if (value.isValueNode())
+    if (value instanceof ValueNode valueNode)
     {
       // Use the implicit "value" sub-attribute to reference this value.
-      return Filter.eq(Path.root().attribute("value"), (ValueNode) value);
+      return Filter.eq(Path.of("value"), valueNode);
     }
     if (value.isObject())
     {

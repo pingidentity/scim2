@@ -294,8 +294,7 @@ public class Parser
       {
         // the only time this is allowed to occur is if the previous attribute
         // had a value filter, in which case, consume the token and move on.
-        if (path.isRoot() ||
-            path.getElement(path.size()-1).getValueFilter() == null)
+        if (path.isRoot() || path.getLastElement().getValueFilter() == null)
         {
           final String msg = String.format(
               "Attribute name expected at position %d", reader.mark);

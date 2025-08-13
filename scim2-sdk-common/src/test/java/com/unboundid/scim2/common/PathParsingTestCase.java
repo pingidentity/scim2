@@ -22,9 +22,12 @@ import com.unboundid.scim2.common.filters.Filter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static com.unboundid.scim2.common.filters.Filter.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
 
 /**
  * Tests for parsing SCIM 2 paths.
@@ -89,11 +92,8 @@ public class PathParsingTestCase
                     attribute("is").
                     attribute("crazy", eq("type", "good")).
                     attribute("deep") },
-
         };
   }
-
-
 
   /**
    * Retrieves a set of invalid path strings.
@@ -116,8 +116,6 @@ public class PathParsingTestCase
         };
   }
 
-
-
   /**
    * Tests the {@code fromString} method with a valid path string.
    *
@@ -135,29 +133,99 @@ public class PathParsingTestCase
     assertEquals(parsedPath, expectedPath);
   }
 
-
-
   /**
    * Tests the {@code fromString} method with an invalid path string.
    *
    * @param  pathString  The string representation of the path to fromString.
-   *
-   * @throws Exception If the test fails.
    */
   @Test(dataProvider = "testInvalidPathStrings")
   public void testParseInvalidPath(final String pathString)
-      throws Exception
   {
-    try
-    {
-      Path.fromString(pathString);
-      fail("Unexpected successful fromString of invalid path: " + pathString);
-    }
-    catch (BadRequestException e)
-    {
-      assertEquals(e.getScimError().getScimType(),
-          BadRequestException.INVALID_PATH);
+    assertThatThrownBy(() -> Path.fromString(pathString))
+        .isInstanceOfSatisfying(BadRequestException.class,
+            bre -> assertThat(bre.getScimError().getScimType())
+                .isEqualTo(BadRequestException.INVALID_PATH));
+  }
 
+  /**
+   * Tests for {@link Path#of}.
+   */
+  @Test
+  public void testPathOf()
+  {
+    for (String attr : List.of("id", "attr withSpace", ""))
+    {
+      // Ensure the path is a top-level attribute.
+      final Path topLevelAttr = Path.of(attr);
+      assertThat(topLevelAttr).isEqualTo(Path.root().attribute(attr));
+
+      // There should be a single element with no schema URN.
+      assertThat(topLevelAttr.size()).isEqualTo(1);
+      assertThat(topLevelAttr.isRoot()).isFalse();
+      assertThat(topLevelAttr.getSchemaUrn()).isNull();
+
+      // The element should match the string value and have no value filter.
+      Path.Element firstElement = Path.of(attr).getElement(0);
+      assertThat(firstElement).isNotNull();
+      assertThat(firstElement.getAttribute()).isEqualTo(attr);
+      assertThat(firstElement.getValueFilter()).isNull();
     }
+
+    // noinspection DataFlowIssue
+    assertThatThrownBy(() -> Path.of(null))
+        .isInstanceOf(NullPointerException.class);
+
+    assertThatThrownBy(() -> Path.of("name.familyName"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Attempted creating a top-level Path");
+
+    assertThatThrownBy(() -> Path.of("addresses[postalCode eq \"12345\"]"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Attempted creating a top-level Path");
+
+    assertThatThrownBy(() -> Path.of("emails["))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Attempted creating a top-level Path");
+
+    assertThatThrownBy(() -> Path.of("eq true]"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Attempted creating a top-level Path");
+
+    assertThatThrownBy(() -> Path.of("urn:ietf"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Attempted creating a top-level Path");
+  }
+
+  /**
+   * Tests for {@link Path#getLastElement}.
+   */
+  @Test
+  public void testLastElement() throws Exception
+  {
+    Path path;
+    Path.Element element;
+
+    assertThatThrownBy(() -> Path.root().getLastElement())
+        .isInstanceOf(IndexOutOfBoundsException.class);
+    assertThatThrownBy(() -> Path.root("urn:extension:value").getLastElement())
+        .isInstanceOf(IndexOutOfBoundsException.class);
+
+    element = Path.of("userName").getLastElement();
+    assertThat(element.getAttribute()).isEqualTo("userName");
+    assertThat(element.getValueFilter()).isNull();
+
+    path = Path.root().attribute("name").attribute("familyName");
+    element = path.getLastElement();
+    assertThat(element.getAttribute()).isEqualTo("familyName");
+    assertThat(element.getValueFilter()).isNull();
+
+    path = Path.root("urn:extension:value")
+        .attribute("attribute")
+        .attribute("nested")
+        .attribute("veryNested", Filter.eq("value", "matryoshka"));
+   element = path.getLastElement();
+   assertThat(element.getAttribute()).isEqualTo("veryNested");
+   assertThat(element.getValueFilter())
+       .isEqualTo(Filter.eq("value", "matryoshka"));
   }
 }

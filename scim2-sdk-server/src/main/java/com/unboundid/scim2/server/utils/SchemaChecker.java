@@ -317,8 +317,7 @@ public class SchemaChecker
       Path path = patchOp.getPath();
       JsonNode value = patchOp.getJsonNode();
       Filter valueFilter =
-          path == null ? null :
-              path.getElement(path.size() - 1).getValueFilter();
+          path == null ? null : path.getLastElement().getValueFilter();
       AttributeDefinition attribute = path == null ? null :
           resourceType.getAttributeDefinition(path);
       if (path != null && attribute == null)
@@ -877,7 +876,7 @@ public class SchemaChecker
       }
     }
 
-    Filter valueFilter = path.getElement(path.size() - 1).getValueFilter();
+    Filter valueFilter = path.getLastElement().getValueFilter();
     if (attribute.equals(SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION) &&
         valueFilter != null)
     {
@@ -980,7 +979,7 @@ public class SchemaChecker
         }
         Path parentPath = path.subPath(path.size() - 1);
         Path valuePath = parentPath.attribute(
-            path.getElement(path.size() - 1).getAttribute() + "[" + i + "]");
+            path.getLastElement().getAttribute() + "[" + i + "]");
         checkAttributeValue(prefix, value, valuePath, attribute, results,
             currentObjectNode, isPartialReplace, isPartialAdd);
         i++;
