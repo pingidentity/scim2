@@ -122,8 +122,11 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
  * The following Java code represents ways to target fields in the example
  * resource shown above:
  * <pre><code>
- *  // These are equivalent, and both target the 'userName' attribute.
+ *  // Primary way to create a path. This targets the 'userName' attribute.
  *  Path.root().attribute("userName");
+ *
+ *  // An alternate way to target the 'userName' attribute. This method is
+ *  // mostly useful for hard-coded string inputs.
  *  Path.of("userName");
  *
  *  // Target values within the 'addresses' array with postal code values that
@@ -132,7 +135,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
  *
  *  // Target the 'givenName' sub-attribute that is nested within the complex
  *  // 'name' attribute.
- *  Path.of("name").attribute("givenName");
+ *  Path.root("name").attribute("givenName");
  *
  *  // Target a schema extension object. Schema extension URNs are considered
  *  // part of the root.
@@ -523,7 +526,7 @@ public final class Path implements Iterable<Path.Element>
 
   /**
    * Create a new top-level attribute. This is typically used for hard-coded
-   * values, since this method is shorthand for:
+   * strings, since this method is shorthand for:
    * <pre><code>
    *   Path.root().attribute("attributeName");
    * </code></pre>
@@ -534,23 +537,20 @@ public final class Path implements Iterable<Path.Element>
    * <pre>
    *   {
    *     "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
-   *     "id": "0xdeadbeef",
+   *     "id": "5ca1e",
    *     "name": {
    *       "givenName": "Clark"
    *     }
    *   }
    * </pre>
    *
-   * This method may be used to construct the following paths:
+   * This method may be used to construct the following paths. Note that
+   * {@code name.givenName} is not permitted as an input.
    * <pre><code>
    *   // Target the top-level attributes.
    *   Path schemas = Path.of("schemas");
    *   Path id = Path.of("id");
    *   Path name = Path.of("name");
-   *
-   *   // Target the 'givenName' sub-attribute. Note that 'name.givenName' is
-   *   // not permitted as an input.
-   *   Path familyPath = Path.of("name").attribute("givenName");
    * </code></pre>
    *
    * @param attribute The name of the top-level attribute. It should not be a
