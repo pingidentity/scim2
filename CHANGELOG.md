@@ -22,6 +22,9 @@ the responsibility for serialization on the SCIM SDK itself, and reduces the num
 configuration properties to set within your application. If you have added custom HTTP configuration
 to your project specifically for the SCIM SDK, you may be able to remove some properties.
 
+Updated the following dependencies:
+* Jackson: 2.19.2
+
 ## v4.0.0 - 2025-Jun-10
 Removed support for Java 11. The UnboundID SCIM 2 SDK now requires Java 17 or a later release.
 
