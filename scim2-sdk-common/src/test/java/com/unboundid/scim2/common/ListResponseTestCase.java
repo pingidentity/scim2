@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
+import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
 
@@ -274,5 +275,80 @@ public class ListResponseTestCase
     assertThat(response3.getResources())
         .isNotNull()
         .isEmpty();
+  }
+
+  /**
+   * Ensures that it is possible to deserialize a JSON string properly. This
+   * test evaluates whether a usable ListResponse object is returned, as well
+   * as ensuring that the objects contained within the {@code Resources} array
+   * are also of the expected Java type.
+   */
+  @Test
+  public void testSerialization() throws Exception
+  {
+    String json = """
+        {
+          "schemas" : [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults" : 2,
+          "itemsPerPage" : 2,
+          "Resources" : [ {
+            "schemas" : [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "id" : "657460d3-04cc-4900-bf50-321a61fc87b7",
+            "userName" : "clark"
+          }, {
+            "schemas" : [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "id" : "fd6fb34c-b8d0-4e10-9ba7-4ae44f11b6c3",
+            "userName" : "bruce"
+          } ]
+        }""";
+
+    ListResponse<UserResource> response = JsonUtils.getObjectReader()
+        .forType(new TypeReference<ListResponse<UserResource>>(){})
+        .readValue(json);
+
+    assertThat(response.getTotalResults()).isEqualTo(2);
+    assertThat(response.getItemsPerPage()).isEqualTo(2);
+    assertThat(response.getStartIndex()).isNull();
+    assertThat(response.getResources())
+        .hasSize(2)
+        .hasOnlyElementsOfType(UserResource.class);
+
+    UserResource clark = response.getResources().get(0);
+    UserResource bruce = response.getResources().get(1);
+    assertThat(clark.getId()).isEqualTo("657460d3-04cc-4900-bf50-321a61fc87b7");
+    assertThat(clark.getUserName()).isEqualTo("clark");
+    assertThat(bruce.getId()).isEqualTo("fd6fb34c-b8d0-4e10-9ba7-4ae44f11b6c3");
+    assertThat(bruce.getUserName()).isEqualTo("bruce");
+
+    // Same JSON, but with different attribute casing.
+    String differentCaseJson = """
+        {
+          "schemas" : [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "TotalResults" : 2,
+          "iTeMsPeRpAgE" : 2,
+          "resources" : [ {
+            "schemas" : [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "id" : "657460d3-04cc-4900-bf50-321a61fc87b7",
+            "userName" : "clark"
+          }, {
+            "schemas" : [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "id" : "fd6fb34c-b8d0-4e10-9ba7-4ae44f11b6c3",
+            "userName" : "bruce"
+          } ]
+        }""";
+
+    ListResponse<UserResource> secondResponse = JsonUtils.getObjectReader()
+        .forType(new TypeReference<ListResponse<UserResource>>(){})
+        .readValue(differentCaseJson);
+
+    assertThat(secondResponse.getTotalResults()).isEqualTo(2);
+    assertThat(secondResponse.getItemsPerPage()).isEqualTo(2);
+    assertThat(secondResponse.getStartIndex()).isNull();
+    assertThat(secondResponse.getResources())
+        .hasSize(2)
+        .hasOnlyElementsOfType(UserResource.class);
+
+    assertThat(response).isEqualTo(secondResponse);
+    assertThat(secondResponse.getResources()).containsExactly(clark, bruce);
   }
 }

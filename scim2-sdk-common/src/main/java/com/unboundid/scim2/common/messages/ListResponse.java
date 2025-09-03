@@ -20,17 +20,12 @@ package com.unboundid.scim2.common.messages;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
-import com.unboundid.scim2.common.utils.JsonUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -110,6 +105,33 @@ import java.util.TreeMap;
  *   }
  * </pre>
  *
+ *
+ * <h2>Deserializing A Raw JSON</h2>
+ *
+ * If you have a raw JSON object and need to convert it to a ListResponse,
+ * deserializing can be confusing since the {@code Resources} array contains
+ * another object type within it. Fortunately, Jackson has a straightforward
+ * method for performing such conversions with use of the
+ * {@link com.fasterxml.jackson.core.type.TypeReference} class. For example,
+ * to parse a string into a {@code ListResponse<UserResource>}, use the
+ * following Java code:
+ * <pre><code>
+ *   String json = getJsonString();
+ *   ListResponse&lt;UserResource&gt; response = JsonUtils.getObjectReader()
+ *       .forType(new TypeReference&lt;ListResponse&lt;UserResource&gt;&gt;(){})
+ *       .readValue(json);
+ * </code></pre>
+ *
+ * If you are obtaining a response from a Spring {@code RestClient}, the
+ * TypeReference may be passed directly to the rest client to obtain the desired
+ * Java object (TODO: update this):
+ * <pre><code>
+ *   String json = getJsonString();
+ *   ListResponse&lt;UserResource&gt; response = JsonUtils.getObjectReader()
+ *       .forType(new TypeReference&lt;ListResponse&lt;UserResource&gt;&gt;(){})
+ *       .readValue(json);
+ * </code></pre>
+ *
  * @param <T> The type of the returned resources.
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:ListResponse",
@@ -147,16 +169,15 @@ public class ListResponse<T> extends BaseScimResource
 
   /**
    * Create a new List Response.
-   * <br><br>
-   *
-   * This constructor is utilized by Jackson when converting JSON strings into
-   * ListResponse objects. To create a ListResponse in code, it is suggested to
-   * use {@link ListResponse#ListResponse(int, List, Integer, Integer)}.
    *
    * @param props  Properties to construct the List Response.
+   *
+   * @deprecated This constructor was previously utilized by Jackson when
+   * deserializing JSON strings into ListResponses, but it is no longer used for
+   * this purpose.
    */
-  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
   @SuppressWarnings("unchecked")
+  @Deprecated(since = "4.0.1")
   public ListResponse(@NotNull final Map<String, Object> props)
       throws IllegalArgumentException, IllegalStateException
   {
@@ -181,36 +202,33 @@ public class ListResponse<T> extends BaseScimResource
   /**
    * Create a new List Response.
    *
-   * @param totalResults The total number of results returned.
-   * @param resources A multi-valued list of complex objects containing the
-   *                  requested resources
-   * @param startIndex The 1-based index of the first result in the current
-   *                   set of list results
-   * @param itemsPerPage The number of resources returned in a list response
-   *                     page.
+   * @param totalResults  The total number of results returned. If there are
+   *                      more results than on one page, this value can be
+   *                      larger than the page size.
+   * @param resources     A multi-valued list of SCIM resources representing the
+   *                      result set.
+   * @param startIndex    The 1-based index of the first result in the current
+   *                      set of list results. This can be {@code null} if the
+   *                      SCIM service provider does not support pagination.
+   * @param itemsPerPage  The number of resources returned in the list response
+   *                      page.
+   *
+   * @throws IllegalStateException If the {@code resources} list is {@code null}
+   *                               and {@code totalResults} is non-zero.
    */
-  public ListResponse(final int totalResults,
-                      @NotNull final List<T> resources,
-                      @Nullable final Integer startIndex,
-                      @Nullable final Integer itemsPerPage)
-      throws IllegalArgumentException
+  @JsonCreator
+  public ListResponse(
+      @JsonProperty(value="totalResults", required=true) final int totalResults,
+      @NotNull @JsonProperty(value = "Resources") final List<T> resources,
+      @Nullable @JsonProperty("startIndex") final Integer startIndex,
+      @Nullable @JsonProperty("itemsPerPage") final Integer itemsPerPage)
+          throws IllegalStateException
   {
     this.totalResults = totalResults;
     this.startIndex   = startIndex;
     this.itemsPerPage = itemsPerPage;
-
-    final ObjectReader reader = JsonUtils.getObjectReader();
-    final ObjectWriter writer = JsonUtils.getObjectWriter();
-    try
-    {
-      final String rawResources = writer.writeValueAsString(resources);
-      this.resources = reader.forType(
-        new TypeReference<List<T>>(){}).readValue(rawResources);
-    }
-    catch (final IOException ie)
-    {
-      throw new IllegalArgumentException("Resources exception", ie);
-    }
+    this.resources =
+        resourcesOrEmptyList(resources, itemsPerPage, totalResults);
   }
 
   /**
