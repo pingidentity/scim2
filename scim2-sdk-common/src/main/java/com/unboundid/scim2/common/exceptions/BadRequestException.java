@@ -133,7 +133,7 @@ public class BadRequestException extends ScimException
 
 
   /**
-   * Create a generic BadRequestException without a {@code} scimType field.
+   * Create a generic BadRequestException without a {@code scimType} field.
    *
    * @param errorMessage  The error message for this SCIM exception.
    */

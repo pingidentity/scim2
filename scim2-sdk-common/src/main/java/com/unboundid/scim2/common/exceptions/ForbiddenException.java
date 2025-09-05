@@ -45,10 +45,19 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  *   throw new ForbiddenException("You do not have access to this resource.");
  * </pre>
  *
- * This exception type generally does not have a {@code scimType} value.
+ * This exception type can have a {@code scimType} value of {@code sensitive}.
+ * See {@link #sensitive(String)} for more information.
  */
 public class ForbiddenException extends ScimException
 {
+  /**
+   * The SCIM detailed error keyword that indicates the provided filter in a
+   * GET search request contained sensitive or confidential information. See
+   * {@link #sensitive(String)} for more information.
+   */
+  @NotNull
+  public static final String SENSITIVE = "sensitive";
+
   /**
    * Create a new {@code ForbiddenException} from the provided information.
    *
@@ -90,5 +99,29 @@ public class ForbiddenException extends ScimException
                             @Nullable final Throwable cause)
   {
     super(scimError, cause);
+  }
+
+  /**
+   * Factory method to create a new {@code ForbiddenException} with the
+   * {@code sensitive} SCIM detailed error keyword.
+   * <br><br>
+   *
+   * This {@code scimType} should be used when a client issues a GET search
+   * request with data in the URI that is potentially sensitive or confidential.
+   * Requesting sensitive information in this manner could cause a breach of
+   * security or confidentiality through leakage in web browsers or server logs.
+   * For this reason, a client that receives this error response should re-issue
+   * their search as a POST search. For more information on POST searches, see
+   * {@link com.unboundid.scim2.common.messages.SearchRequest}.
+   *
+   * @param errorMsg  The error message for this SCIM exception.
+   * @return  The new {@code ForbiddenException}.
+   *
+   * @since 4.0.1
+   */
+  @NotNull
+  public static ForbiddenException sensitive(@Nullable final String errorMsg)
+  {
+    return new ForbiddenException(errorMsg, SENSITIVE, null);
   }
 }
