@@ -25,6 +25,11 @@ to your project specifically for the SCIM SDK, you may be able to remove some pr
 Updated the following dependencies:
 * Jackson: 2.19.2
 
+Added a new `ForbiddenException.sensitive()` method to simplify the creation of a `403 FORBIDDEN`
+exception for a client that has entered potentially-sensitive information via URL query parameters.
+This exception encourages SCIM clients to re-issue these requests as a POST search request that is
+less susceptible to leaking this information from web browsers or log data.
+
 ## v4.0.0 - 2025-Jun-10
 Removed support for Java 11. The UnboundID SCIM 2 SDK now requires Java 17 or a later release.
 
