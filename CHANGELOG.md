@@ -30,6 +30,13 @@ exception for a client that has entered potentially-sensitive information via UR
 This exception encourages SCIM clients to re-issue these requests as a POST search request that is
 less susceptible to leaking this information from web browsers or log data.
 
+Fixed an issue where deserialization of `ListResponse` objects could result in `ClassCastException`
+errors if an application tried to use fields stored in the `Resources` array. Now, the SCIM SDK
+supports these conversions (via Jackson `TypeReference` objects). See the class-level Javadoc of
+ListResponse for more information. As a result of this change, the map-based constructor,
+`com.unboundid.scim2.common.messages.ListResponse.ListResponse(java.util.Map)`, is now deprecated
+and will be removed in a future release.
+
 ## v4.0.0 - 2025-Jun-10
 Removed support for Java 11. The UnboundID SCIM 2 SDK now requires Java 17 or a later release.
 

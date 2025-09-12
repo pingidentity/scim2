@@ -23,13 +23,12 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ListResponse;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 /**
- * A builder for ListResponses that is also a SearchResultHandler
+ * A builder for {@link ListResponse} that is also a SearchResultHandler
  * implementation.
  */
 public class ListResponseBuilder<T>
@@ -92,19 +91,18 @@ public class ListResponseBuilder<T>
   }
 
   /**
-   * Builds a List Response.
+   * Builds a {@link ListResponse} based on the values supplied to the builder.
    *
-   * @return generated ListResponse.
+   * @return A generated ListResponse.
    */
   @NotNull
   public ListResponse<T> build()
   {
-    final Map<String, Object> properties = new LinkedHashMap<>();
-    properties.put("totalResults", totalResults == null ?
-      resources.size() : totalResults);
-    properties.put("resources", resources);
-    properties.put("startIndex", startIndex);
-    properties.put("itemsPerPage", itemsPerPage);
-    return new ListResponse<>(properties);
+    return new ListResponse<>(
+        Optional.ofNullable(totalResults).orElse(resources.size()),
+        resources,
+        startIndex,
+        itemsPerPage
+    );
   }
 }

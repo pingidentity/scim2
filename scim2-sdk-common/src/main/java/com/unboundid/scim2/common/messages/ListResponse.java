@@ -20,17 +20,12 @@ package com.unboundid.scim2.common.messages;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.BaseScimResource;
-import com.unboundid.scim2.common.utils.JsonUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -110,6 +105,27 @@ import java.util.TreeMap;
  *   }
  * </pre>
  *
+ * <h2>Deserializing A Raw JSON</h2>
+ *
+ * If you have a raw JSON object and need to convert it to a ListResponse,
+ * deserializing the {@code Resources} array may be tricky at first glance,
+ * since the response contains a different object type within it. Fortunately,
+ * Jackson has support for performing such conversions with the
+ * {@link com.fasterxml.jackson.core.type.TypeReference} class. For example,
+ * to convert a JSON string into a {@code ListResponse<UserResource>}, the
+ * following Java code may be used:
+ * <pre><code>
+ *   String json = getJsonString();
+ *   ListResponse&lt;UserResource&gt; response = JsonUtils.getObjectReader()
+ *       .forType(new TypeReference&lt;ListResponse&lt;UserResource&gt;&gt;(){})
+ *       .readValue(json);
+ * </code></pre>
+ *
+ * Some frameworks have their own similar constructs for handling generics in
+ * their libraries natively. For example, Spring contains the
+ * {@code ParameterizedTypeReference} class, so look for methods that accept
+ * this (or similar objects) to perform these conversions efficiently.
+ *
  * @param <T> The type of the returned resources.
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:ListResponse",
@@ -147,16 +163,15 @@ public class ListResponse<T> extends BaseScimResource
 
   /**
    * Create a new List Response.
-   * <br><br>
-   *
-   * This constructor is utilized by Jackson when converting JSON strings into
-   * ListResponse objects. To create a ListResponse in code, it is suggested to
-   * use {@link ListResponse#ListResponse(int, List, Integer, Integer)}.
    *
    * @param props  Properties to construct the List Response.
+   *
+   * @deprecated This constructor was previously utilized by Jackson when
+   * deserializing JSON strings into ListResponses, but it is no longer used for
+   * this purpose.
    */
-  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
   @SuppressWarnings("unchecked")
+  @Deprecated(since = "4.0.1")
   public ListResponse(@NotNull final Map<String, Object> props)
       throws IllegalArgumentException, IllegalStateException
   {
@@ -179,42 +194,41 @@ public class ListResponse<T> extends BaseScimResource
   }
 
   /**
-   * Create a new List Response.
+   * Create a new list response, specifying the value of each field.
    *
-   * @param totalResults The total number of results returned.
-   * @param resources A multi-valued list of complex objects containing the
-   *                  requested resources
-   * @param startIndex The 1-based index of the first result in the current
-   *                   set of list results
-   * @param itemsPerPage The number of resources returned in a list response
-   *                     page.
+   * @param totalResults  The total number of results returned. If there are
+   *                      more results than on one page, this value can be
+   *                      larger than the page size.
+   * @param resources     A multi-valued list of SCIM resources representing the
+   *                      result set.
+   * @param startIndex    The 1-based index of the first result in the current
+   *                      set of list results. This can be {@code null} if the
+   *                      SCIM service provider does not support pagination.
+   * @param itemsPerPage  The number of resources returned in the list response
+   *                      page.
+   *
+   * @throws IllegalStateException If the {@code resources} list is {@code null}
+   *                               and {@code totalResults} is non-zero.
    */
-  public ListResponse(final int totalResults,
-                      @NotNull final List<T> resources,
-                      @Nullable final Integer startIndex,
-                      @Nullable final Integer itemsPerPage)
-      throws IllegalArgumentException
+  @JsonCreator
+  public ListResponse(
+      @JsonProperty(value="totalResults", required=true) final int totalResults,
+      @NotNull @JsonProperty(value = "Resources") final List<T> resources,
+      @Nullable @JsonProperty("startIndex") final Integer startIndex,
+      @Nullable @JsonProperty("itemsPerPage") final Integer itemsPerPage)
+          throws IllegalStateException
   {
     this.totalResults = totalResults;
     this.startIndex   = startIndex;
     this.itemsPerPage = itemsPerPage;
-
-    final ObjectReader reader = JsonUtils.getObjectReader();
-    final ObjectWriter writer = JsonUtils.getObjectWriter();
-    try
-    {
-      final String rawResources = writer.writeValueAsString(resources);
-      this.resources = reader.forType(
-        new TypeReference<List<T>>(){}).readValue(rawResources);
-    }
-    catch (final IOException ie)
-    {
-      throw new IllegalArgumentException("Resources exception", ie);
-    }
+    this.resources =
+        resourcesOrEmptyList(resources, itemsPerPage, totalResults);
   }
 
   /**
-   * Create a new List Response.
+   * Create a new list response. The values for other fields such as
+   * {@code totalResults} will be based on the input list size, and all other
+   * fields will be set to {@code null}.
    *
    * @param resources A multi-valued list of complex objects containing the
    *                  requested resources.

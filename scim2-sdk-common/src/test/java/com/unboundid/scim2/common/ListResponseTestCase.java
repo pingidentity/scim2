@@ -21,9 +21,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
+import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
 
@@ -35,8 +35,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 
 /**
  * Test for list responses.
@@ -67,64 +65,6 @@ public class ListResponseTestCase
   public void testListResponse()
       throws Exception
   {
-    // Test required property case-insensitivity
-    ListResponse<ObjectNode> listResponse =
-        JsonUtils.getObjectReader().forType(
-            new TypeReference<ListResponse<ObjectNode>>() {}).readValue(
-            """
-                {
-                  "schemas":[
-                    "urn:ietf:params:scim:api:messages:2.0:ListResponse"
-                  ],
-                  "totalresults":2,
-                  "startIndex":1,
-                  "ItemsPerPage":3,
-                  "Resources":[
-                    {
-                      "userName":"bjensen"
-                    },
-                    {
-                      "userName":"jsmith"
-                    }
-                  ]
-                }""");
-
-    try
-    {
-      // Test missing required property: totalResults
-      // Test case-insensitivity
-      listResponse =
-        JsonUtils.getObjectReader().forType(
-          new TypeReference<ListResponse<ObjectNode>>() {}).readValue(
-            """
-                {
-                  "schemas":[
-                    "urn:ietf:params:scim:api:messages:2.0:ListResponse"
-                  ],
-                  "startIndex":1,
-                  "ItemsPerPage":3,
-                  "Resources":[
-                    {
-                      "userName":"bjensen"
-                    },
-                    {
-                      "userName":"jsmith"
-                    }
-                  ]
-                }""");
-      fail("Expected failure for missing required property 'totalResults'");
-    }
-    catch (final JsonMappingException je)
-    {
-      assertTrue(je.getMessage().contains("Missing required creator property"),
-        je.getMessage());
-    }
-
-    assertEquals(listResponse.getTotalResults(), 2);
-    assertEquals(listResponse.getStartIndex(), Integer.valueOf(1));
-    assertEquals(listResponse.getItemsPerPage(), Integer.valueOf(3));
-    assertEquals(listResponse.getResources().size(), 2);
-
     ArrayList<ResourceTypeResource> resourceTypeList = new ArrayList<>();
     resourceTypeList.add(
         new ResourceTypeResource("urn:test", "test", "test", new URI("/test"),
@@ -168,6 +108,125 @@ public class ListResponseTestCase
             JsonUtils.getObjectWriter().writeValueAsString(listResponse);
 
     assertEquals(listResponseJSON, expectedJSON);
+  }
+
+
+  /**
+   * Ensures that it is possible to deserialize a JSON string properly. This
+   * test ensures that the objects contained within the {@code Resources} array
+   * are also of the expected Java type.
+   */
+  @Test
+  public void testDeserialization() throws Exception
+  {
+    String json = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 2,
+          "itemsPerPage": 2,
+          "Resources": [ {
+            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "id": "657460d3-04cc-4900-bf50-321a61fc87b7",
+            "userName": "Frieren"
+          }, {
+            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "id": "fd6fb34c-b8d0-4e10-9ba7-4ae44f11b6c3",
+            "userName": "Fern"
+          } ]
+        }""";
+
+    // Convert the string to a Java object as described by ListResponse's
+    // class-level Javadoc.
+    ListResponse<UserResource> response = JsonUtils.getObjectReader()
+        .forType(new TypeReference<ListResponse<UserResource>>(){})
+        .readValue(json);
+
+    // Ensure the fields were converted correctly.
+    assertThat(response.getTotalResults()).isEqualTo(2);
+    assertThat(response.getItemsPerPage()).isEqualTo(2);
+    assertThat(response.getStartIndex()).isNull();
+
+    // The use of a TypeReference object must result in UserResource objects
+    // in the Resources list. Otherwise, attempts to use these objects will
+    // result in a ClassCastException.
+    assertThat(response.getResources())
+        .hasSize(2)
+        .hasOnlyElementsOfType(UserResource.class);
+
+    // The elements should have been deserialized in the correct order.
+    UserResource frieren = response.getResources().get(0);
+    UserResource fern = response.getResources().get(1);
+    assertThat(frieren.getId())
+        .isEqualTo("657460d3-04cc-4900-bf50-321a61fc87b7");
+    assertThat(frieren.getUserName()).isEqualTo("Frieren");
+    assertThat(fern.getId()).isEqualTo("fd6fb34c-b8d0-4e10-9ba7-4ae44f11b6c3");
+    assertThat(fern.getUserName()).isEqualTo("Fern");
+
+    // Same JSON as before, but with different casing for attribute names.
+    String differentCaseJson = """
+        {
+          "schemaS": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "TotalResults": 2,
+          "iTeMsPeRpAgE": 2,
+          "resources": [ {
+            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "id": "657460d3-04cc-4900-bf50-321a61fc87b7",
+            "userName": "Frieren"
+          }, {
+            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "iD": "fd6fb34c-b8d0-4e10-9ba7-4ae44f11b6c3",
+            "USERNAME": "Fern"
+          } ]
+        }""";
+
+    ListResponse<UserResource> differentCasing = JsonUtils.getObjectReader()
+        .forType(new TypeReference<ListResponse<UserResource>>(){})
+        .readValue(differentCaseJson);
+
+    // Ensure the newly-deserialized value is identical to the expected result,
+    // as well as the previous object.
+    var expectedResult = new ListResponse<>(2, List.of(frieren, fern), null, 2);
+    assertThat(differentCasing).isEqualTo(expectedResult);
+    assertThat(differentCasing).isEqualTo(response);
+
+    // Attempt converting a JSON that has an invalid UserResource definition
+    // nested within it.
+    String invalidUser = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 1,
+          "itemsPerPage": 1,
+          "Resources": [ {
+            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "id": "657460d3-04cc-4900-bf50-321a61fc87b7",
+            "userName": "Frieren",
+            "hobby": "magic"
+          }]
+        }""";
+
+    ObjectReader reader = JsonUtils.getObjectReader()
+        .forType(new TypeReference<ListResponse<UserResource>>(){});
+    assertThatThrownBy(() -> reader.readValue(invalidUser))
+        .isInstanceOf(JsonMappingException.class)
+        .hasMessageContaining("Core attribute hobby is undefined for schema")
+        .hasMessageContaining("urn:ietf:params:scim:schemas:core:2.0:User");
+
+    // A JSON string must have the required 'totalResults' field.
+    String missingTotalResults = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "itemsPerPage": 1,
+          "Resources": [ {
+            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "id": "657460d3-04cc-4900-bf50-321a61fc87b7",
+            "userName": "Frieren"
+          }]
+        }""";
+
+    String expectedError = "Missing required creator property 'totalResults'";
+    assertThatThrownBy(() -> reader.readValue(missingTotalResults))
+        .isInstanceOf(JsonMappingException.class)
+        .hasMessageContaining(expectedError);
   }
 
 
