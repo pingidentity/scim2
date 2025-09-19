@@ -56,14 +56,16 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * object since you will just have plain old getters and setters
  * for core attributes. Extension attributes cannot be bound to
  * members of the class but they can still be accessed using the
- * {@link #getExtensionObjectNode} method or the {@link #getExtensionValues},
- * {@link #replaceExtensionValue}, and {@link #addExtensionValue} methods.</p>
+ * {@link #getExtensionObjectNode} method or the {@link #getExtensionValues}
+ * and {@link #replaceExtensionValue} methods.
  *
  * <p>If you have a BaseScimResource derived object, you can always get a
  * {@link GenericScimResource} by calling {@link #asGenericScimResource()}.
  * You could also go the other way by calling
  * {@link GenericScimResource#getObjectNode()}, followed by
  * {@link JsonUtils#nodeToValue(JsonNode, Class)}.</p>
+ * See the {@code GenericScimResource} class-level documentation for more
+ * information.
  *
  * @see GenericScimResource
  */
@@ -464,7 +466,15 @@ public abstract class BaseScimResource
    * @param path The path to the attribute whose values to add.
    * @param values The value(s) to add.
    * @throws ScimException If the path is invalid.
+   *
+   * @deprecated  This method adds a schema extension whose value is an array,
+   *              which is not used in practice. Additionally, the SCIM SDK does
+   *              not support deserialization of JSON with array extensions into
+   *              a POJO. If necessary, this behavior can still be achieved by
+   *              fetching the ObjectNode with {@link #getExtensionObjectNode()}
+   *              and adding the array value manually.
    */
+  @Deprecated(since = "4.0.1")
   public void addExtensionValue(@Nullable final String path,
                                 @NotNull final ArrayNode values)
       throws ScimException
@@ -482,7 +492,15 @@ public abstract class BaseScimResource
    * @param path The path to the attribute whose values to add.
    * @param values The value(s) to add.
    * @throws ScimException If the path is invalid.
+   *
+   * @deprecated  This method adds a schema extension whose value is an array,
+   *              which is not used in practice. Additionally, the SCIM SDK does
+   *              not support deserialization of JSON with array extensions into
+   *              a POJO. If necessary, this behavior can still be achieved by
+   *              fetching the ObjectNode with {@link #getExtensionObjectNode()}
+   *              and adding the array value manually.
    */
+  @Deprecated(since = "4.0.1")
   public void addExtensionValue(@Nullable final Path path,
                                 @NotNull final ArrayNode values)
       throws ScimException
