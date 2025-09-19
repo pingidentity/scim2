@@ -234,9 +234,10 @@ public class SearchRequestBuilder
    * @param cls The Java class object used to determine the type to return.
    * @throws ScimException If an error occurred.
    */
-  public <T> void invokePost(@NotNull final SearchResultHandler<T> resultHandler,
-                             @NotNull final Class<T> cls)
-      throws ScimException
+  public <T> void invokePost(
+      @NotNull final SearchResultHandler<T> resultHandler,
+      @NotNull final Class<T> cls)
+          throws ScimException
   {
     invoke(true, resultHandler, cls);
   }

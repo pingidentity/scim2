@@ -27,7 +27,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * type should be thrown when a SCIM service provider encounters an unexpected
  * error.
  * <br><br>
- * The following is an example of a ServerErrorException as seen by a SCIM client.
+ * The following is an example of a ServerErrorException seen by a SCIM client.
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],

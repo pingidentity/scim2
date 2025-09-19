@@ -28,7 +28,6 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
@@ -189,11 +188,9 @@ public class GroupResourceTestCase
   public void testMembersImmutable() throws Exception
   {
     Collection<AttributeDefinition> groupSchema =
-            SchemaUtils.getAttributes(GroupResource.class);
-    List<AttributeDefinition> memberDefinition =
-            groupSchema.stream().filter(
-                    attribute -> attribute.getName().equalsIgnoreCase("members")
-            ).collect(Collectors.toList());
+        SchemaUtils.getAttributes(GroupResource.class);
+    List<AttributeDefinition> memberDefinition = groupSchema.stream().filter(
+        attribute -> attribute.getName().equalsIgnoreCase("members")).toList();
     assertThat(memberDefinition).hasSize(1);
 
     for (AttributeDefinition a : memberDefinition.get(0).getSubAttributes())

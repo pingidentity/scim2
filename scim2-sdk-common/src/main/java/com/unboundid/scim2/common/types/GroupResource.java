@@ -26,9 +26,51 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * SCIM provides a resource type for "{@code Group}" resources.  The core schema
- * for "{@code Group}" is identified using the URI:
- * "{@code urn:ietf:params:scim:schemas:core:2.0:Group}".
+ * This class represents a group object as defined by
+ * <a href="https://datatracker.ietf.org/doc/html/rfc7643#section-4.2">
+ * RFC 7643 section 4.2</a>. A group resource, or "group", is a collection of
+ * other resources, which helps organize user accounts. Groups often contain
+ * {@link UserResource} objects, but can contain other resource types, including
+ * other group resources. Groups contained within other groups are referred to
+ * as "nested" groups.
+ * <br><br>
+ *
+ * Groups help enable role-based access control, such as allowing a group of
+ * users to view a set of documents. In this example, an administrator can
+ * modify user access to all the documents by adding or removing users from a
+ * single group. Note that the SCIM standard itself does not define any specific
+ * rules for this type of authorization or authentication, so this is largely
+ * defined by SCIM services.
+ * <br><br>
+ *
+ * Group resources have the following attributes defined:
+ * <ul>
+ *   <li> {@code id}: The unique identifier for the group resource.
+ *   <li> {@code displayName}: Represents the human-readable name for the group.
+ *   <li> {@code members}: A multi-valued attribute that indicates all user
+ *        accounts that are considered a part of this group.
+ * </ul>
+ *
+ * The following represents an example of a group resource:
+ * <pre>
+ *   {
+ *     "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:Group" ],
+ *     "id": "8e4d749e-6dde-420a-8d71-00faf8d57510",
+ *     "displayName": "Example Group With One Member",
+ *     "members": [{
+ *       "value": "cab1e",
+ *       "type": "DIRECT"
+ *     }]
+ *   }
+ * </pre>
+ *
+ * This group can be created with the following Java code:
+ * <pre><code>
+ *   GroupResource group = new GroupResource()
+ *       .setDisplayName("Example Group With One Member")
+ *       .setMembers(List.of(new Member().setValue("cab1e").setType("DIRECT")));
+ *   group.setId("8e4d749e-6dde-420a-8d71-00faf8d57510");
+ * </code></pre>
  */
 @Schema(id="urn:ietf:params:scim:schemas:core:2.0:Group",
     name="Group", description = "Group")

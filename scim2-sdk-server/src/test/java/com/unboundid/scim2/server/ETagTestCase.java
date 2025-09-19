@@ -352,7 +352,6 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
       Assert.assertTrue(resource.getObjectNode().
           path(HttpHeaders.IF_NONE_MATCH).isMissingNode());
     }
-
   }
 
 }

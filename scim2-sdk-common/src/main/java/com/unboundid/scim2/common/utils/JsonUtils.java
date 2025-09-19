@@ -557,18 +557,20 @@ public class JsonUtils
    * For example, with an ObjectNode representing:
    * <pre>
    *     {
-   *       "name":"Bob",
-   *       "favoriteColors":["red","green","blue"]
+   *       "name": "Bob",
+   *       "favoriteColors": ["red", "green", "blue"]
    *     }
    * </pre>
    *
    * <pre><code>
+   *   ObjectNode resource = getObjectNode();
+   *
    *   // Returns a TextNode containing "Bob".
-   *   getValue(Path.fromString("name"));
+   *   getValue(Path.of("name"), resource);
    *
    *   // Returns an ArrayNode of TextNodes with the values "red", "green", and
    *   // "blue".
-   *   getValue(Path.fromString("favoriteColors"));
+   *   getValue(Path.of("favoriteColors"), resource);
    * </code></pre>
    *
    * @param path The path to the attributes whose values to retrieve.
@@ -615,7 +617,7 @@ public class JsonUtils
    * </pre>
    *
    * Calling getValues with path of emails.value will return a list of all
-   * TextNodes of the "{@code value}" field in the "{@code emails}" array:
+   * TextNodes of the {@code value} field in the {@code emails} array:
    *
    * <pre>
    *   [ TextNode("bob@work.com"), TextNode("bob@home.com") ]
@@ -641,7 +643,7 @@ public class JsonUtils
    * </pre>
    *
    * Calling getValues with path of books.authors will return a list of all
-   * ArrayNodes of the "{@code authors}" field in the "{@code books}" array:
+   * ArrayNodes of the {@code authors} field in the {@code books} array:
    *
    * <pre>
    * [ ArrayNode(["Bill Martin, Jr.", "Eric Carle"]), ArrayNode(["Dr. Seuss"]) ]
@@ -814,16 +816,19 @@ public class JsonUtils
   }
 
   /**
-   * Checks for the existence of a path.  This will return true if the
-   * path is present (even if the value is {@code null}).  This allows the caller
-   * to know if the original json string  had something like
-   * ... "{@code myPath}":{@code null} ... rather than just leaving the value out of the
-   * json string entirely.
+   * Checks for the existence of a path.  This will return true if the path is
+   * present (even if the value is {@code null}).  This allows the caller to
+   * know if the original JSON string contained a field of the following form:
+   * <pre>
+   *   {
+   *     "examplePath": null
+   *   }
+   * </pre>
    *
    * @param path The path to the attribute.
    * @param node The JSON object node to search for the path in.
-   * @return true if the path has a value set (even if that value is
-   * set to {@code null}), or false if not.
+   * @return {@code true} if the path has an explicit value set (even if that
+   *         value is {@code null}), or {@code false} if not.
    * @throws ScimException If an error occurs while traversing the JSON node.
    */
   public static boolean pathExists(@NotNull final Path path,

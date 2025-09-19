@@ -87,10 +87,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
         getCandidateNodes(filter.getAttributePath(), object);
     if (filter.getComparisonValue().isNull() && isEmpty(nodes))
     {
-      // draft-ietf-scim-core-schema section 2.4 states "Unassigned
-      // attributes, the null value, or empty array (in the case of
-      // a multi-valued attribute) SHALL be considered to be
-      // equivalent in "state".
+      // RFC 7643 section 2.4 states "Unassigned attributes, the null value, or
+      // empty array (in the case of a multi-valued attribute) SHALL be
+      // considered to be equivalent in 'state'".
       return true;
     }
     for (JsonNode node : nodes)
@@ -117,10 +116,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
         getCandidateNodes(filter.getAttributePath(), object);
     if (filter.getComparisonValue().isNull() && isEmpty(nodes))
     {
-      // draft-ietf-scim-core-schema section 2.4 states "Unassigned
-      // attributes, the null value, or empty array (in the case of
-      // a multi-valued attribute) SHALL be considered to be
-      // equivalent in "state".
+      // RFC 7643 section 2.4 states "Unassigned attributes, the null value, or
+      // empty array (in the case of a multi-valued attribute) SHALL be
+      // considered to be equivalent in 'state'".
       return false;
     }
     for (JsonNode node : nodes)
@@ -179,10 +177,9 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
         getCandidateNodes(filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
-      // draft-ietf-scim-core-schema section 2.4 states "Unassigned
-      // attributes, the null value, or empty array (in the case of
-      // a multi-valued attribute) SHALL be considered to be
-      // equivalent in "state".
+      // RFC 7643 section 2.4 states "Unassigned attributes, the null value, or
+      // empty array (in the case of a multi-valued attribute) SHALL be
+      // considered to be equivalent in 'state'".
       if (!isEmpty(node))
       {
         return true;

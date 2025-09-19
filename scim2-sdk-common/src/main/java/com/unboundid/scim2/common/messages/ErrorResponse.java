@@ -51,8 +51,8 @@ import java.util.Objects;
  *        errors.
  *   <li> {@code detail}: An optional parameter containing a descriptive message
  *        that describes the reason for the error.
- *   <li> {@code status}: A required parameter that contains the HTTP status code
- *        for the error (e.g., 401, 500).
+ *   <li> {@code status}: A required parameter that contains the HTTP status
+ *         code for the error (e.g., 401, 500).
  * </ul>
  * <br><br>
  * An example error response is shown below:

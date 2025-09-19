@@ -211,7 +211,6 @@ public class AttributeDefinition
       throw BadRequestException.invalidSyntax(
           "Unknown SCIM mutability constraint");
     }
-
   }
 
   /**
@@ -291,7 +290,6 @@ public class AttributeDefinition
 
       throw BadRequestException.invalidSyntax("Unknown SCIM return constraint");
     }
-
   }
 
   /**
@@ -577,8 +575,7 @@ public class AttributeDefinition
      */
     public Builder()
     {
-      // Defaults according to
-      // https://tools.ietf.org/html/draft-ietf-scim-core-schema-20#section-2.2
+      // Default values according to RFC 7643 Section 2.2.
       type = Type.STRING;
       caseExact = false;
       mutability = Mutability.READ_WRITE;

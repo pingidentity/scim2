@@ -50,8 +50,16 @@ public class ApiConstants
   public static final String SCHEMAS_ENDPOINT = "Schemas";
 
   /**
-   * The "{@code /Me}" authenticated subject URI alias for the User or other resource
-   * associated with the currently authenticated subject for any SCIM operation.
+   * Represents the {@code /Me} URI. This is an endpoint alias that may be used
+   * by an authenticated user. For example, a user with an ID of {@code ca5cade}
+   * could be referencing a URI of {@code https://example.com/v2/Users/ca5cade}
+   * when they authenticate and send a request to the {@code /Me} endpoint.
+   * <br><br>
+   *
+   * Note that this endpoint is not guaranteed to be supported by a SCIM service
+   * provider. For more information, see
+   * <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.11">
+   * RFC 7644 Section 3.11</a>.
    */
   @NotNull
   public static final String ME_ENDPOINT = "Me";

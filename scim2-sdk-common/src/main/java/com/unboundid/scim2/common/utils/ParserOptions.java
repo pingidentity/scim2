@@ -36,7 +36,7 @@ public class ParserOptions
 
 
   /**
-   * Add characters (such as semicolons) to the set of extended naming characters
+   * Add characters (e.g., semicolons) to the set of extended naming characters
    * currently allowed within attribute names.
    *
    * @param extendedChars  The extended characters to be added.

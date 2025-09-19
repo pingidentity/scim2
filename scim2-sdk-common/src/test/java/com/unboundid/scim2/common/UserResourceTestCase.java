@@ -195,7 +195,7 @@ public class UserResourceTestCase
 
   /**
    * Test de-serializing the full core user representation copied from
-   * draft-ietf-scim-core-schema-20.
+   * RFC 7643.
    *
    * @throws Exception if an error occurs.
    */
@@ -301,5 +301,4 @@ public class UserResourceTestCase
         UserResource.class);
     Assert.assertEquals(userResource1, userResource2);
   }
-
 }

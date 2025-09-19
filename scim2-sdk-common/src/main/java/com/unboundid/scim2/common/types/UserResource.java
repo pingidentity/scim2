@@ -30,9 +30,77 @@ import java.util.Objects;
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
 /**
- * SCIM provides a resource type for "{@code User}" resources.  The core schema
- * for "{@code User}" is identified using the URI:
- * "{@code urn:ietf:params:scim:schemas:core:2.0:User}".
+ * This class represents the {@code user} resource/object type as described by
+ * <a href="https://datatracker.ietf.org/doc/html/rfc7643#section-4.1">
+ * RFC 7643 section 4.1</a>. A {@code UserResource} is the basic representation
+ * of a user account. Some attributes that may be stored on user resources
+ * include the following, though this list is not exhaustive:
+ * <ul>
+ *   <li> {@code userName}: The username for the user account.
+ *   <li> {@code emails}: An array of emails associated with the user.
+ *   <li> {@code addresses}: An array of addresses associated with the user.
+ *   <li> {@code active}: Indicates whether the account is currently enabled.
+ *   <li> {@code password}: The user's password. Note that SCIM mandates that
+ *        the "cleartext value or the hashed value of a password SHALL NOT be
+ *        returnable by a service provider", so this value will never be
+ *        returned from a SCIM service.
+ * </ul>
+ * <br><br>
+ *
+ * The following is an example of a user resource:
+ * <pre>
+ * {
+ *   "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+ *   "userName": "muhammad.ali",
+ *   "title": "Champ",
+ *   "emails": [{
+ *     "value": "ali@example.com",
+ *     "primary": true
+ *   }]
+ * }
+ * </pre>
+ *
+ * This user can be created with the following Java code:
+ * <pre><code>
+ *   UserResource muhammad = new UserResource()
+ *       .setUserName("muhammad.ali")
+ *       .setTitle("Champ")
+ *       .setEmails(new Email().setValue("ali@example.com").setPrimary(true));
+ * </code></pre>
+ * <br><br>
+ *
+ * Users are the most common resource type used by SCIM services, since users
+ * are central to identity data. However, it's worth noting that the exact
+ * definition of a user can vary between different services. Some SCIM services
+ * apply certain constraints to the form that user data may take. For example,
+ * some SCIM services allow only a single email field on a user, so their users
+ * always use single-valued arrays for email data.
+ * <br><br>
+ *
+ * If a SCIM service has many constraints, it can be a good idea to define a
+ * custom user class that enforces these rules in the code. An example of a
+ * custom user subclass can look like:
+ * <pre>
+ *   public class CustomUser extends UserResource
+ *   {
+ *    {@literal @}Override
+ *     public UserResource setEmails(List&lt;Email&gt; emails)
+ *     {
+ *       if (emails != null &amp;&amp; emails.size() > 1)
+ *       {
+ *         throw new BadRequestException(
+ *             "A CustomUser cannot have more than one email.");
+ *       }
+ *
+ *       this.emails = emails;
+ *       return this;
+ *     }
+ *   }
+ * </pre>
+ *
+ * For more information on creating custom user subclasses, see the
+ * <a href="https://github.com/pingidentity/scim2/wiki/Common-Problems-and-FAQ">
+ * UnboundID SCIM 2 SDK Wiki</a>.
  */
 @Schema(id="urn:ietf:params:scim:schemas:core:2.0:User",
     name="User", description = "User Account")
@@ -324,8 +392,8 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Retrieves the casual way to address the user in real life, for example, 'Bob' or
-   * 'Bobby' instead of 'Robert'.
+   * Retrieves the casual way to address the user in real life, for example,
+   * 'Bob' or 'Bobby' instead of 'Robert'.
    *
    * @return The casual way to address the user in real life.
    */
@@ -336,8 +404,8 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Specifies the casual way to address the user in real life, for example, 'Bob' or
-   * 'Bobby' instead of 'Robert'.
+   * Specifies the casual way to address the user in real life, for example,
+   * 'Bob' or 'Bobby' instead of 'Robert'.
    *
    * @param nickName The casual way to address the user in real life.
    * @return This object.
@@ -378,7 +446,7 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Retrieves the user's title, such as "{@code Vice President}".
+   * Retrieves the user's title, such as {@code Vice President}.
    *
    * @return The user's title.
    */
@@ -389,7 +457,7 @@ public class UserResource extends BaseScimResource
   }
 
   /**
-   * Specifies the user's title, such as "{@code Vice President}".
+   * Specifies the user's title, such as {@code Vice President}.
    *
    * @param title The user's title.
    * @return This object.
@@ -433,8 +501,8 @@ public class UserResource extends BaseScimResource
 
   /**
    * Retrieves the User's preferred written or spoken language.  Generally
-   * used for selecting a localized User interface. for example, 'en_US' specifies the
-   * language English and country US.
+   * used for selecting a localized User interface. For example, 'en_US'
+   * specifies the language English and country US.
    *
    * @return The User's preferred written or spoken language.
    */
@@ -446,8 +514,8 @@ public class UserResource extends BaseScimResource
 
   /**
    * Specifies the User's preferred written or spoken language.  Generally
-   * used for selecting a localized User interface. for example, 'en_US' specifies the
-   * language English and country US.
+   * used for selecting a localized User interface. For example, 'en_US'
+   * specifies the language English and country US.
    *
    * @param preferredLanguage The User's preferred written or spoken language.
    * @return This object.

@@ -37,6 +37,11 @@ ListResponse for more information. As a result of this change, the map-based con
 `com.unboundid.scim2.common.messages.ListResponse.ListResponse(java.util.Map)`, is now deprecated
 and will be removed in a future release.
 
+Updated documentation for `GroupResource` and `Group` to highlight the distinction between the
+classes, as well as provide examples of how they may be used. GroupResource represents a group
+object/entity, whereas a `Group` is a subfield on a user resource (like `Email`). The documentation
+for `UserResource` was also updated.
+
 ## v4.0.0 - 2025-Jun-10
 Removed support for Java 11. The UnboundID SCIM 2 SDK now requires Java 17 or a later release.
 

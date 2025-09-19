@@ -92,9 +92,8 @@ public class ResourceTypesEndpoint
       throw new ForbiddenException("Filtering not allowed");
     }
 
-    // https://tools.ietf.org/html/draft-ietf-scim-api-19#section-4 says
-    // query params should be ignored for discovery endpoints so we can't use
-    // SimpleSearchResults.
+    // RFC 7644 Section 4 says query parameters should be ignored for discovery
+    // endpoints, so we can't use SimpleSearchResults.
     ResourcePreparer<GenericScimResource> preparer =
         new ResourcePreparer<>(RESOURCE_TYPE_DEFINITION, uriInfo);
     Collection<ResourceTypeResource> resourceTypes = getResourceTypes();

@@ -213,9 +213,10 @@ public class ScimException extends Exception
    * @return The appropriate ScimException from the provided information.
    */
   @NotNull
-  public static ScimException createException(final int statusCode,
-                                              @Nullable final String errorMessage,
-                                              @Nullable final Exception cause)
+  public static ScimException createException(
+      final int statusCode,
+      @Nullable final String errorMessage,
+      @Nullable final Exception cause)
   {
     ErrorResponse scimError = new ErrorResponse(statusCode);
     scimError.setDetail(errorMessage);

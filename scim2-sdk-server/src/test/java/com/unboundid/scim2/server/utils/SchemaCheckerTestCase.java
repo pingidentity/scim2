@@ -39,12 +39,12 @@ import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -1009,33 +1009,22 @@ public class SchemaCheckerTestCase
 
     // Create results schema checker for this test.
     SchemaChecker.Results results = checker.checkCreate(o);
+    assertThat(results.getFilterIssues()).isEmpty();
 
     // Attempt a patch modify with a replace operation.
-    results =
-            checker.checkModify(
-                    Collections.singleton(
-                            PatchOperation.replace(
-                                    Path.root().attribute(
-                                            "mvstring",
-                                            Filter.eq("value", "value3")
-                                    ),
-                                    "replacedValue4"
-                            )
-                    ),
-                    null
-            );
-    assertEquals(results.getFilterIssues().size(), 0,
-                 Arrays.toString(results.getFilterIssues().toArray(new String[0])));
+    PatchOperation patch = PatchOperation.replace(
+        Path.root().attribute("mvstring", Filter.eq("value", "value3")),
+        "replacedValue4"
+    );
+    results = checker.checkModify(List.of(patch), null);
+    assertThat(results.getFilterIssues()).isEmpty();
 
     // Attempt a patch modify with a remove operation.
-    results = checker.checkModify(
-            Collections.singleton(PatchOperation.remove(
-                    Path.root().attribute("mvstring",
-                            Filter.eq("value", "value1")))),
-            null);
-    assertEquals(results.getFilterIssues().size(), 0,
-                 Arrays.toString(results.getFilterIssues().toArray(
-                         new String[0])));
+    patch = PatchOperation.remove(
+        Path.root().attribute("mvstring", Filter.eq("value", "value1"))
+    );
+    results = checker.checkModify(List.of(patch), null);
+    assertThat(results.getFilterIssues()).isEmpty();
   }
 
   /**
@@ -1984,7 +1973,6 @@ public class SchemaCheckerTestCase
         assertTrue(containsIssueWith(results.getSyntaxIssues(), "Value"));
       }
     }
-
   }
 
   /**

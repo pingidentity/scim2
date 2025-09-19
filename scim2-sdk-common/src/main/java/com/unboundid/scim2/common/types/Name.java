@@ -41,8 +41,8 @@ public class Name
 
   @Nullable
   @Attribute(description = "The family name of the User, or Last " +
-      "Name in most Western languages (for example, Jensen given the full name Ms. " +
-      "Barbara J Jensen, III.).",
+      "Name in most Western languages (for example, Jensen given the full " +
+      "name Ms. Barbara J Jensen, III.).",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -52,8 +52,8 @@ public class Name
 
   @Nullable
   @Attribute(description = "The given name of the User, or First Name " +
-      "in most Western languages (for example, Barbara given the full name Ms. " +
-      "Barbara J Jensen, III.).",
+      "in most Western languages (for example, Barbara given the full name " +
+      "Ms. Barbara J Jensen, III.).",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -63,7 +63,7 @@ public class Name
 
   @Nullable
   @Attribute(description = "The middle name(s) of the User (for example, " +
-      "Robert given the full name Ms. Barbara J Jensen, III.).",
+      "Janice given the full name Ms. Barbara J Jensen, III.).",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -84,8 +84,8 @@ public class Name
 
   @Nullable
   @Attribute(description = "The honorific suffix(es) of the User, or " +
-      "Suffix in most Western languages (for example, III. given the full name " +
-      "Ms. Barbara J Jensen, III.)",
+      "Suffix in most Western languages (for example, III. given the full " +
+      "name Ms. Barbara J Jensen, III.)",
       isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
@@ -95,8 +95,8 @@ public class Name
 
   /**
    * Retrieves the full name, including all middle names, titles, and
-   * suffixes as appropriate, formatted for display (for example, Ms. Barbara J
-   * Jensen, III.).
+   * suffixes as appropriate, formatted for display (for example, "Mr. Ronald
+   * Gregory Erickson II").
    *
    * @return The full name, including all middle names, titles, and
    * suffixes as appropriate, formatted for display.
@@ -108,9 +108,9 @@ public class Name
   }
 
   /**
-   * Specifies the full name, including all middle names, titles, and
-   * suffixes as appropriate, formatted for display (for example, Ms. Barbara J
-   * Jensen, III.).
+   * Specifies the full name, including all middle names, titles, and suffixes
+   * as appropriate, formatted for display (for example, "Mr. Ronald Gregory
+   * Erickson II").
    *
    * @param formatted The full name, including all middle names, titles, and
    * suffixes as appropriate, formatted for display.
@@ -125,7 +125,8 @@ public class Name
 
   /**
    * Retrieves the family name of the User, or Last Name in most Western
-   * languages (for example, Jensen given the full name Ms. Barbara J Jensen, III.).
+   * languages. For example, in "Mr. Ronald Gregory Erickson II", the
+   * family/last name is "Erickson".
    *
    * @return The family name of the User, or Last Name in most Western
    * languages.
@@ -138,7 +139,8 @@ public class Name
 
   /**
    * Specifies the family name of the User, or Last Name in most Western
-   * languages (for example, Jensen given the full name Ms. Barbara J Jensen, III.).
+   * languages. For example, in "Mr. Ronald Gregory Erickson II", the
+   * family/last name is "Erickson".
    *
    * @param familyName The family name of the User, or Last Name in most Western
    * languages.
@@ -153,7 +155,8 @@ public class Name
 
   /**
    * Retrieves the given name of the User, or First Name in most Western
-   * languages (for example, Barbara given the full name Ms. Barbara J Jensen, III.).
+   * languages. For example, in "Mr. Ronald Gregory Erickson II", the
+   * given/first name is "Ronald".
    *
    * @return The given name of the User, or First Name in most Western
    * languages.
@@ -166,7 +169,8 @@ public class Name
 
   /**
    * Specifies the given name of the User, or First Name in most Western
-   * languages (for example, Barbara given the full name Ms. Barbara J Jensen, III.).
+   * languages. For example, in "Mr. Ronald Gregory Erickson II", the
+   * given/first name is "Ronald".
    *
    * @param givenName The given name of the User, or First Name in most Western
    * languages.
@@ -180,10 +184,10 @@ public class Name
   }
 
   /**
-   * Retrieves the middle name(s) of the User (for example, Robert given the full name
-   * Ms. Barbara J Jensen, III.).
+   * Retrieves the middle name(s) of the User. For example, in "Mr. Ronald
+   * Gregory Erickson II", the middle name is "Gregory".
    *
-   * @return the middle name(s) of the User.
+   * @return The middle name(s) of the User.
    */
   @Nullable
   public String getMiddleName()
@@ -192,8 +196,8 @@ public class Name
   }
 
   /**
-   * Specifies the middle name(s) of the User (for example, Robert given the full name
-   * Ms. Barbara J Jensen, III.).
+   * Specifies the middle name(s) of the User. For example, in "Mr. Ronald
+   * Gregory Erickson II", the middle name is "Gregory".
    *
    * @param middleName The middle name(s) of the User.
    * @return This object.
@@ -207,7 +211,8 @@ public class Name
 
   /**
    * Retrieves the honorific prefix(es) of the User, or Title in most Western
-   * languages (for example, Ms. given the full name Ms. Barbara J Jensen, III.).
+   * languages. For example, in "Mr. Ronald Gregory Erickson II", the prefix is
+   * "Mr.", which is an abbreviation for "Mister".
    *
    * @return The honorific prefix(es) of the User, or Title in most Western
    * languages.
@@ -220,7 +225,8 @@ public class Name
 
   /**
    * Specifies the honorific prefix(es) of the User, or Title in most Western
-   * languages (for example, Ms. given the full name Ms. Barbara J Jensen, III.).
+   * languages. For example, in "Mr. Ronald Gregory Erickson II", the prefix is
+   * "Mr.", which is an abbreviation for "Mister".
    *
    * @param honorificPrefix The honorific prefix(es) of the User, or Title in
    *                        most Western languages.
@@ -235,9 +241,10 @@ public class Name
 
   /**
    * Retrieves the honorific suffix(es) of the User, or Suffix in most Western
-   * languages (for example, III. given the full name Ms. Barbara J Jensen, III.).
+   * languages. Common examples include "Jr.", "Sr.", or "III". For example, in
+   * "Mr. Ronald Gregory Erickson II", the suffix is "II".
    *
-   * @return the honorific suffix(es) of the User, or Suffix in most Western
+   * @return The honorific suffix(es) of the User, or Suffix in most Western
    * languages.
    */
   @Nullable
@@ -248,9 +255,10 @@ public class Name
 
   /**
    * Specifies the honorific suffix(es) of the User, or Suffix in most Western
-   * languages (for example, III. given the full name Ms. Barbara J Jensen, III.).
+   * languages. Common examples include "Jr.", "Sr.", or "III". For example, in
+   * "Mr. Ronald Gregory Erickson II", the suffix is "II".
    *
-   * @param honorificSuffix the honorific suffix(es) of the User, or Suffix in
+   * @param honorificSuffix The honorific suffix(es) of the User, or Suffix in
    *                        most Western languages.
    * @return This object.
    */

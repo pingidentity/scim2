@@ -32,14 +32,16 @@ import java.util.Objects;
 
 /**
  * This object contains all of the information about the account state.
- * The individual properties are stored as JsonReference objects so that
- * the server can tell if the client set a value or not, even if the value
- * was set to "{@code null}".  The custom serializer will not serialize any
- * properties that were not set.  If the property was set to "{@code null}" however (or
+ * <br><br>
+ *
+ * Implementation note: the individual properties are stored as JsonReferences
+ * so that the server can tell if the client set a value or not, even if the
+ * value was set to {@code null}.  The custom serializer will not serialize any
+ * properties that were not set.  If the property was set to {@code null} (or
  * any other value), it will be included in the json string.  Then on the server
- * side, this object gets deserialized into a generic scim object.  That object
+ * side, this object gets deserialized into a GenericScimResource.  That object
  * will not include values that were not in the json string allowing the
- * server to tell the difference between "{@code null}" and not present.
+ * server to tell the difference between {@code null} and "not present".
  */
 @JsonSerialize(using = JsonRefBeanSerializer.class)
 @Schema(id="urn:pingidentity:schemas:2.0:AccountState", name="AccountState",

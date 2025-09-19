@@ -126,7 +126,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      *
      * @return The successfully modified SCIM resource.
      * @throws ProcessingException If a JAX-RS runtime exception occurred.
-     * @throws ScimException If the SCIM service provider responded with an error.
+     * @throws ScimException If the SCIM service responded with an error.
      */
     @NotNull
     @SuppressWarnings("unchecked")
@@ -142,7 +142,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      * @param cls The Java class object used to determine the type to return.
      * @return The successfully modified SCIM resource.
      * @throws ProcessingException If a JAX-RS runtime exception occurred.
-     * @throws ScimException If the SCIM service provider responded with an error.
+     * @throws ScimException If the SCIM service responded with an error.
      */
     @NotNull
     public <C> C invoke(@NotNull final Class<C> cls) throws ScimException
@@ -189,7 +189,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
      * @param cls The Java class object used to determine the type to return.
      * @return The successfully modified SCIM resource.
      * @throws ProcessingException If a JAX-RS runtime exception occurred.
-     * @throws ScimException If the SCIM service provider responded with an error.
+     * @throws ScimException If the SCIM service responded with an error.
      */
     @NotNull
     public <T> T invoke(@NotNull final Class<T> cls) throws ScimException
@@ -206,7 +206,7 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @param cls The Java class object used to determine the type to return.
    * @return The successfully modified SCIM resource.
    * @throws ProcessingException If a JAX-RS runtime exception occurred.
-   * @throws ScimException If the SCIM service provider responded with an error.
+   * @throws ScimException If the SCIM service responded with an error.
    */
   @NotNull
   protected <G> G invokeInternal(@NotNull final Class<G> cls)

@@ -198,7 +198,7 @@ public class Parser
   /**
    * Set new {@code ParserOptions} within the current thread.
    *
-   * <p>NOTE: SCIM server implementations are not guaranteed to support a given option.</p>
+   * <p>NOTE: SCIM services are not guaranteed to support a given option.</p>
    * <p>NOTE: These should be reset as soon as they are no longer needed.</p>
    *
    * <pre>
