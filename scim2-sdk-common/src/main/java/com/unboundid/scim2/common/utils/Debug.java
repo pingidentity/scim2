@@ -47,13 +47,13 @@ import static com.unboundid.scim2.common.utils.StaticUtils.*;
  * <BR><BR>
  * The SCIM SDK debugging subsystem uses the Java logging framework available
  * through the {@code java.util.logging} package with a logger name of
- * "{@code com.unboundid.scim2.sdk}".  The {@link Debug#getLogger} method may
+ * {@code com.unboundid.scim2.sdk}.  The {@link Debug#getLogger} method may
  * be used to access the logger instance used by the SCIM SDK.
  * <BR><BR>
  * <H2>Example</H2>
  * The following example demonstrates the process that may be used to enable
  * debugging within the SCIM SDK and write information about all messages with
- * a {@code WARNING} level or higher to a file named "{@code /tmp/test.log}":
+ * a {@code WARNING} level or higher to a file named {@code /tmp/test.log}:
  * <PRE>
  *   Debug.setEnabled(true);
  *   Logger logger = Debug.getLogger();
@@ -70,8 +70,8 @@ public final class Debug
   /**
    * The name of the system property that will be used to enable debugging in
    * the UnboundID SCIM SDK for Java.  The fully-qualified name for this
-   * property is "{@code com.unboundid.scim2.sdk.debug.enabled}".  If it is set,
-   * then it should have a value of either "{@code true}" or "{@code false}".
+   * property is {@code com.unboundid.scim2.sdk.debug.enabled}.  If it is set,
+   * then it should have a value of either {@code true} or {@code false}.
    */
   @NotNull
   public static final String PROPERTY_DEBUG_ENABLED =
@@ -83,8 +83,8 @@ public final class Debug
    * The name of the system property that may be used to indicate whether stack
    * trace information for the thread calling the debug method should be
    * included in debug log messages.  The fully-qualified name for this property
-   * is "{@code com.unboundid.scim2.sdk.debug.includeStackTrace}".  If it is
-   * set, then it should have a value of either {@code "true"} or {@code "false"}.
+   * is {@code com.unboundid.scim2.sdk.debug.includeStackTrace}. If it is set,
+   * then it should have a value of either {@code true} or {@code false}.
    */
   @NotNull
   public static final String PROPERTY_INCLUDE_STACK_TRACE =
@@ -95,10 +95,10 @@ public final class Debug
   /**
    * The name of the system property that will be used to set the initial level
    * for the debug logger.  The fully-qualified name for this property is
-   * "{@code com.unboundid.scim2.sdk.debug.level}".  If it is set, then it
-   * should be one of the strings "{@code SEVERE}", "{@code WARNING}",
-   * "{@code INFO}", "{@code CONFIG}", "{@code FINE}", "{@code FINER}", or
-   * "{@code FINEST}".
+   * {@code com.unboundid.scim2.sdk.debug.level}.  If it is set, then it
+   * should be one of the strings {@code SEVERE}, {@code WARNING},
+   * {@code INFO}, {@code CONFIG}, {@code FINE}, {@code FINER}, or
+   * {@code FINEST}.
    */
   @NotNull
   public static final String PROPERTY_DEBUG_LEVEL =
@@ -110,7 +110,7 @@ public final class Debug
    * The name of the system property that will be used to indicate that
    * debugging should be enabled for specific types of messages.  The
    * fully-qualified name for this property is
-   * "{@code com.unboundid.scim2.sdk.debug.type}". If it is set, then it should
+   * {@code com.unboundid.scim2.sdk.debug.type}. If it is set, then it should
    * be a comma-delimited list of the names of the desired debug types.  See the
    * {@link DebugType} enum for the available debug types.
    */

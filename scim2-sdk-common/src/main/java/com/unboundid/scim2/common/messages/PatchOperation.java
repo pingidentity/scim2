@@ -306,8 +306,9 @@ public abstract class PatchOperation
         //
         // Since the filter value would be unused, this request is invalid.
         throw BadRequestException.invalidPath(
-            "A patch operation's attribute path was of the form 'attribute[filter]', but"
-                + " needs to be 'attribute[filter].subAttribute'"
+            "A patch operation's attribute path was of the form"
+                + " 'attribute[filter]', but needs to be"
+                + " 'attribute[filter].subAttribute'"
         );
       }
 
@@ -560,7 +561,6 @@ public abstract class PatchOperation
     {
       return Objects.hash(getPath(), value);
     }
-
   }
 
   static final class RemoveOperation extends PatchOperation
@@ -787,10 +787,12 @@ public abstract class PatchOperation
       if (path.size() == 2)
       {
         Filter valueFilter = path.getElement(1).getValueFilter();
-        // Allow use of the special case "value" path to reference the value itself.
-        // Any other value filter is for a sub-attribute, which is not permitted.
+        // Allow use of the special case "value" path to reference the value
+        // itself. Any other value filter is for a sub-attribute, which is not
+        // permitted.
         if (valueFilter != null &&
-            !valueFilter.getAttributePath().getElement(0).getAttribute().equals("value"))
+            !valueFilter.getAttributePath().getElement(0)
+                .getAttribute().equals("value"))
         {
           throw BadRequestException.invalidPath(
               "Path cannot include a value filter on sub-attributes");

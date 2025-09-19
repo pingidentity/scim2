@@ -863,7 +863,8 @@ public class GenericScimResource implements ScimResource
                                           @NotNull final Boolean value)
       throws ScimException
   {
-    return replaceValue(path, JsonUtils.getJsonNodeFactory().booleanNode(value));
+    var factory = JsonUtils.getJsonNodeFactory();
+    return replaceValue(path, factory.booleanNode(value));
   }
 
   /**
@@ -1155,7 +1156,8 @@ public class GenericScimResource implements ScimResource
    *   List&lt;Double&gt; niceNumbers = gsr.getDoubleValueList("niceNumbers");
    *
    *   // Non-existent paths will return an empty list.
-   *   List&lt;Double&gt; emptyList = gsr.getDoubleValueList("pathThatDoesNotExist");
+   *   List&lt;Double&gt; emptyList =
+   *       gsr.getDoubleValueList("pathThatDoesNotExist");
    * </code></pre>
    *
    * @param path  The path to the requested attribute.
@@ -1406,8 +1408,8 @@ public class GenericScimResource implements ScimResource
   /**
    * Fetches the values of a multi-valued attribute of integers in a generic
    * SCIM resource. If the path exists, the JSON node at the path must be a list
-   * of {@link Integer} values. If the path does not exist, an empty list will be
-   * returned.
+   * of {@link Integer} values. If the path does not exist, an empty list will
+   * be returned.
    * <br><br>
    *
    * For example, consider the following GenericScimResource:
@@ -1972,7 +1974,8 @@ public class GenericScimResource implements ScimResource
    *   List&lt;Date&gt; timestamps = gsr.getDateValueList("notableTimestamps");
    *
    *   // Non-existent paths will return an empty list.
-   *   List&lt;Date&gt; emptyList = gsr.getDateValueList("pathThatDoesNotExist");
+   *   List&lt;Date&gt; emptyList =
+   *       gsr.getDateValueList("pathThatDoesNotExist");
    * </code></pre>
    *
    * @param path  The path to the requested attribute.
@@ -2299,7 +2302,8 @@ public class GenericScimResource implements ScimResource
    *   List&lt;byte[]&gt; certs = gsr.getBinaryValueList("certificates");
    *
    *   // Non-existent paths will return an empty list.
-   *   List&lt;byte[]&gt; emptyList = gsr.getBinaryValueList("pathThatDoesNotExist");
+   *   List&lt;byte[]&gt; emptyList =
+   *       gsr.getBinaryValueList("pathThatDoesNotExist");
    * </code></pre>
    *
    * @param path  The path to the requested attribute.

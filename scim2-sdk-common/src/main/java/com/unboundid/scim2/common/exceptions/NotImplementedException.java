@@ -43,7 +43,8 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * The NotImplementedException in the above example can be created with the
  * following Java code:
  * <pre>
- *   throw new NotImplementedException("The requested endpoint is not supported.");
+ *   throw new NotImplementedException(
+ *       "The requested endpoint is not supported.");
  * </pre>
  *
  * This exception type generally does not have a {@code scimType} value.

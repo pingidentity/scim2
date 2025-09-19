@@ -25,6 +25,9 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import java.util.Objects;
 
 /**
+ * This class defines the "enterprise user schema extension" as defined by
+ * <a href="https://datatracker.ietf.org/doc/html/rfc7643#section-4.3">
+ * RFC 7643 Section 4.3</a>. Appended to {@link UserResource} objects, this is a
  * SCIM extension commonly used in representing users that belong to, or act
  * on behalf of a business or enterprise.
  */

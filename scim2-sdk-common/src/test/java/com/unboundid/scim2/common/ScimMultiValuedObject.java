@@ -49,7 +49,7 @@ public class ScimMultiValuedObject<T>
   boolean primary;
 
   /**
-   * The display name for this value.  For example:  "{@code Work phone number}".
+   * The display name for this value, e.g., {@code Work phone number}.
    */
   @Attribute(description = "The display name of the attribute attribute.",
       mutability = AttributeDefinition.Mutability.IMMUTABLE)

@@ -845,7 +845,7 @@ public class SchemaChecker
           " is read-only");
     }
     if (attribute.getMutability() ==
-        AttributeDefinition.Mutability.IMMUTABLE )
+        AttributeDefinition.Mutability.IMMUTABLE)
     {
       if (node == null)
       {

@@ -34,7 +34,7 @@ import java.util.Collection;
  * the attribute values is a JsonReference object.  This will preserve those
  * values, so that if a value was explicitly set to null, we will know that,
  * but if not, we will know it was never set.  During serialization, we will
- * serialize "{@code null}" values, but not serialize never set values.
+ * serialize explicit {@code null} values, but not uninitialized values.
  */
 public class JsonRefBeanSerializer extends JsonSerializer<Object>
 {

@@ -45,8 +45,12 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
 
 /**
  * A ContainerRequestFilter implementation to convert a search request using
- * HTTP POST combine with the "{@code .search}" path extension to a regular search
+ * HTTP POST combine with the {@code .search} path extension to a regular search
  * using HTTP GET.
+ * <br><br>
+ *
+ * For more information on this type of search request, see the documentation
+ * for the {@link SearchRequest} class.
  */
 @Provider
 @PreMatching
@@ -62,7 +66,6 @@ public class DotSearchFilter implements ContainerRequestFilter
     if (requestContext.getMethod().equals(HttpMethod.POST) &&
         requestContext.getUriInfo().getPath().endsWith(
             SEARCH_WITH_POST_PATH_EXTENSION))
-
     {
       if (requestContext.getMediaType() == null ||
           !(requestContext.getMediaType().isCompatible(

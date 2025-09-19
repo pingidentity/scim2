@@ -26,7 +26,32 @@ import java.net.URI;
 import java.util.Objects;
 
 /**
- * Group membership for the user.
+ * The {@code Group} class represents a group membership field that is stored on
+ * a user resource. Note that the group resource object, which represents a
+ * group entity, is instead represented by the {@link GroupResource} class.
+ * Unlike GroupResource, this class represents an attribute that is stored on a
+ * {@link UserResource} to represent the groups that a given user is a part of.
+ * <br><br>
+ *
+ * For example, if a user is as a member of a single group, the JSON
+ * representing the user resource would look like:
+ * <pre>
+ * {
+ *   "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
+ *   "userName": "muhammad.ali",
+ *   "groups": [{
+ *     "value": "ace5",
+ *     "display": "Heavyweights"
+ *   }]
+ * }
+ * </pre>
+ *
+ * The above user resource can be created with the following Java code:
+ * <pre><code>
+ *   UserResource user = new UserResource()
+ *       .setUserName("muhammad.ali")
+ *       .setGroups(new Group().setValue("ace5").setDisplay("Heavyweights"));
+ * </code></pre>
  */
 public class Group
 {

@@ -738,7 +738,7 @@ public class SchemaUtils
   /**
    * Returns true if the string passed in appears to be an urn.
    * That determination is made by looking to see if the string
-   * starts with "{@code urn:}".
+   * starts with {@code urn:}.
    *
    * @param string the string to check.
    * @return true if it's an urn, or false if not.
@@ -751,9 +751,9 @@ public class SchemaUtils
 
   /**
    * Will force the string passed in to look like an urn.  If the
-   * string starts with "{@code urn:}" it will be returned as is, however
+   * string starts with {@code urn:} it will be returned as is, however
    * if the string starts with anything else, this method will
-   * prepend "{@code urn:}".  This is mainly so that if we have a class that
+   * prepend {@code urn:}.  This is mainly so that if we have a class that
    * will be used as an extension schema, we will ensure that its
    * schema will be an urn and distinguishable from all other unmapped
    * values.

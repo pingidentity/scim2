@@ -41,7 +41,8 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * The ResourceNotFoundException in the above example can be created with the
  * following Java code:
  * <pre>
- *   throw new ResourceNotFoundException("The requested resource was not found.");
+ *   throw new ResourceNotFoundException(
+ *       "The requested resource was not found.");
  * </pre>
  *
  * This exception type generally does not have a {@code scimType} value.

@@ -211,10 +211,10 @@
     <module name="FinalParameters" />
   </module>
 
-  <!-- Ensure that there are no lines longer than 100 characters. -->
+  <!-- Lines should be wrapped at 80 characters. Some extra room is allowed. -->
   <module name="LineLength">
     <property name="fileExtensions" value="java"/>
-    <property name="max" value="100"/>
+    <property name="max" value="85"/>
     <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
   </module>
 
@@ -225,5 +225,4 @@
 
   <!-- Ensure that each Java package has a package-info.java file. -->
   <module name="JavadocPackage"/>
-
 </module>
