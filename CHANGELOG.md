@@ -30,6 +30,10 @@ exception for a client that has entered potentially-sensitive information via UR
 This exception encourages SCIM clients to re-issue these requests as a POST search request that is
 less susceptible to leaking this information from web browsers or log data.
 
+Deprecated the `BaseScimResource#addExtensionValue` methods, since they allowed creating schema
+extension attributes whose values are arrays instead of objects. Since this is a form that is not
+used in practice, these methods will be removed in a future release.
+
 Fixed an issue where deserialization of `ListResponse` objects could result in `ClassCastException`
 errors if an application tried to use fields stored in the `Resources` array. Now, the SCIM SDK
 supports these conversions (via Jackson `TypeReference` objects). See the class-level Javadoc of
