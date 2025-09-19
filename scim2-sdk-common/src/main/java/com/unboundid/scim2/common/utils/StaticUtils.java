@@ -268,4 +268,20 @@ public final class StaticUtils
 
     return list;
   }
+
+  @NotNull
+  public static <T> ArrayList<T> toNullFreeList(@Nullable final Iterable<T> it)
+  {
+    final ArrayList<T> returnList = new ArrayList<>();
+    Iterable<T> iterable = (it == null) ? List.of() : it;
+    for (T element : iterable)
+    {
+      if (element != null)
+      {
+        returnList.add(element);
+      }
+    }
+
+    return returnList;
+  }
 }

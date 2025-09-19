@@ -26,6 +26,10 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.messages.BulkOpType;
+import com.unboundid.scim2.common.messages.BulkOperation;
+import com.unboundid.scim2.common.messages.BulkOperationResult;
+import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.messages.PatchOpType;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
@@ -1010,5 +1014,24 @@ public class PatchOpTestCase
     GenericScimResource user = userResource.asGenericScimResource();
     request.apply(user);
     return JsonUtils.nodeToValue(user.getObjectNode(), UserResource.class);
+  }
+
+  @Test
+  public void test()
+  {
+    var userResource = new UserResource().setUserName("name");
+    var op = new BulkOperationResult(BulkOpType.POST,
+        "200",
+        "/Users/fa1afe1",
+        userResource.asGenericScimResource().getObjectNode(),
+        "originalBulkId",
+        null);
+
+    ErrorResponse response = BadRequestException.invalidSyntax(
+        "Request is unparsable, syntactically incorrect, or violates the schema.")
+        .getScimError();
+    var error = BulkOperationResult.error(BulkOpType.POST,
+        response, null);
+    System.out.println(error);
   }
 }

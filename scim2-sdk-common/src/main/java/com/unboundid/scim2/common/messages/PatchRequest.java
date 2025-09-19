@@ -133,7 +133,7 @@ public final class PatchRequest
    *
    * @param object The GenericScimResourceObject to apply this patch to.
    *
-   * @throws ScimException If the one or more patch operations is invalid.
+   * @throws ScimException If one or more patch operations are invalid.
    */
   public void apply(@NotNull final GenericScimResource object)
       throws ScimException

@@ -25,6 +25,8 @@ import com.unboundid.scim2.common.annotations.Schema;
 import java.util.List;
 import java.util.Objects;
 
+import static com.unboundid.scim2.common.utils.StaticUtils.toList;
+
 /**
  * SCIM provides a resource type for "{@code Group}" resources.  The core schema
  * for "{@code Group}" is identified using the URI:
@@ -97,6 +99,24 @@ public class GroupResource extends BaseScimResource
   public GroupResource setMembers(@Nullable final List<Member> members)
   {
     this.members = members;
+    return this;
+  }
+
+  /**
+   * Alternate version of {@link #setMembers(List)} that allows specifying
+   * members individually.
+   *
+   * @param member    The first member of the group. This must not be
+   *                  {@code null}.
+   * @param members   An optional field for additional members. Any {@code null}
+   *                  values will be ignored.
+   * @return  This object.
+   */
+  @NotNull
+  public GroupResource setMembers(@NotNull Member member,
+                                  @Nullable Member... members)
+  {
+    this.members = toList(member, members);
     return this;
   }
 
