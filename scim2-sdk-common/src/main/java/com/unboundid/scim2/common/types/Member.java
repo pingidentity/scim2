@@ -185,7 +185,7 @@ public class Member
     }
     final Member member = (Member) o;
     return value.equals(member.value) &&
-        ref.equals(member.ref) &&
+        Objects.equals(ref, member.ref) &&
         Objects.equals(type, member.type) &&
         Objects.equals(display, member.display);
   }

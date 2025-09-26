@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.LongNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
@@ -42,12 +43,15 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.EqualFilter;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.filters.FilterType;
+import com.unboundid.scim2.common.types.Member;
+import com.unboundid.scim2.common.utils.Debug;
 import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -71,39 +75,47 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * <br><br>
  *
  * To create an {@code add} operation, use methods of the following form:
- * <pre>
+ * <pre><code>
  *   PatchOperation.addIntegerValues(path, 512);
  *   PatchOperation.addStringValues(path, "Kingdom Tears");
  *   PatchOperation.add(path, jsonNodeValue);
- * </pre>
+ * </code></pre>
  *
  * To create a {@code remove} operation, use the following method:
- * <pre>
- *   PatchOperation.remove(path);
- * </pre>
+ * <pre><code>
+ *   // Remove the "displayName" attribute from a resource.
+ *   PatchOperation.remove("displayName");
+ *
+ *   // Remove a user with an ID of "ca11ab1e" from a group resource.
+ *   PatchOperation.remove("members[value eq \"ca11ab1e\"]");
+ * </code></pre>
+ * For non-standard remove operations that mandate setting a {@code value}
+ * field, see {@link #removeOpValue(JsonNode)}.
+ * <br><br>
  *
  * To create a {@code replace} operation, use methods of the following form:
- * <pre>
+ * <pre><code>
  *   PatchOperation.replace(path, 512);
  *   PatchOperation.replace(path, "Kingdom Tears");
  *   PatchOperation.replace(path, true);
  *   PatchOperation.replace(path, jsonNodeValue);
- * </pre>
+ * </code></pre>
  *
  * To create a patch operation in an alternative way, use the {@link #create}
  * static method. This method is useful if the operation type is not known at
  * compile time.
- * <pre>
+ * <pre><code>
  *   PatchOperation.create(operationType, path, jsonNodeValue);
- * </pre>
+ * </code></pre>
  *
  * Note that many of the helper methods for {@code add} and {@code replace}
  * operations do not accept a {@code null} path because they are intended for
  * targeting an attribute value. For example, to replace a user's email, the
  * following method may be used:
- * <pre>
+ * <pre><code>
  *   PatchOperation.replace("emails", "muhammad.ali@example.com")
- * </pre>
+ * </code></pre>
+ *
  * If a {@code null} path is needed for an {@code add} or {@code replace}
  * operation, then use the {@link #add(JsonNode)} and
  * {@link #replace(ObjectNode)} methods.
@@ -129,7 +141,12 @@ public abstract class PatchOperation
   private final Path path;
 
 
-  static final class AddOperation extends PatchOperation
+  /**
+   * This class represents a SCIM 2 {@code add} patch operation as defined by
+   * <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.5.2.1">
+   * RFC 7644 Section 3.5.2.1</a>.
+   */
+  protected static class AddOperation extends PatchOperation
   {
     @NotNull
     @JsonProperty
@@ -143,7 +160,7 @@ public abstract class PatchOperation
      * @throws ScimException If a value is not valid.
      */
     @JsonCreator
-    private AddOperation(
+    protected AddOperation(
         @Nullable @JsonProperty(value = "path")
         final Path path,
         @NotNull @JsonProperty(value = "value", required = true)
@@ -173,22 +190,6 @@ public abstract class PatchOperation
     public JsonNode getJsonNode()
     {
       return value.deepCopy();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Nullable
-    public <T> T getValue(@NotNull final Class<T> cls)
-        throws JsonProcessingException, ScimException, IllegalArgumentException
-    {
-      if (value.isArray())
-      {
-        throw new IllegalArgumentException("Patch operation contains " +
-            "multiple values");
-      }
-      return JsonUtils.getObjectReader().treeToValue(value, cls);
     }
 
     /**
@@ -563,17 +564,36 @@ public abstract class PatchOperation
     }
   }
 
-  static final class RemoveOperation extends PatchOperation
+  /**
+   * This class represents a SCIM 2 {@code remove} patch operation as defined by
+   * <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.5.2.2">
+   * RFC 7644 Section 3.5.2.2</a>.
+   */
+  protected static class RemoveOperation extends PatchOperation
   {
     /**
-     * Create a new remove patch operation.
-     *
-     * @param path The path targeted by this patch operation.
-     * @throws ScimException If a path is null.
+     * This is usually {@code null}, but may be set for specific requests. See
+     * {@link #removeOpValue}.
      */
-    @JsonCreator
-    private RemoveOperation(
-        @NotNull @JsonProperty(value = "path", required = true) final Path path)
+    @Nullable
+    @JsonProperty
+    private JsonNode value;
+
+    /**
+     * Create a new remove patch operation.
+     * <br><br>
+     *
+     * Remove operations do not have a {@code value} in most cases. See
+     * {@link #removeOpValue(JsonNode)} for details on setting this field.
+     *
+     * @param path    The path targeted by this patch operation.
+     * @param value   If not {@code null}, this represents values that should be
+     *                removed from a resource.
+     * @throws ScimException  If the path was not valid.
+     */
+    protected RemoveOperation(
+        @NotNull @JsonProperty(value = "path", required = true) final Path path,
+        @Nullable @JsonProperty(value = "value") final JsonNode value)
             throws ScimException
     {
       super(path);
@@ -582,6 +602,8 @@ public abstract class PatchOperation
         throw BadRequestException.noTarget(
             "path field must not be null for remove operations");
       }
+
+      this.value = (NullNode.getInstance().equals(value)) ? null : value;
     }
 
     /**
@@ -596,11 +618,112 @@ public abstract class PatchOperation
 
     /**
      * {@inheritDoc}
+     * <br><br>
+     *
+     * Note: This method will return {@code null} unless a value was set on this
+     * remove operation explicitly. See {@link #removeOpValue(JsonNode)}.
+     *
+     * @return  The value or values of the patch operation.
+     */
+    @Override
+    @Nullable
+    public JsonNode getJsonNode()
+    {
+      return (value == null) ? null : value.deepCopy();
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void apply(@NotNull final ObjectNode node) throws ScimException
     {
-      JsonUtils.removeValues(getPath(), node);
+      Path path = Objects.requireNonNull(getPath());
+      if (value != null)
+      {
+        if (!"members".equalsIgnoreCase(path.toString()))
+        {
+          throw new BadRequestException("Cannot apply the operation since it"
+              + " has a value, but an invalid '%s' path.".formatted(path));
+        }
+
+        // This is a non-standard remove operation for group membership removal.
+        path = combinePathAndValue();
+        if (path == null)
+        {
+          return;
+        }
+      }
+
+      JsonUtils.removeValues(path, node);
+    }
+
+    /**
+     * This method is used for processing non-standard patch remove operations
+     * as described by {@link #removeOpValue(JsonNode)}. This method returns an
+     * equivalent path representing the data to remove. Consider the operation:
+     * <pre>
+     *   {
+     *     "op": "remove",
+     *     "path": "members",
+     *     "value": {
+     *       "members": [{
+     *         "display": "Example Group Member",
+     *         "value": "2819c223-7f76-453a-919d-413861904646"
+     *       }]
+     *     }
+     *   }
+     * </pre>
+     *
+     * For this example, the following path is returned, which represents the
+     * equivalent path that would have been provided for a remove operation
+     * compliant with the standard.
+     * <pre>
+     *   members[value eq "2819c223-7f76-453a-919d-413861904646"]
+     * </pre>
+     *
+     * Only the {@code value} field will be placed in the filter. Other fields
+     * on the {@link Member} object (e.g., display) will be ignored. The
+     * {@code value} stored on the Member object must not be null.
+     *
+     * @return  An equivalent path representing values to remove or {@code null}
+     *          if there is no update to perform.
+     *
+     * @throws BadRequestException  If the operation is improperly formatted.
+     */
+    @Nullable
+    private Path combinePathAndValue() throws BadRequestException
+    {
+      List<Member> memberList = getRemoveMemberList();
+      if (memberList.isEmpty())
+      {
+        // Empty lists should not cause an exception.
+        return null;
+      }
+
+      // For each member in the request, construct a filter.
+      List<Filter> filters = new ArrayList<>();
+      for (Member member : getRemoveMemberList())
+      {
+        if (member.getValue() != null)
+        {
+          filters.add(Filter.eq("value", member.getValue()));
+        }
+      }
+
+      // Return a path that takes one of the following forms:
+      // members[value eq "ca11ab1e"]
+      // members[(value eq "ca11ab1e") or (value eq "c0a1e5ce")]
+      Filter valueFilter = switch (filters.size())
+      {
+        case 0 -> throw new BadRequestException(
+            "The remove operation was formatted incorrectly because it did"
+                + " not contain a Member object with a 'value' subfield set.");
+        case 1 -> filters.get(0);
+        default -> Filter.or(filters);
+      };
+
+      return Path.root().attribute("members", valueFilter);
     }
 
     /**
@@ -623,6 +746,11 @@ public abstract class PatchOperation
       }
 
       RemoveOperation that = (RemoveOperation) o;
+      if (!Objects.equals(value, that.value))
+      {
+        return false;
+      }
+
       return Objects.equals(getPath(), that.getPath());
     }
 
@@ -634,11 +762,16 @@ public abstract class PatchOperation
     @Override
     public int hashCode()
     {
-      return Objects.hash(getPath());
+      return Objects.hash(getPath(), value);
     }
   }
 
-  static final class ReplaceOperation extends PatchOperation
+  /**
+   * This class represents a SCIM 2 {@code replace} patch operation as defined by
+   * <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.5.2.3">
+   * RFC 7644 Section 3.5.2.3</a>.
+   */
+  protected static class ReplaceOperation extends PatchOperation
   {
     @NotNull
     @JsonProperty
@@ -652,7 +785,7 @@ public abstract class PatchOperation
      * @throws ScimException If a value is not valid.
      */
     @JsonCreator
-    private ReplaceOperation(
+    protected ReplaceOperation(
         @Nullable @JsonProperty(value = "path")
         final Path path,
         @NotNull @JsonProperty(value = "value", required = true)
@@ -682,22 +815,6 @@ public abstract class PatchOperation
     public JsonNode getJsonNode()
     {
       return value.deepCopy();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Nullable
-    public <T> T getValue(@NotNull final Class<T> cls)
-        throws JsonProcessingException, ScimException, IllegalArgumentException
-    {
-      if (value.isArray())
-      {
-        throw new IllegalArgumentException("Patch operation contains " +
-            "multiple values");
-      }
-      return JsonUtils.getObjectReader().treeToValue(value, cls);
     }
 
     /**
@@ -827,15 +944,11 @@ public abstract class PatchOperation
    * returned JsonNode is a copy so it may be altered without altering this
    * operation.
    *
-   * @return  The value or values of the patch operation, or {@code null}
-   *          if this operation is a remove operation.
+   * @return  The value or values of the patch operation.
    */
   @Nullable
   @JsonIgnore
-  public JsonNode getJsonNode()
-  {
-    return null;
-  }
+  public abstract JsonNode getJsonNode();
 
   /**
    * Retrieve the value of the patch operation.
@@ -846,16 +959,26 @@ public abstract class PatchOperation
    * @return The value of the patch operation.
    * @throws JsonProcessingException If the value can not be parsed to the
    *         type specified by the Java class object.
-   * @throws ScimException If the path is invalid.
    * @throws IllegalArgumentException If the operation contains more than one
    *         value, in which case, the getValues method should be used to
    *         retrieve all values.
    */
   @Nullable
   public <T> T getValue(@NotNull final Class<T> cls)
-      throws JsonProcessingException, ScimException, IllegalArgumentException
+      throws JsonProcessingException, IllegalArgumentException
   {
-    return null;
+    JsonNode value = getJsonNode();
+    if (value == null)
+    {
+      return null;
+    }
+
+    if (value.isArray())
+    {
+      throw new IllegalArgumentException("Patch operation contains " +
+          "multiple values");
+    }
+    return JsonUtils.nodeToValue(value, cls);
   }
 
   /**
@@ -867,13 +990,83 @@ public abstract class PatchOperation
    * @return The values of the patch operation.
    * @throws JsonProcessingException If the value can not be parsed to the
    *         type specified by the Java class object.
-   * @throws ScimException If the path is invalid.
    */
   @Nullable
   public <T> List<T> getValues(@NotNull final Class<T> cls)
       throws JsonProcessingException, ScimException
   {
     return null;
+  }
+
+  /**
+   * For non-standard remove operations that contain a {@code value} field for
+   * group membership removal updates, this method provides a convenient way to
+   * fetch the members contained within the patch operation as {@link Member}
+   * objects. See {@link #removeOpValue(JsonNode)} for examples and background.
+   *
+   * @return  The {@link Member} objects contained in the remove request.
+   * @throws BadRequestException    If the JSON is invalid and cannot be
+   *                                converted into {@link Member} objects.
+   * @throws IllegalStateException  If the opType is not {@code remove}.
+   *
+   * @since 4.1.0
+   */
+  @NotNull
+  @JsonIgnore
+  public List<Member> getRemoveMemberList()
+      throws BadRequestException, IllegalStateException
+  {
+    if (getOpType() != PatchOpType.REMOVE)
+    {
+      throw new IllegalStateException(
+          "Fetching members is only supported for 'remove' operations.");
+    }
+
+    JsonNode value = getJsonNode();
+    if (value == null)
+    {
+      return Collections.emptyList();
+    }
+
+    // The array will either be the value itself, or it will be nested under
+    // the 'members' field. See removeOpValue() for example JSON structures.
+    ArrayNode members;
+    if (value instanceof ArrayNode array)
+    {
+      members = array;
+    }
+    else
+    {
+      JsonNode memberPath = value.get("members");
+      if (memberPath instanceof ArrayNode nestedArray)
+      {
+        members = nestedArray;
+      }
+      else
+      {
+        var e = new BadRequestException(
+            "Could not extract a Member object list from the patch operation.");
+        Debug.debugException(e);
+        throw e;
+      }
+    }
+
+    ArrayList<Member> list = new ArrayList<>(members.size());
+    for (JsonNode node : members)
+    {
+      try
+      {
+        list.add(JsonUtils.nodeToValue(node, Member.class));
+      }
+      catch (JsonProcessingException e)
+      {
+        Debug.debugException(e);
+        throw new BadRequestException(
+            "The provided JSON contained an invalid Member representation.");
+      }
+    }
+
+    return list;
   }
 
   /**
@@ -1957,12 +2150,172 @@ public abstract class PatchOperation
   {
     try
     {
-      return new RemoveOperation(path);
+      return new RemoveOperation(path, null);
     }
     catch (ScimException e)
     {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  /**
+   * This method sets the {@code value} field of a {@code remove} operation.
+   * <br><br>
+   *
+   * <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.5.2.2">
+   * RFC 7644 Section 3.5.2.2</a> defines a patch remove operation as an
+   * operation that does not have a {@code value} field. However, some SCIM
+   * service providers still mandate setting a {@code value} when processing
+   * requests that remove users from a group. For example, the following
+   * {@code PatchOperation} JSON contains a remove operation that removes a
+   * {@link Member} object from a
+   * {@link com.unboundid.scim2.common.types.GroupResource GroupResource}:
+   * <pre>
+   *   {
+   *     "op": "remove",
+   *     "path": "members",
+   *     "value": {
+   *       "members": [{
+   *         "value": "ca11ab1e"
+   *       }]
+   *     }
+   *   }
+   * </pre>
+   *
+   * When a remove operation is instantiated with {@link PatchOperation#remove},
+   * it does not contain a {@code value} by default. However, for applications
+   * that must interface with API endpoints that require a value, this method
+   * may be used to attach a {@code JsonNode} value. The above patch operation
+   * can be created with the following Java code:
+   * <pre><code>
+   *   Member m = new Member().setValue("ca11ab1e");
+   *   PatchOperation operation = PatchOperation.remove("members")
+   *       .removeOpValue(List.of(m), false);
+   *
+   *   JsonNode value = newValue();
+   *   PatchOperation operation2 =
+   *       PatchOperation.remove("members").removeOpValue(value);
+   * </code></pre>
+   *
+   * Once a remove operation object has a value added, the list of members can
+   * be obtained with the {@link #getRemoveMemberList()} method:
+   * <pre><code>
+   *   List&lt;Member&gt; memberList = operation.getRemoveMemberList();
+   * </code></pre>
+   *
+   * For more information on constructing these requests in code, see
+   * {@link #removeOpValue(List, boolean)}.
+   *
+   * @param value   The new value for the {@code remove} operation, indicating
+   *                the values that should be removed. This may be {@code null}
+   *                to clear any existing value already stored on the operation.
+   * @return  This patch operation.
+   *
+   * @throws IllegalStateException  If this method is called for a patch
+   *                                operation that is not a {@code remove} type.
+   *
+   * @since 4.1.0
+   */
+  @NotNull
+  public PatchOperation removeOpValue(@Nullable final JsonNode value)
+      throws IllegalStateException
+  {
+    if (getOpType() != PatchOpType.REMOVE)
+    {
+      throw new IllegalStateException(
+          "The 'removeValue()' method may only be used for remove operations.");
+    }
+
+    ((RemoveOperation) this).value = value;
+    return this;
+  }
+
+  /**
+   * Alternate version of {@link #removeOpValue(JsonNode)} that sets a value for
+   * a remove operation, and accepts a list of {@link Member} objects to remove.
+   * <br><br>
+   *
+   * Different SCIM services require different structures for this request. If
+   * the {@code useMemberField} value is {@code true}, the resulting JSON for
+   * the remove operation will take the form of:
+   * <pre>
+   *   {
+   *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+   *     "Operations": [{
+   *       "op": "remove",
+   *       "path": "members",
+   *       "value": {
+   *         "members": [{
+   *           "value": "2819c223-7f76-453a-919d-413861904646"
+   *         }]
+   *       }
+   *     }]
+   *   }
+   * </pre>
+   *
+   * Otherwise, if {@code useMemberField} is {@code false}, the resulting JSON
+   * will instead take the form of:
+   * <pre>
+   *   {
+   *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+   *     "Operations": [{
+   *         "op": "remove",
+   *         "path": "members",
+   *         "value": [{
+   *             "value": "2819c223-7f76-453a-919d-413861904646"
+   *         }]
+   *     }]
+   *   }
+   * </pre>
+   *
+   * Note that for both cases above, the {@code value} stored directly under the
+   * {@code Operations} field refers to the patch operation value, and the
+   * nested {@code value} field refers to the {@link Member#getValue} property.
+   *
+   * @param members           The values to remove from the resource.
+   * @param useMemberField    Indicates whether the JSON should have a nested
+   *                          {@code member} field.
+   *
+   * @return This patch operation.
+   * @throws IllegalStateException  If this method is called on a patch
+   *                                operation type other than {@code remove}.
+   *
+   * @since 4.1.0
+   */
+  @NotNull
+  public PatchOperation removeOpValue(@Nullable final List<Member> members,
+                                      final boolean useMemberField)
+      throws IllegalStateException
+  {
+    ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
+    List<Member> memberList = (members == null) ? List.of() : members;
+    for (Member member : memberList)
+    {
+      if (member != null)
+      {
+        arrayNode.add(JsonUtils.valueToNode(member));
+      }
+    }
+
+    if (arrayNode.isEmpty())
+    {
+      return this;
+    }
+
+    JsonNode memberNode;
+    if (useMemberField)
+    {
+      // Nest the array of values under a 'members' field.
+      memberNode = JsonUtils.getJsonNodeFactory().objectNode()
+          .set("members", arrayNode);
+    }
+    else
+    {
+      memberNode = arrayNode;
+    }
+
+    removeOpValue(memberNode);
+    return this;
   }
 
   /**
@@ -1998,11 +2351,17 @@ public abstract class PatchOperation
    *               operations.
    *
    * @return The new patch operation.
+   *
+   * @throws IllegalArgumentException  If invalid arguments are provided for the
+   *                                   requested patch operation, such as
+   *                                   a {@code null} value for an {@code add}
+   *                                   or {@code replace} operation.
    */
   @NotNull
   public static PatchOperation create(@NotNull final PatchOpType opType,
                                       @NotNull final Path path,
                                       @NotNull final JsonNode value)
+      throws IllegalArgumentException
   {
     return switch (opType)
     {

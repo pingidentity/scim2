@@ -171,7 +171,7 @@ public class ListResponse<T> extends BaseScimResource
    * this purpose.
    */
   @SuppressWarnings("unchecked")
-  @Deprecated(since = "4.0.1")
+  @Deprecated(since = "4.1.0")
   public ListResponse(@NotNull final Map<String, Object> props)
       throws IllegalArgumentException, IllegalStateException
   {

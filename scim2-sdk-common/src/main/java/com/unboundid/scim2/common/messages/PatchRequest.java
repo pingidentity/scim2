@@ -35,9 +35,13 @@ import java.util.Objects;
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
 /**
- * This class represents a SCIM 2 PATCH request. A patch request contains a list
- * of {@link PatchOperation} elements, where each patch operation represents a
- * change that should be applied to a SCIM resource. The following is an example
+ * This class represents a SCIM 2 PATCH request as defined by
+ * <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.5.2">
+ * RFC 7644 Section 3.5.2</a>.
+ * <br><br>
+ *
+ * A patch request contains a list of {@link PatchOperation} elements. Each
+ * operation represents an update to a SCIM resource. This is an example
  * of a patch request in JSON form:
  * <pre>
  * {
@@ -57,11 +61,11 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * This example request contains a single operation that sets the {@code active}
  * value to {@code true}. This request can be created with the following Java
  * code:
- * <pre>
+ * <pre><code>
  *   PatchRequest request = new PatchRequest(
  *       PatchOperation.replace("active", true)
  *   );
- * </pre>
+ * </code></pre>
  *
  * All patch requests are performed atomically. RFC 7644 Section 3.5.2 states
  * that if any operation within the operation list fails, then the resource
@@ -71,7 +75,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:PatchOp",
     name="Patch Operation", description = "SCIM 2.0 Patch Operation Request")
-public final class PatchRequest
+public class PatchRequest
     extends BaseScimResource
     implements Iterable<PatchOperation>
 {
@@ -133,7 +137,7 @@ public final class PatchRequest
    *
    * @param object The GenericScimResourceObject to apply this patch to.
    *
-   * @throws ScimException If the one or more patch operations is invalid.
+   * @throws ScimException If one or more patch operations are invalid.
    */
   public void apply(@NotNull final GenericScimResource object)
       throws ScimException

@@ -25,6 +25,8 @@ import com.unboundid.scim2.common.annotations.Schema;
 import java.util.List;
 import java.util.Objects;
 
+import static com.unboundid.scim2.common.utils.StaticUtils.toList;
+
 /**
  * This class represents a group object as defined by
  * <a href="https://datatracker.ietf.org/doc/html/rfc7643#section-4.2">
@@ -68,7 +70,7 @@ import java.util.Objects;
  * <pre><code>
  *   GroupResource group = new GroupResource()
  *       .setDisplayName("Example Group With One Member")
- *       .setMembers(List.of(new Member().setValue("cab1e").setType("DIRECT")));
+ *       .setMembers(new Member().setValue("cab1e").setType("DIRECT"));
  *   group.setId("8e4d749e-6dde-420a-8d71-00faf8d57510");
  * </code></pre>
  */
@@ -143,6 +145,24 @@ public class GroupResource extends BaseScimResource
   }
 
   /**
+   * Alternate version of {@link #setMembers(List)} that accepts individual
+   * Member objects that are not contained in a list.
+   *
+   * @param member    The first member to add. This must not be {@code null}.
+   * @param members   An optional set of additional arguments. Any {@code null}
+   *                  values will be ignored.
+   * @return This object.
+   *
+   * @since 4.1.0
+   */
+  @NotNull
+  public GroupResource setMembers(@NotNull final Member member,
+                                  @Nullable final Member... members)
+  {
+    return setMembers(toList(member, members));
+  }
+
+  /**
    * Indicates whether the provided object is equal to this group resource.
    *
    * @param o   The object to compare.
@@ -165,7 +185,7 @@ public class GroupResource extends BaseScimResource
       return false;
     }
     final GroupResource that = (GroupResource) o;
-    return displayName.equals(that.displayName) &&
+    return Objects.equals(displayName, that.displayName) &&
         Objects.equals(members, that.members);
   }
 

@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## v4.0.1 - TBD
+## v4.1.0 - TBD
 Added new methods to the Path class to simplify certain usages and make interaction, especially
 instantiation, less verbose. These include:
 * Creation of simple attributes (e.g., `username`) previously had to be performed with
@@ -45,6 +45,44 @@ Updated documentation for `GroupResource` and `Group` to highlight the distincti
 classes, as well as provide examples of how they may be used. GroupResource represents a group
 object/entity, whereas a `Group` is a subfield on a user resource (like `Email`). The documentation
 for `UserResource` was also updated.
+
+Added support for non-standard group membership patch remove requests that contain a value. An
+example JSON for this request type is shared below:
+```json
+    {
+      "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+      "Operations": [{
+        "op": "remove",
+        "path": "members",
+        "value": {
+          "members": [{
+            "value": "2819c223-7f76-453a-919d-413861904646"
+          }]
+        }
+      }]
+    }
+```
+RFC 7644 states that remove operations do not have a `value`. Nevertheless, some SCIM services
+mandate the use of such a field to process group membership operations. To help interface with these
+type of APIs, `PatchOperation` has new `removeOpValue()` and `getRemoveMemberList()` methods. This
+change includes support for applying these operations, where the SCIM SDK will transform the above
+request into the one shown below. For more details, see `PatchOperation#removeOpValue(JsonNode)`.
+Note that this request cannot be created with `PatchOperation#create` for backward compatibility.
+```json
+    {
+      "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+      "Operations": [{
+        "op": "remove",
+        "path": "members[value eq \"2819c223-7f76-453a-919d-413861904646\"]"
+      }]
+    }
+```
+
+The `PatchRequest` and `PatchOperation` classes have been updated so that they are no longer `final`
+and may be extended if desired.
+
+Added a new variant of `GroupResource#setMembers` that allows specifying members individually, so
+that arguments no longer need to be wrapped in a list.
 
 ## v4.0.0 - 2025-Jun-10
 Removed support for Java 11. The UnboundID SCIM 2 SDK now requires Java 17 or a later release.
