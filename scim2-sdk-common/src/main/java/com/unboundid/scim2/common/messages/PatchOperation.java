@@ -1031,7 +1031,7 @@ public abstract class PatchOperation
     }
 
     // The array will either be the value itself, or it will be nested under
-    // the 'members' field. See removeOpValue() for example JSON structures.
+    // the 'members' field. See setRemoveOpValue() for example JSON structures.
     ArrayNode members;
     if (value instanceof ArrayNode array)
     {
@@ -2192,11 +2192,11 @@ public abstract class PatchOperation
    * <pre><code>
    *   Member m = new Member().setValue("ca11ab1e");
    *   PatchOperation operation = PatchOperation.remove("members")
-   *       .removeOpValue(List.of(m), false);
+   *       .setRemoveOpValue(List.of(m), false);
    *
    *   JsonNode value = newValue();
    *   PatchOperation operation2 =
-   *       PatchOperation.remove("members").removeOpValue(value);
+   *       PatchOperation.remove("members").setRemoveOpValue(value);
    * </code></pre>
    *
    * Once a remove operation object has a value added, the list of members can

@@ -175,8 +175,8 @@ public class NonStandardRemoveOperationTest
     assertThat(group.get("members")).isNull();
     assertThat(group.toString()).doesNotContain("def1ec75", "ba5eba11");
 
-    // Passing a non-initialized Member value to 'removeOpValue()' should be a
-    // no-op.
+    // Passing a non-initialized Member value to 'setRemoveOpValue()' should be
+    // a no-op.
     PatchOperation initialRemove = PatchOperation.remove("members")
         .setRemoveOpValue(List.of(new Member().setValue("value")), true);
     JsonNode initialState = initialRemove.getJsonNode();
@@ -188,7 +188,7 @@ public class NonStandardRemoveOperationTest
     initialRemove.setRemoveOpValue(Arrays.asList(null, null), true);
     assertThat(initialRemove.getJsonNode()).isEqualTo(initialState);
 
-    // removeOpValue() should not be permitted for other operation types.
+    // setRemoveOpValue() should not be permitted for other operation types.
     var addOp = PatchOperation.add("userName", TextNode.valueOf("initialVal"));
     assertThatThrownBy(() -> addOp.setRemoveOpValue(TextNode.valueOf("v")))
         .isInstanceOf(IllegalStateException.class)
