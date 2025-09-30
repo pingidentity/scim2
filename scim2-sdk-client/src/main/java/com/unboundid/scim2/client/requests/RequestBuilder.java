@@ -307,7 +307,7 @@ public class RequestBuilder<T extends RequestBuilder<T>>
    * @param resource  The SCIM resource that will be serialized into JSON.
    * @return  An equivalent GenericScimResource.
    *
-   * @since 4.0.1
+   * @since 4.1.0
    */
   @NotNull
   protected GenericScimResource generify(@NotNull final ScimResource resource)

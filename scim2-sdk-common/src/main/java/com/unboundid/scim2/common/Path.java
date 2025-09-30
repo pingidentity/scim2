@@ -462,7 +462,7 @@ public final class Path implements Iterable<Path.Element>
    * @throws IndexOutOfBoundsException  If this path is the root attribute
    *                                    (i.e., the element list size is 0).
    *
-   * @since 4.0.1
+   * @since 4.1.0
    */
   @NotNull
   public Element getLastElement() throws IndexOutOfBoundsException
@@ -560,7 +560,7 @@ public final class Path implements Iterable<Path.Element>
    * @throws IllegalArgumentException  If the attribute name is a sub-attribute
    * (e.g., "name.familyName"), schema extension, or contains a filter.
    *
-   * @since 4.0.1
+   * @since 4.1.0
    */
   @NotNull
   public static Path of(@NotNull final String attribute)

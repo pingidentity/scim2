@@ -117,7 +117,7 @@ public class ForbiddenException extends ScimException
    * @param errorMsg  The error message for this SCIM exception.
    * @return  The new {@code ForbiddenException}.
    *
-   * @since 4.0.1
+   * @since 4.1.0
    */
   @NotNull
   public static ForbiddenException sensitive(@Nullable final String errorMsg)
