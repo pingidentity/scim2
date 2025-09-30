@@ -90,7 +90,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *   PatchOperation.remove("members[value eq \"ca11ab1e\"]");
  * </code></pre>
  * For non-standard remove operations that mandate setting a {@code value}
- * field, see {@link #removeOpValue(JsonNode)}.
+ * field, see {@link #setRemoveOpValue(JsonNode)}.
  * <br><br>
  *
  * To create a {@code replace} operation, use methods of the following form:
@@ -573,7 +573,7 @@ public abstract class PatchOperation
   {
     /**
      * This is usually {@code null}, but may be set for specific requests. See
-     * {@link #removeOpValue}.
+     * {@link #setRemoveOpValue}.
      */
     @Nullable
     @JsonProperty
@@ -584,7 +584,7 @@ public abstract class PatchOperation
      * <br><br>
      *
      * Remove operations do not have a {@code value} in most cases. See
-     * {@link #removeOpValue(JsonNode)} for details on setting this field.
+     * {@link #setRemoveOpValue(JsonNode)} for details on setting this field.
      *
      * @param path    The path targeted by this patch operation.
      * @param value   If not {@code null}, this represents values that should be
@@ -603,6 +603,7 @@ public abstract class PatchOperation
             "path field must not be null for remove operations");
       }
 
+      // Check for explicit null values stored in the JSON.
       this.value = (NullNode.getInstance().equals(value)) ? null : value;
     }
 
@@ -621,7 +622,7 @@ public abstract class PatchOperation
      * <br><br>
      *
      * Note: This method will return {@code null} unless a value was set on this
-     * remove operation explicitly. See {@link #removeOpValue(JsonNode)}.
+     * remove operation explicitly. See {@link #setRemoveOpValue(JsonNode)}.
      *
      * @return  The value or values of the patch operation.
      */
@@ -660,8 +661,9 @@ public abstract class PatchOperation
 
     /**
      * This method is used for processing non-standard patch remove operations
-     * as described by {@link #removeOpValue(JsonNode)}. This method returns an
-     * equivalent path representing the data to remove. Consider the operation:
+     * as described by {@link #setRemoveOpValue(JsonNode)}. This method returns
+     * an equivalent path that representing the data to remove. Consider the
+     * following patch operation:
      * <pre>
      *   {
      *     "op": "remove",
@@ -1002,7 +1004,7 @@ public abstract class PatchOperation
    * For non-standard remove operations that contain a {@code value} field for
    * group membership removal updates, this method provides a convenient way to
    * fetch the members contained within the patch operation as {@link Member}
-   * objects. See {@link #removeOpValue(JsonNode)} for examples and background.
+   * objects. See {@link #setRemoveOpValue(JsonNode)} for more examples.
    *
    * @return  The {@link Member} objects contained in the remove request.
    * @throws BadRequestException    If the JSON is invalid and cannot be
@@ -2204,7 +2206,7 @@ public abstract class PatchOperation
    * </code></pre>
    *
    * For more information on constructing these requests in code, see
-   * {@link #removeOpValue(List, boolean)}.
+   * {@link #setRemoveOpValue(List, boolean)}.
    *
    * @param value   The new value for the {@code remove} operation, indicating
    *                the values that should be removed. This may be {@code null}
@@ -2217,7 +2219,7 @@ public abstract class PatchOperation
    * @since 4.1.0
    */
   @NotNull
-  public PatchOperation removeOpValue(@Nullable final JsonNode value)
+  public PatchOperation setRemoveOpValue(@Nullable final JsonNode value)
       throws IllegalStateException
   {
     if (getOpType() != PatchOpType.REMOVE)
@@ -2231,8 +2233,9 @@ public abstract class PatchOperation
   }
 
   /**
-   * Alternate version of {@link #removeOpValue(JsonNode)} that sets a value for
-   * a remove operation, and accepts a list of {@link Member} objects to remove.
+   * Alternate version of {@link #setRemoveOpValue(JsonNode)} that sets a value
+   * for a remove operation, and accepts a list of {@link Member} objects to
+   * remove.
    * <br><br>
    *
    * Different SCIM services require different structures for this request. If
@@ -2283,8 +2286,8 @@ public abstract class PatchOperation
    * @since 4.1.0
    */
   @NotNull
-  public PatchOperation removeOpValue(@Nullable final List<Member> members,
-                                      final boolean useMemberField)
+  public PatchOperation setRemoveOpValue(@Nullable final List<Member> members,
+                                         final boolean useMemberField)
       throws IllegalStateException
   {
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
@@ -2314,7 +2317,7 @@ public abstract class PatchOperation
       memberNode = arrayNode;
     }
 
-    removeOpValue(memberNode);
+    setRemoveOpValue(memberNode);
     return this;
   }
 

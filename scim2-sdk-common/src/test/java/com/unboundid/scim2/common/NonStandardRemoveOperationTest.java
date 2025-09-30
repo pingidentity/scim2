@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * This class contains tests for {@code remove} PATCH operations that set a
  * {@code value} field in the JSON. This is typically used for group membership
  * updates that involve removing a user from a group resource. See
- * {@link PatchOperation#removeOpValue(JsonNode)} for more details.
+ * {@link PatchOperation#setRemoveOpValue(JsonNode)} for more details.
  * <br><br>
  *
  * The canonical, correct way to remove a member from a group leverages a value
@@ -111,7 +111,7 @@ public class NonStandardRemoveOperationTest
   public void testBasic() throws Exception
   {
     PatchOperation op;
-    Member member;
+    List<Member> member;
 
     GroupResource origGroup = new GroupResource()
         .setDisplayName("testGroup")
@@ -127,16 +127,16 @@ public class NonStandardRemoveOperationTest
     assertThat(group.get("members")).hasSize(groupSize);
 
     // Attempt removing an unrelated member.
-    member = new Member().setValue("fa1afe1");
-    op = PatchOperation.remove("members").removeOpValue(List.of(member), true);
+    member = List.of(new Member().setValue("fa1afe1"));
+    op = PatchOperation.remove("members").setRemoveOpValue(member, true);
     op.apply(group);
     assertThat(group.get("members")).hasSize(groupSize);
 
     // Using the library methods, remove a member by specifying the "value"
     // field in the JSON.
     String memberID = "ca11ab1e";
-    member = new Member().setValue(memberID);
-    op = PatchOperation.remove("members").removeOpValue(List.of(member), true);
+    member = List.of(new Member().setValue(memberID));
+    op = PatchOperation.remove("members").setRemoveOpValue(member, true);
     groupSize--;
     op.apply(group);
     assertThat(group.get("members")).hasSize(groupSize);
@@ -144,7 +144,7 @@ public class NonStandardRemoveOperationTest
 
     // Remove multiple members in a single request.
     op = PatchOperation.remove("members")
-        .removeOpValue(List.of(
+        .setRemoveOpValue(List.of(
             new Member().setValue("c0a1e5ce"),
             new Member().setValue("50f7ba11")
         ), true);
@@ -155,8 +155,8 @@ public class NonStandardRemoveOperationTest
 
     // Remove a member using the alternate JSON structure.
     memberID = "e5ca1a7e";
-    member = new Member().setValue(memberID);
-    op = PatchOperation.remove("members").removeOpValue(List.of(member), false);
+    member = List.of(new Member().setValue(memberID));
+    op = PatchOperation.remove("members").setRemoveOpValue(member, false);
     groupSize--;
     op.apply(group);
     assertThat(group.get("members")).hasSize(groupSize);
@@ -165,7 +165,7 @@ public class NonStandardRemoveOperationTest
     // Remove multiple members in a single request with the alternate JSON
     // structure (by providing "false").
     op = PatchOperation.remove("members")
-        .removeOpValue(List.of(
+        .setRemoveOpValue(List.of(
             new Member().setValue("def1ec75"),
             new Member().setValue("ba5eba11")
         ), false);
@@ -178,24 +178,24 @@ public class NonStandardRemoveOperationTest
     // Passing a non-initialized Member value to 'removeOpValue()' should be a
     // no-op.
     PatchOperation initialRemove = PatchOperation.remove("members")
-        .removeOpValue(List.of(new Member().setValue("value")), true);
+        .setRemoveOpValue(List.of(new Member().setValue("value")), true);
     JsonNode initialState = initialRemove.getJsonNode();
 
-    initialRemove.removeOpValue(null, true);
+    initialRemove.setRemoveOpValue(null, true);
     assertThat(initialRemove.getJsonNode()).isEqualTo(initialState);
-    initialRemove.removeOpValue(List.of(), true);
+    initialRemove.setRemoveOpValue(List.of(), true);
     assertThat(initialRemove.getJsonNode()).isEqualTo(initialState);
-    initialRemove.removeOpValue(Arrays.asList(null, null), true);
+    initialRemove.setRemoveOpValue(Arrays.asList(null, null), true);
     assertThat(initialRemove.getJsonNode()).isEqualTo(initialState);
 
     // removeOpValue() should not be permitted for other operation types.
     var addOp = PatchOperation.add("userName", TextNode.valueOf("initialVal"));
-    assertThatThrownBy(() -> addOp.removeOpValue(TextNode.valueOf("value")))
+    assertThatThrownBy(() -> addOp.setRemoveOpValue(TextNode.valueOf("v")))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("The 'removeValue()' method may only be used for")
         .hasMessageContaining("remove operations.");
     var replaceOp = PatchOperation.replace("userName", "newValue");
-    assertThatThrownBy(() -> replaceOp.removeOpValue(TextNode.valueOf("value")))
+    assertThatThrownBy(() -> replaceOp.setRemoveOpValue(TextNode.valueOf("v")))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("The 'removeValue()' method may only be used for")
         .hasMessageContaining("remove operations.");
@@ -227,7 +227,7 @@ public class NonStandardRemoveOperationTest
     // Construct an equivalent patch request and ensure it is equal.
     PatchRequest pojo = new PatchRequest(
         PatchOperation.remove("members")
-            .removeOpValue(List.of(new Member().setValue("2819c223")), true)
+            .setRemoveOpValue(List.of(new Member().setValue("2819c223")), true)
     );
     assertThat(deserialized).isEqualTo(pojo);
 
@@ -247,7 +247,7 @@ public class NonStandardRemoveOperationTest
             """);
     pojo = new PatchRequest(
         PatchOperation.remove("members")
-            .removeOpValue(List.of(new Member().setValue("2819c223")), false)
+            .setRemoveOpValue(List.of(new Member().setValue("2819c223")), false)
     );
     assertThat(deserialized).isEqualTo(pojo);
 

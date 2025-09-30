@@ -64,9 +64,9 @@ example JSON for this request type is shared below:
 ```
 RFC 7644 states that remove operations do not have a `value`. Nevertheless, some SCIM services
 mandate the use of such a field to process group membership operations. To help interface with these
-type of APIs, `PatchOperation` has new `removeOpValue()` and `getRemoveMemberList()` methods. This
+type of APIs, `PatchOperation` has new `setRemoveOpValue` and `getRemoveMemberList` methods. This
 change includes support for applying these operations, where the SCIM SDK will transform the above
-request into the one shown below. For more details, see `PatchOperation#removeOpValue(JsonNode)`.
+request into the one shown below. For more details, see `PatchOperation#setRemoveOpValue(JsonNode)`.
 Note that this request cannot be created with `PatchOperation#create` for backward compatibility.
 ```json
     {
@@ -81,7 +81,7 @@ Note that this request cannot be created with `PatchOperation#create` for backwa
 The `PatchRequest` and `PatchOperation` classes have been updated so that they are no longer `final`
 and may be extended if desired.
 
-Added a new variant of `GroupResource#setMembers` that allows specifying members individually, so
+Added a new variant of `GroupResource#setMembers` that allows specifying members individually so
 that arguments no longer need to be wrapped in a list.
 
 ## v4.0.0 - 2025-Jun-10
