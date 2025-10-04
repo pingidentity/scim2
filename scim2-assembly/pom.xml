@@ -73,10 +73,12 @@
     <dependency>
       <groupId>com.unboundid.product.scim2</groupId>
       <artifactId>scim2-sdk-server</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.unboundid.product.scim2</groupId>
       <artifactId>scim2-ubid-extensions</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>
