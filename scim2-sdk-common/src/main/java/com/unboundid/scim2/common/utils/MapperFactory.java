@@ -61,7 +61,7 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
  * For example, to disable the
  * {@link MapperFeature#ACCEPT_CASE_INSENSITIVE_PROPERTIES} property, use the
  * following Java code:
- * <pre>
+ * <pre><code>
  *   MapperFactory newFactory = new MapperFactory();
  *   newFactory.setMapperCustomFeatures(
  *       Map.of(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, false)
@@ -69,7 +69,7 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
  *
  *   // Register the new MapperFactory with the SCIM SDK.
  *   JsonUtils.setCustomMapperFactory(newFactory);
- * </pre>
+ * </code></pre>
  *
  * If your desired customization is more complicated than enabling/disabling
  * Jackson features, an alternative is to create a custom {@code MapperFactory}
@@ -77,7 +77,7 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
  * overriding this method, the subclass <em>must</em> first fetch an object
  * mapper from the superclass to ensure that the SCIM SDK's original
  * configuration is preserved. For example:
- * <pre>
+ * <pre><code>
  *   public class CustomMapperFactory extends MapperFactory
  *   {
  *    {@literal @}Override
@@ -96,13 +96,13 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
  *       return mapper;
  *     }
  *   }
- * </pre>
+ * </code></pre>
  *
  * When your application starts up, register your customer mapper factory with
  * the SCIM SDK to use the object mapper returned by the custom class:
- * <pre>
+ * <pre><code>
  *   JsonUtils.setCustomMapperFactory(new CustomMapperFactory());
- * </pre>
+ * </code></pre>
  */
 public class MapperFactory
 {
@@ -224,41 +224,41 @@ public class MapperFactory
   public ObjectMapper createObjectMapper()
   {
     // Create a new object mapper with case-insensitive settings.
-    var objectMapperBuilder = JsonMapper.builder(new ScimJsonFactory());
+    JsonMapper.Builder builder = JsonMapper.builder(new ScimJsonFactory());
 
     // Do not care about case when de-serializing POJOs.
-    objectMapperBuilder.enable(ACCEPT_CASE_INSENSITIVE_PROPERTIES);
+    builder.enable(ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 
-    // Add any custom mapper features. This must be done before other fields
-    // (e.g., serializationCustomFeatures) because it must be configured on the
-    // builder object.
-    mapperCustomFeatures.forEach(objectMapperBuilder::configure);
-
-    final ObjectMapper mapper = objectMapperBuilder.build();
+    // The SCIM SDK relies on its own custom deserializers for timestamps.
+    builder.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     // Don't serialize POJO nulls as JSON nulls.
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    //
+    // This can be replaced with "Value.ALL_NON_NULL" when Jackson 2.21 is used.
+    builder.defaultPropertyInclusion(
+        JsonInclude.Value.construct(
+            JsonInclude.Include.NON_NULL,
+            JsonInclude.Include.NON_NULL));
 
     // Only use xsd:dateTime format for dates.
-    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     SimpleModule dateTimeModule = new SimpleModule();
     dateTimeModule.addSerializer(Calendar.class, new CalendarSerializer());
     dateTimeModule.addDeserializer(Calendar.class, new CalendarDeserializer());
     dateTimeModule.addSerializer(Date.class, new DateSerializer());
     dateTimeModule.addDeserializer(Date.class, new DateDeserializer());
-    mapper.registerModule(dateTimeModule);
+    builder.addModule(dateTimeModule);
 
-    // Use the case-insensitive JsonNodes.
-    mapper.setNodeFactory(new ScimJsonNodeFactory());
+    // Use case-insensitive JsonNodes.
+    builder.nodeFactory(new ScimJsonNodeFactory());
 
-    // Configure the custom Jackson features for object mappers created and used
-    // by the SCIM SDK. This step is performed last to ensure that
-    // customizations are not overwritten.
-    deserializationCustomFeatures.forEach(mapper::configure);
-    jsonGeneratorCustomFeatures.forEach(mapper::configure);
-    jsonParserCustomFeatures.forEach(mapper::configure);
-    serializationCustomFeatures.forEach(mapper::configure);
+    // Add any custom mapper features. This is the last step before building the
+    // object mapper to ensure that customizations are not overwritten.
+    mapperCustomFeatures.forEach(builder::configure);
+    deserializationCustomFeatures.forEach(builder::configure);
+    jsonGeneratorCustomFeatures.forEach(builder::configure);
+    jsonParserCustomFeatures.forEach(builder::configure);
+    serializationCustomFeatures.forEach(builder::configure);
 
-    return mapper;
+    return builder.build();
   }
 }

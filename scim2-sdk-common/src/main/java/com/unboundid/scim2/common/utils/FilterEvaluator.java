@@ -44,7 +44,6 @@ import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -444,22 +443,20 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
    */
   private boolean isEmpty(@NotNull final JsonNode node)
   {
-    if (node.isArray())
-    {
-      Iterator<JsonNode> iterator = node.elements();
-      while (iterator.hasNext())
-      {
-        if (!isEmpty(iterator.next()))
-        {
-          return false;
-        }
-      }
-      return true;
-    }
-    else
+    if (!node.isArray())
     {
       return node.isNull();
     }
+
+    for (JsonNode jsonNode : node)
+    {
+      if (!isEmpty(jsonNode))
+      {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**

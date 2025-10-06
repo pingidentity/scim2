@@ -65,14 +65,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compileSource>17</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
-    <ignore.test.failures>false</ignore.test.failures>
-    <jackson.version>2.19.2</jackson.version>
+    <jackson.version>2.20.0</jackson.version>
+    <jackson-annotations.version>2.20</jackson-annotations.version>
     <jaxb.version>4.0.2</jaxb.version>
     <jakarta-rs.version>4.0.0</jakarta-rs.version>
-    <jersey.version>3.1.10</jersey.version>
+    <jersey.version>3.1.11</jersey.version>
     <testng.version>7.11.0</testng.version>
-    <assertj.version>3.27.4</assertj.version>
-    <maven.surefire.version>3.5.2</maven.surefire.version>
+    <assertj.version>3.27.6</assertj.version>
+    <maven.surefire.version>3.5.4</maven.surefire.version>
   </properties>
 
   <profiles>
@@ -95,7 +95,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>3.2.7</version>
+            <version>3.2.8</version>
             <executions>
               <execution>
                 <id>sign-resources</id>
@@ -149,7 +149,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.14.0</version>
+          <version>3.14.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -162,7 +162,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.4.0</version>
+          <version>3.6.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
@@ -200,7 +200,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -249,6 +249,15 @@
           <propertyExpansion>cacheFile=${project.build.directory}/checkstyle-cachefile</propertyExpansion>
           <logViolationsToConsole>true</logViolationsToConsole>
         </configuration>
+        <dependencies>
+          <!-- Explicitly declare this dependency to resolve a ClassNotFound
+               error in build pipelines. -->
+          <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -359,7 +368,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
+        <version>${jackson-annotations.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>

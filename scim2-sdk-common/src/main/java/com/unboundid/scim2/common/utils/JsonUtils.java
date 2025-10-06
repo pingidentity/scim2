@@ -108,7 +108,7 @@ public class JsonUtils
         throws ScimException
     {
       ArrayNode matchingArray = getJsonNodeFactory().arrayNode();
-      Iterator<JsonNode> i = array.elements();
+      Iterator<JsonNode> i = array.iterator();
       while (i.hasNext())
       {
         JsonNode node = i.next();

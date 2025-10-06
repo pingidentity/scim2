@@ -491,7 +491,7 @@ public class JsonDiff
    */
   private void removeNullAndEmptyValues(@NotNull final JsonNode node)
   {
-    Iterator<JsonNode> si = node.elements();
+    Iterator<JsonNode> si = node.iterator();
     while (si.hasNext())
     {
       JsonNode field = si.next();
