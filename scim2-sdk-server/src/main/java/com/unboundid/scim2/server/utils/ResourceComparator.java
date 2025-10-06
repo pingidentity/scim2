@@ -30,7 +30,6 @@ import com.unboundid.scim2.common.utils.Debug;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -172,10 +171,8 @@ public class ResourceComparator<T extends ScimResource>
       return null;
     }
 
-    Iterator<JsonNode> i = node.elements();
-    while (i.hasNext())
+    for (JsonNode value : node)
     {
-      JsonNode value = i.next();
       JsonNode primary = value.get("primary");
       if (primary != null && primary.booleanValue())
       {

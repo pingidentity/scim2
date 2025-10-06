@@ -239,7 +239,8 @@ public class ListResponseTestCase
   {
     // The object reader that will be used to serialize JSON strings into
     // ListResponse objects.
-    final ObjectReader reader = JsonUtils.getObjectReader();
+    final ObjectReader reader = JsonUtils.getObjectReader()
+        .forType(ListResponse.class);
 
     // When 'totalResults' is 0, a missing "Resources" property should be
     // permitted and translated into an empty list.
@@ -249,7 +250,7 @@ public class ListResponseTestCase
           "totalResults": 0,
           "itemsPerPage": 0
         }""";
-    ListResponse<?> object = reader.readValue(noResource, ListResponse.class);
+    ListResponse<?> object = reader.readValue(noResource);
     assertThat(object.getTotalResults()).isEqualTo(0);
     assertThat(object.getItemsPerPage()).isEqualTo(0);
     assertThat(object.getStartIndex()).isNull();
@@ -264,7 +265,7 @@ public class ListResponseTestCase
           "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
           "totalResults": 0
         }""";
-    ListResponse<?> small = reader.readValue(smallResponse, ListResponse.class);
+    ListResponse<?> small = reader.readValue(smallResponse);
     assertThat(small.getTotalResults()).isEqualTo(0);
     assertThat(small.getItemsPerPage()).isNull();
     assertThat(small.getStartIndex()).isNull();
@@ -279,7 +280,7 @@ public class ListResponseTestCase
           "totalResults": 0,
           "Resources": []
         }""";
-    ListResponse<?> response = reader.readValue(emptyArray, ListResponse.class);
+    ListResponse<?> response = reader.readValue(emptyArray);
     assertThat(response.getTotalResults()).isEqualTo(0);
     assertThat(response.getItemsPerPage()).isNull();
     assertThat(response.getStartIndex()).isNull();
@@ -308,7 +309,7 @@ public class ListResponseTestCase
           "itemsPerPage": 0,
           "Resources": []
         }""";
-    ListResponse<?> response2 = reader.readValue(newObj, ListResponse.class);
+    ListResponse<?> response2 = reader.readValue(newObj);
     assertThat(response2.getTotalResults()).isEqualTo(100);
     assertThat(response2.getItemsPerPage()).isEqualTo(0);
     assertThat(response2.getStartIndex()).isNull();
@@ -326,7 +327,7 @@ public class ListResponseTestCase
           "totalResults": 100,
           "itemsPerPage": 0
         }""";
-    ListResponse<?> response3 = reader.readValue(itemsJSON, ListResponse.class);
+    ListResponse<?> response3 = reader.readValue(itemsJSON);
     assertThat(response3.getTotalResults()).isEqualTo(100);
     assertThat(response3.getItemsPerPage()).isEqualTo(0);
     assertThat(response3.getStartIndex()).isNull();
