@@ -2,8 +2,8 @@ name: Build Status
 
 on:
   push:
-    # Run tests on any push to feature branches.
-    branches: [ "master", "main", "DS-[0-9]+*", "ubid-test" ]
+    # Run tests on any push to the main branch.
+    branches: [ "master", "main", "ubid-test" ]
   pull_request:
     branches: [ "master", "main" ]
 
