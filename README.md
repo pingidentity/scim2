@@ -1,4 +1,4 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.unboundid.product.scim2/scim2-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.unboundid.product.scim2/scim2-parent)
+[![Maven Central](https://img.shields.io/maven-central/v/com.unboundid.product.scim2/scim2-parent)](https://central.sonatype.com/search?q=unboundid.scim2-parent)
 [![Javadocs](http://javadoc.io/badge/com.unboundid.product.scim2/scim2-parent.svg)](http://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent)
 [![Build Status](https://github.com/pingidentity/scim2/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/pingidentity/scim2/actions/workflows/build-and-test.yaml)
 
