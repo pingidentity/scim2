@@ -31,9 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 
 /**
  * This class represents a SCIM 2.0 list response. A list response represents a
@@ -160,38 +158,6 @@ public class ListResponse<T> extends BaseScimResource
 
   @NotNull
   private static final Integer ZERO = 0;
-
-  /**
-   * Create a new List Response.
-   *
-   * @param props  Properties to construct the List Response.
-   *
-   * @deprecated This constructor was previously utilized by Jackson when
-   * deserializing JSON strings into ListResponses, but it is no longer used for
-   * this purpose.
-   */
-  @SuppressWarnings("unchecked")
-  @Deprecated(since = "4.1.0")
-  public ListResponse(@NotNull final Map<String, Object> props)
-      throws IllegalArgumentException, IllegalStateException
-  {
-    final Map<String, Object> properties =
-        new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    properties.putAll(props);
-
-    checkRequiredProperties(properties, "totalResults");
-    this.totalResults = (Integer) properties.get("totalResults");
-    this.itemsPerPage = (Integer) properties.get("itemsPerPage");
-    this.startIndex   = (Integer) properties.get("startIndex");
-
-    var initList = (List<T>) properties.get("Resources");
-    this.resources = resourcesOrEmptyList(initList, itemsPerPage, totalResults);
-
-    if (properties.containsKey("schemas"))
-    {
-      this.setSchemaUrns((Collection<String>) properties.get("schemas"));
-    }
-  }
 
   /**
    * Create a new list response, specifying the value of each field.
@@ -349,21 +315,6 @@ public class ListResponse<T> extends BaseScimResource
   {
     return Objects.hash(super.hashCode(), totalResults, itemsPerPage,
         startIndex, resources);
-  }
-
-  private void checkRequiredProperties(
-      @NotNull final Map<String, Object> properties,
-      @NotNull final String... requiredProperties)
-          throws IllegalStateException
-  {
-    for (final String property : requiredProperties)
-    {
-      if (!properties.containsKey(property))
-      {
-        throw new IllegalStateException(String.format(
-          "Missing required creator property '%s'", property));
-      }
-    }
   }
 
   /**
