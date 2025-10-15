@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v4.1.1 - TBD
+Updated the following dependencies:
+* Jackson: 2.19.2 -> 2.20.0
+* Jersey: 3.1.10 -> 3.1.11
 
 ## v4.1.0 - 2025-Oct-06
 Added new methods to the Path class to simplify certain usages and make interaction, especially
