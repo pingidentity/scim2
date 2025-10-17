@@ -17,9 +17,9 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -236,33 +236,44 @@ public class MapperFactoryTest
    * implement their own object mapper settings.
    */
   @Test
-  public void testOverrideMapperFactoryClass()
+  public void testOverrideMapperFactoryClass() throws Exception
   {
-    // Define a class that inherits from the SCIM SDK's MapperFactory and
-    // overrides the object mapper configuration to explicitly print all null
-    // values.
+    // Override the object mapper configuration to force case-sensitivity.
     class CustomFactory extends MapperFactory
     {
       @NotNull
       @Override
       public ObjectMapper createObjectMapper()
       {
-        ObjectMapper mapper = super.createObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.USE_DEFAULTS);
-        return mapper;
+        return new ObjectMapper();
       }
     }
 
-    // Validate the SCIM SDK's default behavior.
-    final UserResource user = new UserResource().setUserName("kendrick.lamar");
-    assertThat(user.toString()).doesNotContain("null");
+    // A UserResource JSON with capitalized attribute names.
+    String json = """
+        {
+          "SCHEMAS": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+          "USERNAME": "MF DOOM"
+        }
+        """;
+
+    // First validate the SCIM SDK's default behavior. It should be possible to
+    // fetch an attribute value regardless of the casing.
+    final ObjectNode user = JsonUtils.getObjectReader()
+        .forType(ObjectNode.class).readValue(json);
+    assertThat(user.path("userName").asText()).isEqualTo("MF DOOM");
 
     // Update the SCIM SDK's object mapper with the custom factory, which
-    // prints null values.
+    // will require matching casing.
     MapperFactory factory = new CustomFactory();
     JsonUtils.setCustomMapperFactory(factory);
 
-    // Convert the resource to a string again and verify the change in behavior.
-    assertThat(user.toString()).contains("null");
+    // Attempt the same conversion again to verify the change in behavior. This
+    // should now require that the casing of the attribute exactly matches the
+    // field in the JSON.
+    final ObjectNode user2 = JsonUtils.getObjectReader()
+        .forType(ObjectNode.class).readValue(json);
+    assertThat(user2.get("userName")).isNull();
+    assertThat(user2.get("USERNAME").asText()).isEqualTo("MF DOOM");
   }
 }

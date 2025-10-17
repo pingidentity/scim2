@@ -1073,7 +1073,7 @@ public class DiffTestCase
 
   private void removeNullNodes(JsonNode object)
   {
-    Iterator<JsonNode> i = object.elements();
+    Iterator<JsonNode> i = object.iterator();
     while (i.hasNext())
     {
       JsonNode field = i.next();

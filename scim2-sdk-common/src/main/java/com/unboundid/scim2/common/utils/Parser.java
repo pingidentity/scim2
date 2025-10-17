@@ -675,7 +675,7 @@ public class Parser
             // The object mapper will return a Java null for JSON null.
             // Have to distinguish between reading a JSON null and encountering
             // the end of string.
-            if (parser.getCurrentToken() == null && parser.nextToken() == null)
+            if (parser.currentToken() == null && parser.nextToken() == null)
             {
               // End of string.
               valueNode = null;

@@ -694,8 +694,8 @@ public class GenericScimResourceObjectTest
             }
           ]
         }""";
-    ObjectNode node = JsonUtils.getObjectReader()
-        .readValue(rawJSON, ObjectNode.class);
+    ObjectNode node = JsonUtils.getObjectReader().forType(ObjectNode.class)
+        .readValue(rawJSON);
     final GenericScimResource resource = new GenericScimResource(node);
 
     // Ensure the object does not yet contain the new email that will be set by
