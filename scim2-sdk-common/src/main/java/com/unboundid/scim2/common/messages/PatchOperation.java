@@ -992,6 +992,7 @@ public abstract class PatchOperation
    * @return The values of the patch operation.
    * @throws JsonProcessingException If the value can not be parsed to the
    *         type specified by the Java class object.
+   * @throws ScimException If the path is invalid.
    */
   @Nullable
   public <T> List<T> getValues(@NotNull final Class<T> cls)

@@ -2,7 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## v4.1.1 - TBD
+## v5.0.0 - TBD
+Removed the `ListResponse(java.util.Map)` constructor, as well as the
+`BaseScimResource#addExtensionValue` methods. These were deprecated in 4.1.0.
+
 Updated the following dependencies:
 * Jackson: 2.19.2 -> 2.20.0
 * Jersey: 3.1.10 -> 3.1.11
