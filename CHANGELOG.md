@@ -10,6 +10,11 @@ Updated the following dependencies:
 * Jackson: 2.19.2 -> 2.20.0
 * Jersey: 3.1.10 -> 3.1.11
 
+Removed the Jakarta XML Binding dependency (also known as JAXB) from scim2-sdk-common. Now, the
+common library's only dependency is Jackson. `jakarta.xml.bind-api` was used for timestamp
+conversions during serialization and deserialization, but the SCIM SDK has been updated to rely on
+libraries provided with Java SE.
+
 ## v4.1.0 - 2025-Oct-06
 Added new methods to the Path class to simplify certain usages and make interaction, especially
 instantiation, less verbose. These include:
