@@ -17,15 +17,12 @@
 package com.unboundid.scim2.common.utils;
 
 import com.unboundid.scim2.common.annotations.NotNull;
-import jakarta.xml.bind.DatatypeConverter;
-
 import java.time.DateTimeException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
@@ -135,62 +132,7 @@ public final class DateTimeUtils
         ? GMT : TimeZone.getTimeZone(parsedTime.getOffset());
 
     Calendar calendar = Calendar.getInstance(zone);
-    setGregorianCalendar(calendar);
     calendar.setTime(timestamp);
     return calendar;
-  }
-
-  private static void setGregorianCalendar(@NotNull final Calendar calendar)
-  {
-    if (calendar instanceof GregorianCalendar gregorian)
-    {
-      // Observe a pure Gregorian calendar (i.e., not a Julian calendar) as
-      // Jakarta-RS did.
-      gregorian.setGregorianChange(new Date(Long.MIN_VALUE));
-    }
-  }
-
-  /**
-   * Represents the old implementation for this method.
-   *
-   * @param dateStr   The string timestamp.
-   * @return  A calendar object.
-   *
-   * @throws IllegalArgumentException   If the value could not be parsed.
-   */
-  @NotNull
-  public static Calendar oldParse(@NotNull final String dateStr)
-      throws IllegalArgumentException
-  {
-    return DatatypeConverter.parseDateTime(dateStr);
-  }
-
-  /**
-   * Represents the old implementation for this method.
-   *
-   * @param calendar    The calendar.
-   * @return  A calendar object.
-   */
-  @NotNull
-  public static String oldFormat(@NotNull final Calendar calendar)
-  {
-    return DatatypeConverter.printDateTime(calendar);
-  }
-
-  /**
-   * Represents the old implementation for this method.
-   *
-   * @param date      The date.
-   * @param timeZone  The timezone.
-   *
-   * @return  A string timestamp.
-   */
-  @NotNull
-  public static String oldFormat(@NotNull final Date date,
-                                 @NotNull final TimeZone timeZone)
-  {
-    Calendar calendar = Calendar.getInstance(timeZone);
-    calendar.setTime(date);
-    return oldFormat(calendar);
   }
 }

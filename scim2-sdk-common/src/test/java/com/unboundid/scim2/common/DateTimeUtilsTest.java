@@ -24,7 +24,6 @@ import org.testng.annotations.Test;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,9 +52,7 @@ public class DateTimeUtilsTest
     // Serialize the object timestamp to a string. The result should match the
     // provided string representation.
     String computedTimestamp = DateTimeUtils.format(dateObject, timezone);
-    String oldTimestamp = DateTimeUtils.oldFormat(dateObject, timezone);
     assertThat(computedTimestamp).isEqualTo(expected);
-    assertThat(oldTimestamp).isEqualTo(expected);
   }
 
   /**
@@ -75,24 +72,10 @@ public class DateTimeUtilsTest
     Calendar expectedValue = Calendar.getInstance(expectedTimezone);
     expectedValue.setTime(expectedDate);
 
-    // Use a pure Gregorian calendar to match behavior with Jakarta-RS. This is
-    // not really relevant to use cases for identity management, as this
-    // behavior only affects dates from the year 1582 and before.
-    //
-    // This is temporarily being configured so that Calendar objects can easily
-    // be evaluated for equivalency in the unit tests.
-    if (expectedValue instanceof GregorianCalendar gregorian)
-    {
-      gregorian.setGregorianChange(new Date(Long.MIN_VALUE));
-    }
-
-    Calendar oldMethod = DateTimeUtils.oldParse(stringTimestamp);
-
     // Fetch the real value computed by the utility class and ensure it is
     // equivalent.
     Calendar parsedValue = DateTimeUtils.parse(stringTimestamp);
     assertThat(parsedValue).isEqualTo(expectedValue);
-    assertThat(parsedValue).isEqualTo(oldMethod);
   }
 
   /**
@@ -103,8 +86,6 @@ public class DateTimeUtilsTest
   @Test(dataProvider = "invalidTimestamps")
   public void testInvalidTimestamps(final String invalidString)
   {
-    assertThatThrownBy(() -> DateTimeUtils.oldParse(invalidString))
-        .isInstanceOf(IllegalArgumentException.class);
     assertThatThrownBy(() -> DateTimeUtils.parse(invalidString))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("could not be parsed");
