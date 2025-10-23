@@ -18,21 +18,38 @@ package com.unboundid.scim2.common.utils;
 
 import com.unboundid.scim2.common.annotations.NotNull;
 import jakarta.xml.bind.DatatypeConverter;
+
+import java.time.DateTimeException;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
+
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 /**
  * Utility methods for handling SCIM 2 DateTime values. The SCIM 2 DateTime
- * type is defined as a valid xsd:dateTime in RFC 7643, section 2.3.5.
+ * type is defined as a valid {@code xsd:dateTime} in
+ * <a href="https://datatracker.ietf.org/doc/html/rfc7643#section-2.3.5">
+ * RFC 7643, section 2.3.5</a>.
  */
 public final class DateTimeUtils
 {
+  /**
+   * Represents the "UTC" timezone (Coordinated Universal Time).
+   */
   @NotNull
   private static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getTimeZone("UTC");
 
+  @NotNull
+  private static final TimeZone GMT = TimeZone.getTimeZone("GMT+00:00");
+
   /**
    * Formats a {@link Date} value as a SCIM 2 DateTime string.
+   * This will use UTC as the time zone.
    *
    * @param date A Date value.
    * @return The value as a SCIM 2 DateTime string.
@@ -68,7 +85,23 @@ public final class DateTimeUtils
   @NotNull
   public static String format(@NotNull final Calendar calendar)
   {
-    return DatatypeConverter.printDateTime(calendar);
+    OffsetDateTime time = calendar.toInstant()
+        .atZone(calendar.getTimeZone().toZoneId())
+        .toOffsetDateTime()
+        .truncatedTo(ChronoUnit.MILLIS);
+
+    if (time.getNano() > 0)
+    {
+      // Ensure millisecond values, when present, are always printed with three
+      // digits. For example, return "12:00:00.100" instead of "12:00:00.1".
+      return time.toString();
+    }
+    else
+    {
+      // Ensure that the seconds value, when zero, is always explicitly printed.
+      // For example, return "12:00:00" instead of "12:00".
+      return ISO_OFFSET_DATE_TIME.format(time);
+    }
   }
 
   /**
@@ -83,6 +116,81 @@ public final class DateTimeUtils
   public static Calendar parse(@NotNull final String dateStr)
       throws IllegalArgumentException
   {
+    OffsetDateTime parsedTime;
+    try
+    {
+      parsedTime = OffsetDateTime.parse(dateStr);
+    }
+    catch (DateTimeException e)
+    {
+      // Re-throw as an IllegalArgumentException for backward compatibility with
+      // previous releases of the SCIM SDK.
+      throw new IllegalArgumentException(e);
+    }
+
+    // Extract the timestamp and timezone. Timezones in the default region
+    // should be considered as "GMT+00:00" for backward compatibility.
+    Date timestamp = Date.from(parsedTime.toInstant());
+    TimeZone zone = parsedTime.getOffset().equals(ZoneOffset.ofHours(0))
+        ? GMT : TimeZone.getTimeZone(parsedTime.getOffset());
+
+    Calendar calendar = Calendar.getInstance(zone);
+    setGregorianCalendar(calendar);
+    calendar.setTime(timestamp);
+    return calendar;
+  }
+
+  private static void setGregorianCalendar(@NotNull final Calendar calendar)
+  {
+    if (calendar instanceof GregorianCalendar gregorian)
+    {
+      // Observe a pure Gregorian calendar (i.e., not a Julian calendar) as
+      // Jakarta-RS did.
+      gregorian.setGregorianChange(new Date(Long.MIN_VALUE));
+    }
+  }
+
+  /**
+   * Represents the old implementation for this method.
+   *
+   * @param dateStr   The string timestamp.
+   * @return  A calendar object.
+   *
+   * @throws IllegalArgumentException   If the value could not be parsed.
+   */
+  @NotNull
+  public static Calendar oldParse(@NotNull final String dateStr)
+      throws IllegalArgumentException
+  {
     return DatatypeConverter.parseDateTime(dateStr);
+  }
+
+  /**
+   * Represents the old implementation for this method.
+   *
+   * @param calendar    The calendar.
+   * @return  A calendar object.
+   */
+  @NotNull
+  public static String oldFormat(@NotNull final Calendar calendar)
+  {
+    return DatatypeConverter.printDateTime(calendar);
+  }
+
+  /**
+   * Represents the old implementation for this method.
+   *
+   * @param date      The date.
+   * @param timeZone  The timezone.
+   *
+   * @return  A string timestamp.
+   */
+  @NotNull
+  public static String oldFormat(@NotNull final Date date,
+                                 @NotNull final TimeZone timeZone)
+  {
+    Calendar calendar = Calendar.getInstance(timeZone);
+    calendar.setTime(date);
+    return oldFormat(calendar);
   }
 }
