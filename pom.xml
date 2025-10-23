@@ -67,7 +67,6 @@
     <main.basedir>${project.basedir}</main.basedir>
     <jackson.version>2.20.0</jackson.version>
     <jackson-annotations.version>2.20</jackson-annotations.version>
-    <jaxb.version>4.0.2</jaxb.version>
     <jakarta-rs.version>4.0.0</jakarta-rs.version>
     <jersey.version>3.1.11</jersey.version>
     <testng.version>7.11.0</testng.version>
@@ -389,11 +388,6 @@
         <groupId>jakarta.ws.rs</groupId>
         <artifactId>jakarta.ws.rs-api</artifactId>
         <version>${jakarta-rs.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.xml.bind</groupId>
-        <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>${jaxb.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.annotation</groupId>
