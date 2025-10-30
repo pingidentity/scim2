@@ -150,9 +150,9 @@ public class DateTimeUtilsTest
    * @param ignoredZone The timezone from the data provider. This is not used.
    */
   @Test(dataProvider = "timestampTestCases")
-  public void testDeserialize(final String ignored,
-                              final Date dateObject,
-                              final TimeZone ignoredZone)
+  public void testDeserialization(final String ignored,
+                                  final Date dateObject,
+                                  final TimeZone ignoredZone)
       throws Exception
   {
     long timestamp = dateObject.getTime();
