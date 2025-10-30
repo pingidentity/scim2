@@ -135,4 +135,22 @@ public final class DateTimeUtils
     calendar.setTime(timestamp);
     return calendar;
   }
+
+  /**
+   * Converts a UNIX timestamp to a {@link Calendar}. The timezone of the
+   * returned object will be set to the UTC timezone.
+   *
+   * @param timestampMillis   The value representing the number of milliseconds
+   *                          after the epoch (January 1st, 1970, 12:00:00 UTC).
+   * @return  The Calendar value.
+   *
+   * @since 5.0.0
+   */
+  @NotNull
+  public static Calendar parse(final long timestampMillis)
+  {
+    Calendar c = Calendar.getInstance(DEFAULT_TIME_ZONE);
+    c.setTimeInMillis(timestampMillis);
+    return c;
+  }
 }

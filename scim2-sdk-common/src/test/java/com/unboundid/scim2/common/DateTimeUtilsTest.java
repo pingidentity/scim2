@@ -17,7 +17,11 @@
 
 package com.unboundid.scim2.common;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
+import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -92,12 +96,12 @@ public class DateTimeUtilsTest
   }
 
   /**
-   * Validate the {@link DateTimeUtils#format(Date)} method.
+   * Validate the {@link DateTimeUtils#format(Date)} method. This test will only
+   * be run if the timezone value is UTC.
    *
    * @param expected    The string value that should be generated.
    * @param dateObject  The date object.
-   * @param timezone    The timezone. This test will only be run if the timezone
-   *                    value is UTC.
+   * @param timezone    The timezone.
    */
   @Test(dataProvider = "timestampTestCases")
   public void testUTC(final String expected,
@@ -109,6 +113,94 @@ public class DateTimeUtilsTest
       String computedTimestamp = DateTimeUtils.format(dateObject);
       assertThat(computedTimestamp).isEqualTo(expected);
     }
+  }
+
+  /**
+   * This test validates the deserialization of UNIX timestamps as date values
+   * for backward compatibility. Consider the following scenario.
+   * <br><br>
+   *
+   * A SCIM server/service application processes incoming requests. A separate
+   * Java client application sends a request to the service. However, the Java
+   * client uses an ObjectMapper with default settings, which includes using the
+   * {@link SerializationFeature#WRITE_DATES_AS_TIMESTAMPS} feature. Thus, the
+   * JSON sent by the client after serialization looks like:
+   * <pre>
+   *   {
+   *     "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+   *     "userName": "name",
+   *     "meta": {
+   *       "created": 1426901922
+   *     }
+   *   }
+   * </pre>
+   *
+   * The timestamp value above represents milliseconds after the epoch instead
+   * of the expected ISO 8601 string, "2015-03-20T20:38:42-05:00".
+   * <br><br>
+   *
+   * Previous releases of the SCIM SDK supported client requests that sent a
+   * UNIX timestamp as a value. Thus, in the example above, the SCIM service
+   * must be able to support these client requests for consistency with older
+   * releases. This test simulates the behavior of such requests and ensures
+   * they can be deserialized properly.
+   *
+   * @param ignored     The timestamp from the data provider. This is not used.
+   * @param dateObject  The date object from the data provider.
+   * @param ignoredZone The timezone from the data provider. This is not used.
+   */
+  @Test(dataProvider = "timestampTestCases")
+  public void testDeserialize(final String ignored,
+                              final Date dateObject,
+                              final TimeZone ignoredZone)
+      throws Exception
+  {
+    long timestamp = dateObject.getTime();
+    String json = """
+        {
+          "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+          "userName": "name",
+          "meta": {
+            "created": %d
+          }
+        }""".formatted(timestamp);
+
+    // Deserialize the JSON into a user resource.
+    UserResource user = JsonUtils.getObjectReader().forType(UserResource.class)
+        .readValue(json);
+
+    // Fetch the deserialized value of 'meta.created'.
+    assertThat(user.getMeta()).isNotNull();
+    Calendar createdTimestamp = user.getMeta().getCreated();
+
+    // The timestamp should have been deserialized into a Calendar object set
+    // to the correct time.
+    assertThat(createdTimestamp).isNotNull();
+    assertThat(createdTimestamp.getTime()).isEqualTo(dateObject);
+
+    // Since the value was extracted from a timestamp, the timezone must be UTC.
+    assertThat(createdTimestamp.getTimeZone().getRawOffset()).isEqualTo(0);
+  }
+
+  /**
+   * Ensures an exception is thrown when a malformed timestamp is deserialized.
+   */
+  @Test
+  public void testBadDeserialization()
+  {
+    String json = """
+        {
+          "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+          "userName": "name",
+          "meta": {
+            "created": "notATimestamp"
+          }
+        }""";
+
+    var reader = JsonUtils.getObjectReader().forType(UserResource.class);
+    assertThatThrownBy(() -> reader.readValue(json))
+        .isInstanceOf(InvalidFormatException.class)
+        .hasMessageStartingWith("SCIM SDK: unable to deserialize value");
   }
 
   /**
