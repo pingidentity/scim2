@@ -29,7 +29,6 @@ import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.Photo;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -40,9 +39,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.fail;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 
 /**
  * Test the SCIM resource diff utility.
@@ -1041,15 +1040,16 @@ public class DiffTestCase
    * @throws IOException if an error occurs
    */
   @Test
-  public void testMultiValuedAttributesWithEmptyValues() throws IOException
+  public void testMultiValuedAttributesWithEmptyValues() throws Exception
   {
+    final var reader = JsonUtils.getObjectReader().forType(ObjectNode.class);
     String jsonString = """
         {
           "schemas" : [ "urn:unboundid:configuration:2.0" ],
           "id" : "userRoot2",
           "meta" : {
             "resourceType" : "LocalDbBackend",
-            "location" : "http://localhost:5033/config/v2/Backends/userRoot2"
+            "location" : "https://localhost:5033/config/v2/Backends/userRoot2"
           },
           "urn:unboundid:configuration:2.0" : {
             "type" : "LocalDbBackend"
@@ -1057,18 +1057,60 @@ public class DiffTestCase
           "backendId" : "userRoot2",
           "backgroundPrime" : "false",
           "backupFilePermissions" : "700",
-          "baseDn" : [ "dc=example2,dc=com" ],
+          "baseDN" : [ "dc=example2,dc=com" ],
           "checkpointOnCloseCount" : "2",
           "cleanerThreadWaitTime" : "120000",
-          "compactCommonParentDn" : [ ],
-          "jeProperty" : [ ]
+          "compactCommonParentDn" : [],
+          "jeProperty" : []
         }""";
-    ObjectNode source = JsonUtils.getObjectReader().
-        forType(ObjectNode.class).readValue(jsonString);
-    ObjectNode target = JsonUtils.getObjectReader().
-        forType(ObjectNode.class).readValue(jsonString);
-    List<PatchOperation> d = JsonUtils.diff(source, target, false);
-    Assert.assertEquals(d.size(), 0);
+
+    // Create two identical object nodes.
+    ObjectNode source = reader.readValue(jsonString);
+    ObjectNode target = reader.readValue(jsonString);
+
+    // diff() should not return any patch operations for identical resources,
+    // regardless of the boolean value passed in for 'removeMissing'.
+    assertThat(JsonUtils.diff(source, target, false)).isEmpty();
+    assertThat(JsonUtils.diff(source, target, true)).isEmpty();
+
+    // A JSON string that updates "baseDN", "favoriteColors", and a new empty
+    // "jeProperty2" array.
+    String newJSON = """
+        {
+          "schemas" : [ "urn:unboundid:configuration:2.0" ],
+          "id" : "userRoot2",
+          "meta" : {
+            "resourceType" : "LocalDbBackend",
+            "location" : "https://localhost:5033/config/v2/Backends/userRoot2"
+          },
+          "urn:unboundid:configuration:2.0" : {
+            "type" : "LocalDbBackend"
+          },
+          "backendId" : "userRoot2",
+          "backgroundPrime" : "false",
+          "backupFilePermissions" : "700",
+          "baseDN" : [],
+          "checkpointOnCloseCount" : "2",
+          "cleanerThreadWaitTime" : "120000",
+          "compactCommonParentDn" : [],
+          "jeProperty" : [],
+          "jeProperty2" : [],
+          "favoriteColors" : [ "purple", "beige" ]
+        }""";
+
+    ObjectNode target2 = reader.readValue(newJSON);
+
+    // The generated diff should be a remove operation for "baseDN" and a
+    // replace operation for "favoriteColors", but nothing for "jeProperty2".
+    List<PatchOperation> ops = JsonUtils.diff(source, target2, true);
+
+    ObjectNode replaceValue = new GenericScimResource()
+        .addStringValues("favoriteColors", "purple", "beige")
+        .getObjectNode();
+    assertThat(ops).containsExactlyInAnyOrder(
+        PatchOperation.remove("baseDN"),
+        PatchOperation.replace(replaceValue)
+    );
   }
 
   private void removeNullNodes(JsonNode object)
