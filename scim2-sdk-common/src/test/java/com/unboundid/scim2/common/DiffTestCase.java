@@ -29,7 +29,6 @@ import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
 import com.unboundid.scim2.common.types.Photo;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -40,9 +39,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.fail;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 
 /**
  * Test the SCIM resource diff utility.
