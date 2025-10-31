@@ -17,7 +17,6 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -39,8 +38,20 @@ public class CalendarDeserializer extends JsonDeserializer<Calendar>
   @NotNull
   public Calendar deserialize(@NotNull final JsonParser jp,
                               @Nullable final DeserializationContext ctxt)
-      throws IOException, JsonProcessingException
+      throws IOException
   {
+    // Some client requests may provide dates as a UNIX timestamp. To support
+    // this, first attempt using a long. The timezone will be set to UTC.
+    try
+    {
+      long timestamp = jp.getLongValue();
+      return DateTimeUtils.parse(timestamp);
+    }
+    catch (IOException e)
+    {
+      // The value was not a UNIX timestamp. Continue.
+    }
+
     String dateStr = jp.getText();
     try
     {
@@ -48,8 +59,8 @@ public class CalendarDeserializer extends JsonDeserializer<Calendar>
     }
     catch (IllegalArgumentException e)
     {
-      throw new InvalidFormatException(jp, "unable to deserialize value",
-          dateStr, Calendar.class);
+      throw new InvalidFormatException(
+          jp, "SCIM SDK: unable to deserialize value", dateStr, Calendar.class);
     }
   }
 }
