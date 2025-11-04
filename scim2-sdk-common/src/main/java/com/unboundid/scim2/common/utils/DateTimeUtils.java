@@ -137,8 +137,8 @@ public final class DateTimeUtils
   }
 
   /**
-   * Converts a UNIX timestamp to a {@link Calendar}. The timezone of the
-   * returned object will be set to the UTC timezone.
+   * Converts a UNIX timestamp to a {@link Calendar}. The returned object will
+   * be set to the UTC timezone.
    *
    * @param timestampMillis   The value representing the number of milliseconds
    *                          after the epoch (January 1st, 1970, 12:00:00 UTC).
