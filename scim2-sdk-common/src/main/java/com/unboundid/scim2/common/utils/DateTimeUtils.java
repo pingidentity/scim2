@@ -17,22 +17,36 @@
 package com.unboundid.scim2.common.utils;
 
 import com.unboundid.scim2.common.annotations.NotNull;
-import jakarta.xml.bind.DatatypeConverter;
+import java.time.DateTimeException;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
 /**
  * Utility methods for handling SCIM 2 DateTime values. The SCIM 2 DateTime
- * type is defined as a valid xsd:dateTime in RFC 7643, section 2.3.5.
+ * type is defined as a valid {@code xsd:dateTime} in
+ * <a href="https://datatracker.ietf.org/doc/html/rfc7643#section-2.3.5">
+ * RFC 7643, section 2.3.5</a>.
  */
 public final class DateTimeUtils
 {
+  /**
+   * Represents the "UTC" timezone (Coordinated Universal Time).
+   */
   @NotNull
   private static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getTimeZone("UTC");
 
+  @NotNull
+  private static final TimeZone GMT = TimeZone.getTimeZone("GMT+00:00");
+
   /**
    * Formats a {@link Date} value as a SCIM 2 DateTime string.
+   * This will use UTC as the time zone.
    *
    * @param date A Date value.
    * @return The value as a SCIM 2 DateTime string.
@@ -68,7 +82,23 @@ public final class DateTimeUtils
   @NotNull
   public static String format(@NotNull final Calendar calendar)
   {
-    return DatatypeConverter.printDateTime(calendar);
+    OffsetDateTime time = calendar.toInstant()
+        .atZone(calendar.getTimeZone().toZoneId())
+        .toOffsetDateTime()
+        .truncatedTo(ChronoUnit.MILLIS);
+
+    if (time.getNano() > 0)
+    {
+      // Ensure millisecond values, when present, are always printed with three
+      // digits. For example, return "12:00:00.100" instead of "12:00:00.1".
+      return time.toString();
+    }
+    else
+    {
+      // Ensure that the seconds value, when zero, is always explicitly printed.
+      // For example, return "12:00:00" instead of "12:00".
+      return ISO_OFFSET_DATE_TIME.format(time);
+    }
   }
 
   /**
@@ -83,6 +113,44 @@ public final class DateTimeUtils
   public static Calendar parse(@NotNull final String dateStr)
       throws IllegalArgumentException
   {
-    return DatatypeConverter.parseDateTime(dateStr);
+    OffsetDateTime parsedTime;
+    try
+    {
+      parsedTime = OffsetDateTime.parse(dateStr);
+    }
+    catch (DateTimeException e)
+    {
+      // Re-throw as an IllegalArgumentException for backward compatibility with
+      // previous releases of the SCIM SDK.
+      throw new IllegalArgumentException(e);
+    }
+
+    // Extract the timestamp and timezone. Timezones in the default region
+    // should be considered as "GMT+00:00" for backward compatibility.
+    Date timestamp = Date.from(parsedTime.toInstant());
+    TimeZone zone = parsedTime.getOffset().equals(ZoneOffset.ofHours(0))
+        ? GMT : TimeZone.getTimeZone(parsedTime.getOffset());
+
+    Calendar calendar = Calendar.getInstance(zone);
+    calendar.setTime(timestamp);
+    return calendar;
+  }
+
+  /**
+   * Converts a UNIX timestamp to a {@link Calendar}. The returned object will
+   * be set to the UTC timezone.
+   *
+   * @param timestampMillis   The value representing the number of milliseconds
+   *                          after the epoch (January 1st, 1970, 12:00:00 UTC).
+   * @return  The Calendar value.
+   *
+   * @since 5.0.0
+   */
+  @NotNull
+  public static Calendar parse(final long timestampMillis)
+  {
+    Calendar c = Calendar.getInstance(DEFAULT_TIME_ZONE);
+    c.setTimeInMillis(timestampMillis);
+    return c;
   }
 }

@@ -10,6 +10,13 @@ Updated the following dependencies:
 * Jackson: 2.19.2 -> 2.20.0
 * Jersey: 3.1.10 -> 3.1.11
 
+Removed the "Jakarta XML Binding API" dependency (also known as JAX-B) from scim2-sdk-common. Now,
+the common library's only dependency is Jackson. `jakarta.xml.bind-api` was previously used for
+timestamp conversions during serialization and deserialization, but the SCIM SDK has been updated to
+rely on libraries provided with Java SE instead. A new `DateTimeUtils.parse(long)` method has been
+added, but the API of the `DateTimeUtils` class has remained unchanged otherwise. Existing projects
+that upgrade to this version of the library should not require any changes.
+
 ## v4.1.0 - 2025-Oct-06
 Added new methods to the Path class to simplify certain usages and make interaction, especially
 instantiation, less verbose. These include:
