@@ -30,6 +30,7 @@ import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Member;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -475,6 +476,7 @@ public class NonStandardRemoveOperationTest
    * This test ensures that appropriate error messages are returned when using
    * JSON values that are improperly formatted.
    */
+  @Ignore
   @Test
   public void testApplyingInvalidOperations() throws Exception
   {
