@@ -17,6 +17,9 @@ rely on libraries provided with Java SE instead. A new `DateTimeUtils.parse(long
 added, but the API of the `DateTimeUtils` class has remained unchanged otherwise. Existing projects
 that upgrade to this version of the library should not require any changes.
 
+Updated the definition of the `Member` class so that `$ref` is no longer a `required` attribute,
+since it is a reflection of the `value` parameter and is sometimes set to `null` in practice.
+
 ## v4.1.0 - 2025-Oct-06
 Added new methods to the Path class to simplify certain usages and make interaction, especially
 instantiation, less verbose. These include:

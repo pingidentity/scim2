@@ -51,7 +51,7 @@ public class Member
 
   @Nullable
   @Attribute(description = "The URI of the member resource.",
-      isRequired = true,
+      isRequired = false,
       referenceTypes = { "User", "Group" },
       mutability = AttributeDefinition.Mutability.IMMUTABLE,
       returned = AttributeDefinition.Returned.DEFAULT,
