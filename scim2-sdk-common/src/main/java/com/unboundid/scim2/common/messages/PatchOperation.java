@@ -605,6 +605,14 @@ public abstract class PatchOperation
 
       // Check for explicit null values stored in the JSON.
       this.value = (NullNode.getInstance().equals(value)) ? null : value;
+      if (this.value != null)
+      {
+        if (!"members".equalsIgnoreCase(path.toString()))
+        {
+          throw new BadRequestException("Cannot apply the operation since it"
+              + " has a value, but an invalid '%s' path.".formatted(path));
+        }
+      }
     }
 
     /**
