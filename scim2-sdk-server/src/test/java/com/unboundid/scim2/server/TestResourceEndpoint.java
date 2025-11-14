@@ -179,4 +179,36 @@ public class TestResourceEndpoint
               ]
             }""").build();
   }
+
+  /**
+   * Returns a list response with an extra undefined attribute listed as the
+   * last attribute in the list.
+   *
+   * @return  A list response.
+   */
+  @GET
+  @Path("testLastFieldUnknown")
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
+  public Response testLastFieldUnknown()
+  {
+    return Response.status(Response.Status.OK)
+        .type(MEDIA_TYPE_SCIM)
+        .entity("""
+            {
+              "schemas": [
+                "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+              ],
+              "totalResults": 1,
+              "itemsPerPage": 1,
+              "Resources": [
+                {
+                  "schemas": [
+                    "urn:ietf:params:scim:schemas:core:2.0:User"
+                  ],
+                  "userName": "GNX"
+                }
+              ],
+              "unknownAttribute": "unknownValue"
+            }""").build();
+  }
 }
