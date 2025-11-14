@@ -1169,6 +1169,35 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
 
   /**
+   * Validate an edge case where a list response with an unknown attribute is
+   * included at the very end of a response. In previous releases, this caused
+   * parsing issues. The list response returned by the service is defined in
+   * {@link TestResourceEndpoint#testLastFieldUnknown}.
+   */
+  @Test(timeOut = 5_000L)
+  public void testLastFieldUnknown() throws Exception
+  {
+    final ScimService service = new ScimService(target());
+    ListResponse<UserResource> response =
+        service.searchRequest("/Users/testLastFieldUnknown")
+            .invoke(UserResource.class);
+
+    assertThat(response.getSchemaUrns())
+        .hasSize(1)
+        .first()
+        .isEqualTo("urn:ietf:params:scim:api:messages:2.0:ListResponse");
+    assertThat(response.getTotalResults()).isEqualTo(1);
+    assertThat(response.getItemsPerPage()).isEqualTo(1);
+    assertThat(response.getResources())
+        .hasSize(1)
+        .first().isEqualTo(new UserResource().setUserName("GNX"));
+    assertThat(response.toString())
+        .doesNotContain("unknownAttribute")
+        .doesNotContain("unknownValue");
+  }
+
+
+  /**
    * Test custom content-type.
    *
    * @throws ScimException if an error occurs.

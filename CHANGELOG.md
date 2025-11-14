@@ -20,6 +20,9 @@ that upgrade to this version of the library should not require any changes.
 Updated the definition of the `Member` class so that `$ref` is no longer a `required` attribute,
 since it is a reflection of the `value` parameter and is sometimes set to `null` in practice.
 
+Fixed an issue with SearchRequestBuilder where it was possible for the parser to hang if a list
+response contained undefined attributes.
+
 ## v4.1.0 - 2025-Oct-06
 Added new methods to the Path class to simplify certain usages and make interaction, especially
 instantiation, less verbose. These include:

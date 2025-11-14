@@ -272,9 +272,7 @@ public class SearchRequestBuilder
            JsonParser parser = factory.createParser(inputStream))
       {
         parser.nextToken();
-
-        boolean proceed = true;
-        while (proceed && parser.nextToken() != JsonToken.END_OBJECT)
+        while (!parser.isClosed() && parser.nextToken() != JsonToken.END_OBJECT)
         {
           String field = String.valueOf(parser.currentName());
           parser.nextToken();
@@ -298,7 +296,6 @@ public class SearchRequestBuilder
               {
                 if (!resultHandler.resource(parser.readValueAs(cls)))
                 {
-                  proceed = false;
                   break;
                 }
               }
