@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v5.0.0 - TBD
+For consistency with other open source Ping Identity software, the UnboundID SCIM 2 SDK for Java is
+now available under the terms of the Apache License (version 2.0). For legacy compatibility, the
+SCIM SDK is still available under the terms of the GPL v2, LGPL v2.1, and UnboundID Free Use
+licenses.
+
 Removed the `ListResponse(java.util.Map)` constructor, as well as the
 `BaseScimResource#addExtensionValue` methods. These were deprecated in 4.1.0.
 

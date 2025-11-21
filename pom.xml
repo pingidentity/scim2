@@ -47,6 +47,10 @@
   </developers>
   <licenses>
     <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+    <license>
       <name>GNU General Public License version 2 (GPLv2)</name>
       <url>http://www.gnu.org/licenses/gpl-2.0.html</url>
     </license>
@@ -243,7 +247,7 @@
           </execution>
         </executions>
         <configuration>
-          <headerLocation>config/scim2-parent-gpl.sourceheader</headerLocation>
+          <headerLocation>config/scim2-parent.sourceheader</headerLocation>
           <failOnViolation>true</failOnViolation>
           <propertyExpansion>cacheFile=${project.build.directory}/checkstyle-cachefile</propertyExpansion>
           <logViolationsToConsole>true</logViolationsToConsole>
