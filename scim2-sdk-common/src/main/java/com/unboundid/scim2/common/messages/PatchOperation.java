@@ -620,6 +620,14 @@ public abstract class PatchOperation
 
       // Check for explicit null values stored in the JSON.
       this.value = (NullNode.getInstance().equals(value)) ? null : value;
+
+      // For non-standard remove operations that set a value, the SCIM SDK only
+      // supports group membership updates.
+      if (this.value != null && !"members".equalsIgnoreCase(path.toString()))
+      {
+        throw new BadRequestException("Cannot create the operation since it"
+            + " has a value, but an invalid '%s' path.".formatted(path));
+      }
     }
 
     /**
@@ -657,12 +665,6 @@ public abstract class PatchOperation
       Path path = Objects.requireNonNull(getPath());
       if (value != null)
       {
-        if (!"members".equalsIgnoreCase(path.toString()))
-        {
-          throw new BadRequestException("Cannot apply the operation since it"
-              + " has a value, but an invalid '%s' path.".formatted(path));
-        }
-
         // This is a non-standard remove operation for group membership removal.
         path = combinePathAndValue();
         if (path == null)
