@@ -377,7 +377,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   }
 
   /**
-   * Test an resource endpoint implementation registered as a class.
+   * Test a call to a {@code /Users} endpoint with query parameters. The
+   * response is defined in {@link TestResourceEndpoint#searchFourResults}.
    *
    * @throws ScimException if an error occurs.
    */
@@ -385,24 +386,100 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   public void testGetUsers() throws ScimException
   {
     final ScimService service = new ScimService(target());
+
+    // First send a request to /Users with cursor-based pagination, requesting
+    // two resources and a subset of attributes.
     final ListResponse<UserResource> returnedUsers =
-        service.searchRequest("Users").
-            filter("meta.resourceType eq \"User\"").
-            page(1, 10).
-            sort("id", SortOrder.ASCENDING).
-            attributes("id", "name", "Meta").
-            invoke(UserResource.class);
+        service.searchRequest("/Users/WithFourResults")
+            .filter(Filter.eq("meta.resourceType", "User"))
+            .page(1, 2)
+            .sort("id", SortOrder.ASCENDING)
+            .attributes("id", "name", "Meta")
+            .invoke(UserResource.class);
 
-    assertEquals(returnedUsers.getTotalResults(), 1);
-    assertEquals(returnedUsers.getStartIndex(), Integer.valueOf(1));
-    assertEquals(returnedUsers.getItemsPerPage(), Integer.valueOf(1));
+    // There are a total of four users, but two should have been returned.
+    assertThat(returnedUsers.getTotalResults()).isEqualTo(4);
+    assertThat(returnedUsers.getItemsPerPage()).isEqualTo(2);
 
-    final UserResource r = returnedUsers.getResources().get(0);
-    service.retrieve(r);
+    // The response should indicate this is the first page.
+    assertThat(returnedUsers.getStartIndex()).isEqualTo(1);
+
+    // The users should have been sorted by ID.
+    assertThat(returnedUsers.getResources().get(0).getId())
+        .isEqualTo("286080c5");
+    assertThat(returnedUsers.getResources().get(1).getId())
+        .isEqualTo("69d17c9d");
+
+    // The userName attribute was not requested, so this should be null in the
+    // result even though it was present on the user.
+    assertThat(returnedUsers).allMatch(user -> user.getUserName() == null);
+
+    // Fetch a subset of responses and request a cursor. The SimpleSearchResults
+    // implementation should return a string "2" cursor. This time, the
+    // usernames should be provided since most attributes will be returned.
+    ListResponse<UserResource> returnedUsersCursor =
+        service.searchRequest("/Users/WithFourResults")
+            .firstPageCursorWithCount(2)
+            .invoke(UserResource.class);
+    assertThat(returnedUsersCursor.getTotalResults()).isEqualTo(4);
+    assertThat(returnedUsersCursor.getItemsPerPage()).isEqualTo(2);
+    assertThat(returnedUsersCursor.getNextCursor()).isEqualTo("2");
+    assertThat(returnedUsersCursor.getStartIndex()).isNull();
+    assertThat(returnedUsersCursor.getResources()).hasSize(2);
+    assertThat(returnedUsersCursor).allMatch(u -> u.getUserName() != null);
+
+    // Ensure it is possible to use the returned cursor to fetch the next page.
+    returnedUsersCursor = service.searchRequest("/Users/WithFourResults")
+        .pageWithCursor("2", 2)
+        .invoke(UserResource.class);
+    assertThat(returnedUsersCursor.getTotalResults()).isEqualTo(4);
+    assertThat(returnedUsersCursor.getItemsPerPage()).isEqualTo(2);
+    assertThat(returnedUsersCursor.getNextCursor()).isEqualTo("3");
+    assertThat(returnedUsersCursor.getStartIndex()).isNull();
+    assertThat(returnedUsersCursor.getResources()).hasSize(2);
+
+    // Request cursor pagination, but fetch all resources. A value should not be
+    // returned for "nextCursor" since there are no more results to display.
+    ListResponse<UserResource> allUsersWithCursor =
+        service.searchRequest("/Users/WithFourResults")
+            .firstPageCursorWithCount(100)
+            .invoke(UserResource.class);
+    assertThat(allUsersWithCursor.getTotalResults()).isEqualTo(4);
+    assertThat(allUsersWithCursor.getItemsPerPage()).isEqualTo(4);
+    assertThat(allUsersWithCursor.getNextCursor()).isNull();
+    assertThat(allUsersWithCursor.getStartIndex()).isNull();
+    assertThat(allUsersWithCursor.getResources()).hasSize(4);
+
+    // Fetch all remaining resources starting at the second page. Again, a value
+    // should not be returned for "nextCursor".
+    ListResponse<UserResource> remainingUsersWithCursor =
+        service.searchRequest("/Users/WithFourResults")
+            .pageWithCursor("2", 100)
+            .invoke(UserResource.class);
+    assertThat(remainingUsersWithCursor.getTotalResults()).isEqualTo(4);
+    assertThat(remainingUsersWithCursor.getItemsPerPage()).isEqualTo(3);
+    assertThat(remainingUsersWithCursor.getNextCursor()).isNull();
+    assertThat(remainingUsersWithCursor.getStartIndex()).isNull();
+    assertThat(remainingUsersWithCursor.getResources()).hasSize(3);
+
+    // Search for results with a filter that matches no resources. Request a
+    // cursor, though a "nextCursor" value should not be returned since there
+    // are no more results.
+    ListResponse<UserResource> emptyLResults =
+        service.searchRequest("/Users/WithFourResults")
+            .filter(Filter.pr("x509Certificates"))
+            .firstPageCursorWithCount(1)
+            .invoke(UserResource.class);
+    assertThat(emptyLResults.getTotalResults()).isEqualTo(0);
+    assertThat(emptyLResults.getItemsPerPage()).isEqualTo(0);
+    assertThat(emptyLResults.getNextCursor()).isNull();
+    assertThat(emptyLResults.getStartIndex()).isNull();
+    assertThat(emptyLResults.getResources()).hasSize(0);
   }
 
   /**
-   * Test an resource endpoint implementation registered as a class.
+   * Test a resource endpoint implementation registered as a class. The response
+   * is defined in {@link TestResourceEndpoint#searchOneResult}.
    *
    * @throws ScimException if an error occurs.
    */
@@ -1170,13 +1247,12 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     // have been successfully parsed.
     assertThat(response.getSchemaUrns())
         .hasSize(1)
-        .first()
-        .isEqualTo("urn:ietf:params:scim:api:messages:2.0:ListResponse");
+        .containsOnly("urn:ietf:params:scim:api:messages:2.0:ListResponse");
     assertThat(response.getTotalResults()).isEqualTo(2);
     assertThat(response.getItemsPerPage()).isEqualTo(1);
     assertThat(response.getResources())
         .hasSize(1)
-        .first().isEqualTo(new UserResource().setUserName("k.dot"));
+        .containsOnly(new UserResource().setUserName("k.dot"));
 
     // startIndex was not included, so it should not have a value.
     assertThat(response.getStartIndex()).isNull();
@@ -1199,16 +1275,42 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     assertThat(response.getSchemaUrns())
         .hasSize(1)
-        .first()
-        .isEqualTo("urn:ietf:params:scim:api:messages:2.0:ListResponse");
+        .containsOnly("urn:ietf:params:scim:api:messages:2.0:ListResponse");
     assertThat(response.getTotalResults()).isEqualTo(1);
     assertThat(response.getItemsPerPage()).isEqualTo(1);
     assertThat(response.getResources())
         .hasSize(1)
-        .first().isEqualTo(new UserResource().setUserName("GNX"));
+        .containsOnly(new UserResource().setUserName("GNX"));
     assertThat(response.toString())
         .doesNotContain("unknownAttribute")
         .doesNotContain("unknownValue");
+  }
+
+
+  /**
+   * Test a response that includes {@code previousCursor}. The list response
+   * returned by the service is defined in
+   * {@link TestResourceEndpoint#testCursorPagination}.
+   */
+  @Test
+  public void testCursorPagination() throws Exception
+  {
+    final ScimService service = new ScimService(target());
+    ListResponse<UserResource> response =
+        service.searchRequest("/Users/testCursorPagination")
+            .invoke(UserResource.class);
+
+    assertThat(response.getSchemaUrns())
+        .hasSize(1)
+        .containsOnly("urn:ietf:params:scim:api:messages:2.0:ListResponse");
+    assertThat(response.getTotalResults()).isEqualTo(20);
+    assertThat(response.getItemsPerPage()).isEqualTo(1);
+    assertThat(response.getStartIndex()).isNull();
+    assertThat(response.getPreviousCursor()).isEqualTo("ze7L30kMiiLX6x");
+    assertThat(response.getNextCursor()).isEqualTo("YkU3OF86Pz0rGv");
+    assertThat(response.getResources())
+        .hasSize(1)
+        .containsOnly(new UserResource().setUserName("reincarnated"));
   }
 
 

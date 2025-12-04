@@ -167,6 +167,12 @@ public class ScimExceptionTest
     assertThat(e.getScimError().getScimType()).isEqualTo("invalidValue");
     e = BadRequestException.invalidVersion("Message");
     assertThat(e.getScimError().getScimType()).isEqualTo("invalidVersion");
+    e = BadRequestException.invalidCursor("Message");
+    assertThat(e.getScimError().getScimType()).isEqualTo("invalidCursor");
+    e = BadRequestException.expiredCursor("Message");
+    assertThat(e.getScimError().getScimType()).isEqualTo("expiredCursor");
+    e = BadRequestException.invalidCount("Message");
+    assertThat(e.getScimError().getScimType()).isEqualTo("invalidCount");
   }
 
   /**
