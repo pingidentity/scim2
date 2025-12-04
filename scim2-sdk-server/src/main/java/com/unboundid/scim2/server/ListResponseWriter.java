@@ -147,6 +147,26 @@ public class ListResponseWriter<T extends ScimResource>
   }
 
   /**
+   * Write the nextCursor to the output stream immediately if no resources have
+   * been streamed, otherwise it will be written after the resources array.
+   *
+   * @param nextCursor The nextCursor to write.
+   * @throws IOException If an exception occurs while writing to the output
+   * stream.
+   */
+  public void nextCursor(@NotNull final String nextCursor) throws IOException
+  {
+    if (startedResourcesArray.get())
+    {
+      deferredFields.put("nextCursor", nextCursor);
+    }
+    else
+    {
+      jsonGenerator.writeStringField("nextCursor", nextCursor);
+    }
+  }
+
+  /**
    * Write the itemsPerPage to the output stream immediately if no resources
    * have been streamed, otherwise it will be written after the resources array.
    *

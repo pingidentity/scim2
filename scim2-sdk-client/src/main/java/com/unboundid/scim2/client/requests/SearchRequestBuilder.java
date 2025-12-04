@@ -60,9 +60,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_FILTER;
+import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_PAGE_CURSOR;
 import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_PAGE_SIZE;
 import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_PAGE_START_INDEX;
 import static com.unboundid.scim2.common.utils.ApiConstants.QUERY_PARAMETER_SORT_BY;
@@ -89,6 +91,9 @@ public class SearchRequestBuilder
 
   @Nullable
   private Integer startIndex;
+
+  @Nullable
+  private String cursor;
 
   @Nullable
   private Integer count;
@@ -122,6 +127,8 @@ public class SearchRequestBuilder
    *
    * @param filter the filter object used to request a subset of resources.
    * @return This builder.
+   *
+   * @since 4.0.0
    */
   @NotNull
   public SearchRequestBuilder filter(@Nullable final Filter filter)
@@ -148,7 +155,11 @@ public class SearchRequestBuilder
   }
 
   /**
-   * Request pagination of resources.
+   * Request pagination of resources with index-based pagination.
+   * <br><br>
+   *
+   * This type of pagination divides the result set into numeric page numbers.
+   * For example, to fetch the first page, use a value of {@code 1}.
    *
    * @param startIndex the 1-based index of the first query result.
    * @param count the desired maximum number of query results per page.
@@ -161,6 +172,63 @@ public class SearchRequestBuilder
     this.startIndex = startIndex;
     this.count = count;
     return this;
+  }
+
+  /**
+   * Request pagination of resources with cursor-based pagination. For more
+   * information on cursor-based pagination, see {@link ListResponse}.
+   * <br><br>
+   *
+   * For a cursor value of "VZUTiy", this will be translated to a request like:
+   * <pre>
+   *   GET /Users?cursor=VZUTiy&amp;count=10
+   * </pre>
+   *
+   * To obtain the first page of results (i.e., when a cursor value is not
+   * known), use the {@link #firstPageCursorWithCount} method, or set
+   * {@code cursor} to an empty string.
+   *
+   * @param cursor  The cursor that identifies a page. To request the first page
+   *                of results, this may be an empty string. This value may not
+   *                be {@code null}.
+   * @param count   The desired maximum number of query results per page.
+   * @return This builder.
+   *
+   * @since 5.0.0
+   */
+  @NotNull
+  public SearchRequestBuilder pageWithCursor(@NotNull final String cursor,
+                                             final int count)
+  {
+    // For consistency with the page() method, this value cannot be null.
+    this.cursor = Objects.requireNonNull(cursor);
+    this.count = count;
+    return this;
+  }
+
+  /**
+   * Similar to {@link #pageWithCursor}, but requests the first page of
+   * resources with cursor-based pagination. The SCIM standard defines this as
+   * a request like:
+   * <pre>
+   *   GET /Users?cursor&amp;count=10
+   * </pre>
+   *
+   * However, due to the way JAX-RS handles query parameters, this will be
+   * sent as a key-value pair with an empty value:
+   * <pre>
+   *   GET /Users?cursor=&amp;count=10
+   * </pre>
+   *
+   * @param count   The desired maximum number of query results per page.
+   * @return This builder.
+   *
+   * @since 5.0.0
+   */
+  @NotNull
+  public SearchRequestBuilder firstPageCursorWithCount(final int count)
+  {
+    return pageWithCursor("", count);
   }
 
   /**
@@ -186,6 +254,27 @@ public class SearchRequestBuilder
       target = target.queryParam(QUERY_PARAMETER_PAGE_START_INDEX, startIndex);
       target = target.queryParam(QUERY_PARAMETER_PAGE_SIZE, count);
     }
+    // Check the count again since it is possible to use index-based pagination,
+    // cursor-based pagination, or both.
+    if (cursor != null && count != null)
+    {
+      if (!cursor.isEmpty())
+      {
+        // A specific page is being requested with a cursor. Provide a query
+        // like "?cursor=value".
+        target = target.queryParam(QUERY_PARAMETER_PAGE_CURSOR, cursor);
+      }
+      else
+      {
+        // The first page is being requested with cursor-based pagination.
+        // Ideally, this should just be "?cursor" as the standard describes.
+        // Unfortunately, JAX-RS does not appear to support query parameters
+        // without a value, so we provide "?cursor=" instead.
+        target = target.queryParam(QUERY_PARAMETER_PAGE_CURSOR, "");
+      }
+      target = target.queryParam(QUERY_PARAMETER_PAGE_SIZE, count);
+    }
+
     return target;
   }
 
@@ -202,7 +291,7 @@ public class SearchRequestBuilder
       throws ScimException
   {
     ListResponseBuilder<T> listResponseBuilder = new ListResponseBuilder<>();
-    invoke(false, listResponseBuilder, cls);
+    invoke(listResponseBuilder, cls);
     return listResponseBuilder.build();
   }
 
@@ -236,7 +325,7 @@ public class SearchRequestBuilder
           throws ScimException
   {
     ListResponseBuilder<T> listResponseBuilder = new ListResponseBuilder<>();
-    invoke(true, listResponseBuilder, cls);
+    invokePost(listResponseBuilder, cls);
     return listResponseBuilder.build();
   }
 
@@ -303,6 +392,14 @@ public class SearchRequestBuilder
             case "startindex":
               resultHandler.startIndex(parser.getIntValue());
               break;
+            case "previouscursor":
+              // The "previousCursor" value as defined by RFC 9865.
+              resultHandler.previousCursor(parser.getValueAsString());
+              break;
+            case "nextcursor":
+              // The "nextCursor" value as defined by RFC 9865.
+              resultHandler.nextCursor(parser.getValueAsString());
+              break;
             case "itemsperpage":
               resultHandler.itemsPerPage(parser.getIntValue());
               break;
@@ -359,8 +456,8 @@ public class SearchRequestBuilder
       }
     }
 
-    SearchRequest searchRequest = new SearchRequest(attributeSet,
-        excludedAttributeSet, filter, sortBy, sortOrder, startIndex, count);
+    var searchRequest = new SearchRequest(attributeSet, excludedAttributeSet,
+        filter, sortBy, sortOrder, startIndex, cursor, count);
 
     Invocation.Builder builder = target().
         path(ApiConstants.SEARCH_WITH_POST_PATH_EXTENSION).

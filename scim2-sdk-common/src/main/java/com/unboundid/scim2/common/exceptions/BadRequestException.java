@@ -146,6 +146,34 @@ public class BadRequestException extends ScimException
   @NotNull
   public static final String INVALID_VERSION = "invalidVersion";
 
+  /**
+   * The SCIM detailed error keyword that indicates the client's provided
+   * cursor is invalid.
+   *
+   * @since 5.0.0
+   */
+  @NotNull
+  public static final String INVALID_CURSOR = "invalidCursor";
+
+  /**
+   * The SCIM detailed error keyword that indicates the client's provided
+   * cursor is expired.
+   *
+   * @since 5.0.0
+   */
+  @NotNull
+  public static final String EXPIRED_CURSOR = "expiredCursor";
+
+  /**
+   * The SCIM detailed error keyword that indicates the client's provided value
+   * for {@code count} in a
+   * {@link com.unboundid.scim2.common.messages.SearchRequest} was invalid.
+   *
+   * @since 5.0.0
+   */
+  @NotNull
+  public static final String INVALID_COUNT = "invalidCount";
+
 
   /**
    * Create a generic BadRequestException without a {@code scimType} field.
@@ -339,5 +367,53 @@ public class BadRequestException extends ScimException
       @Nullable final String errorMessage)
   {
     return new BadRequestException(errorMessage, INVALID_VERSION);
+  }
+
+  /**
+   * Factory method to create a new {@code BadRequestException} with the
+   * invalidCursor SCIM detailed error keyword.
+   *
+   * @param errorMessage  The error message for this SCIM exception.
+   * @return The new {@code BadRequestException}.
+   *
+   * @since 5.0.0
+   */
+  @NotNull
+  public static BadRequestException invalidCursor(
+      @Nullable final String errorMessage)
+  {
+    return new BadRequestException(errorMessage, INVALID_CURSOR);
+  }
+
+  /**
+   * Factory method to create a new {@code BadRequestException} with the
+   * expiredCursor SCIM detailed error keyword.
+   *
+   * @param errorMessage  The error message for this SCIM exception.
+   * @return The new {@code BadRequestException}.
+   *
+   * @since 5.0.0
+   */
+  @NotNull
+  public static BadRequestException expiredCursor(
+      @Nullable final String errorMessage)
+  {
+    return new BadRequestException(errorMessage, EXPIRED_CURSOR);
+  }
+
+  /**
+   * Factory method to create a new {@code BadRequestException} with the
+   * invalidCount SCIM detailed error keyword.
+   *
+   * @param errorMessage  The error message for this SCIM exception.
+   * @return The new {@code BadRequestException}.
+   *
+   * @since 5.0.0
+   */
+  @NotNull
+  public static BadRequestException invalidCount(
+      @Nullable final String errorMessage)
+  {
+    return new BadRequestException(errorMessage, INVALID_COUNT);
   }
 }
