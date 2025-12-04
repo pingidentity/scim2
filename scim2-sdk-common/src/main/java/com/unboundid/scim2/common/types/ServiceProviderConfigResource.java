@@ -44,19 +44,80 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+
 /**
- * SCIM provides a schema for representing the service provider's configuration
- * identified using the following schema URI:
- * "{@code urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig}"
+ * This class represents a service provider's configuration.
  * <br><br>
  *
- * The Service Provider configuration resource enables a Service
- * Provider to discover SCIM specification features in a standardized
- * form as well as provide additional implementation details to clients.
- * All attributes have a mutability of "{@code readOnly}".  Unlike other core
- * resources, the "{@code id}" attribute is not required for the Service
- * Provider configuration resource.
- **/
+ * All SCIM services should have an endpoint similar to
+ * {@code https://example.com/v2/ServiceProviderConfig}, which indicates
+ * information about the behavior of the SCIM service and what it supports. An
+ * example response is shown below:
+ * <pre>
+ * {
+ *   "schemas": ["urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig"],
+ *   "documentationUri": "https://example.com/help/scim.html",
+ *   "patch": {
+ *     "supported": true
+ *   },
+ *   "bulk": {
+ *     "supported": true,
+ *     "maxOperations": 1000,
+ *     "maxPayloadSize": 1048576
+ *   },
+ *   "filter": {
+ *     "supported": true,
+ *     "maxResults": 200
+ *   },
+ *   "changePassword": {
+ *     "supported": true
+ *   },
+ *   "sort": {
+ *     "supported": true
+ *   },
+ *   "etag": {
+ *     "supported": true
+ *   },
+ *   "pagination": {
+ *       "cursor": true,
+ *       "index": false
+ *   },
+ *   "authenticationSchemes": [
+ *     {
+ *       "name": "OAuth Bearer Token",
+ *       "description": "Authentication scheme using the OAuth Standard",
+ *       "specUri": "https://datatracker.ietf.org/doc/html/rfc6750",
+ *       "documentationUri": "https://example.com/help/oauth.html",
+ *       "type": "oauthbearertoken",
+ *       "primary": true
+ *     }
+ *   ],
+ *   "meta": {
+ *     "location": "https://example.com/v2/ServiceProviderConfig",
+ *     "resourceType": "ServiceProviderConfig",
+ *     "created": "2015-09-25T00:00:00Z",
+ *     "lastModified": "2025-10-09T00:00:00Z"
+ *   }
+ * }
+ * </pre>
+ *
+ * The above JSON response indicates that this SCIM service:
+ * <ul>
+ *   <li> Supports SCIM PATCH requests.
+ *   <li> Supports SCIM bulk requests with up to 1000 operations in a request.
+ *   <li> Supports SCIM filtering and will return a maximum of 200 results.
+ *   <li> Supports password change API requests.
+ *   <li> Supports sorting the result set when multiple resources are returned.
+ *   <li> Supports ETag versioning. For more details, see {@link ETagConfig}.
+ *   <li> Supports paging through results with cursors, but not by page numbers.
+ *   <li> Supports only OAuth 2.0 bearer tokens for authenticating clients.
+ * </ul>
+ * <br><br>
+ *
+ * This endpoint provides a summary for the SCIM service's behavior. All
+ * attributes on this resource type have a mutability of {@code readOnly}.
+ */
+@SuppressWarnings("JavadocLinkAsPlainText")
 @Schema(id="urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig",
     name="Service Provider Config",
     description = "SCIM 2.0 Service Provider Config Resource")
@@ -109,6 +170,12 @@ public class ServiceProviderConfigResource extends BaseScimResource
       isRequired = true)
   private final ETagConfig etag;
 
+  @Nullable
+  @Attribute(description = "A complex type that specifies pagination " +
+      "configuration options.",
+      mutability = AttributeDefinition.Mutability.READ_ONLY)
+  private final PaginationConfig pagination;
+
   @NotNull
   @Attribute(description = "A complex type that specifies supported " +
       "Authentication Scheme properties.",
@@ -128,9 +195,13 @@ public class ServiceProviderConfigResource extends BaseScimResource
    * @param changePassword A complex type that specifies Change Password
    *                       configuration options.
    * @param sort A complex type that specifies Sort configuration options.
-   * @param etag A complex type that specifies Etag configuration options.
+   * @param etag A complex type that specifies ETag configuration options.
+   * @param pagination A complex type that specifies pagination configuration
+   *                   options.
    * @param authenticationSchemes A complex type that specifies supported
    *                              Authentication Scheme properties.
+   *
+   * @since 5.0.0
    */
   @JsonCreator
   public ServiceProviderConfigResource(
@@ -148,6 +219,8 @@ public class ServiceProviderConfigResource extends BaseScimResource
       final SortConfig sort,
       @NotNull @JsonProperty(value = "etag", required = true)
       final ETagConfig etag,
+      @Nullable @JsonProperty(value = "pagination")
+      final PaginationConfig pagination,
       @NotNull @JsonProperty(value = "authenticationSchemes", required = true)
       final List<AuthenticationScheme> authenticationSchemes)
   {
@@ -158,8 +231,84 @@ public class ServiceProviderConfigResource extends BaseScimResource
     this.changePassword = changePassword;
     this.sort = sort;
     this.etag = etag;
+    this.pagination = pagination;
     this.authenticationSchemes = authenticationSchemes == null ? null :
         Collections.unmodifiableList(authenticationSchemes);
+  }
+
+  /**
+   * Alternate constructor that allows specifying authentication schemes
+   * directly.
+   *
+   * @param documentationUri  An HTTP addressable URI pointing to the service
+   *                          provider's human consumable help documentation.
+   * @param patch             A complex type indicating PATCH configuration
+   *                          options.
+   * @param bulk              A complex type indicating Bulk configuration
+   *                          options.
+   * @param filter            A complex type indicating filter options.
+   * @param changePassword    A complex type indicating password changing
+   *                          configuration options.
+   * @param sort              A complex type indicating Sort configuration
+   *                          options.
+   * @param etag              A complex type indicating ETag configuration
+   *                          options.
+   * @param pagination        A complex type indicating pagination configuration
+   *                          options.
+   * @param authenticationSchemes  A complex type indicating supported
+   *                               Authentication Scheme properties.
+   *
+   * @since 5.0.0
+   */
+  public ServiceProviderConfigResource(
+      @Nullable final String documentationUri,
+      @NotNull final PatchConfig patch,
+      @NotNull final BulkConfig bulk,
+      @NotNull final FilterConfig filter,
+      @NotNull final ChangePasswordConfig changePassword,
+      @NotNull final SortConfig sort,
+      @NotNull final ETagConfig etag,
+      @Nullable final PaginationConfig pagination,
+      @NotNull final AuthenticationScheme... authenticationSchemes)
+  {
+    this(documentationUri, patch, bulk, filter, changePassword, sort, etag,
+        pagination, List.of(authenticationSchemes));
+  }
+
+  /**
+   * Create a new ServiceProviderConfig resource. This constructor primarily
+   * exists for backward compatibility, and using the primary constructor
+   * ({@link #ServiceProviderConfigResource(String, PatchConfig, BulkConfig,
+   *          FilterConfig, ChangePasswordConfig, SortConfig, ETagConfig,
+   *          PaginationConfig, List) ServiceProviderConfigResource()}
+   * )
+   * is encouraged. The primary constructor supports information regarding
+   * pagination.
+   *
+   * @param documentationUri An HTTP addressable URI pointing to the service
+   *                         provider's human consumable help documentation.
+   * @param patch A complex type that specifies PATCH configuration options.
+   * @param bulk A complex type that specifies Bulk configuration options.
+   * @param filter A complex type that specifies FILTER options.
+   * @param changePassword A complex type that specifies Change Password
+   *                       configuration options.
+   * @param sort A complex type that specifies Sort configuration options.
+   * @param etag A complex type that specifies ETag configuration options.
+   * @param authenticationSchemes A complex type that specifies supported
+   *                              Authentication Scheme properties.
+   */
+  public ServiceProviderConfigResource(
+      @Nullable final String documentationUri,
+      @NotNull final PatchConfig patch,
+      @NotNull final BulkConfig bulk,
+      @NotNull final FilterConfig filter,
+      @NotNull final ChangePasswordConfig changePassword,
+      @NotNull final SortConfig sort,
+      @NotNull final ETagConfig etag,
+      @NotNull final List<AuthenticationScheme> authenticationSchemes)
+  {
+    this(documentationUri, patch, bulk, filter, changePassword, sort, etag,
+        null, authenticationSchemes);
   }
 
   /**
@@ -233,14 +382,27 @@ public class ServiceProviderConfigResource extends BaseScimResource
   }
 
   /**
-   * Retrieves the complex type that specifies Etag configuration options.
+   * Retrieves the complex type that specifies ETag configuration options.
    *
-   * @return The complex type that specifies Etag configuration options.
+   * @return The complex type that specifies ETag configuration options.
    */
   @NotNull
   public ETagConfig getEtag()
   {
     return etag;
+  }
+
+  /**
+   * Retrieves the complex type that specifies pagination configuration options.
+   * This may be {@code null} for SCIM services that do not explicitly support
+   * <a href="https://datatracker.ietf.org/doc/html/rfc9865">RFC 9865</a>.
+   *
+   * @return The complex type that specifies pagination configuration options.
+   */
+  @Nullable
+  public PaginationConfig getPagination()
+  {
+    return pagination;
   }
 
   /**
@@ -309,6 +471,10 @@ public class ServiceProviderConfigResource extends BaseScimResource
     {
       return false;
     }
+    if (!Objects.equals(pagination, that.pagination))
+    {
+      return false;
+    }
     return Objects.equals(sort, that.sort);
   }
 
@@ -321,6 +487,6 @@ public class ServiceProviderConfigResource extends BaseScimResource
   public int hashCode()
   {
     return Objects.hash(super.hashCode(), documentationUri, patch, bulk, filter,
-        changePassword, sort, etag, authenticationSchemes);
+        changePassword, sort, etag, pagination, authenticationSchemes);
   }
 }

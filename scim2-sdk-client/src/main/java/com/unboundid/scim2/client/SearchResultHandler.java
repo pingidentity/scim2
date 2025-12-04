@@ -34,6 +34,7 @@ package com.unboundid.scim2.client;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 
 /**
  * An interface for handling the search result response. Methods will be called
@@ -54,6 +55,26 @@ public interface SearchResultHandler<T>
    * @param itemsPerPage The itemsPerPage.
    */
   void itemsPerPage(final int itemsPerPage);
+
+  /**
+   * Handle the previousCursor in the search response as defined by
+   * <a href="https://datatracker.ietf.org/doc/html/rfc9865">RFC 9865</a>.
+   *
+   * @param previousCursor The previousCursor.
+   *
+   * @since 5.0.0
+   */
+  void previousCursor(@Nullable final String previousCursor);
+
+  /**
+   * Handle the nextCursor in the search response as defined by
+   * <a href="https://datatracker.ietf.org/doc/html/rfc9865">RFC 9865</a>.
+   *
+   * @param nextCursor The nextCursor.
+   *
+   * @since 5.0.0
+   */
+  void nextCursor(@Nullable final String nextCursor);
 
   /**
    * Handle the totalResults in the search response.
