@@ -28,6 +28,10 @@ since it is a reflection of the `value` parameter and is sometimes set to `null`
 Fixed an issue with SearchRequestBuilder where it was possible for the parser to hang if a list
 response contained undefined attributes.
 
+Updated "remove" patch operations to validate paths when objects are created. Previously, paths were
+only validated when operations were applied. This behavior is specific to non-standard remove
+operations that set a `value` field, and does not affect most patch operations.
+
 ## v4.1.0 - 2025-Oct-06
 Added new methods to the Path class to simplify certain usages and make interaction, especially
 instantiation, less verbose. These include:
