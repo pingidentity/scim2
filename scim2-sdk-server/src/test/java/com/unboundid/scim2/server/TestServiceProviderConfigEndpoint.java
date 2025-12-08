@@ -38,14 +38,12 @@ import com.unboundid.scim2.common.types.BulkConfig;
 import com.unboundid.scim2.common.types.ChangePasswordConfig;
 import com.unboundid.scim2.common.types.ETagConfig;
 import com.unboundid.scim2.common.types.FilterConfig;
+import com.unboundid.scim2.common.types.PaginationConfig;
 import com.unboundid.scim2.common.types.PatchConfig;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.SortConfig;
-import com.unboundid.scim2.server.resources.
-    AbstractServiceProviderConfigEndpoint;
-
-import java.util.Collections;
+import com.unboundid.scim2.server.resources.AbstractServiceProviderConfigEndpoint;
 
 /**
  * A test Service Provider Config endpoint implementation that just serves up
@@ -72,15 +70,15 @@ public class TestServiceProviderConfigEndpoint
    */
   public static ServiceProviderConfigResource create()
   {
-    return new ServiceProviderConfigResource("https://doc",
+    return new ServiceProviderConfigResource("https://example.com/doc",
         new PatchConfig(true),
         new BulkConfig(true, 100, 1000),
         new FilterConfig(true, 200),
         new ChangePasswordConfig(true),
         new SortConfig(true),
         new ETagConfig(false),
-        Collections.singletonList(
-            new AuthenticationScheme(
-                "Basic", "HTTP BASIC", null, null, "httpbasic", true)));
+        new PaginationConfig(true, false, "cursor", 200, 200, null),
+        new AuthenticationScheme(
+            "Basic", "HTTP BASIC", null, null, "httpbasic", true));
   }
 }

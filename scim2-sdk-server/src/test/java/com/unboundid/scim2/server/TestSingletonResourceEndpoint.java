@@ -94,8 +94,7 @@ public class TestSingletonResourceEndpoint
   {
     SimpleSearchResults<UserResource> results =
         new SimpleSearchResults<>(RESOURCE_TYPE_DEFINITION, uriInfo);
-    results.addAll(users.values());
-    return results;
+    return results.addAll(users.values());
   }
 
   /**

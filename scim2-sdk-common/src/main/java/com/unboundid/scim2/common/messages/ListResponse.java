@@ -57,10 +57,8 @@ import java.util.Objects;
  *
  * A list response can be broken down into pages, where each page contains a
  * subset of the overall results. Pagination allows the SCIM service provider to
- * return reasonably-sized JSON responses and avoid expensive computations. The
- * next page of results can be retrieved by leveraging the "startIndex" field,
- * which represents the page number. Pagination is not a hard requirement of the
- * SCIM 2.0 protocol, so some SCIM services do not support it.
+ * return reasonably-sized JSON responses and avoid expensive computations. More
+ * details about pagination are available below.
  * <br><br>
  *
  * List responses contain the following fields:
@@ -73,50 +71,117 @@ import java.util.Objects;
  *        of {@code itemsPerPage} if all of the matched resources are not
  *        present in the provided {@code Resources} array.
  *   <li> {@code startIndex}: The index indicating the page number, if
- *        pagination is supported by the SCIM service.
+ *        index-based pagination is supported by the SCIM service.
+ *   <li> {@code nextCursor}: An identifier representing the next page, if
+ *        cursor-based pagination is supported by the SCIM service.
+ *   <li> {@code previousCursor}: An identifier representing the prior page, if
+ *        cursor-based pagination is supported by the SCIM service.
  * </ul>
  * <br><br>
  *
  * An example list response takes the following form:
  * <pre>
  *   {
- *       "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
- *       "totalResults": 100,
- *       "itemsPerPage": 1,
- *       "Resources": [
- *           {
- *               "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
- *               "userName": "muhammad.ali",
- *               "title": "Champ"
- *           }
- *       ]
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+ *     "totalResults": 100,
+ *     "itemsPerPage": 1,
+ *     "Resources": [
+ *       {
+ *         "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+ *         "userName": "muhammad.ali",
+ *         "title": "Champ"
+ *       }
+ *     ]
  *   }
  * </pre>
  *
  * To create the above list response, use the following Java code:
- * <pre>
+ * <pre><code>
  *   UserResource muhammad = new UserResource()
  *           .setUserName("muhammad.ali")
  *           .setTitle("Champ");
  *   ListResponse&lt;UserResource&gt; response =
  *           new ListResponse&lt;&gt;(100, List.of(muhammad), 1, null);
- * </pre>
+ * </code></pre>
  *
- * Any Collection may be passed directly into the alternate constructor.
- * <pre>
+ * Any Collection may be used directly.
+ * <pre><code>
  *   List&lt;UserResource&gt; list = getUserList();
  *   ListResponse&lt;UserResource&gt; response = new ListResponse&lt;&gt;(list);
- * </pre>
+ * </code></pre>
  *
  * When iterating over the elements in a list response's {@code Resources} list,
  * it is possible to iterate directly over the ListResponse object:
- * <pre>
+ * <pre><code>
  *   ListResponse&lt;BaseScimResource&gt; listResponse = getResponse();
  *   for (BaseScimResource resource : listResponse)
  *   {
  *     System.out.println(resource.getId());
  *   }
+ * </code></pre>
+ *
+ * <h2>Pagination</h2>
+ *
+ * SCIM services often have a maximum number of results that can be returned in
+ * a single list response. For API clients that wish to see all of the results,
+ * the SCIM protocol defines pagination so that results are returned in chunks.
+ * For more information on pagination, see
+ * {@link com.unboundid.scim2.common.types.PaginationConfig PaginationConfig}.
+ * <br><br>
+ *
+ * The following is an example JSON from a service that supports cursor-based
+ * pagination. This response indicates that the next page of results can be
+ * obtained by including a query parameter of {@code cursor=YkU3OF86Pz0rGv} in
+ * the next request to the {@code /Users} endpoint. Note that this example SCIM
+ * service does not return the optional {@code previousCursor} value. When the
+ * final result is returned, the {@code nextCursor} value will be {@code null}.
+ * <pre>
+ *   {
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+ *     "totalResults": 100,
+ *     "itemsPerPage": 1,
+ *     "nextCursor": "YkU3OF86Pz0rGv",
+ *     "Resources": [
+ *       {
+ *         "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+ *         "userName": "muhammad.ali",
+ *         "title": "Champ"
+ *       }
+ *     ]
+ *   }
  * </pre>
+ *
+ * The above list response can be created with the following Java code:
+ * <pre><code>
+ *   ListResponse&lt;UserResource&gt; response =
+ *       new ListResponse&lt;&gt;(100, "YkU3OF86Pz0rGv", 1, List.of(muhammad));
+ * </code></pre>
+ *
+ * The following is an example JSON from a service that supports index-based
+ * pagination. This response indicates the 12th page in the result set. The next
+ * page of results can be obtained by including a query parameter of
+ * {@code startIndex=13} in the next request to the {@code /Users} endpoint.
+ * <pre>
+ *   {
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+ *     "totalResults": 100,
+ *     "itemsPerPage": 1,
+ *     "startIndex": 12,
+ *     "Resources": [
+ *       {
+ *         "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+ *         "userName": "muhammad.ali",
+ *         "title": "Champ"
+ *       }
+ *     ]
+ *   }
+ * </pre>
+ *
+ * The above list response can be created with the following Java code:
+ * <pre><code>
+ *   ListResponse&lt;UserResource&gt; response =
+ *       new ListResponse&lt;&gt;(100, List.of(muhammad), 12, 1);
+ * </code></pre>
  *
  * <h2>Deserializing A Raw JSON</h2>
  *
@@ -144,26 +209,33 @@ import java.util.Objects;
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:ListResponse",
     name="List Response", description = "SCIM 2.0 List Response")
 @JsonPropertyOrder({ "schemas", "totalResults", "itemsPerPage", "startIndex",
-        "Resources" })
+        "previousCursor", "nextCursor", "Resources" })
 public class ListResponse<T> extends BaseScimResource
     implements Iterable<T>
 {
   @Attribute(description = "The total number of results returned by the " +
       "list or query operation")
-  @JsonProperty(value = "totalResults", required = true)
   private final int totalResults;
 
   @Attribute(description = "The number of resources returned in a list " +
       "response page")
   @Nullable
-  @JsonProperty("itemsPerPage")
   private final Integer itemsPerPage;
 
   @Attribute(description = "The 1-based index of the first result in " +
       "the current set of list results")
   @Nullable
-  @JsonProperty("startIndex")
   private final Integer startIndex;
+
+  @Attribute(description = "A cursor value string that MAY be used in a" +
+      " subsequent request to obtain the previous page of results")
+  @Nullable
+  private final String previousCursor;
+
+  @Attribute(description = "A cursor value string that MAY be used in a" +
+      " subsequent request to obtain the next page of results")
+  @Nullable
+  private final String nextCursor;
 
   @Attribute(description = "A multi-valued list of complex objects " +
       "containing the requested resources")
@@ -180,30 +252,93 @@ public class ListResponse<T> extends BaseScimResource
    * @param totalResults  The total number of results returned. If there are
    *                      more results than on one page, this value can be
    *                      larger than the page size.
-   * @param resources     A multi-valued list of SCIM resources representing the
-   *                      result set.
    * @param startIndex    The 1-based index of the first result in the current
    *                      set of list results. This can be {@code null} if the
    *                      SCIM service provider does not support pagination.
+   * @param itemPerPage   The number of resources returned in the list response
+   *                      page.
+   * @param prevCursor    The cursor value representing an ID for the previous
+   *                      page. Cursor-based pagination is defined in RFC 9865.
+   * @param nextCursor    The cursor value representing an ID for the next page.
+   *                      Cursor-based pagination is defined in RFC 9865.
+   * @param resources     A multi-valued list of SCIM resources representing the
+   *                      result set.
+   *
+   * @throws IllegalStateException If the {@code resources} list is {@code null}
+   *                               and {@code totalResults} is non-zero.
+   *
+   * @since 5.0.0
+   */
+  @JsonCreator
+  public ListResponse(
+      @JsonProperty(value="totalResults", required=true) final int totalResults,
+      @Nullable @JsonProperty(value = "startIndex") final Integer startIndex,
+      @Nullable @JsonProperty(value = "itemsPerPage") final Integer itemPerPage,
+      @Nullable @JsonProperty(value = "previousCursor") final String prevCursor,
+      @Nullable @JsonProperty(value = "nextCursor") final String nextCursor,
+      @NotNull @JsonProperty(value = "Resources") final List<T> resources)
+          throws IllegalStateException
+  {
+    this.totalResults = totalResults;
+    this.startIndex = startIndex;
+    this.itemsPerPage = itemPerPage;
+    this.previousCursor = prevCursor;
+    this.nextCursor = nextCursor;
+    this.resources = resourcesOrEmptyList(resources, itemPerPage, totalResults);
+  }
+
+  /**
+   * Create a new list response. This constructor may be used for services that
+   * use index-based pagination.
+   *
+   * @param totalResults  The total number of results returned. If there are
+   *                      more results than on one page, this value can be
+   *                      larger than the page size.
+   * @param resources     A multi-valued list of SCIM resources representing the
+   *                      result set.
+   * @param startIndex    The 1-based index of the first result in the current
+   *                      set of list results. This can be {@code null} to avoid
+   *                      use of index-based pagination.
    * @param itemsPerPage  The number of resources returned in the list response
    *                      page.
    *
    * @throws IllegalStateException If the {@code resources} list is {@code null}
    *                               and {@code totalResults} is non-zero.
    */
-  @JsonCreator
-  public ListResponse(
-      @JsonProperty(value="totalResults", required=true) final int totalResults,
-      @NotNull @JsonProperty(value = "Resources") final List<T> resources,
-      @Nullable @JsonProperty("startIndex") final Integer startIndex,
-      @Nullable @JsonProperty("itemsPerPage") final Integer itemsPerPage)
-          throws IllegalStateException
+  public ListResponse(final int totalResults,
+                      @NotNull final List<T> resources,
+                      @Nullable final Integer startIndex,
+                      @Nullable final Integer itemsPerPage)
+      throws IllegalStateException
   {
-    this.totalResults = totalResults;
-    this.startIndex   = startIndex;
-    this.itemsPerPage = itemsPerPage;
-    this.resources =
-        resourcesOrEmptyList(resources, itemsPerPage, totalResults);
+    this(totalResults, startIndex, itemsPerPage, null, null, resources);
+  }
+
+  /**
+   * Create a new list response. This constructor may be used for services that
+   * use cursor-based pagination.
+   *
+   * @param totalResults  The total number of results returned. If there are
+   *                      more results than on one page, this value can be
+   *                      larger than the page size.
+   * @param nextCursor    The cursor value representing an ID for the next page.
+   *                      Cursor-based pagination is defined in RFC 9865.
+   * @param itemsPerPage  The number of resources returned in the list response
+   *                      page.
+   * @param resources     A multi-valued list of SCIM resources representing the
+   *                      result set.
+   *
+   * @throws IllegalStateException If the {@code resources} list is {@code null}
+   *                               and {@code totalResults} is non-zero.
+   *
+   * @since 5.0.0
+   */
+  public ListResponse(final int totalResults,
+                      @Nullable final String nextCursor,
+                      @Nullable final Integer itemsPerPage,
+                      @NotNull final List<T> resources)
+  {
+    this(totalResults, null, itemsPerPage, null, nextCursor, resources);
   }
 
   /**
@@ -220,6 +355,8 @@ public class ListResponse<T> extends BaseScimResource
     this.resources = new ArrayList<>(resources);
     this.startIndex = null;
     this.itemsPerPage = null;
+    this.previousCursor = null;
+    this.nextCursor = null;
   }
 
   /**
@@ -272,6 +409,42 @@ public class ListResponse<T> extends BaseScimResource
   }
 
   /**
+   * Retrieves the previous cursor value, if:
+   * <ul>
+   *   <li> The SCIM service supports cursor-based pagination as defined by the
+   *        <a href="https://datatracker.ietf.org/doc/html/rfc9865">RFC 9865</a>
+   *        update to the SCIM 2 standard.
+   *   <li> The SCIM service also supports returning this optional value. It is
+   *        possible for a SCIM service to only support "nextCursor" values.
+   * </ul>
+   *
+   * @return The previous cursor value that identifies the previous page in the
+   *         result set, or {@code null} if the value is not present.
+   *
+   * @since 5.0.0
+   */
+  @Nullable
+  public String getPreviousCursor()
+  {
+    return previousCursor;
+  }
+
+  /**
+   * Retrieves the value of the next cursor. This is relevant for SCIM services
+   * that support cursor-based pagination as defined by
+   * <a href="https://datatracker.ietf.org/doc/html/rfc9865">RFC 9865</a>.
+   *
+   * @return The next cursor representing the next page.
+   *
+   * @since 5.0.0
+   */
+  @Nullable
+  public String getNextCursor()
+  {
+    return nextCursor;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -317,6 +490,14 @@ public class ListResponse<T> extends BaseScimResource
     {
       return false;
     }
+    if (!Objects.equals(previousCursor, that.previousCursor))
+    {
+      return false;
+    }
+    if (!Objects.equals(nextCursor, that.nextCursor))
+    {
+      return false;
+    }
     return resources.equals(that.resources);
   }
 
@@ -329,7 +510,7 @@ public class ListResponse<T> extends BaseScimResource
   public int hashCode()
   {
     return Objects.hash(super.hashCode(), totalResults, itemsPerPage,
-        startIndex, resources);
+        startIndex, previousCursor, nextCursor, resources);
   }
 
   /**

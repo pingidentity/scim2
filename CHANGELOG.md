@@ -32,6 +32,15 @@ Updated "remove" patch operations to validate paths when objects are created. Pr
 only validated when operations were applied. This behavior is specific to non-standard remove
 operations that set a `value` field, and does not affect most patch operations.
 
+Added support for [RFC 9865](https://datatracker.ietf.org/doc/html/rfc9865), which is an update to
+the SCIM 2 standard that defines an alternate cursor-based type of API pagination. This allows SCIM
+services to offer an alternative means of returning more results, which is ideal for services that
+cannot feasibly implement index-style pagination. This update includes new helper methods,
+exception types, documentation, and updates to existing classes that now interface with cursors.
+Note that these updates are backward compatible with older API calls, so there are no changes
+required for applications that do not require cursor-based pagination. For more background, see the
+documentation for the new `PaginationConfig` class, the `ListResponse` class, and the RFC itself.
+
 ## v4.1.0 - 2025-Oct-06
 Added new methods to the Path class to simplify certain usages and make interaction, especially
 instantiation, less verbose. These include:
