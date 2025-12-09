@@ -18,6 +18,7 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -476,14 +477,14 @@ public class NonStandardRemoveOperationTest
    * JSON values that are improperly formatted.
    */
   @Test
-  public void testApplyingInvalidOperations() throws Exception
+  public void testInvalidOperations() throws Exception
   {
+    final var reader = JsonUtils.getObjectReader().forType(PatchRequest.class);
     GenericScimResource resource = new GenericScimResource();
 
-    // Applying this operation is invalid because we only support targeting
+    // Creating this operation is invalid because we only support targeting
     // "members".
-    PatchRequest opWithNestedAttr = JsonUtils.getObjectReader()
-        .forType(PatchRequest.class).readValue("""
+    String invalidPath = """
             {
               "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
               "Operations": [{
@@ -494,15 +495,14 @@ public class NonStandardRemoveOperationTest
                 }
               }]
             }
-            """);
-    assertThatThrownBy(() -> opWithNestedAttr.apply(resource))
-        .isInstanceOf(BadRequestException.class)
-        .hasMessageContaining("Cannot apply the operation since it has a")
+            """;
+    assertThatThrownBy(() -> reader.readValue(invalidPath))
+        .isInstanceOf(JsonMappingException.class)
+        .hasMessageContaining("Cannot create the operation since it has a")
         .hasMessageContaining("value, but an invalid 'emails' path.");
 
-    // Applying this operation is invalid because the path has a value filter.
-    PatchRequest operationWithFilter = JsonUtils.getObjectReader()
-        .forType(PatchRequest.class).readValue("""
+    // Creating this operation is invalid because the path has a value filter.
+    String operationWithFilter = """
             {
               "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
               "Operations": [{
@@ -513,10 +513,10 @@ public class NonStandardRemoveOperationTest
                 }
               }]
             }
-            """);
-    assertThatThrownBy(() -> operationWithFilter.apply(resource))
-        .isInstanceOf(BadRequestException.class)
-        .hasMessageContaining("Cannot apply the operation since it has a")
+            """;
+    assertThatThrownBy(() -> reader.readValue(operationWithFilter))
+        .isInstanceOf(JsonMappingException.class)
+        .hasMessageContaining("Cannot create the operation since it has a")
         .hasMessageContaining("value, but an invalid 'members[value sw");
 
     // Applying this operation is invalid because the Member field has other

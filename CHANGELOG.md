@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v4.1.1 - TBD
+Updated "remove" patch operations to validate paths when objects are created. Previously, paths were
+only validated when operations were applied. This behavior is specific to non-standard remove
+operations that set a `value` field, and does not affect most patch operations.
 
 ## v4.1.0 - 2025-Oct-06
 Added new methods to the Path class to simplify certain usages and make interaction, especially
