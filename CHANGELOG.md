@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## v4.1.1 - TBD
+## v4.1.1 - 2025-Dec-15
 Updated "remove" patch operations to validate paths when objects are created. Previously, paths were
 only validated when operations were applied. This behavior is specific to non-standard remove
 operations that set a `value` field, and does not affect most patch operations.
