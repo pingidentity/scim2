@@ -65,11 +65,17 @@ public class SimpleSearchResults<T extends ScimResource>
   @NotNull
   private final List<ScimResource> resources;
 
-  @NotNull
+  @Nullable
   private final Filter filter;
 
   @Nullable
   private final Integer startIndex;
+
+  // Stores a "cursor" value for cursor-based pagination. For simplicity, this
+  // class sets cursor values to string integers, which should not be used for
+  // production use cases.
+  @Nullable
+  private final String nextCursor;
 
   @Nullable
   private final Integer count;
@@ -103,9 +109,10 @@ public class SimpleSearchResults<T extends ScimResource>
     String filterString = queryParams.getFirst(QUERY_PARAMETER_FILTER);
     String startIndexString = queryParams.getFirst(
         QUERY_PARAMETER_PAGE_START_INDEX);
+    String nextCursorString = queryParams.getFirst(QUERY_PARAMETER_PAGE_CURSOR);
     String countString = queryParams.getFirst(QUERY_PARAMETER_PAGE_SIZE);
     String sortByString = queryParams.getFirst(QUERY_PARAMETER_SORT_BY);
-    String  sortOrderString = queryParams.getFirst(QUERY_PARAMETER_SORT_ORDER);
+    String sortOrderString = queryParams.getFirst(QUERY_PARAMETER_SORT_ORDER);
 
     if (filterString != null)
     {
@@ -116,15 +123,43 @@ public class SimpleSearchResults<T extends ScimResource>
       this.filter = null;
     }
 
+    if (startIndexString != null && nextCursorString != null)
+    {
+      throw BadRequestException.invalidCursor(
+          "SimpleSearchResults does not allow index and cursor"
+              + " pagination in the same request.");
+    }
     if (startIndexString != null)
     {
       // RFC 7644 3.4.2.4: A value less than 1 SHALL be interpreted as 1.
       int i = Integer.parseInt(startIndexString);
       startIndex = Math.max(i, 1);
+      nextCursor = null;
+    }
+    else if (queryParams.containsKey("cursor"))
+    {
+      // SimpleSearchResults uses a page identifier of a numerical string, for
+      // simplicity and for parity with index-based pagination behavior.
+      if (nextCursorString == null || nextCursorString.isEmpty())
+      {
+        // This is requesting the first page of results. Return the ID for the
+        // next page.
+        nextCursor = "2";
+      }
+      else
+      {
+        // This is requesting a specific page with a query like "?cursor=VZUTi".
+        // For SimpleSearchResults, this will be of the form "?cursor=3".
+        int i = Integer.parseInt(nextCursorString) + 1;
+        nextCursor = String.valueOf(Math.max(i, 2));
+      }
+
+      startIndex = null;
     }
     else
     {
       startIndex = null;
+      nextCursor = null;
     }
 
     if (countString != null)
@@ -229,18 +264,9 @@ public class SimpleSearchResults<T extends ScimResource>
     {
       resources.sort(resourceComparator);
     }
-    List<ScimResource> resultsToReturn = resources;
-    if (startIndex != null)
-    {
-      if (startIndex > resources.size())
-      {
-        resultsToReturn = Collections.emptyList();
-      }
-      else
-      {
-        resultsToReturn = resources.subList(startIndex - 1, resources.size());
-      }
-    }
+
+    List<ScimResource> resultsToReturn = handlePaging(resources);
+
     if (count != null && !resultsToReturn.isEmpty())
     {
       resultsToReturn = resultsToReturn.subList(
@@ -249,12 +275,59 @@ public class SimpleSearchResults<T extends ScimResource>
     os.totalResults(resources.size());
     if (startIndex != null || count != null)
     {
-      os.startIndex(startIndex == null ? 1 : startIndex);
       os.itemsPerPage(resultsToReturn.size());
+    }
+    if (startIndex != null)
+    {
+      os.startIndex(startIndex);
+    }
+    if (nextCursor != null
+        && !resultsToReturn.isEmpty()
+        && !resultsToReturn.get(resultsToReturn.size() - 1).equals(
+            resources.get(resources.size() - 1)))
+    {
+      // Add the nextCursor value when cursor-based pagination is used, and the
+      // last result has not yet been returned.
+      os.nextCursor(nextCursor);
     }
     for (ScimResource resource : resultsToReturn)
     {
       os.resource((T) responsePreparer.trimRetrievedResource(resource));
+    }
+  }
+
+  /**
+   * Returns a set of resources based on the current paging constraints.
+   *
+   * @param resources  The full result set.
+   * @return  The results that should be returned.
+   */
+  @NotNull
+  private List<ScimResource> handlePaging(
+      @NotNull final List<ScimResource> resources)
+  {
+    if (startIndex == null && nextCursor == null)
+    {
+      return resources;
+    }
+
+    int index;
+    if (startIndex != null)
+    {
+      index = startIndex;
+    }
+    else
+    {
+      index = Integer.parseInt(nextCursor) - 1;
+    }
+
+    if (index > resources.size())
+    {
+      return Collections.emptyList();
+    }
+    else
+    {
+      return resources.subList(index - 1, resources.size());
     }
   }
 }

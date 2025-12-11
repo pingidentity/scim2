@@ -62,6 +62,20 @@ public class ListResponseBuilder<T>
   private Integer itemsPerPage;
 
   /**
+   * The optional value identifying the previous page for a service that
+   * supports cursor-based pagination.
+   */
+  @Nullable
+  private String previousCursor;
+
+  /**
+   * The value identifying the next page for a service that supports
+   * cursor-based pagination.
+   */
+  @Nullable
+  private String nextCursor;
+
+  /**
    * {@inheritDoc}
    */
   public void startIndex(final int startIndex)
@@ -75,6 +89,22 @@ public class ListResponseBuilder<T>
   public void itemsPerPage(final int itemsPerPage)
   {
     this.itemsPerPage = itemsPerPage;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public void previousCursor(@Nullable final String previousCursor)
+  {
+    this.previousCursor = previousCursor;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public void nextCursor(@Nullable final String nextCursor)
+  {
+    this.nextCursor = nextCursor;
   }
 
   /**
@@ -96,13 +126,15 @@ public class ListResponseBuilder<T>
 
   /**
    * {@inheritDoc}
-   * <p>
-   * This method currently does not perform any action and should not be used.
+   * <br><br>
+   *
+   * This does not perform any action since this class represents a ListResponse
+   * as defined in the SCIM 2 standard, which does not have a schema extension.
    */
   public void extension(@NotNull final String urn,
                         @NotNull final ObjectNode extensionObjectNode)
   {
-    // TODO: do nothing for now
+    // No implementation required.
   }
 
   /**
@@ -115,9 +147,11 @@ public class ListResponseBuilder<T>
   {
     return new ListResponse<>(
         Optional.ofNullable(totalResults).orElse(resources.size()),
-        resources,
         startIndex,
-        itemsPerPage
+        itemsPerPage,
+        previousCursor,
+        nextCursor,
+        resources
     );
   }
 }

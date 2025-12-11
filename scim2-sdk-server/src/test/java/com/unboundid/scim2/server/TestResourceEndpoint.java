@@ -51,6 +51,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
+import java.util.Objects;
+
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 
 /**
@@ -67,8 +69,8 @@ import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 public class TestResourceEndpoint
 {
   private static final ResourceTypeDefinition RESOURCE_TYPE_DEFINITION =
-      ResourceTypeDefinition.fromJaxRsResource(
-          TestResourceEndpoint.class);
+      Objects.requireNonNull(
+          ResourceTypeDefinition.fromJaxRsResource(TestResourceEndpoint.class));
 
   /**
    * This method will simply return a poorly formated SCIM exception and
@@ -125,15 +127,34 @@ public class TestResourceEndpoint
    */
   @GET
   @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
-  public SimpleSearchResults<UserResource> search(
+  public SimpleSearchResults<UserResource> searchOneResult(
       @Context final UriInfo uriInfo) throws ScimException
   {
-    UserResource resource = new UserResource().setUserName("test");
-    resource.setId("123");
-
     SimpleSearchResults<UserResource> results =
         new SimpleSearchResults<>(RESOURCE_TYPE_DEFINITION, uriInfo);
-    results.add(resource);
+    results.add(newUserWithId("69d17c9d").setUserName("Frieren"));
+
+    return results;
+  }
+
+  /**
+   * Equivalent to {@link #searchOneResult}, with additional values returned.
+   *
+   * @param uriInfo   The UriInfo.
+   * @return          A SimpleSearchResults object with four resources.
+   */
+  @GET
+  @Path("/WithFourResults")
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
+  public SimpleSearchResults<UserResource> searchFourResults(
+      @Context final UriInfo uriInfo) throws ScimException
+  {
+    SimpleSearchResults<UserResource> results =
+        new SimpleSearchResults<>(RESOURCE_TYPE_DEFINITION, uriInfo);
+    results.add(newUserWithId("69d17c9d").setUserName("Frieren"));
+    results.add(newUserWithId("286080c5").setUserName("Fern"));
+    results.add(newUserWithId("7b847d9f").setUserName("Stark"));
+    results.add(newUserWithId("bb3c36c2").setUserName("Sein"));
 
     return results;
   }
@@ -225,5 +246,43 @@ public class TestResourceEndpoint
               ],
               "unknownAttribute": "unknownValue"
             }""").build();
+  }
+
+  /**
+   * Returns a list response with an extra undefined attribute listed as the
+   * last attribute in the list.
+   *
+   * @return  A list response.
+   */
+  @GET
+  @Path("testCursorPagination")
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
+  public Response testCursorPagination()
+  {
+    return Response.status(Response.Status.OK)
+        .type(MEDIA_TYPE_SCIM)
+        .entity("""
+            {
+              "schemas": [
+                "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+              ],
+              "totalResults": 20,
+              "itemsPerPage": 1,
+              "previousCursor": "ze7L30kMiiLX6x",
+              "nextCursor": "YkU3OF86Pz0rGv",
+              "Resources": [
+                {
+                  "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+                  "userName": "reincarnated"
+                }
+              ]
+            }""").build();
+  }
+
+  private UserResource newUserWithId(String id)
+  {
+    var user = new UserResource();
+    user.setId(id);
+    return user;
   }
 }

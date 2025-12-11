@@ -131,6 +131,14 @@ public class ApiConstants
   public static final String QUERY_PARAMETER_PAGE_START_INDEX = "startIndex";
 
   /**
+   * The HTTP query parameter used in a URI to specify a cursor identifier for
+   * page results. See {@link com.unboundid.scim2.common.types.PaginationConfig}
+   * for more information.
+   */
+  @NotNull
+  public static final String QUERY_PARAMETER_PAGE_CURSOR = "cursor";
+
+  /**
    * The HTTP query parameter used in a URI to specify the maximum size of
    * a page of results.
    */

@@ -43,16 +43,14 @@ import com.unboundid.scim2.common.filters.Filter;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.unboundid.scim2.common.utils.ApiConstants.*;
-
 /**
  * This class represents a SCIM 2.0 search request.
  * <br><br>
  *
  * A SCIM search involves requests to endpoints such as {@code /Users} or
- * {@code /Groups}, where multiple results may be returned. When a client sends
- * a search request, the HTTP response that they will receive from the SCIM
- * service will be a {@link ListResponse}, which will provide a list of
+ * {@code /Groups}, where multiple results are typically returned. When a client
+ * sends a search request, the HTTP response that they will receive from the
+ * SCIM service will be a {@link ListResponse}, which will provide a list of
  * resources.
  * <br><br>
  *
@@ -73,7 +71,10 @@ import static com.unboundid.scim2.common.utils.ApiConstants.*;
  *   <li> {@code sortOrder}: The order that the {@code sortBy} parameter is
  *        applied. This may be set to "ascending" (the default) or "descending".
  *   <li> {@code startIndex}: The page number of the ListResponse, if the SCIM
- *        service provider supports pagination.
+ *        service provider supports this type of pagination.
+ *   <li> {@code cursor}: An alternative to {@code startIndex}, this provides a
+ *         string identifier of a page, if the SCIM service supports this type
+ *         of pagination.
  *   <li> {@code count}: The maximum number of resources to return.
  * </ul>
  * <br><br>
@@ -112,45 +113,99 @@ public class SearchRequest extends BaseScimResource
   @Attribute(description = "A multi-valued list of strings indicating " +
       "the names of resource attributes to return in the response overriding " +
       "the set of attributes that would be returned by default")
-  @JsonProperty
   private final Set<String> attributes;
 
   @Nullable
   @Attribute(description = "A multi-valued list of strings indicating " +
       "the names of resource attributes to be removed from the default set " +
       "of attributes to return")
-  @JsonProperty
   private final Set<String> excludedAttributes;
 
   @Nullable
   @Attribute(description = "The filter string used to request a subset " +
       "of resources")
-  @JsonProperty
   private final String filter;
 
   @Nullable
   @Attribute(description = "A string indicating the attribute whose " +
       "value shall be used to order the returned responses")
-  @JsonProperty
   private final String sortBy;
 
   @Nullable
   @Attribute(description = "A string indicating the order in which the " +
       "sortBy parameter is applied")
-  @JsonProperty
   private final SortOrder sortOrder;
 
   @Nullable
   @Attribute(description = "An integer indicating the 1-based index of " +
       "the first query result")
-  @JsonProperty
   private final Integer startIndex;
+
+  @Nullable
+  @Attribute(description = "A string indicating the unique identifier for " +
+      "the page")
+  private final String cursor;
 
   @Nullable
   @Attribute(description = "An integer indicating the desired maximum " +
       "number of query results per page")
-  @JsonProperty
   private final Integer count;
+
+
+  /**
+   * Create a new SearchRequest with the provided parameters. This constructor
+   * supports the use of the {@code cursor} parameter as defined by
+   * <a href="https://datatracker.ietf.org/doc/html/rfc9865">RFC 9865</a>.
+   *
+   * @param attributes          A list of strings indicating the names of
+   *                            attributes to return in the response, overriding
+   *                            the set of attributes that would be returned by
+   *                            default.
+   * @param excludedAttributes  A list of strings indicating the names of
+   *                            attributes to be removed from the default set of
+   *                            returned attributes.
+   * @param filter              A {@link Filter} used to request a subset of
+   *                            resources that match a criteria.
+   * @param sortBy              A string indicating the attribute whose value
+   *                            shall be used to order the returned responses.
+   * @param sortOrder           The order in which the sortBy parameter is
+   *                            applied (ascending or descending).
+   * @param startIndex          The 1-based index indicating the desired page,
+   *                            if index-based pagination is used.
+   * @param cursor              The cursor ID indicating the desired page, if
+   *                            cursor-based pagination is used.
+   * @param count               The maximum number of query results per page.
+   *
+   * @since 5.0.0
+   */
+  @JsonCreator
+  public SearchRequest(
+      @Nullable @JsonProperty(value = "attributes")
+      final Set<String> attributes,
+      @Nullable @JsonProperty(value = "excludedAttributes")
+      final Set<String> excludedAttributes,
+      @Nullable @JsonProperty(value = "filter")
+      final String filter,
+      @Nullable @JsonProperty(value = "sortBy")
+      final String sortBy,
+      @Nullable @JsonProperty(value = "sortOrder")
+      final SortOrder sortOrder,
+      @Nullable @JsonProperty(value = "startIndex")
+      final Integer startIndex,
+      @Nullable @JsonProperty(value = "cursor")
+      final String cursor,
+      @Nullable @JsonProperty(value = "count")
+      final Integer count)
+  {
+    this.attributes = attributes;
+    this.excludedAttributes = excludedAttributes;
+    this.filter = filter;
+    this.sortBy = sortBy;
+    this.sortOrder = sortOrder;
+    this.startIndex = startIndex;
+    this.cursor = cursor;
+    this.count = count;
+  }
 
   /**
    * Create a new SearchRequest.
@@ -168,29 +223,22 @@ public class SearchRequest extends BaseScimResource
    * @param startIndex the 1-based index of the first query result.
    * @param count the desired maximum number of query results per page.
    */
-  @JsonCreator
-  public SearchRequest(@Nullable @JsonProperty(QUERY_PARAMETER_ATTRIBUTES)
-                       final Set<String> attributes,
-                       @Nullable @JsonProperty(QUERY_PARAMETER_EXCLUDED_ATTRIBUTES)
-                       final Set<String> excludedAttributes,
-                       @Nullable @JsonProperty(QUERY_PARAMETER_FILTER)
-                       final String filter,
-                       @Nullable @JsonProperty(QUERY_PARAMETER_SORT_BY)
-                       final String sortBy,
-                       @Nullable @JsonProperty(QUERY_PARAMETER_SORT_ORDER)
-                       final SortOrder sortOrder,
-                       @Nullable @JsonProperty(QUERY_PARAMETER_PAGE_START_INDEX)
-                       final Integer startIndex,
-                       @Nullable @JsonProperty(QUERY_PARAMETER_PAGE_SIZE)
-                       final Integer count)
+  public SearchRequest(@Nullable final Set<String> attributes,
+                       @Nullable final Set<String> excludedAttributes,
+                       @Nullable final String filter,
+                       @Nullable final String sortBy,
+                       @Nullable final SortOrder sortOrder,
+                       @Nullable final Integer startIndex,
+                       @Nullable final Integer count)
   {
-    this.attributes = attributes;
-    this.excludedAttributes = excludedAttributes;
-    this.filter = filter;
-    this.sortBy = sortBy;
-    this.sortOrder = sortOrder;
-    this.startIndex = startIndex;
-    this.count = count;
+    this(attributes,
+        excludedAttributes,
+        filter,
+        sortBy,
+        sortOrder,
+        startIndex,
+        null,
+        count);
   }
 
   /**
@@ -269,6 +317,20 @@ public class SearchRequest extends BaseScimResource
   }
 
   /**
+   * Retrieves the cursor that identifies the desired page.
+   *
+   * @return  The cursor that identifies the page, or {@code null} if pagination
+   * is not required.
+   *
+   * @since 5.0.0
+   */
+  @Nullable
+  public String getCursor()
+  {
+    return cursor;
+  }
+
+  /**
    * Retrieves the desired maximum number of query results per page.
    *
    * @return the desired maximum number of query results per page or
@@ -328,6 +390,10 @@ public class SearchRequest extends BaseScimResource
     {
       return false;
     }
+    if (!Objects.equals(cursor, that.cursor))
+    {
+      return false;
+    }
     return Objects.equals(count, that.count);
   }
 
@@ -340,6 +406,6 @@ public class SearchRequest extends BaseScimResource
   public int hashCode()
   {
     return Objects.hash(super.hashCode(), attributes, excludedAttributes,
-        filter, sortBy, sortOrder, startIndex, count);
+        filter, sortBy, sortOrder, startIndex, cursor, count);
   }
 }
