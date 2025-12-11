@@ -108,7 +108,6 @@ public class SearchRequestTestCase
           "filter": "displayName sw \\"smith\\"",
           "sortBy": "id",
           "sortOrder": "descending",
-          "startIndex": 21,
           "cursor": "YkU3OF86Pz0rGv",
           "count": 5
         }""";
@@ -124,7 +123,7 @@ public class SearchRequestTestCase
         .isEqualTo(Filter.sw("displayName", "smith").toString());
     assertThat(cursorRequest.getSortBy()).isEqualTo("id");
     assertThat(cursorRequest.getSortOrder()).isEqualTo(SortOrder.DESCENDING);
-    assertThat(cursorRequest.getStartIndex()).isEqualTo(21);
+    assertThat(cursorRequest.getStartIndex()).isNull();
     assertThat(cursorRequest.getCursor()).isEqualTo("YkU3OF86Pz0rGv");
     assertThat(cursorRequest.getCount()).isEqualTo(5);
 
