@@ -37,11 +37,12 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
 /**
- * This class represents a SCIM exception pertaining to the {@code HTTP 400}
- * error response code. This exception type should be thrown when a client sends
- * a JSON payload that cannot be parsed, is syntactically incorrect, or violates
- * the schema.
+ * This class represents a SCIM exception pertaining to the
+ * {@code HTTP 400 BAD REQUEST} error response code. This exception type should
+ * be thrown when a client sends a JSON payload that cannot be parsed, is
+ * syntactically incorrect, or violates the schema.
  * <br><br>
+ *
  * BadRequestExceptions, as well as {@link ResourceConflictException} objects,
  * are unique types of SCIM exceptions since they sometimes include an optional
  * {@code scimType} field. A {@code scimType} represents a "SCIM detail error
@@ -50,6 +51,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * {@link #NO_TARGET}, for more detail on what situations a given
  * {@code scimType} is typically used for.
  * <br><br>
+ *
  * The following is an example of a BadRequestException presented to a SCIM
  * client. This example error response indicates that the client tried to modify
  * an attribute that is defined as read-only in the schema.
@@ -65,20 +67,20 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * The BadRequestException in the above example can be created with the
  * following Java code. Note that this uses a static method to populate the
  * {@code scimType} field.
- * <pre>
+ * <pre><code>
  *   throw BadRequestException.mutability(
  *           "Read-only attributes cannot be modified.");
- * </pre>
+ * </code></pre>
  *
  * The following shows more examples for creating a BadRequestException:
- * <pre>
+ * <pre><code>
  *   throw BadRequestException.invalidPath("Null paths are not permitted.");
  *   throw BadRequestException.tooMany(
  *          "Too many results returned. Narrow the scope of the search.");
  *
  *   // Create a generic BadRequestException without a 'scimType'.
  *   throw new BadRequestException("Detailed message explaining the error.");
- * </pre>
+ * </code></pre>
  */
 public class BadRequestException extends ScimException
 {

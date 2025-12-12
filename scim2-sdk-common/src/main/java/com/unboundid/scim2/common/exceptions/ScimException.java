@@ -71,26 +71,27 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  *   <li> {@code HTTP 501}: {@link NotImplementedException}
  * </ul>
  * <br><br>
+ *
  * To create a SCIM exception, use the subclasses of ScimException whenever
  * possible. For example:
- * <pre>
+ * <pre><code>
  *   throw new UnauthorizedException("Permission denied");
  *   throw new ServerErrorException("An unexpected error occurred.");
- * </pre>
+ * </code></pre>
  *
  * Some classes contain static helper methods to construct exceptions with
  * {@code scimType} fields.
- * <pre>
+ * <pre><code>
  *   throw BadRequestException.invalidFilter(
  *           "The provided filter could not be parsed.");
- * </pre>
+ * </code></pre>
  *
  * To create a SCIM exception with a custom HTTP error code that does not have
  * a dedicated class defined in the SCIM SDK, the constructors on this class may
  * be used directly:
- * <pre>
+ * <pre><code>
  *   throw new ScimException(429, "Detailed error message");
- * </pre>
+ * </code></pre>
  *
  * For more details on a particular exception type, see the class-level
  * documentation for that exception class (e.g., {@link BadRequestException}).

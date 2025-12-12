@@ -44,6 +44,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * insufficient access rights, or that the operation is not permitted by the
  * service provider.
  * <br><br>
+ *
  * The following is an example of a ForbiddenException presented to a SCIM
  * client.
  * <pre>
@@ -56,9 +57,9 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  *
  * The ForbiddenException in the above example can be created with the following
  * Java code:
- * <pre>
+ * <pre><code>
  *   throw new ForbiddenException("You do not have access to this resource.");
- * </pre>
+ * </code></pre>
  *
  * This exception type can have a {@code scimType} value of {@code sensitive}.
  * See {@link #sensitive(String)} for more information.

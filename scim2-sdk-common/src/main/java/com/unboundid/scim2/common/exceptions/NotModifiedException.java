@@ -46,6 +46,7 @@ import com.unboundid.scim2.common.types.ETagConfig;
  * a SCIM service provider returns an empty JSON body when returning this error
  * code.
  * <br><br>
+ *
  * If SCIM ETags are supported by a service provider, a client may request a
  * resource only if it has been modified. To perform this, a client must issue
  * a {@code GET} request with an {@code If-None-Match} HTTP header that includes
@@ -53,10 +54,11 @@ import com.unboundid.scim2.common.types.ETagConfig;
  * ETag provided by the client, then the service provider should return a
  * NotModifiedException if this is not expected.
  * <br><br>
+ *
  * A NotModifiedException can be created with the following Java code:
- * <pre>
+ * <pre><code>
  *   throw new NotModifiedException("The resource has not been modified.");
- * </pre>
+ * </code></pre>
  *
  * This exception type generally does not have a {@code scimType} value.
  */

@@ -45,6 +45,7 @@ import com.unboundid.scim2.common.types.ETagConfig;
  * time they viewed it. For more information on SCIM ETags, see the class-level
  * documentation of {@link ETagConfig}.
  * <br><br>
+ *
  * The following is an example of a PreconditionFailedException as seen by a
  * SCIM client.
  * <pre>
@@ -57,10 +58,10 @@ import com.unboundid.scim2.common.types.ETagConfig;
  *
  * The PreconditionFailedException in the above example can be created with the
  * following Java code:
- * <pre>
+ * <pre><code>
  *   throw new PreconditionFailedException(
  *          "Failed to update. The resource changed on the server.");
- * </pre>
+ * </code></pre>
  *
  * This exception type generally does not have a {@code scimType} value.
  */

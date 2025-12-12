@@ -45,12 +45,14 @@ import com.unboundid.scim2.common.types.ETagConfig;
  *   <li> If the client provides an invalid ETag for a resource.
  *   <li> When a client attempts to create a new duplicate resource.
  * </ul>
+ *
  * For an explanation on SCIM ETags, see {@link ETagConfig}. If a client
  * provides an ETag that does not match the current ETag of the SCIM resource,
  * then it likely indicates that the client is referencing an outdated version
  * of the resource. In this situation, the client should fetch the latest
  * version of the resource and attempt the operation again.
  * <br><br>
+ *
  * The following is an example of a ResourceConflictException as seen by a SCIM
  * client. This example error response indicates that the client tried to create
  * a user whose unique username is already in use by another user.
@@ -66,16 +68,16 @@ import com.unboundid.scim2.common.types.ETagConfig;
  * Note that a userName uniqueness violation should include a {@code scimType}
  * value of {@code "uniqueness"}. The ResourceConflictException in the above
  * example can be created with the following Java code:
- * <pre>
+ * <pre><code>
  *   throw ResourceConflictException.uniqueness(
  *           "The userName is already in use.");
- * </pre>
+ * </code></pre>
  *
  * To create a generic ResourceConflictException that does not contain
  * {@code scimType}, the constructors on this class may be used instead:
- * <pre>
+ * <pre><code>
  *   throw new ResourceConflictException("Detailed error message.");
- * </pre>
+ * </code></pre>
  */
 public class ResourceConflictException extends ScimException
 {

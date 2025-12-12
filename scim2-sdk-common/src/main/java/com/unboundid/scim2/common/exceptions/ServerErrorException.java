@@ -42,6 +42,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * type should be thrown when a SCIM service provider encounters an unexpected
  * error.
  * <br><br>
+ *
  * The following is an example of a ServerErrorException seen by a SCIM client.
  * <pre>
  *   {
@@ -53,9 +54,9 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  *
  * The ServerErrorException in the above example can be created with the
  * following Java code:
- * <pre>
+ * <pre><code>
  *   throw new ServerErrorException("An unexpected error occurred.");
- * </pre>
+ * </code></pre>
  *
  * This exception type generally does not have a {@code scimType} value.
  */

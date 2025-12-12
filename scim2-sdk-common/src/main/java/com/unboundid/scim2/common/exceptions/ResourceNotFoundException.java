@@ -42,6 +42,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * thrown when a client attempts to access a resource or an endpoint that does
  * not exist.
  * <br><br>
+ *
  * The following is an example of a ResourceNotFoundException presented to a
  * SCIM client. This example error response indicates that the client referenced
  * a SCIM resource that does not exist.
@@ -55,10 +56,10 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  *
  * The ResourceNotFoundException in the above example can be created with the
  * following Java code:
- * <pre>
+ * <pre><code>
  *   throw new ResourceNotFoundException(
  *       "The requested resource was not found.");
- * </pre>
+ * </code></pre>
  *
  * This exception type generally does not have a {@code scimType} value.
  */

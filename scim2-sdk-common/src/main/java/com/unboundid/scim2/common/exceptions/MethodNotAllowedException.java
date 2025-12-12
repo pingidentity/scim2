@@ -42,6 +42,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * should be thrown when a client sends a request to a valid endpoint, but
  * provides an unsupported REST method (e.g., {@code GET}, {@code POST}).
  * <br><br>
+ *
  * The following is an example of a MethodNotAllowedException as seen by a SCIM
  * client.
  * <pre>
@@ -54,10 +55,10 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  *
  * The MethodNotAllowedException in the above example can be created with the
  * following Java code:
- * <pre>
+ * <pre><code>
  *   throw new MethodNotAllowedException(
  *           "The /.search endpoint only supports POST requests.");
- * </pre>
+ * </code></pre>
  *
  * This exception type generally does not have a {@code scimType} value.
  */

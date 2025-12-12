@@ -43,6 +43,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * in the request. This error most commonly occurs when a client does not have a
  * valid bearer token for their SCIM request.
  * <br><br>
+ *
  * The following is an example of an UnauthorizedException presented to a SCIM
  * client. This example error response indicates that the client request was
  * denied due to insufficient access rights.
@@ -56,10 +57,10 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  *
  * The UnauthorizedException in the above example can be created with the
  * following Java code:
- * <pre>
+ * <pre><code>
  *   throw new UnauthorizedException(
  *           "The client is not authorized to perform the operation.");
- * </pre>
+ * </code></pre>
  *
  * This exception type generally does not have a {@code scimType} value.
  */

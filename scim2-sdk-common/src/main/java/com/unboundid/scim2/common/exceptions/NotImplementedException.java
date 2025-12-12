@@ -44,6 +44,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * exception can also be used if a client accesses an endpoint that is not
  * supported or defined.
  * <br><br>
+ *
  * The following is an example of a NotImplementedException as seen by a SCIM
  * client. This example error response indicates that the client tried to access
  * an endpoint that was not supported.
@@ -57,10 +58,10 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  *
  * The NotImplementedException in the above example can be created with the
  * following Java code:
- * <pre>
+ * <pre><code>
  *   throw new NotImplementedException(
  *       "The requested endpoint is not supported.");
- * </pre>
+ * </code></pre>
  *
  * This exception type generally does not have a {@code scimType} value.
  */
