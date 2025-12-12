@@ -27,7 +27,7 @@ The main requirements when using the SCIM SDK under the terms of the Apache Lice
 
 
 ## The Apache License, Version 2.0
-The Apache License is provided below in its entirety, as well as in [LICENSE-Apache-2.0.txt](LICENSE-Apache-2.0.txt).
+The Apache License is provided below in its entirety, as well as in [LICENSE](LICENSE).
 ```
 
                                  Apache License

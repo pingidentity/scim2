@@ -6,7 +6,7 @@ the GNU General Public License version 2 (GPLv2), the GNU Lesser
 General Public License version 2.1 (LGPLv2.1), and a free-right-to-use license
 created by Ping Identity Corporation.
 
-See the LICENSE.md or LICENSE-Apache-2.0.txt files for the Apache License.
+See the License-Details.md or LICENSE files for the Apache License.
 
 See the LICENSE-GPLv2.txt file for the GNU General Public License version 2.
 

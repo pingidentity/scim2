@@ -133,4 +133,4 @@ of choice. Some popular choices are linked below:
 Please report bug reports and enhancement requests through this project's [issue tracker](https://github.com/pingidentity/scim2/issues). See the [contribution guidelines](CONTRIBUTING.md) for more information.
 
 # License
-The UnboundID SCIM2 SDK is available under the following licenses: the Apache License version 2.0, the GNU General Public License version 2 (GPLv2), the GNU Lesser General Public License version 2.1 (LGPLv2.1), and a free-right-to-use license created by UnboundID Corp. See the [LICENSE](LICENSE.md) file for more info.
+The UnboundID SCIM2 SDK is available under the following licenses: the Apache License version 2.0, the GNU General Public License version 2 (GPLv2), the GNU Lesser General Public License version 2.1 (LGPLv2.1), and a free-right-to-use license created by UnboundID Corp. See the [License-Details.md](License-Details.md) file for more info.
