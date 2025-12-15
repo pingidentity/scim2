@@ -34,7 +34,7 @@
   <parent>
     <groupId>com.unboundid.product.scim2</groupId>
     <artifactId>scim2-parent</artifactId>
-    <version>5.0.0</version>
+    <version>5.0.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>scim2-sdk-server</artifactId>
