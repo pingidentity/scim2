@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## v5.0.1 - TBD
+
 ## v5.0.0 - 2025-Dec-15
 For consistency with other open source Ping Identity software, the UnboundID SCIM 2 SDK for Java is
 now available under the terms of the Apache License (version 2.0). For legacy compatibility, the
