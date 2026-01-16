@@ -84,10 +84,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compileSource>17</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
-    <jackson.version>2.20.0</jackson.version>
+    <jackson.version>2.20.1</jackson.version>
     <jackson-annotations.version>2.20</jackson-annotations.version>
     <jakarta-rs.version>4.0.0</jakarta-rs.version>
-    <jersey.version>3.1.11</jersey.version>
+    <jersey.version>4.0.0</jersey.version>
     <testng.version>7.11.0</testng.version>
     <assertj.version>3.27.6</assertj.version>
     <maven.surefire.version>3.5.4</maven.surefire.version>
@@ -172,11 +172,11 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.7.1</version>
+          <version>3.8.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-checkstyle-plugin</artifactId>
@@ -188,15 +188,15 @@
         </plugin>
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.11.2</version>
+          <version>3.12.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.4.2</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.3.1</version>
+          <version>3.4.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
@@ -204,7 +204,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
@@ -430,7 +430,7 @@
       </dependency>
       <dependency>
         <groupId>org.glassfish.jersey.connectors</groupId>
-        <artifactId>jersey-apache-connector</artifactId>
+        <artifactId>jersey-apache5-connector</artifactId>
         <version>${jersey.version}</version>
       </dependency>
       <dependency>
