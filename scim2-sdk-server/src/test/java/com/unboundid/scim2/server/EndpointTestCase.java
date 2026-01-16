@@ -74,7 +74,7 @@ import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
 import com.unboundid.scim2.server.utils.ServerUtils;
-import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+import org.glassfish.jersey.apache5.connector.Apache5ConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -161,7 +161,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   @Override
   protected void configureClient(final ClientConfig config)
   {
-    config.connectorProvider(new ApacheConnectorProvider());
+    config.connectorProvider(new Apache5ConnectorProvider());
   }
 
   @BeforeClass
