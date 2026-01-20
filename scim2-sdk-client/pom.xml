@@ -68,6 +68,10 @@
     </developers>
     <licenses>
       <license>
+        <name>Apache License, Version 2.0</name>
+        <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+      </license>
+      <license>
         <name>GNU General Public License version 2 (GPLv2)</name>
         <url>http://www.gnu.org/licenses/gpl-2.0.html</url>
       </license>
