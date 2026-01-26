@@ -89,7 +89,7 @@
     <jakarta-rs.version>4.0.0</jakarta-rs.version>
     <jersey.version>4.0.0</jersey.version>
     <testng.version>7.11.0</testng.version>
-    <assertj.version>3.27.6</assertj.version>
+    <assertj.version>3.27.7</assertj.version>
     <maven.surefire.version>3.5.4</maven.surefire.version>
   </properties>
 
