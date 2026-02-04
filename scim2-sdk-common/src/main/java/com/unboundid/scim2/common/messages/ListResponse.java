@@ -237,6 +237,7 @@ public class ListResponse<T> extends BaseScimResource
   @Nullable
   private final String nextCursor;
 
+  // TODO: Add @Attribute to all bulk classes
   @Attribute(description = "A multi-valued list of complex objects " +
       "containing the requested resources")
   @NotNull

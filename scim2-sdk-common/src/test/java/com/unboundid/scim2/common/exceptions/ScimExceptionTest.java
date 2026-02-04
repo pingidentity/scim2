@@ -35,6 +35,7 @@ package com.unboundid.scim2.common.exceptions;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import org.testng.annotations.Test;
 
+import javax.naming.SizeLimitExceededException;
 import java.net.ConnectException;
 import java.nio.BufferOverflowException;
 import java.nio.file.AccessDeniedException;
@@ -79,6 +80,8 @@ public class ScimExceptionTest
     assertThat(e).isInstanceOf(ResourceConflictException.class);
     e = ScimException.createException(new ErrorResponse(412), null);
     assertThat(e).isInstanceOf(PreconditionFailedException.class);
+    e = ScimException.createException(new ErrorResponse(413), null);
+    assertThat(e).isInstanceOf(PayloadTooLargeException.class);
     e = ScimException.createException(new ErrorResponse(500), null);
     assertThat(e).isInstanceOf(ServerErrorException.class);
     e = ScimException.createException(new ErrorResponse(501), null);
@@ -371,6 +374,38 @@ public class ScimExceptionTest
     assertThat(e.getCause()).isNull();
 
     assertThat(e.getVersion()).isEqualTo("serverVersion");
+  }
+
+  /**
+   * Tests for {@link ServerErrorException}.
+   */
+  @Test
+  public void testPayloadTooLargeException()
+  {
+    final int errorCode = 413;
+
+    PayloadTooLargeException e =
+        new PayloadTooLargeException("The request size exceeds the limit.");
+    assertThat(e.getScimError().getStatus()).isEqualTo(errorCode);
+    assertThat(e.getScimError().getScimType()).isNull();
+    assertThat(e.getMessage()).isEqualTo("The request size exceeds the limit.");
+    assertThat(e.getCause()).isNull();
+
+    e = new PayloadTooLargeException("Size limit exceeded",
+        new SizeLimitExceededException());
+    assertThat(e.getScimError().getStatus()).isEqualTo(errorCode);
+    assertThat(e.getScimError().getScimType()).isNull();
+    assertThat(e.getMessage()).isEqualTo("Size limit exceeded");
+    assertThat(e.getCause()).isInstanceOf(SizeLimitExceededException.class);
+
+    var errorResponse = new ErrorResponse(errorCode);
+    errorResponse.setDetail("Limit exceeded.");
+    e = new PayloadTooLargeException(errorResponse,
+        new NegativeArraySizeException());
+    assertThat(e.getScimError().getStatus()).isEqualTo(errorCode);
+    assertThat(e.getScimError().getScimType()).isNull();
+    assertThat(e.getMessage()).isEqualTo("Limit exceeded.");
+    assertThat(e.getCause()).isInstanceOf(NegativeArraySizeException.class);
   }
 
   /**

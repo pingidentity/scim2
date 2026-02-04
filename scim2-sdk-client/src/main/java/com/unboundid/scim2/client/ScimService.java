@@ -33,6 +33,7 @@
 package com.unboundid.scim2.client;
 
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import com.unboundid.scim2.client.requests.BulkRequestBuilder;
 import com.unboundid.scim2.client.requests.CreateRequestBuilder;
 import com.unboundid.scim2.client.requests.DeleteRequestBuilder;
 import com.unboundid.scim2.client.requests.ModifyRequestBuilder;
@@ -573,6 +574,36 @@ public class ScimService implements ScimInterface
           throws ScimException
   {
     return deleteRequest(checkAndGetLocation(resource));
+  }
+
+  /**
+   * Build a request that will perform multiple write requests in a single API
+   * call. For more information on bulk operations, see the documentation for
+   * {@link com.unboundid.scim2.common.bulk.BulkRequest BulkRequest}.
+   *
+   * @return  The request builder that may be used to specify additional
+   *          operations and to invoke the request.
+   */
+  @NotNull
+  public BulkRequestBuilder bulkRequest()
+  {
+    return new BulkRequestBuilder(baseTarget.path("Bulk"));
+  }
+
+  /**
+   * Build a request that will perform multiple write requests in a single API
+   * call to the specified URI. For more information on bulk operations, see
+   * {@link com.unboundid.scim2.common.bulk.BulkRequest BulkRequest}.
+   *
+   * @param uri  The URI referencing a SCIM service's bulk request endpoint,
+   *             e.g., {@code https://example.com/v2/Bulk}.
+   * @return  The request builder that may be used to specify additional
+   *          operations and to invoke the request.
+   */
+  @NotNull
+  public BulkRequestBuilder bulkRequest(@NotNull final URI uri)
+  {
+    return new BulkRequestBuilder(resolveWebTarget(uri));
   }
 
   /**

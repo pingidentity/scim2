@@ -263,6 +263,7 @@ public class ScimException extends Exception
       case 405 -> new MethodNotAllowedException(scimError, cause);
       case 409 -> new ResourceConflictException(scimError, cause);
       case 412 -> new PreconditionFailedException(scimError, null, cause);
+      case 413 -> new PayloadTooLargeException(scimError, cause);
       case 500 -> new ServerErrorException(scimError, cause);
       case 501 -> new NotImplementedException(scimError, cause);
       default -> new ScimException(scimError, cause);
