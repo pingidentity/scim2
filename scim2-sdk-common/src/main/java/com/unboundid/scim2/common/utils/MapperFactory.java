@@ -33,14 +33,15 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.core.StreamWriteFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 import com.unboundid.scim2.common.annotations.NotNull;
 
 import java.util.Calendar;
@@ -48,7 +49,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
-import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES;
+import static tools.jackson.core.StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION;
+import static tools.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES;
 
 /**
  * This class may be used to customize the object mapper that is used by the
@@ -126,11 +128,11 @@ public class MapperFactory
       Collections.emptyMap();
 
   @NotNull
-  private Map<JsonParser.Feature, Boolean> jsonParserCustomFeatures =
+  private Map<JsonReadFeature, Boolean> jsonParserCustomFeatures =
       Collections.emptyMap();
 
   @NotNull
-  private Map<JsonGenerator.Feature, Boolean> jsonGeneratorCustomFeatures =
+  private Map<StreamWriteFeature, Boolean> jsonGeneratorCustomFeatures =
       Collections.emptyMap();
 
   @NotNull
@@ -158,6 +160,7 @@ public class MapperFactory
     return this;
   }
 
+  // TODO: Is it possible to delete this one?
   /**
    * Sets custom JSON generator features for any JSON ObjectMapper that is
    * used and returned by the SCIM 2 SDK.  This class should be used
@@ -169,9 +172,9 @@ public class MapperFactory
    */
   @NotNull
   public MapperFactory setJsonGeneratorCustomFeatures(
-      @NotNull final Map<JsonGenerator.Feature, Boolean> customFeatures)
+      @NotNull final Map<JsonReadFeature, Boolean> customFeatures)
   {
-    jsonGeneratorCustomFeatures = customFeatures;
+//    jsonGeneratorCustomFeatures = customFeatures;
     return this;
   }
 
@@ -186,7 +189,7 @@ public class MapperFactory
    */
   @NotNull
   public MapperFactory setJsonParserCustomFeatures(
-      @NotNull final Map<JsonParser.Feature, Boolean> customFeatures)
+      @NotNull final Map<JsonReadFeature, Boolean> customFeatures)
   {
     jsonParserCustomFeatures = customFeatures;
     return this;
@@ -236,7 +239,7 @@ public class MapperFactory
    *     and deserializing SCIM JSON objects.
    */
   @NotNull
-  public ObjectMapper createObjectMapper()
+  public JsonMapper createObjectMapper()
   {
     // Create a new object mapper with case-insensitive settings.
     JsonMapper.Builder builder = JsonMapper.builder(new ScimJsonFactory());
@@ -244,16 +247,21 @@ public class MapperFactory
     // Do not care about case when de-serializing POJOs.
     builder.enable(ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 
+    // TODO: This is enabled for debugging, delete this later.
+    builder.enable(INCLUDE_SOURCE_IN_LOCATION);
+
     // The SCIM SDK relies on its own custom deserializers for timestamps.
-    builder.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    builder.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+    // Preserve original behavior from Jackson 2.x. This ensures, for example,
+    // that "userName" is one of the first attributes listed when printing a
+    // UserResource.
+    builder.disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
 
     // Don't serialize POJO nulls as JSON nulls.
-    //
-    // This can be replaced with "Value.ALL_NON_NULL" when Jackson 2.21 is used.
-    builder.defaultPropertyInclusion(
-        JsonInclude.Value.construct(
-            JsonInclude.Include.NON_NULL,
-            JsonInclude.Include.NON_NULL));
+    var nonNull = JsonInclude.Include.NON_NULL;
+    builder.changeDefaultPropertyInclusion(i -> i.withValueInclusion(nonNull))
+        .changeDefaultPropertyInclusion(i -> i.withContentInclusion(nonNull));
 
     // Only use xsd:dateTime format for dates.
     SimpleModule dateTimeModule = new SimpleModule();

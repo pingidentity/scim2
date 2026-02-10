@@ -32,10 +32,10 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.core.Base64Variants;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.Base64Variants;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.UserResource;
@@ -140,10 +140,10 @@ public class GenericScimResourceObjectTest
     ObjectNode metaNode = (ObjectNode) JsonUtils.getObjectReader().readTree(
         JsonUtils.getObjectWriter().writeValueAsString(gso.getMeta()));
     Assert.assertEquals(
-        metaNode.get("created").asText(),
+        metaNode.get("created").asString(),
         "2015-02-27T11:28:39.042Z");
     Assert.assertEquals(
-        metaNode.get("lastModified").asText(),
+        metaNode.get("lastModified").asString(),
         "2015-02-27T11:29:39.042Z");
 
     Assert.assertEquals(meta.getLocation().toString(),
@@ -152,7 +152,7 @@ public class GenericScimResourceObjectTest
     Assert.assertEquals(meta.getVersion(), "1.0");
 
     Assert.assertEquals(
-        ((GenericScimResource) cso).getObjectNode().path("shoeSize").asText(),
+        ((GenericScimResource) cso).getObjectNode().path("shoeSize").asString(),
         "12W");
   }
 
@@ -541,7 +541,7 @@ public class GenericScimResourceObjectTest
 
     // Set TextNode directly
     Assert.assertEquals(gsr.replaceValue(path1,
-        JsonUtils.getJsonNodeFactory().textNode(
+        JsonUtils.getJsonNodeFactory().stringNode(
             Base64Variants.getDefaultVariant().encode(value1))).
         getBinaryValue(Path.fromString(path1)), value1);
 
@@ -568,9 +568,9 @@ public class GenericScimResourceObjectTest
     // Set TextNode directly
     list1 = gsr.replaceValue(path3,
         JsonUtils.getJsonNodeFactory().arrayNode().
-            add(JsonUtils.getJsonNodeFactory().textNode(
+            add(JsonUtils.getJsonNodeFactory().stringNode(
                 Base64Variants.getDefaultVariant().encode(arrayValue1))).
-            add(JsonUtils.getJsonNodeFactory().textNode(
+            add(JsonUtils.getJsonNodeFactory().stringNode(
                 Base64Variants.getDefaultVariant().encode(arrayValue2)))).
         getBinaryValueList(Path.fromString(path3));
     Assert.assertEquals(list1.size(), 2);
@@ -720,7 +720,7 @@ public class GenericScimResourceObjectTest
     // Test the 'replace' method by updating the value of all emails that match
     // a filter.
     resource.replaceValue(Path.fromString("emails[type pr].value"),
-        TextNode.valueOf("newEmail@example.com"));
+        StringNode.valueOf("newEmail@example.com"));
 
     // Fetch the value from the ObjectNode and convert it to a list so that
     // it may be validated.
@@ -734,8 +734,8 @@ public class GenericScimResourceObjectTest
       // Convert the email into a JsonNode and fetch the value field.
       JsonNode valueNode = JsonUtils.valueToNode(email).get("value");
       assertThat(valueNode).isNotNull();
-      assertThat(valueNode.isTextual()).isTrue();
-      if ("newEmail@example.com".equals(valueNode.asText()))
+      assertThat(valueNode.isString()).isTrue();
+      if ("newEmail@example.com".equals(valueNode.asString()))
       {
         emailsWithExpectedValue++;
       }

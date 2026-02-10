@@ -32,8 +32,7 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import tools.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -41,7 +40,6 @@ import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.filters.FilterType;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -677,16 +675,16 @@ public class Parser
         else
         {
           ValueNode valueNode;
-          try
+          ScimJsonFactory scimJsonFactory = (ScimJsonFactory)
+              JsonUtils.getObjectReader().parserFactory();
+          try (var parser = scimJsonFactory.createScimFilterParser(reader))
           {
             // Mark the beginning of the JSON value so we can later reset back
             // to this position and skip the actual chars that were consumed
             // by Jackson. The Jackson parser is buffered and reads everything
             // until the end of string.
             reader.mark(0);
-            ScimJsonFactory scimJsonFactory = (ScimJsonFactory)
-                JsonUtils.getObjectReader().getFactory();
-            JsonParser parser = scimJsonFactory.createScimFilterParser(reader);
+
             // The object mapper will return a Java null for JSON null.
             // Have to distinguish between reading a JSON null and encountering
             // the end of string.
@@ -709,13 +707,6 @@ public class Parser
             reader.reset();
             // Skip the number of chars consumed by JSON parser.
             reader.skip(parser.currentLocation().getCharOffset());
-          }
-          catch (IOException e)
-          {
-            final String msg = String.format(
-                "Invalid comparison value at position %d: %s",
-                reader.mark, e.getMessage());
-            throw BadRequestException.invalidFilter(msg);
           }
 
           if (valueNode == null)

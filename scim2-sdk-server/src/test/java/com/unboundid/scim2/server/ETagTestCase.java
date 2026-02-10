@@ -32,7 +32,8 @@
 
 package com.unboundid.scim2.server;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
@@ -49,7 +50,7 @@ import com.unboundid.scim2.common.types.PatchConfig;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.types.SortConfig;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import com.unboundid.scim2.server.providers.JsonProcessingExceptionMapper;
+import com.unboundid.scim2.server.providers.JacksonExceptionMapper;
 import com.unboundid.scim2.server.providers.RuntimeExceptionMapper;
 import com.unboundid.scim2.server.providers.ScimExceptionMapper;
 import com.unboundid.scim2.server.resources.AbstractServiceProviderConfigEndpoint;
@@ -82,8 +83,9 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
     // Exception Mappers
     config.register(ScimExceptionMapper.class);
     config.register(RuntimeExceptionMapper.class);
-    config.register(JsonProcessingExceptionMapper.class);
-    config.register(new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+    config.register(JacksonExceptionMapper.class);
+    // TODO
+    config.register(new JacksonJsonProvider((JsonMapper) JsonUtils.createObjectMapper()));
 
     // Standard endpoints
     config.register(ResourceTypesEndpoint.class);

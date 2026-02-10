@@ -32,8 +32,8 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 
 /**

@@ -31,20 +31,20 @@
  */
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.exc.InvalidFormatException;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.Calendar;
 
 /**
  * Deserializes SCIM 2 DateTime values to {@link Calendar} objects.
  */
-public class CalendarDeserializer extends JsonDeserializer<Calendar>
+public class CalendarDeserializer extends ValueDeserializer<Calendar>
 {
   /**
    * {@inheritDoc}
@@ -53,7 +53,7 @@ public class CalendarDeserializer extends JsonDeserializer<Calendar>
   @NotNull
   public Calendar deserialize(@NotNull final JsonParser jp,
                               @Nullable final DeserializationContext ctxt)
-      throws IOException
+      throws JacksonException
   {
     // Some client requests may provide dates as a UNIX timestamp. To support
     // this, first attempt using a long. The timezone will be set to UTC.
@@ -62,12 +62,12 @@ public class CalendarDeserializer extends JsonDeserializer<Calendar>
       long timestamp = jp.getLongValue();
       return DateTimeUtils.parse(timestamp);
     }
-    catch (IOException e)
+    catch (JacksonException e)
     {
       // The value was not a UNIX timestamp. Continue.
     }
 
-    String dateStr = jp.getText();
+    String dateStr = jp.getString();
     try
     {
       return DateTimeUtils.parse(dateStr);

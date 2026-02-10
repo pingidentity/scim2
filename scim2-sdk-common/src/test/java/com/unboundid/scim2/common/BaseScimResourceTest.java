@@ -33,11 +33,11 @@
 package com.unboundid.scim2.common;
 
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.types.GroupResource;
@@ -65,7 +65,7 @@ public class BaseScimResourceTest
   @AfterMethod
   public void resetProperty()
   {
-    BaseScimResource.IGNORE_UNKNOWN_FIELDS = false;
+    BaseScimResource.IGNORE_UNKNOWN_FIELDS = true;
   }
 
   /**
@@ -164,7 +164,7 @@ public class BaseScimResourceTest
     assertThat(extension.size()).isEqualTo(1);
 
     assertThat(extension.path("urn:pingidentity:customExtension")
-        .path("id").asText()).isEqualTo("fa1afe1");
+        .path("id").asString()).isEqualTo("fa1afe1");
   }
 
   /**
@@ -186,11 +186,8 @@ public class BaseScimResourceTest
             "userNameButCaps": "CREATIVE3"
         }""";
 
-    // Update the SDK to ignore unknown fields.
-    BaseScimResource.IGNORE_UNKNOWN_FIELDS = true;
-
     // Convert the JSON with the extra non-standard field. This should not
-    // result in an exception.
+    // result in an exception by default.
     UserResource user = reader.readValue(jsonWithNonStandardField);
     assertThat(user.getUserName()).isEqualTo("creative3");
 
@@ -216,7 +213,7 @@ public class BaseScimResourceTest
     List<JsonNode> extensionValues =
         user.getExtensionValues("urn:pingidentity:customExtension");
     assertThat(extensionValues).hasSize(1);
-    assertThat(extensionValues.get(0).path("id").asText()).isEqualTo("fa1afe1");
+    assertThat(extensionValues.get(0).path("id").asString()).isEqualTo("fa1afe1");
 
     // Once again, the ignored field and value should not be present.
     assertThat(user.toString())
@@ -225,28 +222,28 @@ public class BaseScimResourceTest
 
     // Attempt adding a new value by calling setAny() directly. This is not
     // available for public use, but should still be ignored.
-    user.setAny("otherField", TextNode.valueOf("ignored"));
+    user.setAny("otherField", StringNode.valueOf("ignored"));
     assertThat(user.toString())
         .doesNotContain("otherField")
         .doesNotContain("ignored");
 
-    // Reset the property to the default value.
+    // Set the property to a different value.
     BaseScimResource.IGNORE_UNKNOWN_FIELDS = false;
 
     // Re-attempt the same conversions. These should now fail. Note that if this
     // exception type from Jackson changes, the documentation for the
     // IGNORE_UNKNOWN_FIELDS parameter should be updated.
     assertThatThrownBy(() -> reader.readValue(jsonWithNonStandardField))
-        .isInstanceOf(JsonMappingException.class)
+        .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Core attribute userNameButCaps is undefined");
     assertThatThrownBy(() -> reader.readValue(jsonWithExtension))
-        .isInstanceOf(JsonMappingException.class)
+        .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Core attribute userNameButCaps is undefined");
 
     // Directly calling the setAny() method with an invalid field should result
     // in a BadRequestException by default.
     assertThatThrownBy(() ->
-        new UserResource().setAny("unknownField", TextNode.valueOf("ignored")))
+        new UserResource().setAny("unknownField", StringNode.valueOf("ignored")))
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("Core attribute unknownField is undefined");
   }
@@ -277,7 +274,7 @@ public class BaseScimResourceTest
     assertThat(group.getAny()).hasSize(1);
     assertThat(group.getAny().get("urn:pingidentity:groupExt"))
         .isInstanceOfSatisfying(ObjectNode.class, groupExtValue ->
-            assertThat(groupExtValue.path("id").asText()).isEqualTo("beef"));
+            assertThat(groupExtValue.path("id").asString()).isEqualTo("beef"));
   }
 
   /**
@@ -309,7 +306,7 @@ public class BaseScimResourceTest
     assertThat(response.getExtensionValues(extName))
         .hasSize(1).first()
         .isInstanceOfSatisfying(ObjectNode.class, node ->
-            assertThat(node.path("statusName").asText())
+            assertThat(node.path("statusName").asString())
                 .isEqualTo("I_AM_A_TEAPOT"));
 
     // Test that replaceExtensionValue() can recreate the value from scratch.
@@ -325,7 +322,7 @@ public class BaseScimResourceTest
     assertThat(response.getExtensionValues(extName))
         .hasSize(1).first()
         .isInstanceOfSatisfying(ObjectNode.class, node ->
-            assertThat(node.path("statusName").asText())
+            assertThat(node.path("statusName").asString())
                 .isEqualTo("i_am_a_teapot"));
 
     // Test that removeExtensionValue() can remove the schema extension data.
@@ -379,7 +376,7 @@ public class BaseScimResourceTest
   private ObjectNode createObjectNode(String key, String value)
   {
     ObjectNode node = JsonUtils.getJsonNodeFactory().objectNode();
-    node.set(key, TextNode.valueOf(value));
+    node.set(key, StringNode.valueOf(value));
     return node;
   }
 

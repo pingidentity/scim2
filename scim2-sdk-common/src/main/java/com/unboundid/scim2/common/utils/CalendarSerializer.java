@@ -31,19 +31,18 @@
  */
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
+import tools.jackson.databind.ValueSerializer;
 
-import java.io.IOException;
 import java.util.Calendar;
 
 /**
  * Serializes a {@link Calendar} object to a SCIM 2 DateTime string.
  */
-public class CalendarSerializer extends JsonSerializer<Calendar>
+public class CalendarSerializer extends ValueSerializer<Calendar>
 {
   /**
    * {@inheritDoc}
@@ -51,8 +50,7 @@ public class CalendarSerializer extends JsonSerializer<Calendar>
   @Override
   public void serialize(@NotNull final Calendar value,
                         @NotNull final JsonGenerator jgen,
-                        @Nullable final SerializerProvider serializers)
-      throws IOException
+                        @Nullable final SerializationContext ctxt)
   {
     jgen.writeString(DateTimeUtils.format(value));
   }

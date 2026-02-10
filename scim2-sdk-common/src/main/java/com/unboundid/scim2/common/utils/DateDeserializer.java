@@ -31,21 +31,20 @@
  */
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.exc.InvalidFormatException;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.Date;
 
 /**
  * Deserializes SCIM 2 DateTime values to {@link Date} objects.
  */
-public class DateDeserializer extends JsonDeserializer<Date>
+public class DateDeserializer extends ValueDeserializer<Date>
 {
   /**
    * {@inheritDoc}
@@ -54,9 +53,9 @@ public class DateDeserializer extends JsonDeserializer<Date>
   @NotNull
   public Date deserialize(@NotNull final JsonParser jp,
                           @Nullable final DeserializationContext ctxt)
-      throws IOException, JsonProcessingException
+      throws JacksonException
   {
-    String dateStr = jp.getText();
+    String dateStr = jp.getString();
     try
     {
       return DateTimeUtils.parse(dateStr).getTime();

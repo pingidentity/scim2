@@ -32,9 +32,9 @@
 
 package com.unboundid.scim2.client.requests;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.client.SearchResultHandler;
 import com.unboundid.scim2.common.ScimResource;
@@ -371,9 +371,8 @@ public class SearchRequestBuilder
         throw toScimException(response);
       }
 
-      final JsonFactory factory = JsonUtils.getObjectReader().getFactory();
-      try (InputStream inputStream = response.readEntity(InputStream.class);
-           JsonParser parser = factory.createParser(inputStream))
+      try (InputStream i = response.readEntity(InputStream.class);
+           JsonParser parser = JsonUtils.getObjectReader().createParser(i))
       {
         parser.nextToken();
         while (!parser.isClosed() && parser.nextToken() != JsonToken.END_OBJECT)
@@ -426,7 +425,7 @@ public class SearchRequestBuilder
           }
         }
       }
-      catch (IOException e)
+      catch (JacksonException | IOException e)
       {
         throw new ResponseProcessingException(response, e);
       }

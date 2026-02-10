@@ -32,10 +32,9 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectReader;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
@@ -283,7 +282,7 @@ public class ListResponseTestCase
     ObjectReader reader = JsonUtils.getObjectReader()
         .forType(new TypeReference<ListResponse<UserResource>>(){});
     assertThatThrownBy(() -> reader.readValue(invalidUser))
-        .isInstanceOf(JsonMappingException.class)
+        .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Core attribute hobby is undefined for schema")
         .hasMessageContaining("urn:ietf:params:scim:schemas:core:2.0:User");
 
@@ -301,7 +300,7 @@ public class ListResponseTestCase
 
     String expectedError = "Missing required creator property 'totalResults'";
     assertThatThrownBy(() -> reader.readValue(missingTotalResults))
-        .isInstanceOf(JsonMappingException.class)
+        .isInstanceOf(JacksonException.class)
         .hasMessageContaining(expectedError);
   }
 
@@ -377,8 +376,8 @@ public class ListResponseTestCase
           "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
           "totalResults": 1
         }""";
-    assertThatThrownBy(() -> reader.readValue(invalidJSON, ListResponse.class))
-        .isInstanceOf(JsonProcessingException.class)
+    assertThatThrownBy(() -> reader.readValue(invalidJSON))
+        .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Failed to create the ListResponse since it is")
         .hasMessageContaining("missing the 'Resources' property");
 

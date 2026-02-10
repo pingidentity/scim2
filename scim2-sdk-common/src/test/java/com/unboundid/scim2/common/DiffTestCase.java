@@ -32,8 +32,8 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.PatchOpType;
 import com.unboundid.scim2.common.messages.PatchOperation;
@@ -1042,7 +1042,7 @@ public class DiffTestCase
         "urn:pingidentity:schemas:sample:profile:1.0:topicPreferences[" +
             "(id eq \"urn:X-UnboundID:topic:clothing:shoes\" and" +
             " strength eq 10 and timeStamp eq \"2015-10-12T14:57:36.494Z\")]");
-    assertEquals(d.get(0).getJsonNode().path("timeStamp").textValue(),
+    assertEquals(d.get(0).getJsonNode().path("timeStamp").asString(),
         "2015-10-13T14:57:36.494Z");
   }
 

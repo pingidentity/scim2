@@ -33,13 +33,11 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.io.IOContext;
-import com.fasterxml.jackson.core.json.JsonReadContext;
-import com.fasterxml.jackson.core.json.ReaderBasedJsonParser;
-import com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.core.io.IOContext;
+import tools.jackson.core.json.ReaderBasedJsonParser;
+import tools.jackson.core.sym.CharsToNameCanonicalizer;
 import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.io.Reader;
 
@@ -55,21 +53,26 @@ public class ScimFilterJsonParser extends ReaderBasedJsonParser
    * @param ctxt  see superclass
    * @param features  see superclass
    * @param r see superclass
-   * @param codec see superclass
    * @param st see superclass
    */
   public ScimFilterJsonParser(
       @NotNull final IOContext ctxt,
       final int features,
-      @Nullable final Reader r,
-      @Nullable final ObjectCodec codec,
+      @NotNull final Reader r,
       @NotNull final CharsToNameCanonicalizer st)
   {
-    super(ctxt, features, r, codec, st);
     // By default, the JSON read context is set to JsonStreamContext.TYPE_ROOT,
     // which will require whitespace after any unquoted token (e.g., a number).
     // We don't want this restriction when parsing a SCIM filter, so set the
     // context type to -1, which is effectively "none".
-    this._parsingContext = new JsonReadContext(null, 0, null, -1, 1, 0);
+    super(getReadContext(r), ctxt, features, 0, r, st);
+  }
+
+  @NotNull
+  private static ObjectReadContext getReadContext(@NotNull final Reader r)
+  {
+    // TODO: Cleanup
+    return JsonUtils.getObjectReader().createParser(r).objectReadContext();
+//    var parsingContext = new JsonReadContext(null, 0, null, -1, 1, 0);
   }
 }

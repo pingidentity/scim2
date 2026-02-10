@@ -32,7 +32,8 @@
 
 package com.unboundid.scim2.client;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.requests.CreateRequestBuilder;
 import com.unboundid.scim2.client.requests.DeleteRequestBuilder;
 import com.unboundid.scim2.client.requests.ModifyRequestBuilder;
@@ -97,9 +98,12 @@ public class ScimService implements ScimInterface
    */
   public ScimService(@NotNull final WebTarget baseTarget)
   {
+    // TODO
     this.baseTarget = baseTarget.register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper(),
-            JacksonJsonProvider.BASIC_ANNOTATIONS));
+        new JacksonJsonProvider((JsonMapper) JsonUtils.createObjectMapper()));
+//    this.baseTarget = baseTarget.register(
+//        new JacksonJsonProvider(JsonUtils.createObjectMapper(),
+//            JacksonJsonProvider.BASIC_ANNOTATIONS));
   }
 
   /**

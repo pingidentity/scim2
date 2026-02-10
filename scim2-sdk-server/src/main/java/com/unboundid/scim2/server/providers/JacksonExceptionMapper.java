@@ -32,13 +32,9 @@
 
 package com.unboundid.scim2.server.providers;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import tools.jackson.core.JacksonException;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
-import com.unboundid.scim2.common.exceptions.ScimException;
-import com.unboundid.scim2.common.exceptions.ServerErrorException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.server.utils.ServerUtils;
 
@@ -50,12 +46,12 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * A JAX-RS ExceptionMapper for to convert Jackson JsonProcessingException to
+ * A JAX-RS ExceptionMapper for to convert Jackson JacksonException to
  * SCIM ErrorResponses.
  */
 @Provider
-public class JsonProcessingExceptionMapper implements
-    ExceptionMapper<JsonProcessingException>
+public class JacksonExceptionMapper implements
+    ExceptionMapper<JacksonException>
 {
   @NotNull
   @Context
@@ -69,38 +65,21 @@ public class JsonProcessingExceptionMapper implements
    * {@inheritDoc}
    */
   @NotNull
-  public Response toResponse(@NotNull final JsonProcessingException exception)
+  public Response toResponse(@NotNull final JacksonException exception)
   {
     ErrorResponse errorResponse;
-    if ((exception instanceof JsonParseException) ||
-        (exception instanceof JsonMappingException))
+    StringBuilder builder = new StringBuilder();
+    builder.append("Unable to parse request: ");
+    builder.append(exception.getOriginalMessage());
+    if (exception.getLocation() != null)
     {
-      StringBuilder builder = new StringBuilder();
-      builder.append("Unable to parse request: ");
-      builder.append(exception.getOriginalMessage());
-      if (exception.getLocation() != null)
-      {
-        builder.append(" at line: ");
-        builder.append(exception.getLocation().getLineNr());
-        builder.append(", column: ");
-        builder.append(exception.getLocation().getColumnNr());
-      }
-      errorResponse =
-          BadRequestException.invalidSyntax(builder.toString()).getScimError();
+      builder.append(" at line: ");
+      builder.append(exception.getLocation().getLineNr());
+      builder.append(", column: ");
+      builder.append(exception.getLocation().getColumnNr());
     }
-    else
-    {
-      if (exception.getCause() != null &&
-          exception.getCause() instanceof ScimException scimException)
-      {
-        errorResponse = scimException.getScimError();
-      }
-      else
-      {
-        errorResponse =
-            new ServerErrorException(exception.getMessage()).getScimError();
-      }
-    }
+    errorResponse =
+        BadRequestException.invalidSyntax(builder.toString()).getScimError();
 
     return ServerUtils.setAcceptableType(
         Response.status(errorResponse.getStatus()).entity(errorResponse),

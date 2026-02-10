@@ -32,16 +32,14 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.types.JsonReference;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Collection;
 
 /**
@@ -51,7 +49,7 @@ import java.util.Collection;
  * but if not, we will know it was never set.  During serialization, we will
  * serialize explicit {@code null} values, but not uninitialized values.
  */
-public class JsonRefBeanSerializer extends JsonSerializer<Object>
+public class JsonRefBeanSerializer extends ValueSerializer<Object>
 {
   /**
    * {@inheritDoc}
@@ -59,8 +57,7 @@ public class JsonRefBeanSerializer extends JsonSerializer<Object>
   @Override
   public void serialize(@NotNull final Object value,
                         @NotNull final JsonGenerator gen,
-                        @NotNull final SerializerProvider serializers)
-      throws IOException
+                        @NotNull final SerializationContext ctxt)
   {
     Class <?> clazz = value.getClass();
     try
@@ -70,8 +67,7 @@ public class JsonRefBeanSerializer extends JsonSerializer<Object>
           SchemaUtils.getPropertyDescriptors(clazz);
       for (PropertyDescriptor propertyDescriptor : propertyDescriptors)
       {
-        Field field = SchemaUtils.findField(
-            clazz, propertyDescriptor.getName());
+        var field = SchemaUtils.findField(clazz, propertyDescriptor.getName());
         if (field == null)
         {
           continue;
@@ -82,8 +78,9 @@ public class JsonRefBeanSerializer extends JsonSerializer<Object>
         {
           if (reference.isSet())
           {
-            gen.writeFieldName(field.getName());
-            serializers.defaultSerializeValue(reference.getObj(), gen);
+            // TODO: Fix this
+//            gen.writeFieldName(field.getName());
+//            serializers.defaultSerializeValue(reference.getObj(), gen);
           }
         }
       }

@@ -32,10 +32,10 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -126,15 +126,7 @@ public class JsonDiff
       // Now iterate through the fields in targetToAdd and remove any that
       // are not in the source. These new fields should only be in
       // targetToReplace.
-      Iterator<String> ai = targetToAdd.fieldNames();
-      while (ai.hasNext())
-      {
-        final String f = ai.next();
-        if (!source.has(f))
-        {
-          ai.remove();
-        }
-      }
+      targetToAdd.propertyNames().removeIf(f -> !source.has(f));
     }
 
     removeNullAndEmptyValues(targetToAdd);
@@ -402,10 +394,8 @@ public class JsonDiff
         if (targetValue.isObject())
         {
           int matchScore = 0;
-          Iterator<String> si = sourceValue.fieldNames();
-          while (si.hasNext())
+          for (String field : sourceValue.propertyNames())
           {
-            String field = si.next();
             if (sourceValue.get(field).equals(targetValue.path(field)))
             {
               switch (field)
@@ -514,7 +504,7 @@ public class JsonDiff
       {
         si.remove();
       }
-      else if (field.isContainerNode())
+      else if (field.isContainer())
       {
         removeNullAndEmptyValues(field);
       }
@@ -532,7 +522,7 @@ public class JsonDiff
                             @NotNull final JsonNode n2)
   {
     return (n1.getNodeType() == n2.getNodeType() ||
-        ((n1.isTextual() || n1.isBinary()) &&
-            (n2.isTextual() || n2.isBinary())));
+        ((n1.isString() || n1.isBinary()) &&
+            (n2.isString() || n2.isBinary())));
   }
 }

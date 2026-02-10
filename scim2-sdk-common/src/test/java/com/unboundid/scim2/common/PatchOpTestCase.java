@@ -32,13 +32,12 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.core.Base64Variants;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.Base64Variants;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchOpType;
@@ -376,9 +375,9 @@ public class PatchOpTestCase
   @Test
   public void getTestBadPatch() throws IOException
   {
-    try
-    {
-      JsonUtils.getObjectReader().forType(PatchRequest.class).readValue("""
+    final var reader = JsonUtils.getObjectReader().forType(PatchRequest.class);
+
+    String json = """
               {
                 "schemas":[ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
                 "Operations":[
@@ -388,14 +387,14 @@ public class PatchOpTestCase
               value ew \\"example.com\\"].too.deep"
                   }
                 ]
-              }""");
-    }
-    catch (JsonMappingException e)
-    {
-      assertEquals(
-          ((BadRequestException) e.getCause()).getScimError().getScimType(),
-          BadRequestException.INVALID_PATH);
-    }
+              }""";
+    assertThatThrownBy(() -> reader.readValue(json))
+        .isInstanceOf(JacksonException.class)
+        .hasCauseInstanceOf(BadRequestException.class)
+        .cause().isInstanceOf(BadRequestException.class)
+//        .hasMessageContaining()
+        ;
+
 
     try
     {
@@ -411,7 +410,7 @@ public class PatchOpTestCase
           ]
         }""");
     }
-    catch (JsonMappingException e)
+    catch (JacksonException e)
     {
       assertEquals(
           ((BadRequestException) e.getCause()).getScimError().getScimType(),
@@ -435,7 +434,7 @@ public class PatchOpTestCase
           ]
         }""");
     }
-    catch (JsonMappingException e)
+    catch (JacksonException e)
     {
       assertEquals(
           ((BadRequestException) e.getCause()).getScimError().getScimType(),
@@ -456,8 +455,8 @@ public class PatchOpTestCase
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertEquals(jsonNode.size(), 2);
-    Assert.assertEquals(jsonNode.get(0).textValue(), "value1");
-    Assert.assertEquals(jsonNode.get(1).textValue(), "value2");
+    Assert.assertEquals(jsonNode.get(0).asString(), "value1");
+    Assert.assertEquals(jsonNode.get(1).asString(), "value2");
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     patchOp = PatchOperation.addStringValues(Path.fromString("path1"),
@@ -466,8 +465,8 @@ public class PatchOpTestCase
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertEquals(jsonNode.size(), 2);
-    Assert.assertEquals(jsonNode.get(0).textValue(), "value1");
-    Assert.assertEquals(jsonNode.get(1).textValue(), "value2");
+    Assert.assertEquals(jsonNode.get(0).asString(), "value1");
+    Assert.assertEquals(jsonNode.get(1).asString(), "value2");
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     patchOp = PatchOperation.replace("path1", "value1");
@@ -655,7 +654,7 @@ public class PatchOpTestCase
     patchOp = PatchOperation.replace("path1", d5);
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.REPLACE);
     Assert.assertEquals(patchOp.getValue(String.class),
-        GenericScimResource.getDateJsonNode(d5).textValue());
+        GenericScimResource.getDateJsonNode(d5).asString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     Date d6 = new Date(89233675240L);
@@ -663,7 +662,7 @@ public class PatchOpTestCase
         Path.fromString("path1"), d6);
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.REPLACE);
     Assert.assertEquals(patchOp.getValue(String.class),
-        GenericScimResource.getDateJsonNode(d6).textValue());
+        GenericScimResource.getDateJsonNode(d6).asString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
   }
 
@@ -682,9 +681,9 @@ public class PatchOpTestCase
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertTrue(Arrays.equals(Base64Variants.getDefaultVariant().
-        decode(jsonNode.get(0).textValue()), ba1));
+        decode(jsonNode.get(0).asString()), ba1));
     Assert.assertTrue(Arrays.equals(Base64Variants.getDefaultVariant().
-        decode(jsonNode.get(1).textValue()), ba2));
+        decode(jsonNode.get(1).asString()), ba2));
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     byte[] ba3 = new byte[] {0x03, 0x04, 0x05};
@@ -695,9 +694,9 @@ public class PatchOpTestCase
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertTrue(Arrays.equals(Base64Variants.getDefaultVariant().
-        decode(jsonNode.get(0).textValue()), ba3));
+        decode(jsonNode.get(0).asString()), ba3));
     Assert.assertTrue(Arrays.equals(Base64Variants.getDefaultVariant().
-        decode(jsonNode.get(1).textValue()), ba4));
+        decode(jsonNode.get(1).asString()), ba4));
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     byte[] ba5 = new byte[] {0x06, 0x07, 0x08};
@@ -729,8 +728,8 @@ public class PatchOpTestCase
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertEquals(jsonNode.size(), 2);
-    Assert.assertEquals(jsonNode.get(0).textValue(), uri1.toString());
-    Assert.assertEquals(jsonNode.get(1).textValue(), uri2.toString());
+    Assert.assertEquals(jsonNode.get(0).asString(), uri1.toString());
+    Assert.assertEquals(jsonNode.get(1).asString(), uri2.toString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     URI uri3 = new URI("http://localhost:8080/apps/app2");
@@ -741,8 +740,8 @@ public class PatchOpTestCase
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertEquals(jsonNode.size(), 2);
-    Assert.assertEquals(jsonNode.get(0).textValue(), uri3.toString());
-    Assert.assertEquals(jsonNode.get(1).textValue(), uri4.toString());
+    Assert.assertEquals(jsonNode.get(0).asString(), uri3.toString());
+    Assert.assertEquals(jsonNode.get(1).asString(), uri4.toString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     URI uri5 = new URI("http://localhost:8080/apps/app3");
@@ -1020,7 +1019,7 @@ public class PatchOpTestCase
    */
   private static UserResource applyPatchRequest(UserResource userResource,
                                                 PatchRequest request)
-      throws JsonProcessingException, ScimException
+      throws JacksonException, ScimException
   {
     GenericScimResource user = userResource.asGenericScimResource();
     request.apply(user);

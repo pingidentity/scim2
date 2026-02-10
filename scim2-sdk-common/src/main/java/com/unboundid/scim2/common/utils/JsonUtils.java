@@ -32,16 +32,17 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.type.CollectionType;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.type.CollectionType;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -51,7 +52,6 @@ import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -874,7 +874,7 @@ public class JsonUtils
       @NotNull final JsonNode n2,
       @Nullable final AttributeDefinition attributeDefinition)
   {
-    if (n1.isTextual() && n2.isTextual())
+    if (n1.isString() && n2.isString())
     {
       Date d1 = dateValue(n1);
       Date d2 = dateValue(n2);
@@ -888,10 +888,10 @@ public class JsonUtils
             attributeDefinition.getType() == AttributeDefinition.Type.STRING &&
             attributeDefinition.isCaseExact())
         {
-          return n1.textValue().compareTo(n2.textValue());
+          return n1.asString().compareTo(n2.asString());
         }
-        return StaticUtils.toLowerCase(n1.textValue()).compareTo(
-            StaticUtils.toLowerCase(n2.textValue()));
+        return StaticUtils.toLowerCase(n1.asString()).compareTo(
+            StaticUtils.toLowerCase(n2.asString()));
       }
     }
 
@@ -916,7 +916,7 @@ public class JsonUtils
     }
 
     // Compare everything else lexicographically
-    return n1.asText().compareTo(n2.asText());
+    return n1.asString().compareTo(n2.asString());
   }
 
   /**
@@ -1106,13 +1106,13 @@ public class JsonUtils
    * @param fromNode node to convert.
    * @param valueType The value type.
    * @return converted POJO.
-   * @throws JsonProcessingException if an error occurs while binding the JSON
+   * @throws JacksonException if an error occurs while binding the JSON
    * node to the value type.
    */
   @Nullable
   public static <T> T nodeToValue(@Nullable final JsonNode fromNode,
                                   @NotNull final Class<T> valueType)
-      throws JsonProcessingException
+      throws JacksonException
   {
     return SDK_OBJECT_MAPPER.treeToValue(fromNode, valueType);
   }
@@ -1124,31 +1124,20 @@ public class JsonUtils
    * @param fromNode node to convert.
    * @param valueType The value type.
    * @return converted list of POJOs.
-   * @throws JsonProcessingException if an error occurs while binding the JSON
+   * @throws JacksonException if an error occurs while binding the JSON
    * node to the value type.
    */
   @Nullable
   public static <T> List<T> nodeToValues(@NotNull final ArrayNode fromNode,
                                          @NotNull final Class<T> valueType)
-      throws JsonProcessingException
+      throws JacksonException
   {
     final CollectionType collectionType =
         SDK_OBJECT_MAPPER.getTypeFactory().constructCollectionType(
             List.class, valueType);
 
-    try
-    {
-      return SDK_OBJECT_MAPPER.readValue(
-          SDK_OBJECT_MAPPER.treeAsTokens(fromNode), collectionType);
-    }
-    catch (JsonProcessingException e)
-    {
-      throw e;
-    }
-    catch (IOException e)
-    {
-      throw new IllegalArgumentException(e.getMessage(), e);
-    }
+    return SDK_OBJECT_MAPPER.readValue(
+        SDK_OBJECT_MAPPER.treeAsTokens(fromNode), collectionType);
   }
 
   /**
@@ -1163,12 +1152,12 @@ public class JsonUtils
   public static Date nodeToDateValue(@NotNull final JsonNode node)
       throws IllegalArgumentException
   {
-    if (!node.isTextual())
+    if (!node.isString())
     {
       throw new IllegalArgumentException(
           "non-textual node cannot be parsed as DateTime type");
     }
-    String text = node.textValue().trim();
+    String text = node.asString().trim();
     return DateTimeUtils.parse(text).getTime();
   }
 
@@ -1184,7 +1173,18 @@ public class JsonUtils
    *     and deserializing SCIM JSON objects.
    */
   @NotNull
-  public static ObjectMapper createObjectMapper()
+  public static JsonMapper createObjectMapper()
+  {
+    return createJsonMapper();
+  }
+
+  /**
+   * TODO: Fill this out and mention objectmapper is an alias.
+   *
+   * @return A JsonMapper.
+   */
+  @NotNull
+  public static JsonMapper createJsonMapper()
   {
     return mapperFactory.createObjectMapper();
   }

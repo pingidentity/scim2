@@ -32,8 +32,8 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -509,12 +509,12 @@ public class FilterEvaluator implements FilterVisitor<Boolean, JsonNode>
         getCandidateNodes(filter.getAttributePath(), object);
     for (JsonNode node : nodes)
     {
-      if (node.isTextual() && filter.getComparisonValue().isTextual())
+      if (node.isString() && filter.getComparisonValue().isString())
       {
         AttributeDefinition attributeDefinition =
             getAttributeDefinition(filter.getAttributePath());
-        String nodeValue = node.textValue();
-        String comparisonValue = filter.getComparisonValue().textValue();
+        String nodeValue = node.asString();
+        String comparisonValue = filter.getComparisonValue().asString();
         if (attributeDefinition == null || !attributeDefinition.isCaseExact())
         {
           nodeValue = StaticUtils.toLowerCase(nodeValue);

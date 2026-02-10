@@ -32,8 +32,8 @@
 
 package com.unboundid.scim2.server.providers;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.ObjectReader;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.utils.JsonUtils;
@@ -93,8 +93,7 @@ public class DotSearchFilter implements ContainerRequestFilter
 
       ObjectReader reader =
           JsonUtils.getObjectReader().forType(SearchRequest.class);
-      JsonParser p = reader.getFactory().createParser(
-          requestContext.getEntityStream());
+      JsonParser p = reader.createParser(requestContext.getEntityStream());
       if (p.nextToken() == null)
       {
         throw new BadRequestException(

@@ -32,8 +32,8 @@
 
 package com.unboundid.scim2.server;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -225,7 +225,7 @@ public class TestSingletonResourceEndpoint
       patchedFound =
           JsonUtils.getObjectReader().treeToValue(node, UserResource.class);
     }
-    catch (JsonProcessingException e)
+    catch (JacksonException e)
     {
       throw new ServerErrorException(e.getMessage(), null, e);
     }

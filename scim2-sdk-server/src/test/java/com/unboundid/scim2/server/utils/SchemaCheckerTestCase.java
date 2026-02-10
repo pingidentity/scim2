@@ -32,11 +32,11 @@
 
 package com.unboundid.scim2.server.utils;
 
-import com.fasterxml.jackson.core.Base64Variants;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.Base64Variants;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
@@ -758,7 +758,7 @@ public class SchemaCheckerTestCase
     patchOps = new LinkedList<>();
     patchOps.add(PatchOperation.replace(Path.root().attribute("schemas",
             Filter.eq("value", "urn:ietf:params:scim:schemas:core:2.0:User")),
-        TextNode.valueOf("urn:id:extWithOptAttr")));
+        StringNode.valueOf("urn:id:extWithOptAttr")));
 
     results = checker.checkModify(patchOps, resource);
     assertEquals(results.getSyntaxIssues().size(), 2,
@@ -768,7 +768,7 @@ public class SchemaCheckerTestCase
     patchOps = new LinkedList<>();
     patchOps.add(PatchOperation.replace(Path.root().attribute("schemas",
         Filter.eq("value", "urn:id:extWithReqAttr")),
-        TextNode.valueOf("urn:id:extWithOptAttr")));
+        StringNode.valueOf("urn:id:extWithOptAttr")));
 
     results = checker.checkModify(patchOps, resource);
     assertEquals(results.getSyntaxIssues().size(), 3,
@@ -1013,9 +1013,9 @@ public class SchemaCheckerTestCase
     SchemaChecker checker = new SchemaChecker(resourceTypeDefinition);
     // Create array node with the sub-attributes used for testing.
     ArrayNode values = JsonUtils.getJsonNodeFactory().arrayNode();
-    values.add(JsonUtils.getJsonNodeFactory().textNode("value1"));
-    values.add(JsonUtils.getJsonNodeFactory().textNode("value2"));
-    values.add(JsonUtils.getJsonNodeFactory().textNode("value3"));
+    values.add(JsonUtils.getJsonNodeFactory().stringNode("value1"));
+    values.add(JsonUtils.getJsonNodeFactory().stringNode("value2"));
+    values.add(JsonUtils.getJsonNodeFactory().stringNode("value3"));
 
     // Create the node for testing, and set the mvstring test values.
     ObjectNode o = JsonUtils.getJsonNodeFactory().objectNode();
@@ -1077,7 +1077,7 @@ public class SchemaCheckerTestCase
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root().attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1085,7 +1085,7 @@ public class SchemaCheckerTestCase
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root().attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1120,7 +1120,7 @@ public class SchemaCheckerTestCase
 
     results = checker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root().attribute("name").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1129,7 +1129,7 @@ public class SchemaCheckerTestCase
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(
             Path.root().attribute("name").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1169,7 +1169,7 @@ public class SchemaCheckerTestCase
         PatchOperation.add(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1179,7 +1179,7 @@ public class SchemaCheckerTestCase
         PatchOperation.replace(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1225,7 +1225,7 @@ public class SchemaCheckerTestCase
         PatchOperation.add(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("manager").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1235,7 +1235,7 @@ public class SchemaCheckerTestCase
         PatchOperation.replace(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("manager").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1307,13 +1307,13 @@ public class SchemaCheckerTestCase
 
     results = undefinedAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root().attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
 
     results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root().attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1321,13 +1321,13 @@ public class SchemaCheckerTestCase
 
     results = undefinedAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root().attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
 
     results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root().attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1377,7 +1377,7 @@ public class SchemaCheckerTestCase
 
     results = undefinedAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root().attribute("name").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1385,14 +1385,14 @@ public class SchemaCheckerTestCase
 
     results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root().attribute("name").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
 
     results = undefinedAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.replace(
             Path.root().attribute("name").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1401,7 +1401,7 @@ public class SchemaCheckerTestCase
     results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.replace(
             Path.root().attribute("name").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
 
@@ -1463,13 +1463,13 @@ public class SchemaCheckerTestCase
 
     results = undefinedAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root("urn:undefined").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
 
     results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root("urn:undefined").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1478,14 +1478,14 @@ public class SchemaCheckerTestCase
     results = undefinedAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.replace(
             Path.root("urn:undefined").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
 
     results = undefinedSubAttributesChecker.checkModify(Collections.singleton(
         PatchOperation.replace(
             Path.root("urn:undefined").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1541,7 +1541,7 @@ public class SchemaCheckerTestCase
         PatchOperation.add(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
 
@@ -1549,7 +1549,7 @@ public class SchemaCheckerTestCase
         PatchOperation.add(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1559,7 +1559,7 @@ public class SchemaCheckerTestCase
         PatchOperation.replace(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
 
@@ -1567,7 +1567,7 @@ public class SchemaCheckerTestCase
         PatchOperation.replace(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1629,7 +1629,7 @@ public class SchemaCheckerTestCase
         PatchOperation.add(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("manager").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1639,7 +1639,7 @@ public class SchemaCheckerTestCase
         PatchOperation.add(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("manager").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
 
@@ -1647,7 +1647,7 @@ public class SchemaCheckerTestCase
         PatchOperation.replace(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("manager").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 1,
         results.getPathIssues().toString());
     assertTrue(containsIssueWith(results.getPathIssues(),
@@ -1657,7 +1657,7 @@ public class SchemaCheckerTestCase
         PatchOperation.replace(Path.root(
                 "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User").
                 attribute("manager").attribute("undefined"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getPathIssues().size(), 0,
         results.getPathIssues().toString());
 
@@ -1708,23 +1708,23 @@ public class SchemaCheckerTestCase
         new Object[] {"string", JsonUtils.getJsonNodeFactory().objectNode()},
         new Object[] {"string", JsonUtils.getJsonNodeFactory().arrayNode()},
         new Object[] {"stringCanonical",
-            JsonUtils.getJsonNodeFactory().textNode("value3")},
+            JsonUtils.getJsonNodeFactory().stringNode("value3")},
         new Object[] {"datetime",
-            JsonUtils.getJsonNodeFactory().textNode("notdatetime")},
+            JsonUtils.getJsonNodeFactory().stringNode("notdatetime")},
         new Object[] {"datetime", JsonUtils.getJsonNodeFactory().numberNode(1)},
         new Object[] {"datetime",
             JsonUtils.getJsonNodeFactory().booleanNode(true)},
         new Object[] {"datetime", JsonUtils.getJsonNodeFactory().objectNode()},
         new Object[] {"datetime", JsonUtils.getJsonNodeFactory().arrayNode()},
         new Object[] {"binary",
-            JsonUtils.getJsonNodeFactory().textNode("()$#@_@")},
+            JsonUtils.getJsonNodeFactory().stringNode("()$#@_@")},
         new Object[] {"binary", JsonUtils.getJsonNodeFactory().numberNode(1)},
         new Object[] {"binary",
             JsonUtils.getJsonNodeFactory().booleanNode(true)},
         new Object[] {"binary", JsonUtils.getJsonNodeFactory().objectNode()},
         new Object[] {"binary", JsonUtils.getJsonNodeFactory().arrayNode()},
         new Object[] {"reference",
-            JsonUtils.getJsonNodeFactory().textNode("rtp:\\")},
+            JsonUtils.getJsonNodeFactory().stringNode("rtp:\\")},
         new Object[] {"reference",
             JsonUtils.getJsonNodeFactory().numberNode(1)},
         new Object[] {"reference",
@@ -1732,18 +1732,18 @@ public class SchemaCheckerTestCase
         new Object[] {"reference", JsonUtils.getJsonNodeFactory().objectNode()},
         new Object[] {"reference", JsonUtils.getJsonNodeFactory().arrayNode()},
         new Object[] {"boolean",
-            JsonUtils.getJsonNodeFactory().textNode("string")},
+            JsonUtils.getJsonNodeFactory().stringNode("string")},
         new Object[] {"boolean", JsonUtils.getJsonNodeFactory().numberNode(1)},
         new Object[] {"boolean", JsonUtils.getJsonNodeFactory().objectNode()},
         new Object[] {"boolean", JsonUtils.getJsonNodeFactory().arrayNode()},
         new Object[] {"decimal",
-            JsonUtils.getJsonNodeFactory().textNode("string")},
+            JsonUtils.getJsonNodeFactory().stringNode("string")},
         new Object[] {"decimal",
             JsonUtils.getJsonNodeFactory().booleanNode(true)},
         new Object[] {"decimal", JsonUtils.getJsonNodeFactory().objectNode()},
         new Object[] {"decimal", JsonUtils.getJsonNodeFactory().arrayNode()},
         new Object[] {"integer",
-            JsonUtils.getJsonNodeFactory().textNode("string")},
+            JsonUtils.getJsonNodeFactory().stringNode("string")},
         new Object[] {"integer",
             JsonUtils.getJsonNodeFactory().booleanNode(true)},
         new Object[] {"integer", JsonUtils.getJsonNodeFactory().objectNode()},
@@ -1751,7 +1751,7 @@ public class SchemaCheckerTestCase
         new Object[] {"integer",
             JsonUtils.getJsonNodeFactory().numberNode(1.1)},
         new Object[] {"complex",
-            JsonUtils.getJsonNodeFactory().textNode("string")},
+            JsonUtils.getJsonNodeFactory().stringNode("string")},
         new Object[] {"complex", JsonUtils.getJsonNodeFactory().numberNode(1)},
         new Object[] {"complex",
             JsonUtils.getJsonNodeFactory().booleanNode(true)},
@@ -2008,7 +2008,7 @@ public class SchemaCheckerTestCase
     // Test as TextNode
     ObjectNode o = JsonUtils.getJsonNodeFactory().objectNode();
     o.putArray("schemas").add("urn:id:test");
-    o.set("binary", JsonUtils.getJsonNodeFactory().textNode(
+    o.set("binary", JsonUtils.getJsonNodeFactory().stringNode(
         Base64Variants.getDefaultVariant().encode(new byte[]{ 0x00 })));
     SchemaChecker.Results results = checker.checkCreate(o);
     assertEquals(results.getSyntaxIssues().size(), 0,
@@ -2076,7 +2076,7 @@ public class SchemaCheckerTestCase
     // Can not add read-only in patch
     results = checker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root().attribute("readOnly"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getMutabilityIssues().size(), 1,
         results.getMutabilityIssues().toString());
     assertTrue(containsIssueWith(results.getMutabilityIssues(), "read-only"));
@@ -2091,7 +2091,7 @@ public class SchemaCheckerTestCase
     // Can not replace read-only in patch
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root().attribute("readOnly"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getMutabilityIssues().size(), 1,
         results.getMutabilityIssues().toString());
     assertTrue(containsIssueWith(results.getMutabilityIssues(), "read-only"));
@@ -2133,14 +2133,14 @@ public class SchemaCheckerTestCase
     // Can add immutable in patch if not already present
     results = checker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root().attribute("immutable"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertTrue(results.getMutabilityIssues().isEmpty(),
         results.getMutabilityIssues().toString());
 
     // Can not replace immutable in patch if not already present
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root().attribute("immutable"),
-            TextNode.valueOf("value"))), null);
+            StringNode.valueOf("value"))), null);
     assertEquals(results.getMutabilityIssues().size(), 1,
         results.getMutabilityIssues().toString());
     assertTrue(containsIssueWith(results.getMutabilityIssues(), "immutable"));
@@ -2148,7 +2148,7 @@ public class SchemaCheckerTestCase
     // Can not add immutable in patch if it is the same
     results = checker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root().attribute("immutable"),
-            TextNode.valueOf("value"))), o);
+            StringNode.valueOf("value"))), o);
     assertEquals(results.getMutabilityIssues().size(), 1,
         results.getMutabilityIssues().toString());
     assertTrue(containsIssueWith(results.getMutabilityIssues(), "immutable"));
@@ -2156,7 +2156,7 @@ public class SchemaCheckerTestCase
     // Can not replace immutable in patch if it is the same
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root().attribute("immutable"),
-            TextNode.valueOf("value"))), o);
+            StringNode.valueOf("value"))), o);
     assertEquals(results.getMutabilityIssues().size(), 1,
         results.getMutabilityIssues().toString());
     assertTrue(containsIssueWith(results.getMutabilityIssues(), "immutable"));
@@ -2164,7 +2164,7 @@ public class SchemaCheckerTestCase
     // Can not add immutable in patch if already present and different
     results = checker.checkModify(Collections.singleton(
         PatchOperation.add(Path.root().attribute("immutable"),
-            TextNode.valueOf("newValue"))), o);
+            StringNode.valueOf("newValue"))), o);
     assertEquals(results.getMutabilityIssues().size(), 2,
         results.getMutabilityIssues().toString());
     assertTrue(containsIssueWith(results.getMutabilityIssues(), "immutable"));
@@ -2172,7 +2172,7 @@ public class SchemaCheckerTestCase
     // Can not replace immutable in patch if already present and different
     results = checker.checkModify(Collections.singleton(
         PatchOperation.replace(Path.root().attribute("immutable"),
-            TextNode.valueOf("newValue"))), o);
+            StringNode.valueOf("newValue"))), o);
     assertEquals(results.getMutabilityIssues().size(), 2,
         results.getMutabilityIssues().toString());
     assertTrue(containsIssueWith(results.getMutabilityIssues(), "immutable"));

@@ -37,9 +37,6 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
@@ -48,6 +45,9 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -92,7 +92,7 @@ public abstract class BaseScimResource
    * subclasses of BaseScimResource.
    * <br><br>
    *
-   * By default, the SCIM SDK can throw a {@code JsonMappingException} during
+   * By default, the SCIM SDK can throw a {@code JacksonException} during
    * the Jackson deserialization process if it is converting an object to a
    * BaseScimResource or one of its subclasses. This occurs if the source JSON
    * contains fields that are not defined on the Java object, and the field is
@@ -106,8 +106,13 @@ public abstract class BaseScimResource
    * so that unknown fields are ignored instead of causing exceptions.
    *
    * @since 4.0.0
+   *
+   * TODO: Update doc about this flag getting flipped.
+  // When the SCIM SDK used Jackson 2.x, it would throw exceptions for
+  // unrecognized attributes. Since the default behavior of Jackson changed in
+  // 3.x, the SCIM SDK ignores this case.
    */
-  public static boolean IGNORE_UNKNOWN_FIELDS = false;
+  public static boolean IGNORE_UNKNOWN_FIELDS = true;
 
   @Nullable
   private String id;
@@ -240,16 +245,17 @@ public abstract class BaseScimResource
   /**
    * This method is used by Jackson when deserializing JSON data into a Java
    * object. This will be called for schema extensions and any unknown fields
-   * (i.e., any fields in the JSON that are not defined in the Java class). If
-   * the unknown field is not a schema extension, then an exception will be
-   * thrown by default, indicating that the JSON representation of a resource
-   * could not be properly mapped to the schema defined by the Java object.
+   * (i.e., any fields in the JSON that are not defined in the Java class).
+   * Schema extension data is always handled.
    * <br><br>
    *
-   * If it is better for your application to ignore unknown fields instead of
-   * throwing exceptions, set the {@link #IGNORE_UNKNOWN_FIELDS} flag to
-   * {@code true}. This is helpful when working with SCIM services that include
-   * additional non-standard fields in their responses.
+   * Since Jackson 3.0.0, JSON processing ignores unknown fields by default.
+   * As a result, since version 6.1.0, the SCIM SDK ignores any unknown fields
+   * that appear in the JSON. However, if the old behavior (throwing exceptions
+   * for unknown attributes) is desired, set the {@link #IGNORE_UNKNOWN_FIELDS}
+   * flag to {@code false}. This can be helpful for determining if a SCIM
+   * service is returning extra non-standard fields, but can cause increase
+   * request failures.
    *
    * @param key    The name of the unknown field.
    * @param value  The value of the field.
@@ -411,7 +417,7 @@ public abstract class BaseScimResource
         return JsonUtils.nodeToValue(extensionNode, clazz);
       }
     }
-    catch (JsonProcessingException ex)
+    catch (JacksonException ex)
     {
       throw new RuntimeException(ex);
     }
@@ -575,7 +581,7 @@ public abstract class BaseScimResource
       return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
           writeValueAsString(this);
     }
-    catch (JsonProcessingException e)
+    catch (JacksonException e)
     {
       throw new RuntimeException(e);
     }

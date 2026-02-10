@@ -32,21 +32,21 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
-import java.io.IOException;
 
 /**
  * Deserializer for {@link GenericScimResource}.
  */
 public class GenericScimObjectDeserializer
-    extends JsonDeserializer<GenericScimResource>
+    extends ValueDeserializer<GenericScimResource>
 {
   /**
    * {@inheritDoc}
@@ -55,9 +55,16 @@ public class GenericScimObjectDeserializer
   @NotNull
   public GenericScimResource deserialize(@NotNull final JsonParser jp,
       @Nullable final DeserializationContext ctxt)
-          throws IOException
   {
-    ObjectNode objectNode = JsonUtils.getObjectReader().readTree(jp);
-    return new GenericScimResource(objectNode);
+    JsonNode node = JsonUtils.getObjectReader().readTree(jp);
+    if (node instanceof ObjectNode objectNode)
+    {
+      return new GenericScimResource(objectNode);
+    }
+    else
+    {
+      // TODO: Change
+      throw new RuntimeException("Bad request");
+    }
   }
 }

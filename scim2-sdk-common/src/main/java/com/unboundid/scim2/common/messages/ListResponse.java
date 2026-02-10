@@ -189,7 +189,7 @@ import java.util.Objects;
  * deserializing the {@code Resources} array may be tricky at first glance,
  * since the response contains a different object type within it. Fortunately,
  * Jackson has support for performing such conversions with the
- * {@link com.fasterxml.jackson.core.type.TypeReference} class. For example,
+ * {@link tools.jackson.core.type.TypeReference} class. For example,
  * to convert a JSON string into a {@code ListResponse<UserResource>}, the
  * following Java code may be used:
  * <pre><code>
