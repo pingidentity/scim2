@@ -248,7 +248,12 @@ public class MapperFactory
     builder.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     // Don't serialize POJO nulls as JSON nulls.
-    builder.defaultPropertyInclusion(JsonInclude.Value.ALL_NON_NULL);
+    //
+    // This can be replaced with "Value.ALL_NON_NULL" when Jackson 2.21 is used.
+    builder.defaultPropertyInclusion(
+        JsonInclude.Value.construct(
+            JsonInclude.Include.NON_NULL,
+            JsonInclude.Include.NON_NULL));
 
     // Only use xsd:dateTime format for dates.
     SimpleModule dateTimeModule = new SimpleModule();
