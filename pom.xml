@@ -84,11 +84,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compileSource>17</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
-    <jackson.version>2.20.1</jackson.version>
-    <jackson-annotations.version>2.20</jackson-annotations.version>
+    <jackson.version>2.21.0</jackson.version>
+    <jackson-annotations.version>2.21</jackson-annotations.version>
     <jakarta-rs.version>4.0.0</jakarta-rs.version>
-    <jersey.version>4.0.0</jersey.version>
-    <testng.version>7.11.0</testng.version>
+    <jersey.version>4.0.2</jersey.version>
+    <testng.version>7.12.0</testng.version>
     <assertj.version>3.27.7</assertj.version>
     <maven.surefire.version>3.5.4</maven.surefire.version>
   </properties>
