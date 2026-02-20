@@ -39,6 +39,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.annotations.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 
 /**
@@ -121,5 +122,38 @@ public class ErrorResponseTest
         JsonUtils.getObjectReader().forType(ErrorResponse.class).
             readValue(serializedString);
     assertEquals(errorResponse, deserializedErrorResponse);
+  }
+
+  /**
+   * Ensures that serialized ErrorResponse objects match the form presented in
+   * RFC 7644.
+   */
+  @Test
+  public void testSerialization() throws Exception
+  {
+    // Use a JSON string from the RFC with all fields populated.
+    String json = """
+        {
+          "schemas": ["urn:ietf:params:scim:api:messages:2.0:Error"],
+          "scimType": "invalidSyntax",
+          "detail": "Request is unparsable, syntactically incorrect, or violates schema.",
+          "status": "400"
+        }""";
+    String expectedJSON = JsonUtils.getObjectReader().readTree(json)
+        .toPrettyString();
+
+    // Construct the same data in object form. When the object is printed as a
+    // string, it should match the expected output.
+    ErrorResponse errorResponse = new ErrorResponse(400);
+    errorResponse.setScimType("invalidSyntax");
+    errorResponse.setDetail(
+        "Request is unparsable, syntactically incorrect, or violates schema.");
+    assertThat(errorResponse.toString()).isEqualTo(expectedJSON);
+
+    // The string formatting should also match when the error originates from
+    // an exception object.
+    BadRequestException e = BadRequestException.invalidSyntax(
+        "Request is unparsable, syntactically incorrect, or violates schema.");
+    assertThat(e.getScimError().toString()).isEqualTo(expectedJSON);
   }
 }

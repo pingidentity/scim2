@@ -34,6 +34,7 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.unboundid.scim2.common.annotations.NotNull;
@@ -85,6 +86,7 @@ import java.util.Objects;
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:Error",
     name="Error Response", description = "SCIM 2.0 Error Response")
+@JsonPropertyOrder({"schemas", "scimType", "detail", "status"})
 public class ErrorResponse extends BaseScimResource
 {
   @Nullable
