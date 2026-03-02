@@ -48,8 +48,8 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *     "status": "405",
- *     "detail": "The /.search endpoint only supports POST requests."
+ *     "detail": "The /.search endpoint only supports POST requests.",
+ *     "status": "405"
  *   }
  * </pre>
  *

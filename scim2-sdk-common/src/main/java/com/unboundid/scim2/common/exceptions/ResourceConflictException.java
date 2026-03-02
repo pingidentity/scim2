@@ -59,9 +59,9 @@ import com.unboundid.scim2.common.types.ETagConfig;
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *     "status": "409",
  *     "scimType": "uniqueness",
- *     "detail": "The userName is already in use."
+ *     "detail": "The userName is already in use.",
+ *     "status": "409"
  *   }
  * </pre>
  *

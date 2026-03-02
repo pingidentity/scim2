@@ -95,7 +95,7 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
  * <pre><code>
  *   public class CustomMapperFactory extends MapperFactory
  *   {
- *    {@literal @}Override
+ *     &#64;Override
  *     public ObjectMapper createObjectMapper()
  *     {
  *       // Fetch the initial object mapper from the superclass, then add your

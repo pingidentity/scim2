@@ -50,8 +50,8 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *     "status": "401",
- *     "detail": "The client is not authorized to perform the operation."
+ *     "detail": "The client is not authorized to perform the operation.",
+ *     "status": "401"
  *   }
  * </pre>
  *

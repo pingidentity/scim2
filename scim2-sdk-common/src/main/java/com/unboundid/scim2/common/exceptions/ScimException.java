@@ -45,9 +45,9 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *     "status": "400",
  *     "scimType": "invalidFilter",
- *     "detail": "The provided filter could not be parsed."
+ *     "detail": "The provided filter could not be parsed.",
+ *     "status": "400"
  *   }
  * </pre>
  *
