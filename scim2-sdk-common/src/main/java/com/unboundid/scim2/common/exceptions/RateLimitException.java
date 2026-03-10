@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2026 Ping Identity Corporation
+ * Copyright 2026 Ping Identity Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /*
- * Copyright 2015-2026 Ping Identity Corporation
+ * Copyright 2026 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -36,75 +36,74 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 
+
 /**
  * This class represents a SCIM exception pertaining to the
- * {@code HTTP 405 METHOD NOT ALLOWED} error response code. This exception type
- * should be thrown when a client sends a request to a valid endpoint, but
- * provides an unsupported REST method (e.g., {@code GET}, {@code POST}).
+ * {@code HTTP 429 TOO MANY REQUESTS} error response code. This exception type
+ * is thrown when a client exceeds a defined rate limit of an HTTP service, and
+ * occurs commonly when a client sends excessive requests within a brief period
+ * of time. By denying excessive request volumes, the service defends against
+ * expensive traffic that could affect availability. This also defends against
+ * malicious actors that attempt to overwhelm the service with attacks such as a
+ * distributed denial of service.
  * <br><br>
  *
- * The following is an example of a MethodNotAllowedException as seen by a SCIM
- * client.
+ * The following is an example of a rate limit exceeded exception presented to
+ * a SCIM client:
  * <pre>
- *   {
- *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *     "status": "405",
- *     "detail": "The /.search endpoint only supports POST requests."
- *   }
+ * {
+ *   "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+ *   "detail": "Too many requests. Please try again later.",
+ *   "status": "429"
+ * }
  * </pre>
  *
- * The MethodNotAllowedException in the above example can be created with the
- * following Java code:
+ * This exception can be created with the following Java code:
  * <pre><code>
- *   throw new MethodNotAllowedException(
- *           "The /.search endpoint only supports POST requests.");
+ *   throw new RateLimitException("Too many requests. Please try again later.");
  * </code></pre>
  *
- * This exception type generally does not have a {@code scimType} value.
+ * This exception type does not have a {@code scimType} value.
+ *
+ * @since 5.1.0
  */
-public class MethodNotAllowedException extends ScimException
+public class RateLimitException extends ScimException
 {
-  private static final int METHOD_NOT_ALLOWED_HTTP_STATUS = 405;
-
+  private static final int TOO_MANY_REQUESTS_HTTP_STATUS = 429;
 
   /**
-   * Returns the {@code 405 METHOD NOT ALLOWED} HTTP status code value.
+   * Returns the {@code 429 TOO MANY REQUESTS} HTTP status code value.
    *
    * @return  The HTTP status value.
-   * @since 5.1.0
    */
   public static int statusInt()
   {
-    return METHOD_NOT_ALLOWED_HTTP_STATUS;
+    return TOO_MANY_REQUESTS_HTTP_STATUS;
   }
 
   /**
-   * Returns the {@code 405 METHOD NOT ALLOWED} HTTP status code string value.
+   * Returns the {@code 429 TOO MANY REQUESTS} HTTP status code string value.
    *
    * @return  The HTTP status value as a string.
-   * @since 5.1.0
    */
   @NotNull
   public static String status()
   {
-    return "405";
+    return "429";
   }
 
   /**
-   * Create a new {@code MethodNotAllowedException} from the provided
-   * information.
+   * Create a new {@code RateLimitException} from the provided information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
-  public MethodNotAllowedException(@Nullable final String errorMessage)
+  public RateLimitException(@Nullable final String errorMessage)
   {
-    super(METHOD_NOT_ALLOWED_HTTP_STATUS, errorMessage);
+    super(TOO_MANY_REQUESTS_HTTP_STATUS, errorMessage);
   }
 
-
   /**
-   * Create a new {@code MethodNotAllowedException} from the provided
-   * information.
+   * Create a new {@code RateLimitException} from the provided information.
    *
    * @param scimError     The SCIM error response.
    * @param cause         The cause (which is saved for later retrieval by the
@@ -112,8 +111,8 @@ public class MethodNotAllowedException extends ScimException
    *                      is permitted, and indicates that the cause is
    *                      nonexistent or unknown.
    */
-  public MethodNotAllowedException(@NotNull final ErrorResponse scimError,
-                                   @Nullable final Throwable cause)
+  public RateLimitException(@NotNull final ErrorResponse scimError,
+                            @Nullable final Throwable cause)
   {
     super(scimError, cause);
   }

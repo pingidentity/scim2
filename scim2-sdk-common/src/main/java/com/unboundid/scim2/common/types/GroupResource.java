@@ -163,8 +163,9 @@ public class GroupResource extends BaseScimResource
    * Alternate version of {@link #setMembers(List)} that accepts individual
    * Member objects that are not contained in a list.
    *
-   * @param member    The first member to add. This must not be {@code null}.
-   * @param members   An optional set of additional arguments. Any {@code null}
+   * @param member    The first member of the group. This must not be
+   *                  {@code null}.
+   * @param members   An optional field for additional members. Any {@code null}
    *                  values will be ignored.
    * @return This object.
    *

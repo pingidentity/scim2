@@ -65,6 +65,31 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  */
 public class ResourceNotFoundException extends ScimException
 {
+  private static final int NOT_FOUND_HTTP_STATUS = 404;
+
+  /**
+   * Returns the {@code 404 NOT FOUND} HTTP status code value.
+   *
+   * @return  The HTTP status value.
+   * @since 5.1.0
+   */
+  public static int statusInt()
+  {
+    return NOT_FOUND_HTTP_STATUS;
+  }
+
+  /**
+   * Returns the {@code 404 NOT FOUND} HTTP status code string value.
+   *
+   * @return  The HTTP status value as a string.
+   * @since 5.1.0
+   */
+  @NotNull
+  public static String status()
+  {
+    return "404";
+  }
+
   /**
    * Create a new {@code ResourceNotFoundException} from the provided
    * information.
@@ -73,7 +98,7 @@ public class ResourceNotFoundException extends ScimException
    */
   public ResourceNotFoundException(@Nullable final String errorMessage)
   {
-    super(404, null, errorMessage);
+    super(NOT_FOUND_HTTP_STATUS, null, errorMessage);
   }
 
   /**
@@ -91,7 +116,7 @@ public class ResourceNotFoundException extends ScimException
                                    @Nullable final String scimType,
                                    @Nullable final Throwable cause)
   {
-    super(404, scimType, errorMessage, cause);
+    super(NOT_FOUND_HTTP_STATUS, scimType, errorMessage, cause);
   }
 
   /**

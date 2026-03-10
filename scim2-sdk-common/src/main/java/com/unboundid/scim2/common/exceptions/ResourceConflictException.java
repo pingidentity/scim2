@@ -81,11 +81,36 @@ import com.unboundid.scim2.common.types.ETagConfig;
  */
 public class ResourceConflictException extends ScimException
 {
+  private static final int CONFLICT_HTTP_STATUS = 409;
+
   /**
    * The SCIM detailed error keyword that indicates a uniqueness conflict.
    */
   @NotNull
   public static final String UNIQUENESS = "uniqueness";
+
+  /**
+   * Returns the {@code 409 CONFLICT} HTTP status code value.
+   *
+   * @return  The HTTP status value.
+   * @since 5.1.0
+   */
+  public static int statusInt()
+  {
+    return CONFLICT_HTTP_STATUS;
+  }
+
+  /**
+   * Returns the {@code 409 CONFLICT} HTTP status code string value.
+   *
+   * @return  The HTTP status value as a string.
+   * @since 5.1.0
+   */
+  @NotNull
+  public static String status()
+  {
+    return "409";
+  }
 
   /**
    * Create a new {@code ResourceConflictException} from the provided
@@ -96,7 +121,7 @@ public class ResourceConflictException extends ScimException
    */
   public ResourceConflictException(@Nullable final String errorMessage)
   {
-    super(409, null, errorMessage);
+    super(CONFLICT_HTTP_STATUS, null, errorMessage);
   }
 
   /**
@@ -110,7 +135,7 @@ public class ResourceConflictException extends ScimException
   public ResourceConflictException(@Nullable final String errorMessage,
                                    @Nullable final String scimType)
   {
-    super(409, scimType, errorMessage);
+    super(CONFLICT_HTTP_STATUS, scimType, errorMessage);
   }
 
   /**
@@ -143,7 +168,7 @@ public class ResourceConflictException extends ScimException
                                    @Nullable final String scimType,
                                    @Nullable final Throwable cause)
   {
-    super(409, scimType, errorMessage, cause);
+    super(CONFLICT_HTTP_STATUS, scimType, errorMessage, cause);
   }
 
   /**

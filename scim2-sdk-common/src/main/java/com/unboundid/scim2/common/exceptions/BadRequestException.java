@@ -84,6 +84,8 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  */
 public class BadRequestException extends ScimException
 {
+  private static final int BAD_REQUEST_HTTP_STATUS = 400;
+
   /**
    * The SCIM detailed error keyword that indicates the specified filter syntax
    * was invalid.
@@ -178,6 +180,29 @@ public class BadRequestException extends ScimException
 
 
   /**
+   * Returns the {@code 400 BAD REQUEST} HTTP status code value.
+   *
+   * @return  The HTTP status value.
+   * @since 5.1.0
+   */
+  public static int statusInt()
+  {
+    return BAD_REQUEST_HTTP_STATUS;
+  }
+
+  /**
+   * Returns the {@code 400 BAD REQUEST} HTTP status code string value.
+   *
+   * @return  The HTTP status value as a string.
+   * @since 5.1.0
+   */
+  @NotNull
+  public static String status()
+  {
+    return "400";
+  }
+
+  /**
    * Create a generic BadRequestException without a {@code scimType} field.
    *
    * @param errorMessage  The error message for this SCIM exception.
@@ -196,7 +221,7 @@ public class BadRequestException extends ScimException
   public BadRequestException(@Nullable final String errorMessage,
                              @Nullable final String scimType)
   {
-    super(400, scimType, errorMessage);
+    super(BAD_REQUEST_HTTP_STATUS, scimType, errorMessage);
   }
 
   /**
@@ -228,7 +253,7 @@ public class BadRequestException extends ScimException
                              @Nullable final String scimType,
                              @Nullable final Throwable cause)
   {
-    super(400, scimType, errorMessage, cause);
+    super(BAD_REQUEST_HTTP_STATUS, scimType, errorMessage, cause);
   }
 
   /**
