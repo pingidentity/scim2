@@ -67,6 +67,31 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  */
 public class NotImplementedException extends ScimException
 {
+  private static final int NOT_IMPLEMENTED_HTTP_STATUS = 501;
+
+  /**
+   * Returns the {@code 501 NOT IMPLEMENTED} HTTP status code value.
+   *
+   * @return  The HTTP status value.
+   * @since 5.1.0
+   */
+  public static int statusInt()
+  {
+    return NOT_IMPLEMENTED_HTTP_STATUS;
+  }
+
+  /**
+   * Returns the {@code 501 NOT IMPLEMENTED} HTTP status code string value.
+   *
+   * @return  The HTTP status value as a string.
+   * @since 5.1.0
+   */
+  @NotNull
+  public static String status()
+  {
+    return "501";
+  }
+
   /**
    * Create a new {@code NotImplementedException} from the provided information.
    *
@@ -74,7 +99,7 @@ public class NotImplementedException extends ScimException
    */
   public NotImplementedException(@Nullable final String errorMessage)
   {
-    super(501, null, errorMessage);
+    super(NOT_IMPLEMENTED_HTTP_STATUS, null, errorMessage);
   }
 
   /**
@@ -92,7 +117,7 @@ public class NotImplementedException extends ScimException
                                  @Nullable final String scimType,
                                  @Nullable final Throwable cause)
   {
-    super(501, scimType, errorMessage, cause);
+    super(NOT_IMPLEMENTED_HTTP_STATUS, scimType, errorMessage, cause);
   }
 
   /**

@@ -144,4 +144,12 @@ public class ApiConstants
    */
   @NotNull
   public static final String QUERY_PARAMETER_PAGE_SIZE = "count";
+
+  /**
+   * An identifier that may be used by a bulk operation to reference another
+   * operation within the same bulk request. For more information, see
+   * {@link com.unboundid.scim2.common.bulk.BulkOperation BulkOperation}.
+   */
+  @NotNull
+  public static final String BULK_PREFIX = "bulkId:";
 }

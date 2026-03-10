@@ -66,6 +66,31 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  */
 public class UnauthorizedException extends ScimException
 {
+  private static final int UNAUTHORIZED_HTTP_STATUS = 401;
+
+  /**
+   * Returns the {@code 401 UNAUTHORIZED} HTTP status code value.
+   *
+   * @return  The HTTP status value.
+   * @since 5.1.0
+   */
+  public static int statusInt()
+  {
+    return UNAUTHORIZED_HTTP_STATUS;
+  }
+
+  /**
+   * Returns the {@code 401 UNAUTHORIZED} HTTP status code string value.
+   *
+   * @return  The HTTP status value as a string.
+   * @since 5.1.0
+   */
+  @NotNull
+  public static String status()
+  {
+    return "401";
+  }
+
   /**
    * Create a new {@code UnauthorizedException} from the provided information.
    *
@@ -73,7 +98,7 @@ public class UnauthorizedException extends ScimException
    */
   public UnauthorizedException(@Nullable final String errorMessage)
   {
-    super(401, null, errorMessage);
+    super(UNAUTHORIZED_HTTP_STATUS, null, errorMessage);
   }
 
   /**
@@ -90,7 +115,7 @@ public class UnauthorizedException extends ScimException
                                @Nullable final String scimType,
                                @Nullable final Throwable cause)
   {
-    super(401, scimType, errorMessage, cause);
+    super(UNAUTHORIZED_HTTP_STATUS, scimType, errorMessage, cause);
   }
 
   /**

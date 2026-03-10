@@ -35,11 +35,13 @@ package com.unboundid.scim2.common.exceptions;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import org.testng.annotations.Test;
 
+import javax.naming.SizeLimitExceededException;
 import java.net.ConnectException;
 import java.nio.BufferOverflowException;
 import java.nio.file.AccessDeniedException;
 import java.sql.SQLClientInfoException;
 import java.text.ParseException;
+import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -79,6 +81,10 @@ public class ScimExceptionTest
     assertThat(e).isInstanceOf(ResourceConflictException.class);
     e = ScimException.createException(new ErrorResponse(412), null);
     assertThat(e).isInstanceOf(PreconditionFailedException.class);
+    e = ScimException.createException(new ErrorResponse(413), null);
+    assertThat(e).isInstanceOf(ContentTooLargeException.class);
+    e = ScimException.createException(new ErrorResponse(429), null);
+    assertThat(e).isInstanceOf(RateLimitException.class);
     e = ScimException.createException(new ErrorResponse(500), null);
     assertThat(e).isInstanceOf(ServerErrorException.class);
     e = ScimException.createException(new ErrorResponse(501), null);
@@ -94,6 +100,9 @@ public class ScimExceptionTest
   public void testNotModifiedException()
   {
     final int errorCode = 304;
+    assertThat(errorCode).isEqualTo(NotModifiedException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(NotModifiedException.status());
 
     NotModifiedException e =
         new NotModifiedException("The resource has not been modified.");
@@ -129,6 +138,9 @@ public class ScimExceptionTest
   public void testBadRequestException()
   {
     final int errorCode = 400;
+    assertThat(errorCode).isEqualTo(BadRequestException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(BadRequestException.status());
 
     BadRequestException e =
         new BadRequestException("Detailed message explaining the error.");
@@ -182,6 +194,9 @@ public class ScimExceptionTest
   public void testUnauthorizedException()
   {
     final int errorCode = 401;
+    assertThat(errorCode).isEqualTo(UnauthorizedException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(UnauthorizedException.status());
 
     UnauthorizedException e = new UnauthorizedException(
         "The client is not authorized to perform the operation.");
@@ -213,6 +228,9 @@ public class ScimExceptionTest
   public void testForbiddenException()
   {
     final int errorCode = 403;
+    assertThat(errorCode).isEqualTo(ForbiddenException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(ForbiddenException.status());
 
     ForbiddenException e = new ForbiddenException("Access denied.");
     assertThat(e.getScimError().getStatus()).isEqualTo(errorCode);
@@ -249,6 +267,9 @@ public class ScimExceptionTest
   public void testNotFoundException()
   {
     final int errorCode = 404;
+    assertThat(errorCode).isEqualTo(ResourceNotFoundException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(ResourceNotFoundException.status());
 
     ResourceNotFoundException e =
         new ResourceNotFoundException("The requested resource was not found.");
@@ -271,6 +292,9 @@ public class ScimExceptionTest
   public void testMethodNotAllowedException()
   {
     final int errorCode = 405;
+    assertThat(errorCode).isEqualTo(MethodNotAllowedException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(MethodNotAllowedException.status());
 
     MethodNotAllowedException e = new MethodNotAllowedException(
         "The /.search endpoint only supports POST requests.");
@@ -295,6 +319,9 @@ public class ScimExceptionTest
   public void testResourceConflictException()
   {
     final int errorCode = 409;
+    assertThat(errorCode).isEqualTo(ResourceConflictException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(ResourceConflictException.status());
 
     ResourceConflictException e =
         new ResourceConflictException("Detailed error message.");
@@ -332,6 +359,9 @@ public class ScimExceptionTest
   public void testPreconditionFailedException()
   {
     final int errorCode = 412;
+    assertThat(errorCode).isEqualTo(PreconditionFailedException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(PreconditionFailedException.status());
 
     PreconditionFailedException e = new PreconditionFailedException(
         "Failed to update. The resource changed on the server.");
@@ -374,12 +404,77 @@ public class ScimExceptionTest
   }
 
   /**
+   * Tests for {@link ContentTooLargeException}.
+   */
+  @Test
+  public void testContentTooLargeException()
+  {
+    final int errorCode = 413;
+    assertThat(errorCode).isEqualTo(ContentTooLargeException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(ContentTooLargeException.status());
+
+    ContentTooLargeException e =
+        new ContentTooLargeException("The request size exceeds the limit.");
+    assertThat(e.getScimError().getStatus()).isEqualTo(errorCode);
+    assertThat(e.getScimError().getScimType()).isNull();
+    assertThat(e.getMessage()).isEqualTo("The request size exceeds the limit.");
+    assertThat(e.getCause()).isNull();
+
+    e = new ContentTooLargeException("Size limit exceeded",
+        new SizeLimitExceededException());
+    assertThat(e.getScimError().getStatus()).isEqualTo(errorCode);
+    assertThat(e.getScimError().getScimType()).isNull();
+    assertThat(e.getMessage()).isEqualTo("Size limit exceeded");
+    assertThat(e.getCause()).isInstanceOf(SizeLimitExceededException.class);
+
+    var errorResponse = new ErrorResponse(errorCode);
+    errorResponse.setDetail("Limit exceeded.");
+    e = new ContentTooLargeException(errorResponse,
+        new NegativeArraySizeException());
+    assertThat(e.getScimError().getStatus()).isEqualTo(errorCode);
+    assertThat(e.getScimError().getScimType()).isNull();
+    assertThat(e.getMessage()).isEqualTo("Limit exceeded.");
+    assertThat(e.getCause()).isInstanceOf(NegativeArraySizeException.class);
+  }
+
+  /**
+   * Tests for {@link RateLimitException}.
+   */
+  @Test
+  public void testRateLimitException()
+  {
+    final int errorCode = 429;
+    assertThat(errorCode).isEqualTo(RateLimitException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(RateLimitException.status());
+
+    RateLimitException e =
+        new RateLimitException("Too many requests. Please try again later.");
+    assertThat(e.getScimError().getStatus()).isEqualTo(errorCode);
+    assertThat(e.getScimError().getScimType()).isNull();
+    assertThat(e.getMessage()).contains("Please try again later.");
+    assertThat(e.getCause()).isNull();
+
+    var errorResponse = new ErrorResponse(errorCode);
+    errorResponse.setDetail("You're sending it too fast.");
+    e = new RateLimitException(errorResponse, new TimeoutException());
+    assertThat(e.getScimError().getStatus()).isEqualTo(errorCode);
+    assertThat(e.getScimError().getScimType()).isNull();
+    assertThat(e.getMessage()).isEqualTo("You're sending it too fast.");
+    assertThat(e.getCause()).isInstanceOf(TimeoutException.class);
+  }
+
+  /**
    * Tests for {@link ServerErrorException}.
    */
   @Test
   public void testServerErrorException()
   {
     final int errorCode = 500;
+    assertThat(errorCode).isEqualTo(ServerErrorException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(ServerErrorException.status());
 
     ServerErrorException e =
         new ServerErrorException("An unexpected error occurred.");
@@ -403,6 +498,9 @@ public class ScimExceptionTest
   public void testNotImplementedException()
   {
     final int errorCode = 501;
+    assertThat(errorCode).isEqualTo(NotImplementedException.statusInt());
+    assertThat(errorCode)
+        .asString().isEqualTo(NotImplementedException.status());
 
     NotImplementedException e =
         new NotImplementedException("The requested endpoint is not supported.");
