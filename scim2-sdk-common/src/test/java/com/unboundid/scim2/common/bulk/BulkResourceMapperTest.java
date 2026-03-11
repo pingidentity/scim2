@@ -36,7 +36,6 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.GenericScimResource;
-import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.GroupResource;
