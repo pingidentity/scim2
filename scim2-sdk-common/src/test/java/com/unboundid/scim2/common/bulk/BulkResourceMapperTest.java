@@ -33,10 +33,14 @@
 package com.unboundid.scim2.common.bulk;
 
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.GenericScimResource;
+import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.types.GroupResource;
+import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
@@ -119,6 +123,84 @@ public class BulkResourceMapperTest
   }
 
   /**
+   * Ensures the mapper returns expected objects when a JsonNode is provided to
+   * the {@link BulkResourceMapper#asScimResource} method. This is the primary
+   * way to interface with the BulkResourceMapper.
+   */
+  @Test
+  public void testJsonNodeConversion() throws Exception
+  {
+    final var reader = JsonUtils.getObjectReader().forType(ObjectNode.class);
+
+    // A user JSON should result in a UserResource.
+    String userJson = """
+        {
+          "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+          "userName": "simpleUser"
+        }""";
+    ObjectNode userNode = reader.readValue(userJson);
+    ScimResource resource = BulkResourceMapper.asScimResource(userNode);
+    assertThat(resource).isInstanceOfSatisfying(UserResource.class,
+        user -> assertThat(user.getUserName()).isEqualTo("simpleUser"));
+
+    // Group JSON objects should result in a GroupResource.
+    String groupJson = """
+        {
+          "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:Group" ],
+          "displayName": "simpleGroup"
+        }""";
+    ObjectNode groupNode = reader.readValue(groupJson);
+    ScimResource groupResource = BulkResourceMapper.asScimResource(groupNode);
+    assertThat(groupResource).isInstanceOfSatisfying(GroupResource.class,
+        group -> assertThat(group.getDisplayName()).isEqualTo("simpleGroup"));
+
+    // An unregistered schema should be returned as a GenericScimResource.
+    String customJson = """
+        {
+          "schemas": [
+              "urn:ietf:params:scim:schemas:core:2.0:User",
+              "urn:example:customExtension"
+          ],
+          "userName": "customName"
+        }""";
+    var gen = BulkResourceMapper.asScimResource(reader.readValue(customJson));
+    assertThat(gen).isInstanceOfSatisfying(GenericScimResource.class, gsr -> {
+      assertThat(gsr.getObjectNode().get("userName").asText())
+          .isEqualTo("customName");
+    });
+
+    // Register the custom class that was just attempted.
+    BulkResourceMapper.put(
+        Set.of("urn:ietf:params:scim:schemas:core:2.0:User",
+            "urn:example:customExtension"),
+        UserSubClass.class
+    );
+
+    // Attempt reading the value again.
+    ObjectNode customUser = reader.readValue(customJson);
+    ScimResource customResource = BulkResourceMapper.asScimResource(customUser);
+    assertThat(customResource).isInstanceOfSatisfying(UserSubClass.class,
+        user -> assertThat(user.getUserName()).isEqualTo("customName"));
+    assertThat(resource).isNotInstanceOf(GenericScimResource.class);
+
+    // The "schemas" value should be treated as a set. Ensure the mapping still
+    // works when the values are out of order.
+    String outOfOrderJson = """
+        {
+          "schemas": [
+              "urn:example:customExtension",
+              "urn:ietf:params:scim:schemas:core:2.0:User"
+          ],
+          "userName": "customName"
+        }""";
+    ObjectNode outOfOrderUser = reader.readValue(outOfOrderJson);
+    var outOfOrderResource = BulkResourceMapper.asScimResource(outOfOrderUser);
+    assertThat(outOfOrderResource).isInstanceOfSatisfying(UserSubClass.class,
+        user -> assertThat(user.getUserName()).isEqualTo("customName"));
+    assertThat(outOfOrderResource).isEqualTo(customResource);
+  }
+
+  /**
    * A custom class definition with a {@code @Schema} annotation.
    */
   @Schema(id = "urn:pingidentity:example", description = "", name = "")
@@ -128,4 +210,13 @@ public class BulkResourceMapperTest
    * A custom class definition without a {@code @Schema} annotation.
    */
   private static class NoAnnotation extends BaseScimResource {}
+
+  private static class UserSubClass extends UserResource
+  {
+    UserSubClass()
+    {
+      super.setSchemaUrns("urn:ietf:params:scim:schemas:core:2.0:User",
+          "urn:example:customExtension");
+    }
+  }
 }
