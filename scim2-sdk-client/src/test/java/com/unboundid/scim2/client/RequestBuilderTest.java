@@ -32,6 +32,7 @@
 
 package com.unboundid.scim2.client;
 
+import com.unboundid.scim2.client.requests.BulkRequestBuilder;
 import com.unboundid.scim2.client.requests.CreateRequestBuilder;
 import com.unboundid.scim2.client.requests.DeleteRequestBuilder;
 import com.unboundid.scim2.client.requests.ReplaceRequestBuilder;
@@ -112,5 +113,19 @@ public class RequestBuilderTest
     var searchInstance = new CustomSearch(target);
     searchInstance.otherField = "present";
     assertThat(searchInstance.otherField).isEqualTo("present");
+
+    // Test BulkRequestBuilder.
+    class CustomBulk extends BulkRequestBuilder
+    {
+      public String otherField;
+
+      public CustomBulk(WebTarget target)
+      {
+        super(target);
+      }
+    }
+    var bulkInstance = new CustomBulk(target);
+    bulkInstance.otherField = "present";
+    assertThat(bulkInstance.otherField).isEqualTo("present");
   }
 }

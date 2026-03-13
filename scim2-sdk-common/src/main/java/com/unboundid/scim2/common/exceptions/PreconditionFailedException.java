@@ -67,11 +67,36 @@ import com.unboundid.scim2.common.types.ETagConfig;
  */
 public class PreconditionFailedException extends ScimException
 {
+  private static final int PRECONDITION_FAILED_HTTP_STATUS = 412;
+
   /**
    * Represents the ETag version value of the resource.
    */
   @Nullable
   private final String version;
+
+  /**
+   * Returns the {@code 412 PRECONDITION FAILED} HTTP status code value.
+   *
+   * @return  The HTTP status value.
+   * @since 5.1.0
+   */
+  public static int statusInt()
+  {
+    return PRECONDITION_FAILED_HTTP_STATUS;
+  }
+
+  /**
+   * Returns the {@code 412 PRECONDITION FAILED} HTTP status code string value.
+   *
+   * @return  The HTTP status value as a string.
+   * @since 5.1.0
+   */
+  @NotNull
+  public static String status()
+  {
+    return "412";
+  }
 
   /**
    * Create a new {@code PreconditionFailedException} from the provided
@@ -81,7 +106,7 @@ public class PreconditionFailedException extends ScimException
    */
   public PreconditionFailedException(@Nullable final String errorMessage)
   {
-    super(412, null, errorMessage);
+    super(PRECONDITION_FAILED_HTTP_STATUS, null, errorMessage);
     this.version = null;
   }
 
@@ -98,7 +123,7 @@ public class PreconditionFailedException extends ScimException
   public PreconditionFailedException(@Nullable final String errorMessage,
                                      @Nullable final Throwable cause)
   {
-    super(412, null, errorMessage, cause);
+    super(PRECONDITION_FAILED_HTTP_STATUS, null, errorMessage, cause);
     this.version = null;
   }
 
@@ -119,7 +144,7 @@ public class PreconditionFailedException extends ScimException
                                      @Nullable final String version,
                                      @Nullable final Throwable cause)
   {
-    super(412, scimType, errorMessage, cause);
+    super(PRECONDITION_FAILED_HTTP_STATUS, scimType, errorMessage, cause);
     this.version = version;
   }
 

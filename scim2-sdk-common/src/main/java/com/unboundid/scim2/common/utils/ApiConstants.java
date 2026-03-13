@@ -80,6 +80,22 @@ public class ApiConstants
   public static final String ME_ENDPOINT = "Me";
 
   /**
+   * An HTTP POST to this endpoint is used as a means to consolidate multiple
+   * write requests into a single API call. For more information, see
+   * {@link com.unboundid.scim2.common.bulk.BulkRequest BulkRequest}.
+   */
+  @NotNull
+  public static final String BULK_ENDPOINT = "Bulk";
+
+  /**
+   * An identifier that may be used by a bulk operation to reference another
+   * operation within the same bulk request. For more information, see
+   * {@link com.unboundid.scim2.common.bulk.BulkOperation BulkOperation}.
+   */
+  @NotNull
+  public static final String BULK_PREFIX = "bulkId:";
+
+  /**
    * An HTTP POST to this endpoint is used to retrieve information about
    * resource schemas supported by a SCIM service provider.
    */

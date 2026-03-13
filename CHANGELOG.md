@@ -2,11 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## v5.0.1 - TBD
+## v5.1.0 - TBD
 Updated Jackson to 2.20.1.
 
 Updated `ErrorResponse.java` to print attributes in an order that is more consistent with the
 example JSON objects presented in RFC 7644. Now, `status` is the last attribute printed.
+
+Added new `ContentTooLargeException` and `RateLimitException` classes corresponding to the HTTP 413
+and HTTP 429 status codes.
+
+Added new `status()` and `statusInt()` method to all exception types. For example, to obtain a
+string of `"400"` corresponding to `400 BAD REQUEST`, use `BadRequestException.status()`.
 
 ## v5.0.0 - 2025-Dec-15
 For consistency with other open source Ping Identity software, the UnboundID SCIM 2 SDK for Java is

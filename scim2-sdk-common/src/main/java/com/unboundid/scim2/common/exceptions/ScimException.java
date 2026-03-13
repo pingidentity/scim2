@@ -67,6 +67,8 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  *   <li> {@code HTTP 405}: {@link MethodNotAllowedException}
  *   <li> {@code HTTP 409}: {@link ResourceConflictException}
  *   <li> {@code HTTP 412}: {@link PreconditionFailedException}
+ *   <li> {@code HTTP 413}: {@link ContentTooLargeException}
+ *   <li> {@code HTTP 429}: {@link RateLimitException}
  *   <li> {@code HTTP 500}: {@link ServerErrorException}
  *   <li> {@code HTTP 501}: {@link NotImplementedException}
  * </ul>
@@ -90,7 +92,7 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * a dedicated class defined in the SCIM SDK, the constructors on this class may
  * be used directly:
  * <pre><code>
- *   throw new ScimException(429, "Detailed error message");
+ *   throw new ScimException(418, "Detailed error message");
  * </code></pre>
  *
  * For more details on a particular exception type, see the class-level
@@ -263,6 +265,8 @@ public class ScimException extends Exception
       case 405 -> new MethodNotAllowedException(scimError, cause);
       case 409 -> new ResourceConflictException(scimError, cause);
       case 412 -> new PreconditionFailedException(scimError, null, cause);
+      case 413 -> new ContentTooLargeException(scimError, cause);
+      case 429 -> new RateLimitException(scimError, cause);
       case 500 -> new ServerErrorException(scimError, cause);
       case 501 -> new NotImplementedException(scimError, cause);
       default -> new ScimException(scimError, cause);

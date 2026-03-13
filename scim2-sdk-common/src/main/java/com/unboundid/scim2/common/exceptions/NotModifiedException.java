@@ -64,11 +64,36 @@ import com.unboundid.scim2.common.types.ETagConfig;
  */
 public class NotModifiedException extends ScimException
 {
+  private static final int NOT_MODIFIED_HTTP_STATUS = 304;
+
   /**
    * Represents the ETag version value of the resource.
    */
   @Nullable
   private final String version;
+
+  /**
+   * Returns the {@code 304 NOT MODIFIED} HTTP status code value.
+   *
+   * @return  The HTTP status value.
+   * @since 5.1.0
+   */
+  public static int statusInt()
+  {
+    return NOT_MODIFIED_HTTP_STATUS;
+  }
+
+  /**
+   * Returns the {@code 304 NOT MODIFIED} HTTP status code string value.
+   *
+   * @return  The HTTP status value as a string.
+   * @since 5.1.0
+   */
+  @NotNull
+  public static String status()
+  {
+    return "304";
+  }
 
   /**
    * Create a new {@code NotModifiedException} from the provided information.
@@ -77,7 +102,7 @@ public class NotModifiedException extends ScimException
    */
   public NotModifiedException(@Nullable final String errorMessage)
   {
-    super(304, null, errorMessage);
+    super(NOT_MODIFIED_HTTP_STATUS, null, errorMessage);
     version = null;
   }
 
@@ -93,7 +118,7 @@ public class NotModifiedException extends ScimException
   public NotModifiedException(@Nullable final String errorMessage,
                               @Nullable final Throwable cause)
   {
-    super(304, null, errorMessage, cause);
+    super(NOT_MODIFIED_HTTP_STATUS, null, errorMessage, cause);
     version = null;
   }
 
@@ -113,7 +138,7 @@ public class NotModifiedException extends ScimException
                               @Nullable final String version,
                               @Nullable final Throwable cause)
   {
-    super(304, scimType, errorMessage, cause);
+    super(NOT_MODIFIED_HTTP_STATUS, scimType, errorMessage, cause);
     this.version = version;
   }
 

@@ -33,6 +33,7 @@
 package com.unboundid.scim2.client;
 
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import com.unboundid.scim2.client.requests.BulkRequestBuilder;
 import com.unboundid.scim2.client.requests.CreateRequestBuilder;
 import com.unboundid.scim2.client.requests.DeleteRequestBuilder;
 import com.unboundid.scim2.client.requests.ModifyRequestBuilder;
@@ -56,6 +57,7 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import java.net.URI;
 
+import static com.unboundid.scim2.common.utils.ApiConstants.BULK_ENDPOINT;
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 import static com.unboundid.scim2.common.utils.ApiConstants.ME_ENDPOINT;
 import static com.unboundid.scim2.common.utils.ApiConstants.RESOURCE_TYPES_ENDPOINT;
@@ -573,6 +575,55 @@ public class ScimService implements ScimInterface
           throws ScimException
   {
     return deleteRequest(checkAndGetLocation(resource));
+  }
+
+  /**
+   * Build a request that will perform multiple write operations in a single API
+   * call. See {@link com.unboundid.scim2.common.bulk.BulkRequest BulkRequest}
+   * for more information.
+   *
+   * @return  The request builder that may be used to specify additional
+   *          operations and to invoke the request.
+   */
+  @NotNull
+  public BulkRequestBuilder bulkRequest()
+  {
+    return new BulkRequestBuilder(baseTarget.path(BULK_ENDPOINT));
+  }
+
+  /**
+   * Build a request that will perform multiple write operations in a single API
+   * call to the specified endpoint. In general, {@link #bulkRequest()} should
+   * be used to target the {@code /Bulk} endpoint defined in the specification.
+   * See {@link com.unboundid.scim2.common.bulk.BulkRequest BulkRequest} for
+   * more information.
+   *
+   * @param endpoint  The resource endpoint, e.g., {@code /Bulk}.
+   * @return  The request builder that may be used to specify additional
+   *          operations and to invoke the request.
+   */
+  @NotNull
+  public BulkRequestBuilder bulkRequest(@NotNull final String endpoint)
+  {
+    return new BulkRequestBuilder(baseTarget.path(endpoint));
+  }
+
+  /**
+   * Build a request that will perform multiple write operations in a single API
+   * call to the specified URI. In general, {@link #bulkRequest()} should be
+   * used to target the {@code /Bulk} endpoint defined in the specification. See
+   * {@link com.unboundid.scim2.common.bulk.BulkRequest BulkRequest} for more
+   * information.
+   *
+   * @param uri  The URI referencing a SCIM service's bulk request endpoint,
+   *             e.g., {@code https://example.com/v2/Bulk}.
+   * @return  The request builder that may be used to specify additional
+   *          operations and to invoke the request.
+   */
+  @NotNull
+  public BulkRequestBuilder bulkRequest(@NotNull final URI uri)
+  {
+    return new BulkRequestBuilder(resolveWebTarget(uri));
   }
 
   /**

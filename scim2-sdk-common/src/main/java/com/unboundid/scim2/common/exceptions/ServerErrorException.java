@@ -62,6 +62,32 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  */
 public class ServerErrorException extends ScimException
 {
+  private static final int INTERNAL_SERVER_ERROR_HTTP_STATUS = 500;
+
+  /**
+   * Returns the {@code 500 INTERNAL SERVER ERROR} HTTP status code value.
+   *
+   * @return  The HTTP status value.
+   * @since 5.1.0
+   */
+  public static int statusInt()
+  {
+    return INTERNAL_SERVER_ERROR_HTTP_STATUS;
+  }
+
+  /**
+   * Returns the {@code 500 INTERNAL SERVER ERROR} HTTP status code string
+   * value.
+   *
+   * @return  The HTTP status value as a string.
+   * @since 5.1.0
+   */
+  @NotNull
+  public static String status()
+  {
+    return "500";
+  }
+
   /**
    * Create a new {@code ServerErrorException} from the provided information.
    *
@@ -69,7 +95,7 @@ public class ServerErrorException extends ScimException
    */
   public ServerErrorException(@Nullable final String errorMessage)
   {
-    super(500, null, errorMessage);
+    super(INTERNAL_SERVER_ERROR_HTTP_STATUS, null, errorMessage);
   }
 
   /**
@@ -86,7 +112,7 @@ public class ServerErrorException extends ScimException
                               @Nullable final String scimType,
                               @Nullable final Throwable cause)
   {
-    super(500, scimType, errorMessage, cause);
+    super(INTERNAL_SERVER_ERROR_HTTP_STATUS, scimType, errorMessage, cause);
   }
 
   /**
