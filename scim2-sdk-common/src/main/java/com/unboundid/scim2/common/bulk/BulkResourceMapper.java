@@ -138,8 +138,9 @@ public class BulkResourceMapper
    * @throws IllegalArgumentException  If the provided class does not have the
    *                                   required annotation.
    */
-  public static <T extends ScimResource> void add(@NotNull final Class<T> clazz)
-      throws IllegalArgumentException
+  public static synchronized <T extends ScimResource> void add(
+      @NotNull final Class<T> clazz)
+          throws IllegalArgumentException
   {
     SchemaResource schema;
 
@@ -172,7 +173,7 @@ public class BulkResourceMapper
    * @param clazz    The class type that is associated with the resource type.
    * @param <T>      The returned Java type.
    */
-  public static <T extends ScimResource> void put(
+  public static synchronized <T extends ScimResource> void put(
       @NotNull final Set<String> schemas,
       @NotNull final Class<T> clazz)
   {

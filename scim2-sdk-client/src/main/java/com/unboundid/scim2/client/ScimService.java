@@ -57,6 +57,7 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import java.net.URI;
 
+import static com.unboundid.scim2.common.utils.ApiConstants.BULK_ENDPOINT;
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 import static com.unboundid.scim2.common.utils.ApiConstants.ME_ENDPOINT;
 import static com.unboundid.scim2.common.utils.ApiConstants.RESOURCE_TYPES_ENDPOINT;
@@ -587,7 +588,7 @@ public class ScimService implements ScimInterface
   @NotNull
   public BulkRequestBuilder bulkRequest()
   {
-    return new BulkRequestBuilder(baseTarget.path("Bulk"));
+    return new BulkRequestBuilder(baseTarget.path(BULK_ENDPOINT));
   }
 
   /**
