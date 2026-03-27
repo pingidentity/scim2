@@ -62,7 +62,7 @@ import java.util.Objects;
  *   },
  *   "bulk": {
  *     "supported": true,
- *     "maxOperations": 1000,
+ *     "maxOperations": 100,
  *     "maxPayloadSize": 1048576
  *   },
  *   "filter": {
@@ -104,7 +104,7 @@ import java.util.Objects;
  * The above JSON response indicates that this SCIM service:
  * <ul>
  *   <li> Supports SCIM PATCH requests.
- *   <li> Supports SCIM bulk requests with up to 1000 operations in a request.
+ *   <li> Supports SCIM bulk requests with up to 100 operations in a request.
  *   <li> Supports SCIM filtering and will return a maximum of 200 results.
  *   <li> Supports password change API requests.
  *   <li> Supports sorting the result set when multiple resources are returned.

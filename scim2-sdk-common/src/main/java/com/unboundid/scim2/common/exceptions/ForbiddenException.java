@@ -66,6 +66,8 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  */
 public class ForbiddenException extends ScimException
 {
+  private static final int FORBIDDEN_HTTP_STATUS = 403;
+
   /**
    * The SCIM detailed error keyword that indicates the provided filter in a
    * GET search request contained sensitive or confidential information. See
@@ -75,13 +77,36 @@ public class ForbiddenException extends ScimException
   public static final String SENSITIVE = "sensitive";
 
   /**
+   * Returns the {@code 403 FORBIDDEN} HTTP status code value.
+   *
+   * @return  The HTTP status value.
+   * @since 5.1.0
+   */
+  public static int statusInt()
+  {
+    return FORBIDDEN_HTTP_STATUS;
+  }
+
+  /**
+   * Returns the {@code 403 FORBIDDEN} HTTP status code string value.
+   *
+   * @return  The HTTP status value as a string.
+   * @since 5.1.0
+   */
+  @NotNull
+  public static String status()
+  {
+    return "403";
+  }
+
+  /**
    * Create a new {@code ForbiddenException} from the provided information.
    *
    * @param errorMessage  The error message for this SCIM exception.
    */
   public ForbiddenException(@Nullable final String errorMessage)
   {
-    super(403, null, errorMessage);
+    super(FORBIDDEN_HTTP_STATUS, null, errorMessage);
   }
 
   /**
@@ -99,7 +124,7 @@ public class ForbiddenException extends ScimException
                             @Nullable final String scimType,
                             @Nullable final Throwable cause)
   {
-    super(403, scimType, errorMessage, cause);
+    super(FORBIDDEN_HTTP_STATUS, scimType, errorMessage, cause);
   }
 
   /**
