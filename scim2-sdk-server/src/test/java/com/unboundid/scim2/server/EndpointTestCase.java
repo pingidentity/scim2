@@ -42,6 +42,10 @@ import com.unboundid.scim2.client.ScimServiceException;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.bulk.BulkOpType;
+import com.unboundid.scim2.common.bulk.BulkOperation;
+import com.unboundid.scim2.common.bulk.BulkOperationResult;
+import com.unboundid.scim2.common.bulk.BulkResponse;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.MethodNotAllowedException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
@@ -55,6 +59,7 @@ import com.unboundid.scim2.common.messages.SearchRequest;
 import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.Email;
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
+import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.PhoneNumber;
@@ -144,6 +149,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     config.register(requestFilter);
 
     // Standard endpoints
+    config.register(BulkEndpoint.class);
     config.register(ResourceTypesEndpoint.class);
     config.register(CustomContentEndpoint.class);
     config.register(SchemasEndpoint.class);
@@ -189,7 +195,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
           Collections.singletonList(new ResourceTypeResource.SchemaExtension(
               new URI(enterpriseSchema.getId()), true)));
       setMeta(ResourceTypesEndpoint.class, singletonResourceType);
-
       serviceProviderConfig = TestServiceProviderConfigEndpoint.create();
       setMeta(TestServiceProviderConfigEndpoint.class, serviceProviderConfig);
     }
@@ -268,9 +273,10 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     final ListResponse<SchemaResource> returnedSchemas =
         new ScimService(target()).getSchemas();
 
-    assertEquals(returnedSchemas.getTotalResults(), 2);
-    assertTrue(contains(returnedSchemas, userSchema));
-    assertTrue(contains(returnedSchemas, enterpriseSchema));
+    assertThat(returnedSchemas.getTotalResults()).isEqualTo(3);
+    assertThat(returnedSchemas)
+        .contains(userSchema)
+        .contains(enterpriseSchema);
 
     // Now with application/json
     WebTarget target = target().register(
@@ -324,9 +330,10 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     final ListResponse<ResourceTypeResource> returnedResourceTypes =
         new ScimService(target()).getResourceTypes();
 
-    assertEquals(returnedResourceTypes.getTotalResults(), 3);
-    assertTrue(contains(returnedResourceTypes, resourceType));
-    assertTrue(contains(returnedResourceTypes, singletonResourceType));
+    assertThat(returnedResourceTypes.getTotalResults()).isEqualTo(4);
+    assertThat(returnedResourceTypes)
+        .contains(resourceType)
+        .contains(singletonResourceType);
 
     // Now with application/json
     WebTarget target = target().register(
@@ -1365,6 +1372,181 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
             .accept()
             .invoke(byte[].class)))
         .isInstanceOf(IllegalArgumentException.class);
+  }
+
+
+  /**
+   * This test performs basic validation for bulk requests and responses in a
+   * Jakarta-RS environment. Handling for these {@code /Bulk} calls come from
+   * {@link BulkEndpoint#processBulkRequest}.
+   */
+  @Test
+  public void testBulk() throws Exception
+  {
+    ScimService scimService = new ScimService(target());
+    final BulkOperation post = BulkOperation.post("/Users",
+        new UserResource().setUserName("frieren"));
+    final BulkOperation put = BulkOperation.put("/Users/fa1afe1",
+        new UserResource().setUserName("frieren"));
+    final BulkOperation patch = BulkOperation.patch("/Users/fa1afe1",
+        PatchOperation.remove("nickName"));
+    final BulkOperation delete = BulkOperation.delete("/Users/fa1afe1");
+
+    // Validate a single delete operation.
+    BulkResponse response = scimService.bulkRequest()
+        .append(delete)
+        .invoke();
+    assertThat(response.getOperations()).hasSize(1);
+    BulkOperationResult deleteResult = response.getOperations().get(0);
+    assertThat(deleteResult.getMethod()).isEqualTo(BulkOpType.DELETE);
+    assertThat(deleteResult.getStatus()).isEqualTo("204");
+    assertThat(deleteResult.getLocation()).endsWith("/Users/fa1afe1");
+
+    // A single create operation.
+    BulkResponse createResponse = scimService.bulkRequest()
+        .append(post)
+        .invoke();
+    assertThat(createResponse.getOperations()).hasSize(1);
+    BulkOperationResult createResult = response.getOperations().get(0);
+    assertThat(createResult.getMethod()).isEqualTo(BulkOpType.DELETE);
+    assertThat(createResult.getStatus()).isEqualTo("204");
+    assertThat(createResult.getLocation()).endsWith("/Users/fa1afe1");
+
+    // A single PUT operation.
+    BulkResponse replaceResponse = scimService.bulkRequest()
+        .append(put)
+        .invoke();
+    assertThat(replaceResponse.getOperations()).hasSize(1);
+    BulkOperationResult replaceResult = response.getOperations().get(0);
+    assertThat(replaceResult.getMethod()).isEqualTo(BulkOpType.DELETE);
+    assertThat(replaceResult.getStatus()).isEqualTo("204");
+    assertThat(replaceResult.getLocation()).endsWith("/Users/fa1afe1");
+
+    // A single PATCH operation.
+    BulkResponse modifyResponse = scimService.bulkRequest()
+        .append(patch)
+        .invoke();
+    assertThat(modifyResponse.getOperations()).hasSize(1);
+    BulkOperationResult modifyResult = response.getOperations().get(0);
+    assertThat(modifyResult.getMethod()).isEqualTo(BulkOpType.DELETE);
+    assertThat(modifyResult.getStatus()).isEqualTo("204");
+    assertThat(modifyResult.getLocation()).endsWith("/Users/fa1afe1");
+
+    // Issue requests with no operations.
+    BulkResponse noOpResponse = scimService.bulkRequest().invoke();
+    assertThat(noOpResponse.getOperations()).hasSize(0);
+    noOpResponse = scimService.bulkRequest()
+        .append((List<BulkOperation>) null)
+        .append((BulkOperation[]) null)
+        .append(null, null)
+        .append()
+        .invoke();
+    assertThat(noOpResponse.getOperations()).hasSize(0);
+
+    // Issue a request with multiple operations.
+    BulkOperation postWithBulkID = post.copy().setBulkId("Bulkley");
+    BulkResponse multipleOpResponse = scimService.bulkRequest()
+        .append(postWithBulkID, put, patch, delete)
+        .invoke();
+    assertThat(multipleOpResponse.getOperations()).hasSize(4);
+
+    // Ensure the order of the requests is preserved.
+    List<BulkOperationResult> expectedList = List.of(
+        new BulkOperationResult(
+            BulkOpType.POST, "201", "location", null, "Bulkley", null),
+        new BulkOperationResult(
+            BulkOpType.PUT, "200", "location", null, null, null),
+        new BulkOperationResult(
+            BulkOpType.PATCH, "200", "location", null, null, null),
+        new BulkOperationResult(
+            BulkOpType.DELETE, "204", "location", null, null, null)
+    );
+    for (int i = 0; i < expectedList.size(); i++)
+    {
+      BulkOperationResult expected = expectedList.get(i);
+      BulkOperationResult actual = multipleOpResponse.getOperations().get(i);
+
+      assertThat(actual.getMethod()).isEqualTo(expected.getMethod());
+      assertThat(actual.getStatus()).isEqualTo(expected.getStatus());
+      assertThat(actual.getBulkId()).isEqualTo(expected.getBulkId());
+    }
+
+    // Re-run the previous test case with an explicit endpoint provided to the
+    // bulk request.
+    var uri = UriBuilder.fromUri(getBaseUri()).path("/Bulk").build();
+    BulkResponse multipleOpResponse2 = scimService.bulkRequest(uri)
+        .append(postWithBulkID, put, patch, delete)
+        .invoke();
+    assertThat(multipleOpResponse2).isEqualTo(multipleOpResponse);
+
+    // Simulate a bulk error.
+    var errorUri = UriBuilder.fromUri(getBaseUri())
+        .path("/Bulk").path("/BulkError").build();
+    assertThatThrownBy(() -> scimService.bulkRequest(errorUri).invoke())
+        .isInstanceOf(BadRequestException.class)
+        .hasMessage("Simulated error for too many bulk operations.");
+  }
+
+
+  /**
+   * Test the behavior of a bulk response processed by the SCIM SDK into an
+   * object. In particular, objects within the bulk response should be
+   * deserialized properly if they are registered with the
+   * {@link com.unboundid.scim2.common.bulk.BulkResourceMapper}.
+   * <br><br>
+   *
+   * The JSON responses obtained by this test are defined in
+   * {@link BulkEndpoint#testBulkRequest}.
+   */
+  @Test
+  public void testBulkRequestJsonProcessing() throws Exception
+  {
+    final ScimService service = new ScimService(target());
+
+    // Invoke a bulk request and obtain a normal response.
+    BulkResponse response =
+        service.bulkRequest("/Bulk/testBulkRequest").invoke();
+    assertThat(response.getSchemaUrns())
+        .hasSize(1)
+        .containsOnly("urn:ietf:params:scim:api:messages:2.0:BulkResponse");
+    final List<BulkOperationResult> resultList = response.getOperations();
+    assertThat(resultList).hasSize(4);
+
+    // Validate each bulk operation result that was returned.
+    assertThat(resultList.get(0)).satisfies(boResult -> {
+      assertThat(boResult.getStatus()).isEqualTo("201");
+      assertThat(boResult.isSuccess()).isTrue();
+
+      ScimResource u = boResult.getResponseAsScimResource();
+      assertThat(u).isInstanceOfSatisfying(UserResource.class,
+          user -> assertThat(user.getUserName()).isEqualTo("silhouette.man"));
+    });
+
+    assertThat(resultList.get(1)).satisfies(boResult -> {
+      assertThat(boResult.getStatus()).isEqualTo("200");
+      assertThat(boResult.isSuccess()).isTrue();
+
+      ScimResource g = boResult.getResponseAsScimResource();
+      assertThat(g).isInstanceOfSatisfying(GroupResource.class,
+          group -> assertThat(group.getDisplayName()).contains("california"));
+    });
+
+    assertThat(resultList.get(2)).satisfies(boResult -> {
+      assertThat(boResult.getStatus()).isEqualTo("404");
+      assertThat(boResult.isClientError()).isTrue();
+
+      ScimResource e = boResult.getResponseAsScimResource();
+      assertThat(e).isInstanceOfSatisfying(ErrorResponse.class,
+          error -> assertThat(error.getDetail()).contains("was not found"));
+    });
+
+    assertThat(resultList.get(3)).satisfies(boResult -> {
+      assertThat(boResult.getStatus()).isEqualTo("200");
+
+      ScimResource g = boResult.getResponseAsScimResource();
+      assertThat(g).isInstanceOfSatisfying(GenericScimResource.class,
+          gsr -> assertThat(gsr.getExternalId()).isEqualTo("tarmac"));
+    });
   }
 
 
