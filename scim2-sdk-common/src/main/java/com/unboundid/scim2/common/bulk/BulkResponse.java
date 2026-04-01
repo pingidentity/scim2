@@ -69,11 +69,11 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *         "location": "https://example.com/v2/Users/fa1afe1",
  *         "method": "POST",
  *         "bulkId": "qwerty",
+ *         "status": "201",
  *         "response": {
  *           "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
  *           "userName": "Alice"
  *         }
- *         "status": "201"
  *       }
  *     ]
  *   }
@@ -82,7 +82,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * The bulk response indicates that the server-side processing successfully
  * created one user resource. It also details the URI for the new resource,
  * along with the original HTTP method, the bulk ID set in the client bulk
- * request, the optional JSON response data, and the HTTP response status code.
+ * request, the HTTP response status code, and the optional JSON response data.
  * <br><br>
  *
  * This bulk response can be created with the following Java code. See

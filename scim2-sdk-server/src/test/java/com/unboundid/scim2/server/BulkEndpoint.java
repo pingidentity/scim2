@@ -128,31 +128,32 @@ public class BulkEndpoint
               "Operations": [ {
                 "location": "https://example.com/v2/Users/fa1afe1",
                 "method": "POST",
+                "status": "201",
                 "response": {
                   "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
                   "userName": "silhouette.man"
-                },
-                "status": "201"
+                }
               }, {
                 "location": "https://example.com/v2/Groups/c0a1e5ce",
                 "method": "PUT",
+                "status": "200",
                 "response": {
                   "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:Group" ],
                   "displayName": "hotel.california"
-                },
-                "status": "200"
+                }
               }, {
-                "location" : "https://example.com/v2/Users/deadbeef",
-                "method" : "DELETE",
-                "response" : {
-                  "schemas" : [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
-                  "detail" : "The requested resource was not found.",
-                  "status" : "404"
-                },
-                "status" : "404"
+                "location": "https://example.com/v2/Users/deadbeef",
+                "method": "DELETE",
+                "status": "404",
+                "response": {
+                  "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+                  "detail": "The requested resource was not found.",
+                  "status": "404"
+                }
               }, {
                 "location": "https://example.com/v2/CustomResource/af10a7",
                 "method": "PATCH",
+                "status": "200",
                 "response": {
                   "schemas": [
                     "urn:ietf:params:scim:schemas:core:2.0:User",
@@ -160,8 +161,7 @@ public class BulkEndpoint
                   ],
                   "externalId": "tarmac",
                   "userName": "tarmac"
-                },
-                "status": "200"
+                }
               } ]
             }""").build();
   }

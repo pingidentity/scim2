@@ -101,12 +101,12 @@ import java.util.logging.Level;
  *   "location": "https://example.com/v2/Users/fa1afe1",
  *   "method": "POST",
  *   "bulkId": "originalBulkId",
+ *   "status": "200",
  *   "response": {
  *     "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
  *     "id": "fa1afe1",
  *     "userName": "walker"
- *   },
- *   "status": "200"
+ *   }
  * }
  * </pre>
  *
@@ -140,13 +140,13 @@ import java.util.logging.Level;
  * <pre>
  * {
  *   "method": "POST",
+ *   "status": "400",
  *   "response": {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
  *     "scimType": "invalidSyntax",
  *     "detail": "Request is unparsable or violates the schema.",
  *     "status": "400"
- *   },
- *   "status": "400"
+ *   }
  * }
  * </pre>
  *
@@ -170,8 +170,8 @@ import java.util.logging.Level;
  * @since 5.1.0
  */
 @SuppressWarnings("JavadocLinkAsPlainText")
-@JsonPropertyOrder({ "location", "method", "bulkId", "version", "response",
-                     "status" })
+@JsonPropertyOrder({ "location", "method", "bulkId", "version", "status",
+                     "response" })
 public class BulkOperationResult
 {
   /**
@@ -204,8 +204,7 @@ public class BulkOperationResult
   private final BulkOpType method;
 
   /**
-   * The bulk ID of the original bulk operation. For more information, see
-   * {@link BulkOperation#bulkId}.
+   * The bulk ID of the original bulk operation.
    */
   @Nullable
   private String bulkId;
@@ -216,6 +215,19 @@ public class BulkOperationResult
    */
   @Nullable
   private String version;
+
+  /**
+   * The status code to return for the write request, e.g., {@code "200"}
+   * representing a {@code 200 OK} response for a successful modification.
+   */
+  @NotNull
+  @JsonDeserialize(using = BulkStatusDeserializer.class)
+  private String status = "";
+
+  /**
+   * The status value as an integer.
+   */
+  private int statusInt;
 
   /**
    * The JSON data representing the response for the individual write request.
@@ -231,19 +243,6 @@ public class BulkOperationResult
    */
   @Nullable
   private ObjectNode response;
-
-  /**
-   * The status code to return for the write request, e.g., {@code "200"}
-   * representing a {@code 200 OK} response for a successful modification.
-   */
-  @NotNull
-  @JsonDeserialize(using = BulkStatusDeserializer.class)
-  private String status = "";
-
-  /**
-   * The status value as an integer.
-   */
-  private int statusInt;
 
   /**
    * Constructs an entry to be contained in a {@link BulkResponse} based on the

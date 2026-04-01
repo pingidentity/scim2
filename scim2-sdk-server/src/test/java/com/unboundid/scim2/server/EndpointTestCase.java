@@ -1516,6 +1516,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertThat(resultList.get(0)).satisfies(boResult -> {
       assertThat(boResult.getStatus()).isEqualTo("201");
       assertThat(boResult.isSuccess()).isTrue();
+      assertThat(boResult.isClientError()).isFalse();
+      assertThat(boResult.isServerError()).isFalse();
 
       ScimResource u = boResult.getResponseAsScimResource();
       assertThat(u).isInstanceOfSatisfying(UserResource.class,
@@ -1525,6 +1527,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertThat(resultList.get(1)).satisfies(boResult -> {
       assertThat(boResult.getStatus()).isEqualTo("200");
       assertThat(boResult.isSuccess()).isTrue();
+      assertThat(boResult.isClientError()).isFalse();
+      assertThat(boResult.isServerError()).isFalse();
 
       ScimResource g = boResult.getResponseAsScimResource();
       assertThat(g).isInstanceOfSatisfying(GroupResource.class,
@@ -1534,6 +1538,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertThat(resultList.get(2)).satisfies(boResult -> {
       assertThat(boResult.getStatus()).isEqualTo("404");
       assertThat(boResult.isClientError()).isTrue();
+      assertThat(boResult.isSuccess()).isFalse();
+      assertThat(boResult.isServerError()).isFalse();
 
       ScimResource e = boResult.getResponseAsScimResource();
       assertThat(e).isInstanceOfSatisfying(ErrorResponse.class,
@@ -1542,6 +1548,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     assertThat(resultList.get(3)).satisfies(boResult -> {
       assertThat(boResult.getStatus()).isEqualTo("200");
+      assertThat(boResult.isSuccess()).isTrue();
+      assertThat(boResult.isClientError()).isFalse();
+      assertThat(boResult.isServerError()).isFalse();
 
       ScimResource g = boResult.getResponseAsScimResource();
       assertThat(g).isInstanceOfSatisfying(GenericScimResource.class,

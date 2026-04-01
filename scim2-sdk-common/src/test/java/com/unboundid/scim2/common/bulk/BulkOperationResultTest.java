@@ -345,7 +345,7 @@ public class BulkOperationResultTest
   {
     // Check the constructors for null operations and statuses.
     assertThatThrownBy(() ->
-        new BulkOperationResult((BulkOperation) null, "500", location))
+        new BulkOperationResult(null, "500", location))
         .isInstanceOf(NullPointerException.class);
     assertThatThrownBy(() ->
         new BulkOperationResult(BulkOperation.delete("/val"), null, location))

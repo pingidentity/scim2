@@ -63,8 +63,8 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *
  * <h2>SCIM 2 Bulk Requests and Responses</h2>
  *
- * Issuing a REST API call always incurs request processing overhead, namely
- * DNS resolution, TCP handshakes and termination, and TLS negotiation. This is
+ * Issuing a REST API call always incurs network processing overhead, namely DNS
+ * resolution, TCP handshakes and termination, and TLS negotiation. This is
  * necessary work for all API calls, but can become expensive in cases where a
  * client anticipates sending large amounts of traffic (e.g., on the order of
  * millions of requests). A SCIM bulk request is an optimization that combines
@@ -139,16 +139,17 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *   "schemas": [ "urn:ietf:params:scim:api:messages:2.0:BulkResponse" ],
  *   "Operations": [ {
  *     "method": "POST",
+ *     "status": "400",
  *     "response": {
  *       "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
  *       "scimType": "uniqueness",
  *       "detail": "The requested username was not available.",
  *       "status": "400"
- *     },
- *     "status": "400"
+ *     }
  *   }, {
  *     "location": "https://example.com/v2/Users/5b261bdf",
  *     "method": "POST",
+ *     "status": "201",
  *     "response": {
  *       "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
  *       "userName": "Whiplash!"
@@ -156,8 +157,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *       "meta": {
  *         "created": "1970-01-01T13:00:00Z"
  *       },
- *     },
- *     "status": "201"
+ *     }
  *   } ]
  * }
  * </pre>
@@ -191,7 +191,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *       new BulkOperationResult(e, BulkOpType.POST, null);
  *
  *   final BulkOperationResult successResult = new BulkOperationResult(
- *       BulkOpType.POST,
+ *       getClientBulkOperation(),
  *       BulkOperationResult.HTTP_STATUS_CREATED,
  *       "https://example.com/v2/Users/5b261bdf");
  *   // Set the JSON payload value.
@@ -227,9 +227,9 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * With these methods, along with the {@code instanceof} keyword, application
  * code can easily and directly handle object representations of SCIM resources.
  * As an example, a service handling client bulk requests may use the following
- * structure. This example does not handle client bulk ID values (see
- * {@link BulkOperation}), and it is intentionally verbose to indicate cases that
- * can occur for all types of requests and responses.
+ * structure. This example does not handle client bulk ID values (see more info
+ * below), and it is intentionally verbose to indicate cases that can occur for
+ * all types of requests and responses.
  * <pre><code>
  *   public BulkResponse processBulkRequest(BulkRequest bulkRequest)
  *   {
@@ -396,7 +396,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *
  * <h2>More About Bulk Requests</h2>
  *
- * Some additional background about bulk requests and how SCIM services may
+ * Some additional background about bulk requests and how SCIM applications may
  * process them are shared below.
  * <ul>
  *   <li> Bulk responses can return fewer results than what the client bulk
@@ -422,8 +422,8 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *   <li> By their nature, bulk requests can quickly become expensive traffic
  *        for a SCIM service to process. As a client, it is important to be
  *        careful about restrictions such as payload sizes and rate limits when
- *        sending bulk requests to a SCIM service. Be prepared to handle
- *        {@link ContentTooLargeException} and {@link RateLimitException} errors.
+ *        sending bulk requests to a SCIM service. Be prepared to handle errors
+ *        like {@link ContentTooLargeException} and {@link RateLimitException}.
  *   <li> As a SCIM service, it is generally a good idea to implement request
  *        limiting on endpoints that facilitate bulk request processing, as
  *        these endpoints can be a potential attack vector. This is crucial for
