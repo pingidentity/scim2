@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v5.1.0 - TBD
-Updated Jackson to 2.20.1.
+Updated Jackson to 2.21.2.
 
 Updated `ErrorResponse.java` to print attributes in an order that is more consistent with the
 example JSON objects presented in RFC 7644. Now, `status` is the last attribute printed.
