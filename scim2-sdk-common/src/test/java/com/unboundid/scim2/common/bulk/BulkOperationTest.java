@@ -363,8 +363,8 @@ public class BulkOperationTest
     BulkOperation opWithInvalidData = BulkOperation.post("/Users", invalidNode);
     assertThatThrownBy(opWithInvalidData::getDataAsScimResource)
         .isInstanceOf(BulkRequestException.class)
-        .hasMessageContaining("A malformed JSON failed to be converted into a")
-        .hasMessageContaining(" SCIM resource.");
+        .hasMessageContaining("Failed to convert a malformed JSON into")
+        .hasMessageContaining("a SCIM resource.");
   }
 
   /**

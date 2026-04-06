@@ -413,7 +413,7 @@ public abstract class BulkOperation
     catch (IllegalArgumentException e)
     {
       throw new BulkRequestException(
-          "A malformed JSON failed to be converted into a SCIM resource.", e);
+          "Failed to convert a malformed JSON into a SCIM resource.", e);
     }
   }
 
@@ -450,7 +450,9 @@ public abstract class BulkOperation
    * This method permanently alters the bulk operation directly, and it is not
    * thread safe.
    *
-   * @param bulkId      The temporary bulk ID value.
+   * @param bulkId      The temporary bulk ID value. For example, to replace all
+   *                    instances of {@code "bulkId:hallmarkCards"}, this string
+   *                    should be set to {@code "hallmarkCards"}.
    * @param realValue   The real value after the resource has been created.
    */
   public void replaceBulkIdValue(@NotNull final String bulkId,
@@ -902,23 +904,11 @@ public abstract class BulkOperation
       return false;
     }
 
-    if (!Objects.equals(method, that.method))
-    {
-      return false;
-    }
-    if (!Objects.equals(path, that.path))
-    {
-      return false;
-    }
-    if (!Objects.equals(bulkId, that.bulkId))
-    {
-      return false;
-    }
-    if (!Objects.equals(version, that.version))
-    {
-      return false;
-    }
-    return Objects.equals(data, that.data);
+    return Objects.equals(method, that.method)
+        && Objects.equals(path, that.path)
+        && Objects.equals(bulkId, that.bulkId)
+        && Objects.equals(version, that.version)
+        && Objects.equals(data, that.data);
   }
 
   /**

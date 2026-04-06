@@ -1048,14 +1048,15 @@ public class JsonUtils
 
   /**
    * Recursively traverses a JsonNode and replaces all text values with the
-   * appropriate new value.
+   * appropriate new value. The replacement is performed left to right, e.g.,
+   * replacing "aa" with "b" in the string "aaa" will result in "ba".
    *
    * @param node      The JsonNode that should be traversed.
-   * @param original  The original string value contained within the JsonNode.
+   * @param oldValue  The original string value contained within the JsonNode.
    * @param newValue  The new value to use as the replacement.
    */
   public static void replaceAllTextValues(@NotNull final JsonNode node,
-                                          @NotNull final String original,
+                                          @NotNull final String oldValue,
                                           @NotNull final String newValue)
   {
     if (node instanceof ObjectNode objectNode)
@@ -1066,16 +1067,16 @@ public class JsonUtils
         if (valueNode.isTextual())
         {
           String text = valueNode.asText();
-          if (text.contains(original))
+          if (text.contains(oldValue))
           {
             // Replace the text node with the updated value
-            objectNode.put(field.getKey(), text.replace(original, newValue));
+            objectNode.put(field.getKey(), text.replace(oldValue, newValue));
           }
         }
         else if (valueNode.isObject() || valueNode.isArray())
         {
           // Recursively resolve nested values.
-          replaceAllTextValues(valueNode, original, newValue);
+          replaceAllTextValues(valueNode, oldValue, newValue);
         }
       }
     }
@@ -1087,15 +1088,15 @@ public class JsonUtils
         if (element.isTextual())
         {
           String text = element.asText();
-          if (text.contains(original))
+          if (text.contains(oldValue))
           {
-            array.set(i, TextNode.valueOf(text.replace(original, newValue)));
+            array.set(i, TextNode.valueOf(text.replace(oldValue, newValue)));
           }
         }
         else if (element.isObject() || element.isArray())
         {
           // Recursively resolve nested values.
-          replaceAllTextValues(element, original, newValue);
+          replaceAllTextValues(element, oldValue, newValue);
         }
       }
     }

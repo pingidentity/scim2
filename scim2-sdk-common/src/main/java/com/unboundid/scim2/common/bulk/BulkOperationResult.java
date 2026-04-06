@@ -573,7 +573,7 @@ public class BulkOperationResult
     catch (IllegalArgumentException e)
     {
       throw new BulkResponseException(
-          "A malformed JSON failed to be converted into a SCIM resource.", e);
+          "Failed to convert a malformed JSON into a SCIM resource.", e);
     }
   }
 
@@ -690,27 +690,12 @@ public class BulkOperationResult
       return false;
     }
 
-    if (!Objects.equals(location, that.location))
-    {
-      return false;
-    }
-    if (!method.equals(that.method))
-    {
-      return false;
-    }
-    if (!Objects.equals(bulkId, that.bulkId))
-    {
-      return false;
-    }
-    if (!Objects.equals(version, that.version))
-    {
-      return false;
-    }
-    if (!status.equals(that.status))
-    {
-      return false;
-    }
-    return Objects.equals(response, that.response);
+    return Objects.equals(location, that.location)
+        && method.equals(that.method)
+        && Objects.equals(bulkId, that.bulkId)
+        && Objects.equals(version, that.version)
+        && status.equals(that.status)
+        && Objects.equals(response, that.response);
   }
 
   /**

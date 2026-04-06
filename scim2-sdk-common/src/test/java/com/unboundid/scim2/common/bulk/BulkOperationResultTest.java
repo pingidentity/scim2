@@ -281,8 +281,8 @@ public class BulkOperationResultTest
     result.setResponse(invalidNode);
     assertThatThrownBy(result::getResponseAsScimResource)
         .isInstanceOf(BulkResponseException.class)
-        .hasMessageContaining("A malformed JSON failed to be converted into a")
-        .hasMessageContaining("SCIM resource.");
+        .hasMessageContaining("Failed to convert a malformed JSON into")
+        .hasMessageContaining("a SCIM resource.");
 
     // An error result should result in an ErrorResponse object.
     BulkOperationResult error = new BulkOperationResult(

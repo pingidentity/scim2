@@ -184,7 +184,7 @@ public class BulkResponse extends BaseScimResource
   }
 
   /**
-   * {@inheritDoc}
+   * Returns an iterator over results contained in this bulk response.
    */
   @Override
   @NotNull

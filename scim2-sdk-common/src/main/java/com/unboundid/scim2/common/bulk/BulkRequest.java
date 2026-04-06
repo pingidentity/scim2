@@ -623,7 +623,9 @@ public class BulkRequest extends BaseScimResource
    * This method permanently alters the bulk request directly, and it is not
    * thread safe.
    *
-   * @param bulkId      The temporary bulk ID value.
+   * @param bulkId      The temporary bulk ID value. For example, to replace all
+   *                    instances of {@code "bulkId:hallmarkCards"}, this string
+   *                    should be set to {@code "hallmarkCards"}.
    * @param realValue   The real value after the resource has been created.
    */
   public void replaceBulkIdValues(@NotNull final String bulkId,
@@ -636,7 +638,7 @@ public class BulkRequest extends BaseScimResource
   }
 
   /**
-   * {@inheritDoc}
+   * Returns an iterator over operations contained in this bulk request.
    */
   @Override
   @NotNull
@@ -664,11 +666,8 @@ public class BulkRequest extends BaseScimResource
       return false;
     }
 
-    if (!Objects.equals(failOnErrors, that.failOnErrors))
-    {
-      return false;
-    }
-    return operations.equals(that.getOperations());
+    return Objects.equals(failOnErrors, that.failOnErrors)
+        && operations.equals(that.getOperations());
   }
 
   /**

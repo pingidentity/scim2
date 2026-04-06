@@ -40,6 +40,7 @@ import java.util.List;
 
 import static com.unboundid.scim2.common.bulk.BulkOperationResult.HTTP_STATUS_CREATED;
 import static com.unboundid.scim2.common.bulk.BulkOperationResult.HTTP_STATUS_NO_CONTENT;
+import static com.unboundid.scim2.common.bulk.BulkOperationResult.HTTP_STATUS_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -166,21 +167,41 @@ public class BulkResponseTest
   @Test
   public void testEquals()
   {
-    BulkOperationResult result = new BulkOperationResult(BulkOpType.DELETE,
+    BulkOperationResult result1 = new BulkOperationResult(BulkOpType.DELETE,
         HTTP_STATUS_NO_CONTENT,
         "https://example.com/v2/Users/fa1afe1",
         null,
-        "qwerty",
+        null,
         "W/\"4weymrEsh5O6cAEK\"");
+    BulkOperationResult result2 = new BulkOperationResult(BulkOpType.PUT,
+        HTTP_STATUS_OK,
+        "https://example.com/v2/Users/5ca1ab1e",
+        null,
+        null,
+        null);
 
-    BulkResponse response = new BulkResponse(result);
+    // Bulk responses should be equal to themselves, as well as other response
+    // objects with the same results.
+    BulkResponse response = new BulkResponse(result1, result2);
+    assertThat(response == response).isTrue();
     assertThat(response.equals(response)).isTrue();
+    BulkResponse response2 = new BulkResponse(result1, result2);
+    assertThat(response == response2).isFalse();
+    assertThat(response.equals(response2)).isTrue();
+    assertThat(response2.equals(response)).isTrue();
+
+    // Null references should never be equivalent.
     assertThat(response.equals(null)).isFalse();
 
     // Bulk responses should not be equivalent if the operations do not match.
     // The hash code should also be different.
-    BulkResponse emptyResponse = new BulkResponse(List.of());
+    BulkResponse emptyResponse = new BulkResponse(result1);
     assertThat(response.equals(emptyResponse)).isFalse();
     assertThat(response.hashCode()).isNotEqualTo(emptyResponse.hashCode());
+
+    // Validate the order of results within a bulk response.
+    BulkResponse differentOrder = new BulkResponse(result2, result1);
+    assertThat(response.equals(differentOrder)).isFalse();
+    assertThat(response.hashCode()).isNotEqualTo(differentOrder.hashCode());
   }
 }
