@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## v5.1.0 - TBD
+Added support for bulk operations, requests, and responses as defined by the SCIM standard. To get
+started with implementing bulk request support for client or server applications, see the
+documentation in the `BulkRequest.java` class, which provides a comprehensive overview of how bulk
+operations are defined and utilized in the SCIM standard. It also includes notes on how to interface
+with the new classes, general structures for handling bulk data, useful utility methods, and more.
+
 Updated Jackson to 2.21.2.
 
 Updated `ErrorResponse.java` to print attributes in an order that is more consistent with the

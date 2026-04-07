@@ -68,12 +68,12 @@ import java.util.Set;
  *  {
  *    "location": "/Users/fa1afe1",
  *    "method": "POST",
+ *    "status": "200",
  *    "response": {
  *      "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
  *      "id": "fa1afe1",
  *      "userName": "Polaroid"
- *    },
- *    "status": "200"
+ *    }
  *  }
  * </pre>
  * <br><br>

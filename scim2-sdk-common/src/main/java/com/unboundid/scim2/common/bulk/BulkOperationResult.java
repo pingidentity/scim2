@@ -32,6 +32,693 @@
 
 package com.unboundid.scim2.common.bulk;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
+import com.unboundid.scim2.common.exceptions.BulkResponseException;
+import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.messages.ErrorResponse;
+import com.unboundid.scim2.common.types.ETagConfig;
+import com.unboundid.scim2.common.utils.BulkStatusDeserializer;
+import com.unboundid.scim2.common.utils.Debug;
+import com.unboundid.scim2.common.utils.DebugType;
+import com.unboundid.scim2.common.utils.JsonUtils;
+
+import java.util.Objects;
+import java.util.logging.Level;
+
+
+/**
+ * This class represents an operation contained within a {@link BulkResponse}.
+ * For an introduction to SCIM bulk processing, see the documentation for
+ * {@link BulkRequest}.
+ * <br><br>
+ *
+ * Both {@link BulkRequest} and {@link BulkResponse} objects contain an
+ * {@code Operations} array, with similar elements contained within them.
+ * However, there are specific restrictions on what fields may be defined for
+ * operations in a request compared to ones in a response. For example, client
+ * bulk POST requests should never have a {@code version} tag set, since a
+ * resource that does not exist cannot have a checksum, but a bulk POST response
+ * may have this field. To help create a distinction between these scenarios,
+ * operations within a bulk request are represented by {@link BulkOperation},
+ * and operations within a bulk response are called "bulk operation results",
+ * represented by this class.
+ * <br><br>
+ *
+ * Bulk operation results contain the following fields:
+ * <ul>
+ *   <li> {@code location}: The location URI for the resource that was targeted.
+ *        This field MUST be present, except in the case that a POST operation
+ *        fails. Since a failure to create a resource means that a URI does not
+ *        exist, this is the only case where the location will be {@code null}.
+ *   <li> {@code method}: The HTTP method that was used for the bulk operation.
+ *   <li> {@code response}: The JSON response body for the write request. If the
+ *        response was successful, this may optionally be {@code null}, but it
+ *        must be present for an error. Null values are permitted so that
+ *        services can avoid sending payloads that exceed size limits.
+ *   <li> {@code status}: The HTTP status code for the operation, e.g.,
+ *        {@code 200 OK}, {@code 404 NOT FOUND}, etc.
+ *   <li> {@code bulkId}: The bulk ID that was provided in the POST request.
+ *   <li> {@code version}: The {@link ETagConfig ETag} version of the resource.
+ * </ul>
+ * <br><br>
+ *
+ * The following is an example of a bulk operation result that corresponds to
+ * a successful user create response:
+ * <pre>
+ * {
+ *   "location": "https://example.com/v2/Users/fa1afe1",
+ *   "method": "POST",
+ *   "bulkId": "originalBulkId",
+ *   "status": "200",
+ *   "response": {
+ *     "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+ *     "id": "fa1afe1",
+ *     "userName": "walker"
+ *   }
+ * }
+ * </pre>
+ *
+ * Bulk operation responses can be created with Java code of the following form.
+ * <pre><code>
+ *   BulkOperation sourceOp = getClientBulkOperation();
+ *   UserResource userResource = new UserResource().setUserName("walker");
+ *   user.setId("fa1afe1");
+ *   BulkOperationResult result = new BulkOperationResult(
+ *       sourceOp,
+ *       BulkOperationResult.HTTP_STATUS_CREATED,
+ *       "https://example.com/v2/Users/fa1afe1");
+ *   result.setResponse(userResource);
+ *
+ *   // If desired, the fields may be set directly.
+ *   BulkOperationResult result = new BulkOperationResult(
+ *       BulkOpType.POST,
+ *       BulkOperationResult.HTTP_STATUS_CREATED,
+ *       "https://example.com/v2/Users/fa1afe1",
+ *       userResource.asGenericScimResource().getObjectNode(),
+ *       "originalBulkId",
+ *       null);
+ * </code></pre>
+ *
+ * Unlike {@link BulkOperation}, this {@link BulkOperationResult} does not use
+ * static helper methods since all result types are formatted the same and have
+ * similar restrictions. There are, however, alternate constructors available
+ * for error responses, which have a separate consistent format based on the
+ * {@link ErrorResponse} object that should be displayed. An example error is
+ * shown below:
+ * <pre>
+ * {
+ *   "method": "POST",
+ *   "status": "400",
+ *   "response": {
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+ *     "scimType": "invalidSyntax",
+ *     "detail": "Request is unparsable or violates the schema.",
+ *     "status": "400"
+ *   }
+ * }
+ * </pre>
+ *
+ * Bulk response errors are required to be displayed in the {@code response}
+ * field so that clients can understand the cause of the failure. The following
+ * Java code may be used to construct bulk operation result errors:
+ * <pre><code>
+ *   // The location is always null for POST request failures.
+ *   BulkOperation source = getBulkOperation();
+ *   BadRequestException e = BadRequestException.invalidSyntax(
+ *       "Request is unparsable or violates the schema.");
+ *   BulkOperationResult postResult = new BulkOperationResult(e, source, null);
+ *
+ *   // Provide the location for all other operation types.
+ *   ForbiddenException fe = new ForbiddenException("User is unauthorized.");
+ *   String location = "https://example.com/v2/Users/fa1afe1";
+ *   BulkOperationResult result =
+ *       new BulkOperationResult(fe, BulkOpType.PUT, location);
+ * </code></pre>
+ *
+ * @since 5.1.0
+ */
+@SuppressWarnings("JavadocLinkAsPlainText")
+@JsonPropertyOrder({ "location", "method", "bulkId", "version", "status",
+                     "response" })
 public class BulkOperationResult
 {
+  /**
+   * Represents the status code for {@code HTTP 200 OK}.
+   */
+  @NotNull public static final String HTTP_STATUS_OK = "200";
+
+  /**
+   * Represents the status code for {@code HTTP 201 CREATED}.
+   */
+  @NotNull public static final String HTTP_STATUS_CREATED = "201";
+
+  /**
+   * Represents the status code for {@code HTTP 204 NO_CONTENT}.
+   */
+  @NotNull public static final String HTTP_STATUS_NO_CONTENT = "204";
+
+  /**
+   * The location of the resource referenced by this bulk operation result. This
+   * will only be {@code null} for client POST request failures, since there is
+   * not an existing resource to reference.
+   */
+  @Nullable
+  private String location;
+
+  /**
+   * This field represents the HTTP operation type (e.g., POST).
+   */
+  @NotNull
+  private final BulkOpType method;
+
+  /**
+   * The bulk ID of the original bulk operation.
+   */
+  @Nullable
+  private String bulkId;
+
+  /**
+   * The optional version tag, which can be used if the SCIM service provider
+   * supports ETag versioning. See {@link ETagConfig} for more information.
+   */
+  @Nullable
+  private String version;
+
+  /**
+   * The status code to return for the write request, e.g., {@code "200"}
+   * representing a {@code 200 OK} response for a successful modification.
+   */
+  @NotNull
+  @JsonDeserialize(using = BulkStatusDeserializer.class)
+  private String status = "";
+
+  /**
+   * The status value as an integer.
+   */
+  private int statusInt;
+
+  /**
+   * The JSON data representing the response for the individual write request.
+   * The form of this value depends on the nature of the bulk operation result:
+   * <ul>
+   *   <li> For unsuccessful responses, this will return the error response,
+   *        represented as an {@link ErrorResponse} object.
+   *   <li> For successful {@code DELETE} operations, this will be {@code null}.
+   *   <li> For successful responses, this may still be {@code null} since it is
+   *        an optional field for services to populate. Otherwise, it will
+   *        contain the updated resource.
+   * </ul>
+   */
+  @Nullable
+  private ObjectNode response;
+
+  /**
+   * Constructs an entry to be contained in a {@link BulkResponse} based on the
+   * initial bulk operation that requested the update.
+   * <br><br>
+   *
+   * Since bulk IDs should only be used for POST requests, this constructor will
+   * only copy the bulk ID from the {@code operation} if it refers to a POST.
+   *
+   * @param operation The source bulk operation.
+   * @param status    The HTTP response status code for the update, e.g., "200".
+   * @param location  The location URI of the modified resource. This must not
+   *                  be {@code null}, except in the case of a POST failure.
+   *
+   * @throws BulkResponseException  If the location is {@code null} for a
+   *                                response that is not a POST failure.
+   */
+  public BulkOperationResult(@NotNull final BulkOperation operation,
+                             @NotNull final String status,
+                             @Nullable final String location)
+      throws BulkResponseException
+  {
+    // The location is never guaranteed to be present in the operation, either
+    // in the 'path' (which could be '/Users' for POST) or the 'data' (which
+    // may be null). Thus, we must explicitly request it as a parameter.
+    this(operation.getMethod(),
+        status,
+        location,
+        null,
+        operation.getMethod() == BulkOpType.POST ? operation.getBulkId() : null,
+        null);
+  }
+
+  /**
+   * Constructs an entry to be contained in a {@link BulkResponse}.
+   *
+   * @param method    The HTTP method (e.g., POST).
+   * @param status    A string indicating the HTTP response code, e.g., "200".
+   * @param response  The JSON data indicating the response for the operation.
+   *                  This may optionally be {@code null} if the status is a
+   *                  {@code 2xx} successful response.
+   * @param location  The location URI of the modified resource. This must not
+   *                  be {@code null}, except in the case of a POST failure.
+   * @param bulkId    The bulk ID specified by the client, if it exists.
+   * @param version   The ETag version of the resource, if the service provider
+   *                  supports it.
+   *
+   * @throws BulkResponseException  If the location is {@code null} for a
+   *                                response that is not a POST failure.
+   */
+  @JsonCreator
+  public BulkOperationResult(
+      @NotNull @JsonProperty(value = "method") final BulkOpType method,
+      @NotNull @JsonProperty(value = "status") final String status,
+      @Nullable @JsonProperty(value = "location") final String location,
+      @Nullable @JsonProperty(value = "response") final ObjectNode response,
+      @Nullable @JsonProperty(value = "bulkId") final String bulkId,
+      @Nullable @JsonProperty(value = "version") final String version)
+          throws BulkResponseException
+  {
+    this.method = Objects.requireNonNull(method);
+    this.location = location;
+    this.response = response;
+    this.version = version;
+    setBulkId(bulkId);
+    setStatus(status);
+
+    boolean isUnsuccessfulPost =
+        method == BulkOpType.POST && (isClientError() || isServerError());
+    if (location == null && !isUnsuccessfulPost)
+    {
+      throw new BulkResponseException(
+          "The 'location' of a BulkOperationResult must be defined, with the"
+              + " exception of unsuccessful POST requests."
+      );
+    }
+  }
+
+  /**
+   * Constructs a bulk operation result that represents an error. See the
+   * class-level documentation for an example.
+   *
+   * @param scimException   The SCIM error that will be displayed in the
+   *                        {@code response} field.
+   * @param operation       The bulk operation that was attempted.
+   * @param location        The URI of the resource targeted by the bulk
+   *                        operation. This field will be ignored for POST
+   *                        operations, as the resource will not exist. This
+   *                        value may only be {@code null} for failed POSTs.
+   */
+  public BulkOperationResult(@NotNull final ScimException scimException,
+                             @NotNull final BulkOperation operation,
+                             @Nullable final String location)
+  {
+    this(scimException, operation.getMethod(), location);
+
+    // Bulk IDs should only be handled for POST requests.
+    String bulkVal = (method == BulkOpType.POST) ? operation.getBulkId() : null;
+    setBulkId(bulkVal);
+  }
+
+  /**
+   * Constructs a bulk operation result that represents an error.
+   *
+   * @param scimException   The SCIM error that will be displayed in the
+   *                        {@code response} field.
+   * @param opType          The type of the bulk operation.
+   * @param location        The URI of the resource targeted by the bulk
+   *                        operation. This field will be ignored for POST
+   *                        operations, as the resource will not exist. This
+   *                        value may only be {@code null} for failed POSTs.
+   */
+  public BulkOperationResult(@NotNull final ScimException scimException,
+                             @NotNull final BulkOpType opType,
+                             @Nullable final String location)
+  {
+    this(opType,
+        scimException.getScimError().getStatus().toString(),
+        (opType == BulkOpType.POST) ? null : location,
+        JsonUtils.valueToNode(scimException.getScimError()),
+        null,
+        null);
+  }
+
+  /**
+   * Sets the {@code location} field for this bulk operation result. For
+   * example, for a bulk operation result that created a resource, the location
+   * could take the form of {@code https://example.com/v2/fa1afe1}.
+   * <br><br>
+   *
+   * This may only be {@code null} for client POST request failures, since there
+   * is not an existing resource to reference.
+   *
+   * @param location  The new value for the location.
+   * @return  This bulk operation result.
+   */
+  @NotNull
+  public BulkOperationResult setLocation(@Nullable final String location)
+  {
+    if (method != BulkOpType.POST)
+    {
+      Objects.requireNonNull(location);
+    }
+
+    this.location = location;
+    return this;
+  }
+
+  /**
+   * Sets the bulk ID of this bulk operation result.
+   *
+   * @param bulkId  The bulk ID value. This BulkOperationResult's bulk ID should
+   *                reflect the bulk ID that was present on the original client
+   *                {@link BulkOperation}.
+   * @return  This bulk operation result.
+   */
+  @NotNull
+  public BulkOperationResult setBulkId(@Nullable final String bulkId)
+  {
+    this.bulkId = bulkId;
+    return this;
+  }
+
+  /**
+   * Sets the ETag version of this bulk operation result.
+   *
+   * @param version  The version tag to use.
+   * @return         This bulk operation result.
+   */
+  @NotNull
+  public BulkOperationResult setVersion(@Nullable final String version)
+  {
+    this.version = version;
+    return this;
+  }
+
+  /**
+   * Sets the response of this bulk operation result.
+   *
+   * @param response  The JSON payload representing the response to the
+   *                  individual client {@link BulkOperation}.
+   * @return  This bulk operation result.
+   */
+  @NotNull
+  @JsonSetter
+  public BulkOperationResult setResponse(@Nullable final ObjectNode response)
+  {
+    this.response = response;
+    return this;
+  }
+
+  /**
+   * Sets the response of this bulk operation result.
+   *
+   * @param response  The resource representing the JSON payload response to
+   *                  return to the client.
+   * @return  This bulk operation result.
+   */
+  @NotNull
+  public BulkOperationResult setResponse(@Nullable final ScimResource response)
+  {
+    ObjectNode node = (response == null) ?
+        null : response.asGenericScimResource().getObjectNode();
+    return setResponse(node);
+  }
+
+  /**
+   * Sets the HTTP status code representing the result after the client
+   * {@link BulkOperation} was processed.
+   *
+   * @param status  The HTTP status code.
+   * @return  This bulk operation result.
+   *
+   * @throws BulkResponseException  If the provided value was not an integer.
+   */
+  @NotNull
+  @JsonSetter
+  public BulkOperationResult setStatus(@NotNull final String status)
+      throws BulkResponseException
+  {
+    Objects.requireNonNull(status);
+
+    try
+    {
+      Integer intValue = Integer.parseInt(status);
+      return setStatus(intValue);
+    }
+    catch (NumberFormatException e)
+    {
+      throw new BulkResponseException(
+          "Could not convert '" + status + "' to an integer HTTP status code.");
+    }
+  }
+
+  /**
+   * Sets the HTTP status code representing the result code for the original
+   * client {@link BulkOperation}.
+   *
+   * @param status  The HTTP status code.
+   * @return  This bulk operation result.
+   */
+  @NotNull
+  public BulkOperationResult setStatus(@NotNull final Integer status)
+  {
+    this.status = status.toString();
+    statusInt = status;
+    return this;
+  }
+
+  /**
+   * Retrieves the location of this bulk operation result.
+   *
+   * @return  The bulk operation result location.
+   */
+  @Nullable
+  public String getLocation()
+  {
+    return location;
+  }
+
+  /**
+   * Fetches the method of this bulk operation result (e.g., {@code POST}).
+   *
+   * @return  The bulk operation result method.
+   */
+  @NotNull
+  public BulkOpType getMethod()
+  {
+    return method;
+  }
+
+  /**
+   * Fetches the bulk ID of this bulk operation result.
+   *
+   * @return  The bulk ID.
+   */
+  @Nullable
+  public String getBulkId()
+  {
+    return bulkId;
+  }
+
+  /**
+   * Fetches the ETag version of this bulk operation result.
+   *
+   * @return  The bulk operation result version.
+   */
+  @Nullable
+  public String getVersion()
+  {
+    return version;
+  }
+
+  /**
+   * Fetches the response of this bulk operation result. This will be
+   * {@code null} for deletes, and may optionally be {@code null} for other
+   * successful responses, but will not be {@code null} for error responses.
+   *
+   * @return  The HTTP response for the bulk operation result, or {@code null}
+   *          if it is not available.
+   */
+  @Nullable
+  public ObjectNode getResponse()
+  {
+    return response;
+  }
+
+  /**
+   * Fetches the response of this BulkOperationResult as a {@link ScimResource}
+   * based POJO. See {@link BulkOperation#getDataAsScimResource()} for more
+   * information. Note that this method will never return a
+   * {@code PatchRequest}, unlike the variant in {@code BulkOperation}.
+   *
+   * @return  The bulk operation result response, or {@code null} if there was
+   *          no response.
+   * @throws BulkResponseException  If an error occurs while converting the
+   *                                object into a ScimResource type.
+   */
+  @Nullable
+  @JsonIgnore
+  public ScimResource getResponseAsScimResource()
+      throws BulkResponseException
+  {
+    try
+    {
+      return BulkResourceMapper.asScimResource(response);
+    }
+    catch (IllegalArgumentException e)
+    {
+      throw new BulkResponseException(
+          "Failed to convert a malformed JSON into a SCIM resource.", e);
+    }
+  }
+
+  /**
+   * Indicates whether the {@code status} represents an HTTP 2xx successful
+   * response code.
+   *
+   * @return  A boolean indicating a success.
+   */
+  @JsonIgnore
+  public boolean isSuccess()
+  {
+    return statusInt >= 200 && statusInt < 300;
+  }
+
+  /**
+   * Indicates whether the {@code status} represents an HTTP 4xx client error
+   * response code.
+   *
+   * @return  A boolean indicating an error.
+   */
+  @JsonIgnore
+  public boolean isClientError()
+  {
+    return statusInt >= 400 && statusInt < 500;
+  }
+
+  /**
+   * Indicates whether the {@code status} represents an HTTP 5xx server error
+   * response code.
+   *
+   * @return  A boolean indicating an error.
+   */
+  @JsonIgnore
+  public boolean isServerError()
+  {
+    return statusInt >= 500 && statusInt < 600;
+  }
+
+  /**
+   * Fetches the status of this bulk operation result.
+   *
+   * @return  The bulk operation result status.
+   */
+  @NotNull
+  public String getStatus()
+  {
+    return status;
+  }
+
+  /**
+   * Fetches the numerical value of {@link #getStatus()}.
+   *
+   * @return  The bulk operation result status as an integer.
+   */
+  @JsonIgnore
+  public int getStatusInt()
+  {
+    return statusInt;
+  }
+
+  /**
+   * When deserializing a JSON into this class, there's a possibility that an
+   * unknown attribute is contained within the JSON. This method captures
+   * attempts to set undefined attributes and ignores them in the interest of
+   * preventing JsonProcessingException errors. This method should only be
+   * called by Jackson.
+   *
+   * @param key           The unknown attribute name.
+   * @param ignoredValue  The value of the attribute.
+   */
+  @JsonAnySetter
+  protected void setAny(@NotNull final String key,
+                        @NotNull final JsonNode ignoredValue)
+  {
+    // The value is not logged, since it's not needed and may contain PII.
+    Debug.debug(Level.WARNING, DebugType.OTHER,
+        "Attempted setting an undefined attribute: " + key);
+  }
+
+  @Override
+  @NotNull
+  public String toString()
+  {
+    try
+    {
+      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+          .writeValueAsString(this);
+    }
+    catch (JsonProcessingException e)
+    {
+      // This should never happen.
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Indicates whether the provided object is equal to this bulk operation
+   * result.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this bulk
+   *            operation result, or {@code false} if not.
+   */
+  @Override
+  public boolean equals(@Nullable final Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+    if (!(o instanceof BulkOperationResult that))
+    {
+      return false;
+    }
+
+    return Objects.equals(location, that.location)
+        && method.equals(that.method)
+        && Objects.equals(bulkId, that.bulkId)
+        && Objects.equals(version, that.version)
+        && status.equals(that.status)
+        && Objects.equals(response, that.response);
+  }
+
+  /**
+   * Retrieves a hash code for this bulk operation result.
+   *
+   * @return  A hash code for this bulk operation result.
+   */
+  @Override
+  public int hashCode()
+  {
+    return Objects.hash(location, method, bulkId, version, status, response);
+  }
+
+  /**
+   * Provides another instance of this bulk operation result.
+   *
+   * @return  A copy of this BulkOperationResult.
+   */
+  @NotNull
+  public BulkOperationResult copy()
+  {
+    ObjectNode responseCopy = (response == null) ? null : response.deepCopy();
+    return new BulkOperationResult(
+        method, status, location, responseCopy, bulkId, version);
+  }
 }
