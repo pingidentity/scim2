@@ -340,8 +340,8 @@ public class BulkOperationResult
     this(scimException, operation.getMethod(), location);
 
     // Bulk IDs should only be handled for POST requests.
-    String bulkId = (method == BulkOpType.POST) ? operation.getBulkId() : null;
-    setBulkId(bulkId);
+    String bulkVal = (method == BulkOpType.POST) ? operation.getBulkId() : null;
+    setBulkId(bulkVal);
   }
 
   /**
