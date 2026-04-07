@@ -94,8 +94,8 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *     "https://example.com/v2/Users/fa1afe1",
  *     null,
  *     null,
- *     "W/\"4weymrEsh5O6cAEK\"");
- *
+ *     "W/\"4weymrEsh5O6cAEK\""
+ *   );
  *   result.setResponse(new UserResource().setUserName("Alice"));
  *   BulkResponse response = new BulkResponse(result);
  * </code></pre>

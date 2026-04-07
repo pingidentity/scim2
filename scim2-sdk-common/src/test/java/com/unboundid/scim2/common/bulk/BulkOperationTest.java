@@ -313,6 +313,7 @@ public class BulkOperationTest
     );
     BulkOperation bulkPatch = BulkOperation.patch("/Users/userID", patchList);
     assertThat(bulkPatch.getPatchOperationList()).isEqualTo(patchList);
+    assertThat(bulkPatch.getPatchOperationList() != patchList).isTrue();
 
     // The method should only be allowed for PATCH operations.
     ObjectNode node = JsonUtils.getJsonNodeFactory().objectNode();

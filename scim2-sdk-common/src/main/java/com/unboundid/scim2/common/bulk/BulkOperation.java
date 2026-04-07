@@ -436,8 +436,8 @@ public abstract class BulkOperation
 
     // This is not a BulkRequestException since it cannot occur during
     // deserialization.
-    throw new IllegalStateException("Attempted fetching patch data for a '"
-        + method + "' bulk operation.");
+    throw new IllegalStateException(
+        "Cannot fetch patch data for a '" + method + "' bulk operation.");
   }
 
   /**
@@ -875,8 +875,8 @@ public abstract class BulkOperation
   {
     try
     {
-      var objectWriter = JsonUtils.getObjectWriter();
-      return objectWriter.withDefaultPrettyPrinter().writeValueAsString(this);
+      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+          .writeValueAsString(this);
     }
     catch (JsonProcessingException e)
     {

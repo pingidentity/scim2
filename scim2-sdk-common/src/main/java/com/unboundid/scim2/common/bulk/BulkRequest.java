@@ -64,13 +64,13 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * <h2>SCIM 2 Bulk Requests and Responses</h2>
  *
  * Issuing a REST API call always incurs network processing overhead, namely DNS
- * resolution, TCP handshakes and termination, and TLS negotiation. This is
- * necessary work for all API calls, but can become expensive in cases where a
- * client anticipates sending large amounts of traffic (e.g., on the order of
- * millions of requests). A SCIM bulk request is an optimization that combines
- * multiple write requests into a single API call, minimizing the number of
- * times that overhead costs are paid by both the client and server. The
- * following documentation discusses some key points on utilizing this class
+ * resolution, TCP handshakes and termination, TLS negotiation, and HTTP header
+ * handling. This is necessary work for all API calls, but can become expensive
+ * in cases where a client anticipates sending large amounts of traffic (e.g.,
+ * on the order of millions of requests). A SCIM bulk request is an optimization
+ * that combines multiple write requests into a single API call, minimizing the
+ * number of times that overhead costs are paid by both the client and server.
+ * The following documentation discusses some key points on utilizing this class
  * to support bulk workflows. For further background, see
  * <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.7">
  * RFC 7644</a>.
@@ -169,7 +169,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * that would be seen from a typical SCIM POST request to the {@code /Users}
  * endpoint. Note that the SCIM standard states that the {@code response} field
  * is always defined with information in the event of an error, but successful
- * responses may omit the value to reduce the size of the response.
+ * responses may omit the value to reduce the size of the bulk payload response.
  * <br><br>
  *
  * To create the above bulk request and response, the following Java code may
@@ -202,6 +202,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *
  *   BulkResponse response = new BulkResponse(failedResult, successResult);
  * </code></pre>
+ * <br><br>
  *
  * <h2>Handling Bulk Request and Response Data</h2>
  *
@@ -228,8 +229,8 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * code can easily and directly handle object representations of SCIM resources.
  * As an example, a service handling client bulk requests may use the following
  * structure. This example does not handle client bulk ID values (see more info
- * below), and it is intentionally verbose to indicate cases that can occur for
- * all types of requests and responses.
+ * below), and is intentionally verbose to indicate cases that can occur for all
+ * types of requests and responses.
  * <pre><code>
  *   public BulkResponse processBulkRequest(BulkRequest bulkRequest)
  *   {
@@ -367,9 +368,10 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * used to help with this processing. After an operation (e.g., creating a user)
  * has completed successfully, all other operations that reference the bulk ID
  * can be updated to start using the real {@code id} of the resource once it is
- * available. Note that this directly modifies the operations contained within
- * the bulk request to avoid repeatedly duplicating bulk objects in memory, and
- * this method is not thread safe.
+ * available, as seen in the example code below. Note that this implementation
+ * directly modifies the operations contained within the bulk request to avoid
+ * repeatedly duplicating bulk objects in memory, and this method is not thread
+ * safe.
  * <pre><code>
  *   BulkOperation op;
  *   BulkOperationResult result;
@@ -382,6 +384,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *     bulkRequest.replaceBulkIdValues(bulkId, createdResource.getId());
  *   }
  * </code></pre>
+ * <br><br>
  *
  * One complication with bulk IDs is that it can be possible to create circular
  * dependencies. If a circular reference is contained within a request via
@@ -393,6 +396,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * RFC 7644 Section 3.7.1</a>. Note that if a SCIM service allows creating loops
  * in the graph representation of their groups, the linked example can be
  * considered a valid circular dependency.
+ * <br><br>
  *
  * <h2>More About Bulk Requests</h2>
  *
@@ -413,12 +417,11 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *        and the same stateful result is achieved..."
  *   <li> By default, RFC 7644 states that SCIM services "MUST continue
  *        performing as many changes as possible and disregard partial
- *        failures". In other words, bulk requests must attempt to process as
- *        many of the bulk operations as possible, even if failures occur for
- *        some of the bulk operations. As stated above, clients may override
- *        this behavior by setting the {@code failOnErrors} field.
- *   <li> Bulk requests are not atomic. Successful updates will always be
- *        applied until the optional {@code failOnErrors} threshold is reached.
+ *        failures". In other words, services must attempt to process all bulk
+ *        operations within a request, even if some failures occur. As stated
+ *        above, clients may override this behavior with {@code failOnErrors}.
+ *   <li> Bulk requests are not atomic. Clients should be prepared to handle
+ *        cases where a subset (or all) bulk operations failed.
  *   <li> By their nature, bulk requests can quickly become expensive traffic
  *        for a SCIM service to process. As a client, it is important to be
  *        careful about restrictions such as payload sizes and rate limits when

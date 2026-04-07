@@ -340,8 +340,8 @@ public class BulkOperationResult
     this(scimException, operation.getMethod(), location);
 
     // Bulk IDs should only be handled for POST requests.
-    String bid = (method == BulkOpType.POST) ? operation.getBulkId() : null;
-    setBulkId(bid);
+    String bulkId = (method == BulkOpType.POST) ? operation.getBulkId() : null;
+    setBulkId(bulkId);
   }
 
   /**
@@ -660,8 +660,8 @@ public class BulkOperationResult
   {
     try
     {
-      var objectWriter = JsonUtils.getObjectWriter();
-      return objectWriter.withDefaultPrettyPrinter().writeValueAsString(this);
+      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+          .writeValueAsString(this);
     }
     catch (JsonProcessingException e)
     {
