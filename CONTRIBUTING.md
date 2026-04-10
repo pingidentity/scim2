@@ -8,7 +8,13 @@ Thanks for taking the time to contribute!
 
 #### Before submitting a bug report
 
-It can be helpful to review the documentation and examples, including the [Javadocs](https://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent/) and the [wiki](https://github.com/pingidentity/scim2/wiki). It's also a good idea to search the [issue tracker](https://github.com/pingidentity/scim2/issues) to see if your issue or one similar to it has already been reported.
+It can be helpful to review the documentation and examples. Please check the following before opening an issue:
+* Read through the [FAQ](https://github.com/pingidentity/scim2/wiki/Common-Problems-and-FAQ) to check if your issue or
+  question has already been addressed.
+* Check the [Javadocs](https://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent/) and the
+  [wiki](https://github.com/pingidentity/scim2/wiki) to ensure the behavior is likely not intentional.
+* It's also a good idea to search the [issue tracker](https://github.com/pingidentity/scim2/issues) to see if your issue
+  or one similar to it has already been reported.
 
 #### How do I submit a bug report?
 
