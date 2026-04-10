@@ -24,8 +24,8 @@ different SCIM services can have variance by enforcing their own constraints, bu
 common ground.
 
 ## Advantages of the UnboundID SCIM 2 SDK
-The UnboundID SCIM 2 SDK provides many strong benefits for applications that need support for
-SCIM 2.0:
+The UnboundID SCIM 2 SDK provides many strong benefits for applications that need to communicate
+with SCIM 2.0 clients or servers:
 
 * Full support for the SCIM 2.0 protocol as defined by the latest specification. This includes
   support for PATCH operations, filter processing, bulk operations, and cursor-based pagination.
@@ -39,7 +39,7 @@ SCIM 2.0:
   [generic JSON data](https://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent/latest/com/unboundid/scim2/common/GenericScimResource.html),
   even when there is not a clear model class or strong schema.
 * An extendable framework that allows defining custom resource types by
-  [extending model classes](https://github.com/pingidentity/scim2/wiki/Common-Problems-and-FAQ#scim-service-provider-has-special-users).
+  [extending core model classes](https://github.com/pingidentity/scim2/wiki/Common-Problems-and-FAQ#scim-service-provider-has-special-users).
 * Extensive [documentation](https://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent/latest/index.html)
   that thoroughly explains SCIM concepts and semantics, such as
   [service provider configuration](https://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent/latest/com/unboundid/scim2/common/types/ServiceProviderConfigResource.html)
@@ -177,16 +177,13 @@ If desired, the code styling rules enforced by Checkstyle can be ignored with th
 `-Dcheckstyle.skip=true` flag.
 
 ## Nullability Annotations
-Every input parameter, member variable, and method return value in this library is labelled with the
+As stated above, all inputs, member variables, and return values in this library are labelled with
 `com.unboundid.scim2.common.annotations.Nullable` and `com.unboundid.scim2.common.annotations.NotNull`
-annotations. For example, the following method in the `UserResource.java` class accepts `null`
-username values, and will never return a `null` object:
+annotations. To showcase an example, the following method in the `UserResource.java` class accepts
+`null` username values, and will never return a `null` object:
 ```java
   @NotNull
-  public UserResource setUserName(@Nullable final String userName)
-  {
-
-  }
+  public UserResource setUserName(@Nullable final String userName);
 ```
 These annotations can be seen in the Javadocs. This aims to provide insight when invoking SCIM SDK
 library methods, help interface with languages like Kotlin (which has built-in null types for
@@ -208,4 +205,4 @@ licenses:
 * The GNU Lesser General Public License version 2.1 ([LGPLv2.1](resource/LICENSE-LGPLv2.1.txt))
 * The legacy [UnboundID Free Use License](resource/LICENSE-UnboundID-SCIM2.txt)
 
-For further background, see the [LICENSE.md](LICENSE.md) file.
+For further background on project licensing, see the [LICENSE.md](LICENSE.md) file.
