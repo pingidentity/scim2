@@ -167,11 +167,11 @@ For detailed information about using the UnboundID SCIM SDK, including more exam
 
 ## Building
 This project is built with Maven. To build the source code contained in this repository, run:
-```
+```bash
 # Linux or Mac
 ./mvnw clean package
 
-# Windows:
+# Windows
 mvnw.cmd clean package
 ```
 If desired, the code styling rules enforced by Checkstyle can be ignored with the
