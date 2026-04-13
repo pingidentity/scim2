@@ -10,18 +10,18 @@ filtering, request handling, generating error responses, and more. It is complet
 source, and is developed by [Ping Identity Corporation](https://www.pingidentity.com/).
 
 
-## What is SCIM?
+## What Is SCIM?
 [SCIM](https://www.simplecloud.info), or _System for Cross-domain Identity Management_, is an IETF
 standard that defines an extensible schema mechanism and REST API for **managing users and other
 identity data**. SCIM is used by a variety of vendors — including Salesforce, Microsoft,
 Cisco, Sailpoint, and Ping Identity — for a variety of purposes, including user provisioning,
 directory services, attribute exchange, and more.
 
-SCIM is an open standard that is interoperable, which means that SCIM clients should be able to
-communicate with any SCIM 2-based service. This avoids the need to accommodate multiple APIs to
+SCIM is an open standard that is interoperable, which means that SCIM 2 clients should be able to
+communicate with any SCIM 2 service. This avoids the need to accommodate multiple APIs to
 communicate with different platforms, and also avoids vendor lock-in concerns. In practice,
-different SCIM services can have variance by enforcing their own constraints, but still provide much
-common ground.
+different SCIM services can have slight variance in behavior by enforcing their own constraints, but
+still provide much common ground.
 
 ## Advantages of the UnboundID SCIM 2 SDK
 The UnboundID SCIM 2 SDK provides many strong benefits for applications that need to communicate
@@ -57,20 +57,21 @@ This library also depends on the Jackson 2.x libraries for JSON serialization an
 This library is separated into multiple modules to target specific use cases, and consists of the
 following components:
 
-| Component name          | What it is                                                                                | Who needs it                                                                |
-|-------------------------|-------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
-| `scim2-sdk-common`      | This package contains core SCIM model classes, parsers, filter and PATCH processing, etc. | Developers looking for model classes, utilities, or general SCIM support.   |
-| `scim2-sdk-client`      | This package contains classes to help create SCIM 2 client applications.                  | SCIM client developers using JAX-RS.                                        |
-| `scim2-sdk-server`      | This package contains classes to help create SCIM 2 service providers.                    | SCIM service developers using JAX-RS. Spring libraries should use `common`. |
-| `scim2-ubid-extensions` | This package contains classes representing Ping Identity extensions to the SCIM standard. | Developers using features specific to Ping Identity services.               |
-| `scim2-parent`          | This package contains all of the dependencies listed above.                               | Anyone who needs all of the above.                                          |
+| Component name          | What it is                                                                                | Who needs it                                                               |
+|-------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| `scim2-sdk-common`      | This package contains core SCIM model classes, parsers, filter and PATCH processing, etc. | Developers looking for model classes, utilities, or general SCIM support.  |
+| `scim2-sdk-client`      | This package contains classes to help create SCIM 2 client applications.                  | SCIM client developers using JAX-RS.                                       |
+| `scim2-sdk-server`      | This package contains classes to help create SCIM 2 service providers.                    | SCIM service developers using JAX-RS. Spring projects should use `common`. |
+| `scim2-ubid-extensions` | This package contains classes representing Ping Identity extensions to the SCIM standard. | Developers using features specific to Ping Identity services.              |
+| `scim2-parent`          | This package contains all of the dependencies listed above.                               | Anyone who needs all of the above.                                         |
 
 More information on each section:
 * `scim2-sdk-common`: This package contains the core SCIM constructs and utility classes. This
   contains logic for SCIM filtering, performing updates/searches on JSON data, bulk request
   processing, and more. It may be used standalone without the other components.
-* `scim2-sdk-client`: This component helps create SCIM 2 client applications using JAX-RS.
-  For more information, see the [wiki](https://github.com/pingidentity/scim2/wiki/JAX-RS-Client-examples).
+* `scim2-sdk-client`: This component helps create SCIM 2 client applications using
+  [JAX-RS](https://projects.eclipse.org/projects/ee4j.rest). For more information, see the
+  [wiki](https://github.com/pingidentity/scim2/wiki/JAX-RS-Client-examples).
 * `scim2-sdk-server`: This component helps create SCIM 2 services using JAX-RS. If you are not using
   JAX-RS and are using another solution (e.g., Spring), the `scim2-sdk-common` component is
   generally a better choice and may be used directly.
@@ -78,7 +79,7 @@ More information on each section:
   SCIM extensions. This component is subject to API changes and should be considered experimental.
 * `scim2-parent`: The parent module for all of the other components.
 
-## How to get it
+## How to Get It
 The UnboundID SCIM SDK is available from Maven Central and can be included in your product like any other
 Maven dependency. Check Maven Central for the latest available versions.
 ```xml
@@ -91,7 +92,7 @@ Maven dependency. Check Maven Central for the latest available versions.
 
 You may also download SCIM SDK builds from the [Releases](https://github.com/pingidentity/scim2/releases) page.
 
-## How to use it
+## How to Use It
 The primary point of entry for a client is the `ScimService` class, which represents a SCIM service
 provider. This class acts as a wrapper for a [JAX-RS](https://projects.eclipse.org/projects/ee4j.rest)
 client instance, providing methods for building and making requests.
@@ -152,7 +153,7 @@ scimService.modifyRequest("Users", user.getId())
 
 // Search for users with the same last name as our user. Fetch the first page
 // of results, which should have a maximum of five resources on the page. The
-// service should only return the value of the  "name" attribute.
+// service should only return the value of the "name" attribute.
 ListResponse<UserResource> searchResponse =
     scimService.searchRequest("Users")
         .filter(Filter.eq("name.familyName", user.getName().getFamilyName()))
@@ -182,8 +183,8 @@ As stated above, all inputs, member variables, and return values in this library
 annotations. To showcase an example, the following method in the `UserResource.java` class accepts
 `null` username values, and will never return a `null` object:
 ```java
-  @NotNull
-  public UserResource setUserName(@Nullable final String userName);
+@NotNull
+public UserResource setUserName(@Nullable final String userName);
 ```
 These annotations can be seen in the Javadocs. This aims to provide insight when invoking SCIM SDK
 library methods, help interface with languages like Kotlin (which has built-in null types for
@@ -193,7 +194,7 @@ SDK library. To configure/integrate this into your environment, view the documen
 of choice (e.g., [IntelliJ IDEA](https://www.jetbrains.com/help/idea/annotating-source-code.html#configure-nullability-annotations),
 [Eclipse](https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftask-using_null_annotations.htm)).
 
-## Reporting issues
+## Reporting Issues
 Please report bug reports and enhancement requests through this project's [issue tracker](https://github.com/pingidentity/scim2/issues). See the [contribution guidelines](CONTRIBUTING.md) for more information.
 Note that Ping Identity does not accept third-party code contributions.
 
