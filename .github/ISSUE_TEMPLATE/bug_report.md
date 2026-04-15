@@ -18,5 +18,5 @@ A clear and concise description of what you expected to happen.
 
 **Additional context**
 Add any other context about the problem here. For example:
- - Java version: [e.g. Java 8]
- - SCIM 2 SDK version: [e.g. 2.3.7, master branch]
+ - Java version: [e.g., Java 25]
+ - SCIM 2 SDK version: [e.g., 5.0.0, master branch]
