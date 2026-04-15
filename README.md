@@ -121,11 +121,13 @@ UserResource user = new UserResource()
     .setPassword("secret");
 user.setName(new Name()
     .setGivenName("Barbara")
-    .setFamilyName("Jensen"));
+    .setFamilyName("Jensen")
+);
 user.setEmails(new Email()
     .setType("home")
     .setPrimary(true)
-    .setValue("babs@example.com"));
+    .setValue("babs@example.com")
+);
 user = scimService.create("Users", user);
 
 // Retrieve the latest version of the user as a UserResource, and
