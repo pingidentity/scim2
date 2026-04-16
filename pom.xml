@@ -84,7 +84,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compileSource>17</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
-    <jackson.version>2.21.2</jackson.version>
+    <jackson.version>3.1.2</jackson.version>
     <jackson-annotations.version>2.21</jackson-annotations.version>
     <jakarta-rs.version>4.0.0</jakarta-rs.version>
     <jersey.version>4.0.2</jersey.version>
@@ -379,7 +379,7 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
+        <groupId>tools.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
         <version>${jackson.version}</version>
       </dependency>
@@ -389,17 +389,17 @@
         <version>${jackson-annotations.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
+        <groupId>tools.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+        <groupId>tools.jackson.jakarta.rs</groupId>
         <artifactId>jackson-jakarta-rs-base</artifactId>
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+        <groupId>tools.jackson.jakarta.rs</groupId>
         <artifactId>jackson-jakarta-rs-json-provider</artifactId>
         <version>${jackson.version}</version>
       </dependency>

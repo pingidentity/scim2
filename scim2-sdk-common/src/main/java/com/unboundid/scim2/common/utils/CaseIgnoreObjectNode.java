@@ -35,9 +35,9 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
@@ -147,7 +147,7 @@ public class CaseIgnoreObjectNode extends ObjectNode
   }
 
   /**
-   * Similar to {@link #findValues}, but invokes {@link #asText()} on each
+   * Similar to {@link #findValues}, but invokes {@link #asString()} on each
    * element.
    *
    * @param fieldName   The name of the JSON field/attribute.
@@ -158,8 +158,9 @@ public class CaseIgnoreObjectNode extends ObjectNode
    */
   @Override
   @NotNull
-  public List<String> findValuesAsText(@NotNull final String fieldName,
-                                       @Nullable final List<String> foundSoFar)
+  public List<String> findValuesAsString(
+      @NotNull final String fieldName,
+      @Nullable final List<String> foundSoFar)
   {
     List<String> localFoundSoFar = foundSoFar;
     for (Map.Entry<String, JsonNode> entry : _children.entrySet())
@@ -170,11 +171,11 @@ public class CaseIgnoreObjectNode extends ObjectNode
         {
           localFoundSoFar = new ArrayList<>();
         }
-        localFoundSoFar.add(entry.getValue().asText());
+        localFoundSoFar.add(entry.getValue().asString());
       }
       else
       { // only add children if parent not added
-        localFoundSoFar = entry.getValue().findValuesAsText(fieldName,
+        localFoundSoFar = entry.getValue().findValuesAsString(fieldName,
             foundSoFar);
       }
     }

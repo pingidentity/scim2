@@ -32,9 +32,9 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;

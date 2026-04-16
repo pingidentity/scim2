@@ -32,7 +32,7 @@
 
 package com.unboundid.scim2.extension.messages.pwdmgmt;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.utils.JsonRefBeanSerializer;
 import com.unboundid.scim2.common.types.JsonReference;

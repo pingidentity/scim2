@@ -51,7 +51,9 @@ with SCIM 2.0 clients or servers:
 
 ## Supported Versions
 As of version 4.0.0, the UnboundID SCIM SDK requires Java SE 17 or greater.
-This library also depends on the Jackson 2.x libraries for JSON serialization and deserialization.
+
+As of version 6.0.0, the library also uses Jackson 3 for JSON serialization and deserialization. For
+Jackson 2.x support, use the latest release before 6.0.0.
 
 ## Structure
 This library is separated into multiple modules to target specific use cases, and consists of the

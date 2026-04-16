@@ -32,32 +32,42 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 
-import java.io.IOException;
 
 /**
  * Deserializer for {@link GenericScimResource}.
  */
 public class GenericScimObjectDeserializer
-    extends JsonDeserializer<GenericScimResource>
+    extends ValueDeserializer<GenericScimResource>
 {
   /**
    * {@inheritDoc}
    */
   @Override
   @NotNull
-  public GenericScimResource deserialize(@NotNull final JsonParser jp,
+  public GenericScimResource deserialize(
+      @NotNull final JsonParser jp,
       @Nullable final DeserializationContext ctxt)
-          throws IOException
   {
-    ObjectNode objectNode = JsonUtils.getObjectReader().readTree(jp);
-    return new GenericScimResource(objectNode);
+    try
+    {
+      ObjectNode node = JsonUtils.getObjectReader()
+          .forType(ObjectNode.class).readValue(jp);
+      return new GenericScimResource(node);
+    }
+    catch (JacksonException e)
+    {
+      throw new ScimDeserializeException(
+          "Cannot convert a non-object JSON to a GenericScimResource.", e);
+    }
   }
 }

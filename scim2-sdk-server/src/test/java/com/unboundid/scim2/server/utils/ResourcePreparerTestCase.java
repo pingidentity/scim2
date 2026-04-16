@@ -32,8 +32,8 @@
 
 package com.unboundid.scim2.server.utils;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
@@ -194,13 +194,13 @@ public class ResourcePreparerTestCase
     testResource = new GenericScimResource(node);
     testPatch = new ArrayList<>();
     testPatch.add(PatchOperation.add(Path.fromString("alWays"),
-        new TextNode("test")));
+        new StringNode("test")));
     testPatch.add(PatchOperation.add(Path.fromString("neveR"),
-        new TextNode("test")));
+        new StringNode("test")));
     testPatch.add(PatchOperation.add(Path.fromString("defauLt"),
-        new TextNode("test")));
+        new StringNode("test")));
     testPatch.add(PatchOperation.add(Path.fromString("Request"),
-        new TextNode("test")));
+        new StringNode("test")));
   }
 
   /**

@@ -32,7 +32,7 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.utils.JsonUtils;
@@ -56,12 +56,9 @@ public class ErrorResponseTest
   /**
    * Confirms that an ErrorResponse can be deserialized when the status field
    * is a JSON string.
-   *
-   * @throws Exception if an error occurs.
    */
   @Test
   public void testDeserializationAndSerializationWithStringStatus()
-      throws Exception
   {
     final ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().readTree(
         """

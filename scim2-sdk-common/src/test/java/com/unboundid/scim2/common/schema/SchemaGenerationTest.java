@@ -32,7 +32,7 @@
 
 package com.unboundid.scim2.common.schema;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.schema.testobjects.TestObject1;

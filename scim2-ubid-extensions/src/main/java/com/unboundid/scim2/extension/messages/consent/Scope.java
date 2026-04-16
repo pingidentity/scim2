@@ -32,6 +32,7 @@
 
 package com.unboundid.scim2.extension.messages.consent;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -165,12 +166,7 @@ public final class Scope
       mutability = AttributeDefinition.Mutability.READ_WRITE)
   private final String consent;
 
-  // private no-arg constructor for Jackson
-  private Scope()
-  {
-    this(new Builder());
-  }
-
+  @JsonCreator
   private Scope(@NotNull final Builder builder)
   {
     this.name = builder.name;

@@ -32,7 +32,7 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.node.StringNode;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import org.testng.annotations.Test;
@@ -54,20 +54,20 @@ public class PatchRequestTest
   public void testConstructors() throws Exception
   {
     PatchRequest listRequest = new PatchRequest(Collections.singletonList(
-            PatchOperation.add("nickName", TextNode.valueOf("G"))
+            PatchOperation.add("nickName", StringNode.valueOf("G"))
     ));
     PatchRequest argsRequest = new PatchRequest(
-            PatchOperation.add("nickName", TextNode.valueOf("G"))
+            PatchOperation.add("nickName", StringNode.valueOf("G"))
     );
     assertEquals(listRequest, argsRequest);
 
     listRequest = new PatchRequest(Arrays.asList(
-            PatchOperation.add("displayName", TextNode.valueOf("myName")),
-            PatchOperation.replace("displayName", TextNode.valueOf("yourName"))
+            PatchOperation.add("displayName", StringNode.valueOf("myName")),
+            PatchOperation.replace("displayName", StringNode.valueOf("yourName"))
     ));
     argsRequest = new PatchRequest(
-            PatchOperation.add("displayName", TextNode.valueOf("myName")),
-            PatchOperation.replace("displayName", TextNode.valueOf("yourName"))
+            PatchOperation.add("displayName", StringNode.valueOf("myName")),
+            PatchOperation.replace("displayName", StringNode.valueOf("yourName"))
     );
     assertEquals(listRequest, argsRequest);
 

@@ -33,13 +33,13 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.io.IOContext;
-import com.fasterxml.jackson.core.json.JsonReadContext;
-import com.fasterxml.jackson.core.json.ReaderBasedJsonParser;
-import com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer;
 import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.annotations.Nullable;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.core.io.IOContext;
+import tools.jackson.core.json.JsonReadContext;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.core.json.ReaderBasedJsonParser;
+import tools.jackson.core.sym.CharsToNameCanonicalizer;
 
 import java.io.Reader;
 
@@ -50,26 +50,33 @@ import java.io.Reader;
 public class ScimFilterJsonParser extends ReaderBasedJsonParser
 {
   /**
-   * Constructor.
+   * Creates a Jackson-based object for parsing SCIM filters.
    *
-   * @param ctxt  see superclass
-   * @param features  see superclass
-   * @param r see superclass
-   * @param codec see superclass
-   * @param st see superclass
+   * @param ctxt           The I/O context to use.
+   * @param r              Reader used for reading actual content.
+   * @param st             The name canonicalizer to use.
    */
   public ScimFilterJsonParser(
       @NotNull final IOContext ctxt,
-      final int features,
-      @Nullable final Reader r,
-      @Nullable final ObjectCodec codec,
+      @NotNull final Reader r,
       @NotNull final CharsToNameCanonicalizer st)
   {
-    super(ctxt, features, r, codec, st);
-    // By default, the JSON read context is set to JsonStreamContext.TYPE_ROOT,
+    super(getReadContext(r), ctxt, JsonReadFeature.collectDefaults(), 0, r, st);
+
+    // By default, the JSON read context is set to StreamContext.TYPE_ROOT,
     // which will require whitespace after any unquoted token (e.g., a number).
     // We don't want this restriction when parsing a SCIM filter, so set the
     // context type to -1, which is effectively "none".
-    this._parsingContext = new JsonReadContext(null, 0, null, -1, 1, 0);
+    this._streamReadContext = new JsonReadContext(null, 0, null, -1, 1, 0);
+  }
+
+  /**
+   * Provides a Jackson reader context based off of the settings established in
+   * the SCIM SDK's object mapper.
+   */
+  @NotNull
+  private static ObjectReadContext getReadContext(@NotNull final Reader r)
+  {
+    return JsonUtils.getObjectReader().createParser(r).objectReadContext();
   }
 }

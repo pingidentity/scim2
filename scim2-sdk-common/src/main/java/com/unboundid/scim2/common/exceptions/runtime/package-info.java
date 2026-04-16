@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2026 Ping Identity Corporation
+ * Copyright 2026 Ping Identity Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /*
- * Copyright 2015-2026 Ping Identity Corporation
+ * Copyright 2026 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -30,25 +30,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.common.utils;
-
-import tools.jackson.databind.node.JsonNodeFactory;
-import tools.jackson.databind.node.ObjectNode;
-import com.unboundid.scim2.common.annotations.NotNull;
-
 /**
- * This class represents a Jackson {@link JsonNodeFactory} implementation that
- * treats JSON attribute names as case-insensitive.
+ * Exception classes representing SCIM-based runtime errors.
  */
-public class ScimJsonNodeFactory extends JsonNodeFactory
-{
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @NotNull
-  public ObjectNode objectNode()
-  {
-    return new CaseIgnoreObjectNode(this);
-  }
-}
+
+package com.unboundid.scim2.common.exceptions.runtime;

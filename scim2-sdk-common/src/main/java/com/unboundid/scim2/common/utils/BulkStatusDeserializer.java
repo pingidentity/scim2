@@ -32,14 +32,13 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-
-import java.io.IOException;
+import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
 /**
  * Deserializer for the {@code status} field of a bulk operation contained
@@ -64,7 +63,7 @@ import java.io.IOException;
  * parsing the {@code status} value. Note that when the SCIM SDK serializes
  * objects into JSON, it always prints strings of the first form.
  */
-public class BulkStatusDeserializer extends JsonDeserializer<String>
+public class BulkStatusDeserializer extends ValueDeserializer<String>
 {
   /**
    * Implementation of the bulk status deserializer. See the class-level Javadoc
@@ -77,25 +76,32 @@ public class BulkStatusDeserializer extends JsonDeserializer<String>
   @NotNull
   public String deserialize(@NotNull final JsonParser p,
                             @Nullable final DeserializationContext ctxt)
-      throws IOException
   {
-    final JsonNode statusNode = JsonUtils.getObjectReader().readTree(p);
-
-    // Check for { "status": "200" }.
-    if (statusNode.isTextual())
+    // Check for the most common form: { "status": "200" }
+    String standardValue = p.getValueAsString();
+    if (standardValue != null)
     {
-      return statusNode.asText();
+      return standardValue;
     }
 
-    // Check for the "status.code" sub-attribute.
-    JsonNode nested = statusNode.path("code");
-    if (nested.isTextual())
+    // Check for a nested view: { "status": { "code": "200" } }
+    String nextField = p.nextName();
+    if (!"code".equals(nextField))
     {
-      return nested.asText();
+      throw new ScimDeserializeException(
+          "Could not parse the 'status' field of the bulk operation response.");
     }
 
-    throw new IOException(
-        "Could not parse the 'status' field of the bulk operation response."
-    );
+    String statusValue = p.nextStringValue();
+
+    // The parser still points to the status value. Before returning, navigate
+    // to the closing brace.
+    JsonToken token;
+    do
+    {
+      token = p.nextToken();
+    }
+    while (!p.isClosed() && token != JsonToken.END_OBJECT);
+    return statusValue;
   }
 }

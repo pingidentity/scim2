@@ -32,8 +32,6 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
@@ -46,6 +44,8 @@ import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.StringNode;
 
 import java.util.List;
 
@@ -210,8 +210,8 @@ public class AddOperationValueFilterTestCase
     // request should also be forbidden.
     path = Path.fromString("photos[type eq \"thumbnail\"].value");
     PatchRequest requestWithConflict = new PatchRequest(
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/1.png")),
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/2.png"))
+        PatchOperation.add(path, StringNode.valueOf("https://example.com/1.png")),
+        PatchOperation.add(path, StringNode.valueOf("https://example.com/2.png"))
     );
     assertThatThrownBy(() -> applyPatchRequest(requestWithConflict, new UserResource()))
         .isInstanceOf(BadRequestException.class)
@@ -226,7 +226,7 @@ public class AddOperationValueFilterTestCase
     );
     path = Path.fromString("addresses[type eq \"home\"].streetAddress");
     PatchRequest requestOnInvalidResource = new PatchRequest(
-        PatchOperation.add(path, TextNode.valueOf("aThirdStreet"))
+        PatchOperation.add(path, StringNode.valueOf("aThirdStreet"))
     );
     assertThatThrownBy(() -> applyPatchRequest(requestOnInvalidResource, existingUser))
         .isInstanceOf(BadRequestException.class)
@@ -259,7 +259,7 @@ public class AddOperationValueFilterTestCase
     // pre-existing value.
     PatchRequest invalidAttr2 = createAddRequest(singleValuedAttr, "en-US");
     assertThatThrownBy(() -> applyPatchRequest(invalidAttr2, new UserResource()))
-        .isInstanceOf(JsonProcessingException.class);
+        .isInstanceOf(JacksonException.class);
 
     // Value filters must be the first element in the path.
     Path nestedFilter = Path.fromString("parent.examples[type eq \"best\"].value");
@@ -360,8 +360,8 @@ public class AddOperationValueFilterTestCase
     resource = new UserResource();
     path = Path.fromString("photos[type eq \"thumbnail\"].value");
     request = new PatchRequest(
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/1.png")),
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/2.png"))
+        PatchOperation.add(path, StringNode.valueOf("https://example.com/1.png")),
+        PatchOperation.add(path, StringNode.valueOf("https://example.com/2.png"))
     );
     resource = applyPatchRequest(request, resource);
     assertThat(resource.getPhotos())
@@ -375,7 +375,7 @@ public class AddOperationValueFilterTestCase
    */
   private static PatchRequest createAddRequest(Path path, String value)
   {
-    return new PatchRequest(PatchOperation.add(path, TextNode.valueOf(value)));
+    return new PatchRequest(PatchOperation.add(path, StringNode.valueOf(value)));
   }
 
   /**
@@ -384,7 +384,7 @@ public class AddOperationValueFilterTestCase
    */
   private static UserResource applyPatchRequest(PatchRequest request,
                                                 UserResource userResource)
-      throws JsonProcessingException, ScimException
+      throws JacksonException, ScimException
   {
     GenericScimResource user = userResource.asGenericScimResource();
     request.apply(user);

@@ -32,7 +32,6 @@
 
 package com.unboundid.scim2.client;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.requests.BulkRequestBuilder;
 import com.unboundid.scim2.client.requests.CreateRequestBuilder;
 import com.unboundid.scim2.client.requests.DeleteRequestBuilder;
@@ -52,6 +51,7 @@ import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
@@ -99,9 +99,8 @@ public class ScimService implements ScimInterface
    */
   public ScimService(@NotNull final WebTarget baseTarget)
   {
-    this.baseTarget = baseTarget.register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper(),
-            JacksonJsonProvider.BASIC_ANNOTATIONS));
+    var mapper = JsonUtils.createJsonMapper();
+    this.baseTarget = baseTarget.register(new JacksonJsonProvider(mapper));
   }
 
   /**

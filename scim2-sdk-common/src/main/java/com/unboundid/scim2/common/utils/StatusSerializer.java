@@ -32,20 +32,18 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-
-import java.io.IOException;
 
 /**
  * Serializes {@link com.unboundid.scim2.common.messages.ErrorResponse}'s
  * status field to a String.
  */
-public class StatusSerializer extends JsonSerializer<Integer>
+public class StatusSerializer extends ValueSerializer<Integer>
 {
   /**
    * {@inheritDoc}
@@ -53,8 +51,8 @@ public class StatusSerializer extends JsonSerializer<Integer>
   @Override
   public void serialize(@Nullable final Integer value,
                         @NotNull final JsonGenerator jgen,
-                        @Nullable final SerializerProvider serializers)
-      throws IOException, JsonProcessingException
+                        @Nullable final SerializationContext ctxt)
+      throws JacksonException
   {
     jgen.writeString(String.valueOf(value));
   }

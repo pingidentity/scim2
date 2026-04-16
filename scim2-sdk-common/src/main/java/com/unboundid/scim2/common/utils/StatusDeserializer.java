@@ -32,20 +32,19 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.annotations.Nullable;
 
-import java.io.IOException;
 
 /**
  * Deserializes the status field of
  * {@link com.unboundid.scim2.common.messages.ErrorResponse} to an Integer.
  */
-public class StatusDeserializer extends JsonDeserializer<Integer>
+public class StatusDeserializer extends ValueDeserializer<Integer>
 {
   /**
    * {@inheritDoc}
@@ -53,9 +52,16 @@ public class StatusDeserializer extends JsonDeserializer<Integer>
   @Override
   @NotNull
   public Integer deserialize(@NotNull final JsonParser jp,
-                             @Nullable final DeserializationContext ctxt)
-      throws IOException, JsonProcessingException
+                             @NotNull final DeserializationContext ctxt)
   {
-    return jp.readValueAs(Integer.class);
+    try
+    {
+      return ctxt.readValue(jp, Integer.class);
+    }
+    catch (JacksonException e)
+    {
+      throw new ScimDeserializeException(
+          "Failed to obtain a status value due to a malformed input.", e);
+    }
   }
 }

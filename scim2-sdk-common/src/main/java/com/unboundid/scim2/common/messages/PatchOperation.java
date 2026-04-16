@@ -37,18 +37,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.core.Base64Variants;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
@@ -63,6 +51,19 @@ import com.unboundid.scim2.common.utils.Debug;
 import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import tools.jackson.core.Base64Variants;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.BooleanNode;
+import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.IntNode;
+import tools.jackson.databind.node.LongNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
+import tools.jackson.databind.node.ValueNode;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -213,7 +214,7 @@ public abstract class PatchOperation
     @Override
     @Nullable
     public <T> List<T> getValues(@NotNull final Class<T> cls)
-        throws JsonProcessingException, ScimException
+        throws JacksonException
     {
       ArrayList<T> objects = new ArrayList<>(value.size());
       for (JsonNode node : value)
@@ -842,7 +843,7 @@ public abstract class PatchOperation
     @Override
     @Nullable
     public <T> List<T> getValues(@NotNull final Class<T> cls)
-        throws JsonProcessingException, ScimException
+        throws JacksonException
     {
       ArrayList<T> objects = new ArrayList<>(value.size());
       for (JsonNode node : value)
@@ -976,7 +977,7 @@ public abstract class PatchOperation
    * @param <T> The generic type parameter of the Java class used to determine
    *            the type to return.
    * @return The value of the patch operation.
-   * @throws JsonProcessingException If the value can not be parsed to the
+   * @throws JacksonException If the value can not be parsed to the
    *         type specified by the Java class object.
    * @throws IllegalArgumentException If the operation contains more than one
    *         value, in which case, the getValues method should be used to
@@ -984,7 +985,7 @@ public abstract class PatchOperation
    */
   @Nullable
   public <T> T getValue(@NotNull final Class<T> cls)
-      throws JsonProcessingException, IllegalArgumentException
+      throws JacksonException, IllegalArgumentException
   {
     JsonNode value = getJsonNode();
     if (value == null)
@@ -1007,13 +1008,12 @@ public abstract class PatchOperation
    * @param <T> The generic type parameter of the Java class used to determine
    *            the type to return.
    * @return The values of the patch operation.
-   * @throws JsonProcessingException If the value can not be parsed to the
+   * @throws JacksonException If the value can not be parsed to the
    *         type specified by the Java class object.
-   * @throws ScimException If the path is invalid.
    */
   @Nullable
   public <T> List<T> getValues(@NotNull final Class<T> cls)
-      throws JsonProcessingException, ScimException
+      throws JacksonException
   {
     return null;
   }
@@ -1071,22 +1071,17 @@ public abstract class PatchOperation
       }
     }
 
-    ArrayList<Member> list = new ArrayList<>(members.size());
-    for (JsonNode node : members)
+    try
     {
-      try
-      {
-        list.add(JsonUtils.nodeToValue(node, Member.class));
-      }
-      catch (JsonProcessingException e)
-      {
-        Debug.debugException(e);
-        throw new BadRequestException(
-            "The provided JSON contained an invalid Member representation.");
-      }
+      return JsonUtils.getObjectReader()
+          .forType(new TypeReference<ArrayList<Member>>(){})
+          .readValue(members);
     }
-
-    return list;
+    catch (JacksonException e)
+    {
+      throw new BadRequestException(
+          "Failed to convert the JSON data into a list of group members.");
+    }
   }
 
   /**
@@ -1108,15 +1103,8 @@ public abstract class PatchOperation
   @NotNull
   public String toString()
   {
-    try
-    {
-      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
-          writeValueAsString(this);
-    }
-    catch (JsonProcessingException e)
-    {
-      throw new RuntimeException(e);
-    }
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
+        writeValueAsString(this);
   }
 
   /**
@@ -1135,10 +1123,8 @@ public abstract class PatchOperation
     {
       if (getPath() == null)
       {
-        Iterator<String> i = getJsonNode().fieldNames();
-        while (i.hasNext())
+        for (String field : getJsonNode().propertyNames())
         {
-          String field = i.next();
           if (SchemaUtils.isUrn(field))
           {
             addSchemaUrnIfMissing(schemas, field);
@@ -1157,7 +1143,7 @@ public abstract class PatchOperation
   {
     for (JsonNode node : schemas)
     {
-      if (node.isTextual() && node.textValue().equalsIgnoreCase(schemaUrn))
+      if (node.isString() && node.asString().equalsIgnoreCase(schemaUrn))
       {
         return;
       }
@@ -1312,7 +1298,7 @@ public abstract class PatchOperation
                                        @NotNull final String value)
       throws ScimException
   {
-    return replace(path, TextNode.valueOf(value));
+    return replace(path, StringNode.valueOf(value));
   }
 
   /**
@@ -1333,7 +1319,7 @@ public abstract class PatchOperation
   public static PatchOperation replace(@NotNull final Path path,
                                        @NotNull final String value)
   {
-    return replace(path, TextNode.valueOf(value));
+    return replace(path, StringNode.valueOf(value));
   }
 
   /**
@@ -1780,7 +1766,7 @@ public abstract class PatchOperation
     ArrayNode arrayNode = JsonUtils.getJsonNodeFactory().arrayNode();
     for (Date value : values)
     {
-      arrayNode.add(GenericScimResource.getDateJsonNode(value).textValue());
+      arrayNode.add(GenericScimResource.getDateJsonNode(value).asString());
     }
     return add(path, arrayNode);
   }
@@ -1820,7 +1806,7 @@ public abstract class PatchOperation
       throws ScimException
   {
     String valueString =
-        GenericScimResource.getDateJsonNode(value).textValue();
+        GenericScimResource.getDateJsonNode(value).asString();
     return replace(path, valueString);
   }
 
@@ -1844,7 +1830,7 @@ public abstract class PatchOperation
       throws ScimException
   {
     String valueString =
-        GenericScimResource.getDateJsonNode(value).textValue();
+        GenericScimResource.getDateJsonNode(value).asString();
     return replace(path, valueString);
   }
 

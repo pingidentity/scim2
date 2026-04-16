@@ -32,6 +32,7 @@
 
 package com.unboundid.scim2.extension.messages.consent;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -177,12 +178,7 @@ public final class OAuth2Client
       "this session.", mutability = AttributeDefinition.Mutability.READ_ONLY)
   private Calendar lastAuthorization;
 
-  // private no-arg constructor for Jackson
-  private OAuth2Client()
-  {
-    this(new Builder());
-  }
-
+  @JsonCreator
   private OAuth2Client(@NotNull final Builder builder)
   {
     this.name = builder.name;

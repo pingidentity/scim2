@@ -95,10 +95,10 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * If a SCIM service has many constraints, it can be a good idea to define a
  * custom user class that enforces these rules in the code. An example of a
  * custom user subclass can look like:
- * <pre>
+ * <pre><code>
  *   public class CustomUser extends UserResource
  *   {
- *    {@literal @}Override
+ *     &#64;Override
  *     public UserResource setEmails(List&lt;Email&gt; emails)
  *     {
  *       if (emails != null &amp;&amp; emails.size() > 1)
@@ -111,7 +111,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *       return this;
  *     }
  *   }
- * </pre>
+ * </code></pre>
  *
  * For more information on creating custom user subclasses, see the
  * <a href="https://github.com/pingidentity/scim2/wiki/Common-Problems-and-FAQ">

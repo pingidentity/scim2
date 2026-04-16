@@ -32,10 +32,10 @@
 
 package com.unboundid.scim2.server;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.jakarta.rs.cfg.JakartaRSFeature;
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.StringNode;
+import tools.jackson.jakarta.rs.cfg.JakartaRSFeature;
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimInterface;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.client.ScimServiceException;
@@ -72,7 +72,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.server.providers.DefaultContentTypeFilter;
 import com.unboundid.scim2.server.providers.DotSearchFilter;
-import com.unboundid.scim2.server.providers.JsonProcessingExceptionMapper;
+import com.unboundid.scim2.server.providers.JacksonExceptionMapper;
 import com.unboundid.scim2.server.providers.RuntimeExceptionMapper;
 import com.unboundid.scim2.server.providers.ScimExceptionMapper;
 import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
@@ -135,7 +135,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     // Exception Mappers
     config.register(ScimExceptionMapper.class);
     config.register(RuntimeExceptionMapper.class);
-    config.register(JsonProcessingExceptionMapper.class);
+    config.register(JacksonExceptionMapper.class);
 
     var provider = new JacksonJsonProvider(JsonUtils.createObjectMapper());
     provider.configure(JakartaRSFeature.ALLOW_EMPTY_INPUT, false);
@@ -642,9 +642,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
       assertEquals(createdUser.getExtensionValues(
           Path.root(EnterpriseUserExtension.class).attribute("employeeNumber"))
-          .get(0).textValue(), "1234");
+          .get(0).asString(), "1234");
     }
-    catch (JsonProcessingException e)
+    catch (JacksonException e)
     {
       throw new RuntimeException(e);
     }
@@ -886,7 +886,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
   /**
    * Test error response when an invalid standard SCIM message is submitted and
-   * a Jackson binding error occurs.
+   * a Jackson binding error occurs. Invalid fields should be ignored by
+   * default as of the 6.0.0 release.
    */
   @Test
   public void testInvalidMessage()
@@ -900,12 +901,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     try (Response response = request.post(Entity.entity(
         "{\"undefinedField\": \"value\"}", MEDIA_TYPE_SCIM)))
     {
-      assertEquals(response.getStatus(), 400);
-      assertEquals(response.getMediaType(), MediaType.valueOf(MEDIA_TYPE_SCIM));
-      ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
-      assertEquals(errorResponse.getStatus(), Integer.valueOf(400));
-      assertEquals(errorResponse.getScimType(), "invalidSyntax");
-      assertNotNull(errorResponse.getDetail());
+      assertThat(response.getStatus()).isEqualTo(200);
+      assertThat(response.getMediaType())
+          .isEqualTo(MediaType.valueOf(MEDIA_TYPE_SCIM));
     }
 
     // Now with application/json
@@ -916,8 +914,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     try (Response response = request.post(Entity.entity(
         "{\"undefinedField\": \"value\"}", MediaType.APPLICATION_JSON_TYPE)))
     {
-      assertEquals(response.getStatus(), 400);
-      assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+      assertThat(response.getStatus()).isEqualTo(200);
+      assertThat(response.getMediaType())
+          .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
     }
   }
 
@@ -1044,7 +1043,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       UserResource patchedUser =
           service.modifyRequest("SingletonUsers", updatedUser.getId()).
               addOperation(PatchOperation.replace("displayName",
-                                                  TextNode.valueOf("Joe"))).
+                                                  StringNode.valueOf("Joe"))).
               queryParam(expectedKey, expectedValue).
               invoke(UserResource.class);
 
@@ -1126,7 +1125,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       UserResource patchedUser =
           service.modifyRequest("SingletonUsers", updatedUser.getId()).
               addOperation(PatchOperation.replace("displayName",
-                                                  TextNode.valueOf("Joe"))).
+                                                  StringNode.valueOf("Joe"))).
               header(expectedKey, expectedValue).
               invoke(UserResource.class);
 

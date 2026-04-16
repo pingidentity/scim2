@@ -32,7 +32,6 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -41,6 +40,7 @@ import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import tools.jackson.databind.JsonNode;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -222,11 +222,11 @@ public class ExtensionsTest
     JsonNode userNode = JsonUtils.getObjectReader().readTree(userString);
 
     // check some of the basic fields
-    Assert.assertEquals(userNode.path("userName").asText(),
+    Assert.assertEquals(userNode.path("userName").asString(),
         user.getUserName());
-    Assert.assertEquals(userNode.path("id").asText(),
+    Assert.assertEquals(userNode.path("id").asString(),
         user.getId());
-    Assert.assertEquals(userNode.path("externalId").asText(),
+    Assert.assertEquals(userNode.path("externalId").asString(),
         user.getExternalId());
 
     // check the schemas
@@ -237,7 +237,7 @@ public class ExtensionsTest
     // check the extension values
     Assert.assertEquals(
         userNode.path("urn:pingidentity:schemas:FavoriteColor").
-            path("favoriteColor").asText(),
+            path("favoriteColor").asString(),
         JsonUtils.nodeToValue(user.getExtensionValues(
             Path.root(ExtensionClass.class)).get(0),
             ExtensionClass.class).getFavoriteColor());

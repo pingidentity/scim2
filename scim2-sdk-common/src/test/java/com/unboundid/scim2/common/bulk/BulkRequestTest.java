@@ -32,9 +32,6 @@
 
 package com.unboundid.scim2.common.bulk;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.BulkRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
@@ -42,8 +39,9 @@ import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Member;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,15 +60,6 @@ import static org.assertj.core.api.Assertions.fail;
  */
 public class BulkRequestTest
 {
-  /**
-   * Resets a customizable property.
-   */
-  @AfterMethod
-  public void tearDown()
-  {
-    BaseScimResource.IGNORE_UNKNOWN_FIELDS = false;
-  }
-
   /**
    * Performs basic validation on the BulkRequest class.
    */
@@ -317,17 +306,6 @@ public class BulkRequestTest
         }""";
 
     // By default, we should see a JacksonException.
-    assertThatThrownBy(() -> reader.readValue(invalidJson))
-        .isInstanceOf(JacksonException.class);
-
-    // If the configuration setting is set to allow unknown attributes without
-    // failing, then we should still have an exception to indicate that no data
-    // was successfully copied. In this test case, a user resource should appear
-    // to deserialize successfully into a BulkRequest.
-    //
-    // The method throws a BulkRequestException, but Jackson re-throws this as
-    // one of its own exception types.
-    BaseScimResource.IGNORE_UNKNOWN_FIELDS = true;
     assertThatThrownBy(() -> reader.readValue(invalidJson))
         .isInstanceOf(JacksonException.class);
 

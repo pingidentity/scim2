@@ -32,16 +32,16 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.filters.FilterType;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.node.ValueNode;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -685,8 +685,9 @@ public class Parser
             // until the end of string.
             reader.mark(0);
             ScimJsonFactory scimJsonFactory = (ScimJsonFactory)
-                JsonUtils.getObjectReader().getFactory();
+                JsonUtils.getObjectReader().parserFactory();
             JsonParser parser = scimJsonFactory.createScimFilterParser(reader);
+
             // The object mapper will return a Java null for JSON null.
             // Have to distinguish between reading a JSON null and encountering
             // the end of string.
@@ -710,7 +711,7 @@ public class Parser
             // Skip the number of chars consumed by JSON parser.
             reader.skip(parser.currentLocation().getCharOffset());
           }
-          catch (IOException e)
+          catch (JacksonException e)
           {
             final String msg = String.format(
                 "Invalid comparison value at position %d: %s",

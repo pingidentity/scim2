@@ -32,9 +32,9 @@
 
 package com.unboundid.scim2.server.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
@@ -715,7 +715,7 @@ public class SchemaChecker
       boolean coreFound = false;
       for (JsonNode schema : schemas)
       {
-        if (!schema.isTextual())
+        if (!schema.isString())
         {
           // Go to the next one if the schema URI is not valid. We will report
           // this issue later when we check the values for the schemas
@@ -724,7 +724,7 @@ public class SchemaChecker
         }
 
         // Get the extension namespace object node.
-        JsonNode extensionNode = objectNode.remove(schema.textValue());
+        JsonNode extensionNode = objectNode.remove(schema.asString());
         if (extensionNode == null)
         {
           // Extension listed in schemas but no namespace in resource. Treat it
@@ -735,13 +735,13 @@ public class SchemaChecker
         {
           // Go to the next one if the extension namespace is not valid
           results.syntaxIssues.add(prefix + "Extended attributes namespace " +
-              schema.textValue() + " must be a JSON object");
+              schema.asString() + " must be a JSON object");
           continue;
         }
 
         // Find the schema definition.
         Map.Entry<SchemaResource, Boolean> extensionDefinition = null;
-        if (schema.textValue().equals(resourceType.getCoreSchema().getId()))
+        if (schema.asString().equals(resourceType.getCoreSchema().getId()))
         {
           // Skip the core schema.
           coreFound = true;
@@ -752,7 +752,7 @@ public class SchemaChecker
           for (Map.Entry<SchemaResource, Boolean> schemaExtension :
               resourceType.getSchemaExtensions().entrySet())
           {
-            if (schema.textValue().equals(schemaExtension.getKey().getId()))
+            if (schema.asString().equals(schemaExtension.getKey().getId()))
             {
               extensionDefinition = schemaExtension;
               break;
@@ -767,7 +767,7 @@ public class SchemaChecker
           continue;
         }
 
-        checkObjectNode(prefix, Path.root(schema.textValue()),
+        checkObjectNode(prefix, Path.root(schema.asString()),
             extensionDefinition.getKey().getAttributes(),
             (ObjectNode) extensionNode, results, currentObjectNode,
                         isReplace, false, isReplace);
@@ -790,7 +790,7 @@ public class SchemaChecker
           boolean found = false;
           for (JsonNode schema : schemas)
           {
-            if (schema.textValue().equals(schemaExtension.getKey().getId()))
+            if (schema.asString().equals(schemaExtension.getKey().getId()))
             {
               found = true;
               break;
@@ -898,7 +898,7 @@ public class SchemaChecker
       // Make sure the core schema and/or required schemas extensions are
       // not removed.
       if (FilterEvaluator.evaluate(valueFilter,
-          TextNode.valueOf(resourceType.getCoreSchema().getId())))
+          StringNode.valueOf(resourceType.getCoreSchema().getId())))
       {
         results.syntaxIssues.add(prefix + "Attribute value(s) " + path +
             " may not be removed or replaced because the core schema " +
@@ -910,7 +910,7 @@ public class SchemaChecker
       {
         if (schemaExtension.getValue() &&
             FilterEvaluator.evaluate(valueFilter,
-                TextNode.valueOf(schemaExtension.getKey().getId())))
+                StringNode.valueOf(schemaExtension.getKey().getId())))
         {
           results.syntaxIssues.add(prefix + "Attribute value(s) " +
               path + " may not be removed or replaced because the schema " +
@@ -1042,7 +1042,7 @@ public class SchemaChecker
       case STRING:
       case DATETIME:
       case REFERENCE:
-        if (!node.isTextual())
+        if (!node.isString())
         {
           results.syntaxIssues.add(prefix + "Value for attribute " + path +
               " must be a JSON string");
@@ -1075,7 +1075,7 @@ public class SchemaChecker
         }
         break;
       case BINARY:
-        if (!node.isTextual() && !node.isBinary())
+        if (!node.isString() && !node.isBinary())
         {
           results.syntaxIssues.add(prefix + "Value for attribute " + path +
               " must be a JSON string");
@@ -1119,7 +1119,7 @@ public class SchemaChecker
       case REFERENCE:
         try
         {
-          new URI(node.textValue());
+          new URI(node.asString());
         }
         catch (Exception e)
         {
@@ -1149,9 +1149,9 @@ public class SchemaChecker
           for (String canonicalValue : attribute.getCanonicalValues())
           {
             if (attribute.isCaseExact() ?
-                canonicalValue.equals(node.textValue()) :
+                canonicalValue.equals(node.asString()) :
                 StaticUtils.toLowerCase(canonicalValue).equals(
-                    StaticUtils.toLowerCase(node.textValue())))
+                    StaticUtils.toLowerCase(node.asString())))
             {
               found = true;
               break;
@@ -1159,7 +1159,7 @@ public class SchemaChecker
           }
           if (!found)
           {
-            results.syntaxIssues.add(prefix + "Value " + node.textValue() +
+            results.syntaxIssues.add(prefix + "Value " + node.asString() +
                 " is not valid for attribute " + path + " because it " +
                 "is not one of the canonical types: " +
                 StaticUtils.collectionToString(
@@ -1177,7 +1177,7 @@ public class SchemaChecker
       for (SchemaResource schemaExtension :
           resourceType.getSchemaExtensions().keySet())
       {
-        if (node.textValue().equals(schemaExtension.getId()))
+        if (node.asString().equals(schemaExtension.getId()))
         {
           found = true;
           break;
@@ -1185,11 +1185,11 @@ public class SchemaChecker
       }
       if (!found)
       {
-        found = node.textValue().equals(resourceType.getCoreSchema().getId());
+        found = node.asString().equals(resourceType.getCoreSchema().getId());
       }
       if (!found && !enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
       {
-        results.syntaxIssues.add(prefix + "Schema URI " + node.textValue() +
+        results.syntaxIssues.add(prefix + "Schema URI " + node.asString() +
             " is not a valid value for attribute " + path + " because it is " +
             "undefined as a core or schema extension for this resource type");
       }

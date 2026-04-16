@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2026 Ping Identity Corporation
+ * Copyright 2026 Ping Identity Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /*
- * Copyright 2015-2026 Ping Identity Corporation
+ * Copyright 2026 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -30,25 +30,37 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.common.utils;
+package com.unboundid.scim2.common.exceptions.runtime;
 
-import tools.jackson.databind.node.JsonNodeFactory;
-import tools.jackson.databind.node.ObjectNode;
+
 import com.unboundid.scim2.common.annotations.NotNull;
 
 /**
- * This class represents a Jackson {@link JsonNodeFactory} implementation that
- * treats JSON attribute names as case-insensitive.
+ * TODO.
  */
-public class ScimJsonNodeFactory extends JsonNodeFactory
+public class ScimDeserializeException extends RuntimeException
 {
   /**
-   * {@inheritDoc}
+   * Constructs a new exception indicating a failure to deserialize SCIM
+   * resource data.
+   *
+   * @param message   The error message for this deserialization failure.
    */
-  @Override
-  @NotNull
-  public ObjectNode objectNode()
+  public ScimDeserializeException(@NotNull final String message)
   {
-    return new CaseIgnoreObjectNode(this);
+    super(message);
+  }
+
+  /**
+   * Constructs a new exception indicating a failure to deserialize SCIM
+   * resource data.
+   *
+   * @param message The error message for this deserialization failure.
+   * @param cause   The exception that caused the failure.
+   */
+  public ScimDeserializeException(@NotNull final String message,
+                                  @NotNull final Throwable cause)
+  {
+    super(message, cause);
   }
 }

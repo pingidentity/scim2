@@ -32,13 +32,13 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.cfg.DateTimeFeature;
 
 import java.time.ZoneOffset;
 import java.util.Calendar;
@@ -138,7 +138,7 @@ public class DateTimeUtilsTest
    * A SCIM server/service application processes incoming requests. A separate
    * Java client application sends a request to the service. However, the Java
    * client uses an ObjectMapper with default settings, which includes using the
-   * {@link SerializationFeature#WRITE_DATES_AS_TIMESTAMPS} feature. Thus, the
+   * {@link DateTimeFeature#WRITE_DATES_AS_TIMESTAMPS} feature. Thus, the
    * JSON sent by the client after serialization looks like:
    * <pre>
    *   {
@@ -168,7 +168,6 @@ public class DateTimeUtilsTest
   public void testDeserialization(final String ignored,
                                   final Date dateObject,
                                   final TimeZone ignoredZone)
-      throws Exception
   {
     long timestamp = dateObject.getTime();
     String json = """
@@ -214,7 +213,7 @@ public class DateTimeUtilsTest
 
     var reader = JsonUtils.getObjectReader().forType(UserResource.class);
     assertThatThrownBy(() -> reader.readValue(json))
-        .isInstanceOf(InvalidFormatException.class)
+        .isInstanceOf(JacksonException.class)
         .hasMessageStartingWith("SCIM SDK: unable to deserialize value");
   }
 

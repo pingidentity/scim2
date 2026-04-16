@@ -37,9 +37,6 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
@@ -48,6 +45,9 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -92,22 +92,26 @@ public abstract class BaseScimResource
    * subclasses of BaseScimResource.
    * <br><br>
    *
-   * By default, the SCIM SDK can throw a {@code JsonMappingException} during
-   * the Jackson deserialization process if it is converting an object to a
-   * BaseScimResource or one of its subclasses. This occurs if the source JSON
-   * contains fields that are not defined on the Java object, and the field is
-   * also not a schema extension such as
-   * {@code urn:ietf:params:scim:schemas:extension:enterprise:2.0:User}.
+   * Before supporting version 3.x of the Jackson library, the SCIM SDK strictly
+   * enforced deserialization errors when unknown attributes were present in a
+   * JSON payload that was being converted to an object. This was aligned with
+   * Jackson's default behavior to immediately report problems instead of
+   * potentially hiding data loss errors. However, the default value of the
+   * {@code FAIL_ON_UNKNOWN_PROPERTIES} Jackson setting was changed in Jackson
+   * 3.0.0 to be {@code false} to avoid throwing errors. Thus, as of the 6.0.0
+   * release of the SCIM SDK, ignoring unknown attributes during deserialization
+   * is the default behavior to be aligned with Jackson.
    * <br><br>
    *
-   * If a SCIM service includes additional non-standard fields in their
-   * responses, it can cause these exceptions to be thrown when they are likely
-   * undesired. To avoid this problem, this property may be set to {@code true}
-   * so that unknown fields are ignored instead of causing exceptions.
+   * It is strongly encouraged to align your application with this behavior to
+   * avoid rejecting requests/responses from SCIM 2 clients or services that may
+   * not be fully compliant. However, if necessary, this property may be set to
+   * {@code false} to allow the SCIM SDK to report unknown attributes detected
+   * while deserializing a JSON into a BaseScimResource-based class.
    *
    * @since 4.0.0
    */
-  public static boolean IGNORE_UNKNOWN_FIELDS = false;
+  public static boolean IGNORE_UNKNOWN_FIELDS = true;
 
   @Nullable
   private String id;
@@ -240,16 +244,17 @@ public abstract class BaseScimResource
   /**
    * This method is used by Jackson when deserializing JSON data into a Java
    * object. This will be called for schema extensions and any unknown fields
-   * (i.e., any fields in the JSON that are not defined in the Java class). If
-   * the unknown field is not a schema extension, then an exception will be
-   * thrown by default, indicating that the JSON representation of a resource
-   * could not be properly mapped to the schema defined by the Java object.
+   * (i.e., any fields in the JSON that are not defined in the Java class).
+   * Schema extension data is always handled.
    * <br><br>
    *
-   * If it is better for your application to ignore unknown fields instead of
-   * throwing exceptions, set the {@link #IGNORE_UNKNOWN_FIELDS} flag to
-   * {@code true}. This is helpful when working with SCIM services that include
-   * additional non-standard fields in their responses.
+   * Since Jackson 3.0.0, JSON processing ignores unknown fields by default.
+   * As a result, since version 6.0.0, the SCIM SDK ignores any unknown fields
+   * that appear in the JSON. However, if the old behavior (throwing exceptions
+   * for unknown attributes) is desired, set the {@link #IGNORE_UNKNOWN_FIELDS}
+   * flag to {@code false}. This can be helpful for determining if a SCIM
+   * service is returning extra non-standard fields, but could result in
+   * increased request failure rate.
    *
    * @param key    The name of the unknown field.
    * @param value  The value of the field.
@@ -400,18 +405,11 @@ public abstract class BaseScimResource
   {
     try
     {
-      JsonNode extensionNode =
-          extensionObjectNode.path(getSchemaUrnOrThrowException(clazz));
-      if (extensionNode.isMissingNode())
-      {
-        return null;
-      }
-      else
-      {
-        return JsonUtils.nodeToValue(extensionNode, clazz);
-      }
+      JsonNode extNode =
+          extensionObjectNode.get(getSchemaUrnOrThrowException(clazz));
+      return (extNode == null) ? null : JsonUtils.nodeToValue(extNode, clazz);
     }
-    catch (JsonProcessingException ex)
+    catch (JacksonException ex)
     {
       throw new RuntimeException(ex);
     }
@@ -575,7 +573,7 @@ public abstract class BaseScimResource
       return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
           writeValueAsString(this);
     }
-    catch (JsonProcessingException e)
+    catch (JacksonException e)
     {
       throw new RuntimeException(e);
     }

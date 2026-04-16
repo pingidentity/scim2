@@ -32,15 +32,15 @@
 
 package com.unboundid.scim2.server;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -72,27 +72,26 @@ public class ListResponseWriter<T extends ScimResource>
    * output stream.
    *
    * @param outputStream The output stream to write to.
-   * @throws IOException If an exception occurs while writing to the output
+   * @throws JacksonException If an exception occurs while writing to the output
    * stream.
    */
   public ListResponseWriter(@NotNull final OutputStream outputStream)
-      throws IOException
+      throws JacksonException
   {
-    jsonGenerator =
-        JsonUtils.getObjectReader().getFactory().createGenerator(outputStream);
+    jsonGenerator = JsonUtils.getObjectWriter().createGenerator(outputStream);
     deferredFields = JsonUtils.getJsonNodeFactory().objectNode();
   }
 
   /**
    * Start the response.
    *
-   * @throws IOException If an exception occurs while writing to the output
+   * @throws JacksonException If an exception occurs while writing to the output
    * stream.
    */
-  void startResponse() throws IOException
+  void startResponse() throws JacksonException
   {
     jsonGenerator.writeStartObject();
-    jsonGenerator.writeArrayFieldStart("schemas");
+    jsonGenerator.writeArrayPropertyStart("schemas");
     jsonGenerator.writeString(
         "urn:ietf:params:scim:api:messages:2.0:ListResponse");
     jsonGenerator.writeEndArray();
@@ -101,10 +100,10 @@ public class ListResponseWriter<T extends ScimResource>
   /**
    * End the response.
    *
-   * @throws IOException If an exception occurs while writing to the output
+   * @throws JacksonException If an exception occurs while writing to the output
    * stream.
    */
-  void endResponse() throws IOException
+  void endResponse() throws JacksonException
   {
     if (!sentTotalResults.get() && !deferredFields.has("totalResults"))
     {
@@ -119,7 +118,7 @@ public class ListResponseWriter<T extends ScimResource>
 
     for (Map.Entry<String, JsonNode> field : deferredFields.properties())
     {
-      jsonGenerator.writeObjectField(field.getKey(), field.getValue());
+      jsonGenerator.writePOJOProperty(field.getKey(), field.getValue());
     }
     jsonGenerator.writeEndObject();
     jsonGenerator.flush();
@@ -131,10 +130,11 @@ public class ListResponseWriter<T extends ScimResource>
    * been streamed, otherwise it will be written after the resources array.
    *
    * @param startIndex The startIndex to write.
-   * @throws IOException If an exception occurs while writing to the output
+   * @throws JacksonException If an exception occurs while writing to the output
    * stream.
    */
-  public void startIndex(final int startIndex) throws IOException
+  public void startIndex(final int startIndex)
+      throws JacksonException
   {
     if (startedResourcesArray.get())
     {
@@ -142,7 +142,7 @@ public class ListResponseWriter<T extends ScimResource>
     }
     else
     {
-      jsonGenerator.writeNumberField("startIndex", startIndex);
+      jsonGenerator.writeNumberProperty("startIndex", startIndex);
     }
   }
 
@@ -151,10 +151,10 @@ public class ListResponseWriter<T extends ScimResource>
    * been streamed, otherwise it will be written after the resources array.
    *
    * @param nextCursor The nextCursor to write.
-   * @throws IOException If an exception occurs while writing to the output
+   * @throws JacksonException If an exception occurs while writing to the output
    * stream.
    */
-  public void nextCursor(@NotNull final String nextCursor) throws IOException
+  public void nextCursor(@NotNull final String nextCursor)
   {
     if (startedResourcesArray.get())
     {
@@ -162,7 +162,7 @@ public class ListResponseWriter<T extends ScimResource>
     }
     else
     {
-      jsonGenerator.writeStringField("nextCursor", nextCursor);
+      jsonGenerator.writeStringProperty("nextCursor", nextCursor);
     }
   }
 
@@ -171,10 +171,11 @@ public class ListResponseWriter<T extends ScimResource>
    * have been streamed, otherwise it will be written after the resources array.
    *
    * @param itemsPerPage The itemsPerPage to write.
-   * @throws IOException If an exception occurs while writing to the output
+   * @throws JacksonException If an exception occurs while writing to the output
    * stream.
    */
-  public void itemsPerPage(final int itemsPerPage) throws IOException
+  public void itemsPerPage(final int itemsPerPage)
+      throws JacksonException
   {
     if (startedResourcesArray.get())
     {
@@ -182,7 +183,7 @@ public class ListResponseWriter<T extends ScimResource>
     }
     else
     {
-      jsonGenerator.writeNumberField("itemsPerPage", itemsPerPage);
+      jsonGenerator.writeNumberProperty("itemsPerPage", itemsPerPage);
     }
   }
 
@@ -191,10 +192,11 @@ public class ListResponseWriter<T extends ScimResource>
    * have been streamed, otherwise it will be written after the resources array.
    *
    * @param totalResults The totalResults to write.
-   * @throws IOException If an exception occurs while writing to the output
+   * @throws JacksonException If an exception occurs while writing to the output
    * stream.
    */
-  public void totalResults(final int totalResults) throws IOException
+  public void totalResults(final int totalResults)
+      throws JacksonException
   {
     if (startedResourcesArray.get())
     {
@@ -202,7 +204,7 @@ public class ListResponseWriter<T extends ScimResource>
     }
     else
     {
-      jsonGenerator.writeNumberField("totalResults", totalResults);
+      jsonGenerator.writeNumberProperty("totalResults", totalResults);
       sentTotalResults.set(true);
     }
   }
@@ -211,16 +213,17 @@ public class ListResponseWriter<T extends ScimResource>
    * Write the result resource to the output stream immediately.
    *
    * @param scimResource The resource to write.
-   * @throws IOException If an exception occurs while writing to the output
+   * @throws JacksonException If an exception occurs while writing to the output
    * stream.
    */
-  public void resource(@Nullable final T scimResource) throws IOException
+  public void resource(@Nullable final T scimResource)
+      throws JacksonException
   {
     if (startedResourcesArray.compareAndSet(false, true))
     {
-      jsonGenerator.writeArrayFieldStart("Resources");
+      jsonGenerator.writeArrayPropertyStart("Resources");
     }
-    jsonGenerator.writeObject(scimResource);
+    jsonGenerator.writePOJO(scimResource);
     resultsSent.incrementAndGet();
   }
 }

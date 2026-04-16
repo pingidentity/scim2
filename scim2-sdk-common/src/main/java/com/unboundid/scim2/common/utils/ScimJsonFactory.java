@@ -33,16 +33,13 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.ErrorReportConfiguration;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.io.ContentReference;
-import com.fasterxml.jackson.core.io.IOContext;
 import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.annotations.Nullable;
+import tools.jackson.core.ErrorReportConfiguration;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.io.ContentReference;
+import tools.jackson.core.io.IOContext;
 
-import java.io.IOException;
 import java.io.Reader;
 
 
@@ -63,14 +60,10 @@ public class ScimJsonFactory extends JsonFactory
    * A constructor used when copying an existing SCIM JsonFactory instance.
    *
    * @param sourceFactory   The original ScimJsonFactory.
-   * @param codec           The codec that defines the way that objects should
-   *                        be serialized and deserialized. This may be
-   *                        {@code null}.
    */
-  protected ScimJsonFactory(@NotNull final ScimJsonFactory sourceFactory,
-                            @Nullable final ObjectCodec codec)
+  protected ScimJsonFactory(@NotNull final ScimJsonFactory sourceFactory)
   {
-    super(sourceFactory, codec);
+    super(sourceFactory);
   }
 
   /**
@@ -79,17 +72,15 @@ public class ScimJsonFactory extends JsonFactory
    *
    * @param r Reader to use for reading JSON content to parse
    * @return ScimFilterJsonParser object
-   * @throws IOException on parse error
    */
   @NotNull
   JsonParser createScimFilterParser(@NotNull final Reader r)
-      throws IOException
   {
-    ContentReference reference = ContentReference.construct(true, r,
-        ErrorReportConfiguration.defaults());
+    var config = ErrorReportConfiguration.defaults();
+    ContentReference reference = ContentReference.construct(true, r, config);
     IOContext ctxt = _createContext(reference, false);
-    return new ScimFilterJsonParser(ctxt, _parserFeatures, r, _objectCodec,
-        _rootCharSymbols.makeChild());
+
+    return new ScimFilterJsonParser(ctxt, r, _rootCharSymbols.makeChild());
   }
 
   /**
@@ -101,6 +92,6 @@ public class ScimJsonFactory extends JsonFactory
   @NotNull
   public ScimJsonFactory copy()
   {
-    return new ScimJsonFactory(this, _objectCodec);
+    return new ScimJsonFactory(this);
   }
 }

@@ -39,7 +39,7 @@ import org.testng.annotations.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- *
+ * Tests for {@link AccountState}.
  */
 public class AccountStateTest
 {

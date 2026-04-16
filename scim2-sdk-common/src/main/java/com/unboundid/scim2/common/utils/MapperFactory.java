@@ -33,14 +33,13 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 import com.unboundid.scim2.common.annotations.NotNull;
 
 import java.util.Calendar;
@@ -48,7 +47,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
-import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES;
+import static tools.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES;
 
 /**
  * This class may be used to customize the object mapper that is used by the
@@ -70,7 +69,6 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
  *   <li> {@link #setDeserializationCustomFeatures}
  *   <li> {@link #setSerializationCustomFeatures}
  *   <li> {@link #setJsonParserCustomFeatures}
- *   <li> {@link #setJsonGeneratorCustomFeatures}
  * </ul>
  *
  * For example, to disable the
@@ -95,7 +93,7 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
  * <pre><code>
  *   public class CustomMapperFactory extends MapperFactory
  *   {
- *    {@literal @}Override
+ *     &#64;Override
  *     public ObjectMapper createObjectMapper()
  *     {
  *       // Fetch the initial object mapper from the superclass, then add your
@@ -126,11 +124,7 @@ public class MapperFactory
       Collections.emptyMap();
 
   @NotNull
-  private Map<JsonParser.Feature, Boolean> jsonParserCustomFeatures =
-      Collections.emptyMap();
-
-  @NotNull
-  private Map<JsonGenerator.Feature, Boolean> jsonGeneratorCustomFeatures =
+  private Map<JsonReadFeature, Boolean> jsonParserCustomFeatures =
       Collections.emptyMap();
 
   @NotNull
@@ -159,23 +153,6 @@ public class MapperFactory
   }
 
   /**
-   * Sets custom JSON generator features for any JSON ObjectMapper that is
-   * used and returned by the SCIM 2 SDK.  This class should be used
-   * to configure any object mapper customizations needed prior to using
-   * any method in the JsonUtils class.
-   *
-   * @param customFeatures The list of custom JSON generator feature settings.
-   * @return this object.
-   */
-  @NotNull
-  public MapperFactory setJsonGeneratorCustomFeatures(
-      @NotNull final Map<JsonGenerator.Feature, Boolean> customFeatures)
-  {
-    jsonGeneratorCustomFeatures = customFeatures;
-    return this;
-  }
-
-  /**
    * Sets custom JSON parser features for any JSON ObjectMapper that is
    * used and returned by the SCIM 2 SDK.  This class should be used
    * to configure any object mapper customizations needed prior to using
@@ -186,7 +163,7 @@ public class MapperFactory
    */
   @NotNull
   public MapperFactory setJsonParserCustomFeatures(
-      @NotNull final Map<JsonParser.Feature, Boolean> customFeatures)
+      @NotNull final Map<JsonReadFeature, Boolean> customFeatures)
   {
     jsonParserCustomFeatures = customFeatures;
     return this;
@@ -236,7 +213,7 @@ public class MapperFactory
    *     and deserializing SCIM JSON objects.
    */
   @NotNull
-  public ObjectMapper createObjectMapper()
+  public JsonMapper createObjectMapper()
   {
     // Create a new object mapper with case-insensitive settings.
     JsonMapper.Builder builder = JsonMapper.builder(new ScimJsonFactory());
@@ -244,11 +221,15 @@ public class MapperFactory
     // Do not care about case when de-serializing POJOs.
     builder.enable(ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 
-    // The SCIM SDK relies on its own custom deserializers for timestamps.
-    builder.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    // Preserve original behavior from Jackson 2.x. This ensures, for example,
+    // that "userName" is one of the first attributes listed when printing a
+    // UserResource.
+    builder.disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
 
     // Don't serialize POJO nulls as JSON nulls.
-    builder.defaultPropertyInclusion(JsonInclude.Value.ALL_NON_NULL);
+    var nonNull = JsonInclude.Include.NON_NULL;
+    builder.changeDefaultPropertyInclusion(v -> v.withValueInclusion(nonNull))
+        .changeDefaultPropertyInclusion(v -> v.withContentInclusion(nonNull));
 
     // Only use xsd:dateTime format for dates.
     SimpleModule dateTimeModule = new SimpleModule();
@@ -265,7 +246,6 @@ public class MapperFactory
     // object mapper to ensure that customizations are not overwritten.
     mapperCustomFeatures.forEach(builder::configure);
     deserializationCustomFeatures.forEach(builder::configure);
-    jsonGeneratorCustomFeatures.forEach(builder::configure);
     jsonParserCustomFeatures.forEach(builder::configure);
     serializationCustomFeatures.forEach(builder::configure);
 

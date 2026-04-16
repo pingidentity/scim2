@@ -32,10 +32,6 @@
 
 package com.unboundid.scim2.common.bulk;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.exceptions.BulkRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
@@ -44,6 +40,10 @@ import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class BulkOperationTest
    * Tests the behavior of bulk delete operations.
    */
   @Test
-  public void testDelete() throws Exception
+  public void testDelete()
   {
     // Instantiate a bulk delete operation and verify the result.
     BulkOperation operation = BulkOperation.delete("/Users/customResource")
@@ -101,7 +101,7 @@ public class BulkOperationTest
    * Tests the behavior of bulk POST operations.
    */
   @Test
-  public void testPost() throws Exception
+  public void testPost()
   {
     // Instantiate a post operation.
     UserResource newUser = new UserResource().setUserName("kendrick.lamar");
@@ -150,7 +150,7 @@ public class BulkOperationTest
    * Tests the behavior of bulk PUT operations.
    */
   @Test
-  public void testPut() throws Exception
+  public void testPut()
   {
     // Instantiate a bulk put operation.
     UserResource newUserData = new UserResource()
@@ -343,14 +343,14 @@ public class BulkOperationTest
 
     // A bulk patch operation should be returned as a PatchRequest.
     BulkOperation patch = BulkOperation.patch("/Users/fa1afe1",
-        PatchOperation.add("userName", TextNode.valueOf("newUser")),
+        PatchOperation.add("userName", StringNode.valueOf("newUser")),
         PatchOperation.replace("title", "newHire"));
     assertThat(patch.getDataAsScimResource()).isInstanceOf(PatchRequest.class);
     PatchRequest patchRequest = (PatchRequest) patch.getDataAsScimResource();
     assertThat(patchRequest.getOperations())
         .hasSize(2)
         .containsExactly(
-            PatchOperation.add("userName", TextNode.valueOf("newUser")),
+            PatchOperation.add("userName", StringNode.valueOf("newUser")),
             PatchOperation.replace("title", "newHire"));
 
     // Delete operations do not have data. Ensure a null value is returned.
@@ -360,7 +360,7 @@ public class BulkOperationTest
     // Create an invalid user resource.
     ObjectNode invalidNode = op.getData();
     assertThat(invalidNode).isNotNull();
-    invalidNode.set("emails", TextNode.valueOf("invalidSingleValue"));
+    invalidNode.set("emails", StringNode.valueOf("invalidSingleValue"));
     BulkOperation opWithInvalidData = BulkOperation.post("/Users", invalidNode);
     assertThatThrownBy(opWithInvalidData::getDataAsScimResource)
         .isInstanceOf(BulkRequestException.class)
@@ -448,10 +448,10 @@ public class BulkOperationTest
     // is the case by showing that valid keys/fields make no update.
     BulkOperation operation = BulkOperation.post("/Users", new UserResource());
     var operation2 = operation.copy();
-    operation.setAny("method", TextNode.valueOf("DELETE"));
+    operation.setAny("method", StringNode.valueOf("DELETE"));
     assertThat(operation).isEqualTo(operation2);
 
-    operation.setAny("doesNotExist", TextNode.valueOf("Other"));
+    operation.setAny("doesNotExist", StringNode.valueOf("Other"));
     assertThat(operation).isEqualTo(operation2);
   }
 }
