@@ -32,18 +32,6 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -52,8 +40,18 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.AttributeDefinition;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
+import tools.jackson.databind.type.CollectionType;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -70,7 +68,7 @@ public class JsonUtils
   private static MapperFactory mapperFactory = new MapperFactory();
 
   @NotNull
-  private static ObjectMapper SDK_OBJECT_MAPPER = createObjectMapper();
+  private static JsonMapper SDK_OBJECT_MAPPER = createJsonMapper();
 
   /**
    * This represents the base class for handling SCIM JSON data. Subclasses
@@ -582,11 +580,11 @@ public class JsonUtils
    * <pre><code>
    *   ObjectNode resource = getObjectNode();
    *
-   *   // Returns a TextNode containing "Bob".
+   *   // Returns a StringNode containing "Bob".
    *   getValue(Path.of("name"), resource);
    *
-   *   // Returns an ArrayNode of TextNodes with the values "red", "green", and
-   *   // "blue".
+   *   // Returns an ArrayNode of StringNodes with the values "red", "green",
+   *   // and "blue".
    *   getValue(Path.of("favoriteColors"), resource);
    * </code></pre>
    *
@@ -633,11 +631,11 @@ public class JsonUtils
    *   }
    * </pre>
    *
-   * Calling getValues with path of emails.value will return a list of all
-   * TextNodes of the {@code value} field in the {@code emails} array:
+   * Calling this method with a path of {@code emails.value} will return a list
+   * of all StringNodes of the {@code value} field in the {@code emails} array:
    *
    * <pre>
-   *   [ TextNode("bob@work.com"), TextNode("bob@home.com") ]
+   *   [ StringNode("bob@work.com"), StringNode("bob@home.com") ]
    * </pre>
    *
    * However, if the last element of the path references a JSON array, the
@@ -659,8 +657,8 @@ public class JsonUtils
    *   }
    * </pre>
    *
-   * Calling getValues with path of books.authors will return a list of all
-   * ArrayNodes of the {@code authors} field in the {@code books} array:
+   * Calling this method with a path of {@code books.authors} will return a list
+   * of all ArrayNodes of the {@code authors} field in the {@code books} array:
    *
    * <pre>
    * [ ArrayNode(["Bill Martin, Jr.", "Eric Carle"]), ArrayNode(["Dr. Seuss"]) ]
@@ -876,7 +874,7 @@ public class JsonUtils
       @NotNull final JsonNode n2,
       @Nullable final AttributeDefinition attributeDefinition)
   {
-    if (n1.isTextual() && n2.isTextual())
+    if (n1.isString() && n2.isString())
     {
       Date d1 = dateValue(n1);
       Date d2 = dateValue(n2);
@@ -890,10 +888,10 @@ public class JsonUtils
             attributeDefinition.getType() == AttributeDefinition.Type.STRING &&
             attributeDefinition.isCaseExact())
         {
-          return n1.textValue().compareTo(n2.textValue());
+          return n1.asString().compareTo(n2.asString());
         }
-        return StaticUtils.toLowerCase(n1.textValue()).compareTo(
-            StaticUtils.toLowerCase(n2.textValue()));
+        return StaticUtils.toLowerCase(n1.asString()).compareTo(
+            StaticUtils.toLowerCase(n2.asString()));
       }
     }
 
@@ -918,7 +916,7 @@ public class JsonUtils
     }
 
     // Compare everything else lexicographically
-    return n1.asText().compareTo(n2.asText());
+    return n1.asString().compareTo(n2.asString());
   }
 
   /**
@@ -941,8 +939,6 @@ public class JsonUtils
   {
     return new JsonDiff().diff(source, target, removeMissing);
   }
-
-
 
   /**
    * Try to parse out a date from a JSON text node.
@@ -1065,9 +1061,9 @@ public class JsonUtils
       for (Map.Entry<String, JsonNode> field : objectNode.properties())
       {
         JsonNode valueNode = field.getValue();
-        if (valueNode.isTextual())
+        if (valueNode.isString())
         {
-          String text = valueNode.asText();
+          String text = valueNode.asString();
           if (text.contains(oldValue))
           {
             // Replace the text node with the updated value
@@ -1086,12 +1082,12 @@ public class JsonUtils
       for (int i = 0; i < array.size(); i++)
       {
         JsonNode element = array.get(i);
-        if (element.isTextual())
+        if (element.isString())
         {
-          String text = element.asText();
+          String text = element.asString();
           if (text.contains(oldValue))
           {
-            array.set(i, TextNode.valueOf(text.replace(oldValue, newValue)));
+            array.set(i, StringNode.valueOf(text.replace(oldValue, newValue)));
           }
         }
         else if (element.isObject() || element.isArray())
@@ -1164,13 +1160,13 @@ public class JsonUtils
    * @param fromNode node to convert.
    * @param valueType The value type.
    * @return converted POJO.
-   * @throws JsonProcessingException if an error occurs while binding the JSON
+   * @throws JacksonException if an error occurs while binding the JSON
    * node to the value type.
    */
   @Nullable
   public static <T> T nodeToValue(@Nullable final JsonNode fromNode,
                                   @NotNull final Class<T> valueType)
-      throws JsonProcessingException
+      throws JacksonException
   {
     return SDK_OBJECT_MAPPER.treeToValue(fromNode, valueType);
   }
@@ -1182,31 +1178,20 @@ public class JsonUtils
    * @param fromNode node to convert.
    * @param valueType The value type.
    * @return converted list of POJOs.
-   * @throws JsonProcessingException if an error occurs while binding the JSON
+   * @throws JacksonException if an error occurs while binding the JSON
    * node to the value type.
    */
   @Nullable
   public static <T> List<T> nodeToValues(@NotNull final ArrayNode fromNode,
                                          @NotNull final Class<T> valueType)
-      throws JsonProcessingException
+      throws JacksonException
   {
     final CollectionType collectionType =
         SDK_OBJECT_MAPPER.getTypeFactory().constructCollectionType(
             List.class, valueType);
 
-    try
-    {
-      return SDK_OBJECT_MAPPER.readValue(
-          SDK_OBJECT_MAPPER.treeAsTokens(fromNode), collectionType);
-    }
-    catch (JsonProcessingException e)
-    {
-      throw e;
-    }
-    catch (IOException e)
-    {
-      throw new IllegalArgumentException(e.getMessage(), e);
-    }
+    return SDK_OBJECT_MAPPER.readValue(
+        SDK_OBJECT_MAPPER.treeAsTokens(fromNode), collectionType);
   }
 
   /**
@@ -1221,30 +1206,44 @@ public class JsonUtils
   public static Date nodeToDateValue(@NotNull final JsonNode node)
       throws IllegalArgumentException
   {
-    if (!node.isTextual())
+    if (!node.isString())
     {
       throw new IllegalArgumentException(
           "non-textual node cannot be parsed as DateTime type");
     }
-    String text = node.textValue().trim();
+    String text = node.asString().trim();
     return DateTimeUtils.parse(text).getTime();
   }
 
   /**
-   * Creates a configured SCIM-compatible Jackson ObjectMapper. Creating new
-   * ObjectMapper instances are expensive, so instances should be shared if
-   * possible. Alternatively, consider using one of the
+   * Creates a configured SCIM-compatible Jackson JsonMapper. Consider using the
    * {@link #getObjectReader}, {@link #getObjectWriter},
    * {@link #getJsonNodeFactory}, or {@link #valueToNode} methods, which use the
-   * SCIM 2 SDK's ObjectMapper singleton.
+   * SCIM 2 SDK's JsonMapper singleton.
    *
-   * @return an Object Mapper with the correct options set for serializing
-   *     and deserializing SCIM JSON objects.
+   * @return A JsonMapper with the correct options set for serializing
+   *         and deserializing SCIM JSON objects.
+   *
+   * @since 6.0.0
    */
   @NotNull
-  public static ObjectMapper createObjectMapper()
+  public static JsonMapper createJsonMapper()
   {
     return mapperFactory.createObjectMapper();
+  }
+
+  /**
+   * Creates a configured SCIM-compatible Jackson JsonMapper. This method is
+   * equivalent to {@link #createJsonMapper()}, and exists for backward
+   * compatibility with previous releases that used this method name.
+   *
+   * @return A JsonMapper with the correct options set for serializing
+   *         and deserializing SCIM JSON objects.
+   */
+  @NotNull
+  public static JsonMapper createObjectMapper()
+  {
+    return createJsonMapper();
   }
 
   /**
@@ -1272,7 +1271,7 @@ public class JsonUtils
    *
    * @param customMapperFactory the custom JSON object mapper.
    */
-  public static void setCustomMapperFactory(
+  public static synchronized void setCustomMapperFactory(
       @NotNull final MapperFactory customMapperFactory)
   {
     JsonUtils.mapperFactory = customMapperFactory;

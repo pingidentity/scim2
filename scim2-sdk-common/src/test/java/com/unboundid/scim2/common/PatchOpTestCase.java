@@ -32,16 +32,7 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.core.Base64Variants;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
-import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchOpType;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
@@ -53,14 +44,23 @@ import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import tools.jackson.core.Base64Variants;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.IntNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static com.unboundid.scim2.common.exceptions.BadRequestException.INVALID_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertThrows;
@@ -78,12 +78,9 @@ public class PatchOpTestCase
 
   /**
    * Test patch request.
-   *
-   * @throws IOException If an error occurs.
-   * @throws ScimException If an error occurs.
    */
   @Test
-  public void getTestPatch() throws IOException, ScimException
+  public void getTestPatch() throws Exception
   {
     PatchRequest patchOp = JsonUtils.getObjectReader().
         forType(PatchRequest.class).
@@ -372,82 +369,66 @@ public class PatchOpTestCase
 
   /**
    * Test bad patch requests.
-   *
-   * @throws IOException If an error occurs.
    */
   @Test
-  public void getTestBadPatch() throws IOException
+  public void getTestBadPatch()
   {
-    try
-    {
-      JsonUtils.getObjectReader().forType(PatchRequest.class).readValue("""
-              {
-                "schemas":[ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
-                "Operations":[
-                  {
-                    "op":"remove",
-                    "path":"emails[type eq \\"work\\" and \
-              value ew \\"example.com\\"].too.deep"
-                  }
-                ]
-              }""");
-    }
-    catch (JsonMappingException e)
-    {
-      assertEquals(
-          ((BadRequestException) e.getCause()).getScimError().getScimType(),
-          BadRequestException.INVALID_PATH);
-    }
+    final var reader = JsonUtils.getObjectReader().forType(PatchRequest.class);
 
-    try
-    {
-    JsonUtils.getObjectReader().forType(PatchRequest.class).readValue("""
+    // Start with a valid form that should deserialize correctly.
+    String valid = """
         {
-          "schemas":[ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
-          "Operations":[
-            {
-              "op":"remove",
-              "path":"emails[type eq \\"work\\" and \
-        value ew \\"example.com\\"].sub[something eq 2]"
-            }
-          ]
-        }""");
-    }
-    catch (JsonMappingException e)
-    {
-      assertEquals(
-          ((BadRequestException) e.getCause()).getScimError().getScimType(),
-          BadRequestException.INVALID_PATH);
-    }
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "remove",
+            "path": "emails[type eq \\"work\\"]"
+          } ]
+        }""";
+    assertThatCode(() -> reader.readValue(valid)).doesNotThrowAnyException();
 
-    try
-    {
-    JsonUtils.getObjectReader().forType(PatchRequest.class).readValue("""
+    String overlyNested = """
         {
-          "schemas":[
-            "urn:ietf:params:scim:api:messages:2.0:PatchOp"
-          ],
-          "Operations":[
-            {
-              "op":"add",
-              "path":"emails[type eq \\"work\\" and \
-        value ew \\"example.com\\"],"
-              "value":"value"
-            }
-          ]
-        }""");
-    }
-    catch (JsonMappingException e)
-    {
-      assertEquals(
-          ((BadRequestException) e.getCause()).getScimError().getScimType(),
-          BadRequestException.INVALID_PATH);
-    }
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "remove",
+            "path":"emails[type eq \\"work\\" and value ew \\"example.com\\"].too.deep"
+          } ]
+        }""";
+    assertThatThrownBy(() -> reader.readValue(overlyNested))
+        .isInstanceOf(JacksonException.class)
+        .cause().isInstanceOfSatisfying(BadRequestException.class, e ->
+            assertThat(e.getScimError().getScimType()).isEqualTo(INVALID_PATH));
+
+    String nestedSubfilter = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "remove",
+            "path":"emails[type eq \\"work\\" and value ew \\"example.com\\"].sub[something eq 2]"
+          } ]
+        }""";
+    assertThatThrownBy(() -> reader.readValue(nestedSubfilter))
+        .isInstanceOf(JacksonException.class)
+        .cause().isInstanceOfSatisfying(BadRequestException.class, e ->
+            assertThat(e.getScimError().getScimType()).isEqualTo(INVALID_PATH));
+
+    String trailingCommaInPath = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "add",
+            "path":"emails[type eq \\"work\\" and value ew \\"example.com\\"],",
+            "value": "value"
+          } ]
+        }""";
+    assertThatThrownBy(() -> reader.readValue(trailingCommaInPath))
+        .isInstanceOf(JacksonException.class)
+        .cause().isInstanceOfSatisfying(BadRequestException.class, e ->
+            assertThat(e.getScimError().getScimType()).isEqualTo(INVALID_PATH));
   }
 
   /**
    * test string methods.
-   * @throws Exception error
    */
   @Test
   public void testStringPatchOps() throws Exception
@@ -458,8 +439,8 @@ public class PatchOpTestCase
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertEquals(jsonNode.size(), 2);
-    Assert.assertEquals(jsonNode.get(0).textValue(), "value1");
-    Assert.assertEquals(jsonNode.get(1).textValue(), "value2");
+    Assert.assertEquals(jsonNode.get(0).asString(), "value1");
+    Assert.assertEquals(jsonNode.get(1).asString(), "value2");
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     patchOp = PatchOperation.addStringValues(Path.fromString("path1"),
@@ -468,8 +449,8 @@ public class PatchOpTestCase
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertEquals(jsonNode.size(), 2);
-    Assert.assertEquals(jsonNode.get(0).textValue(), "value1");
-    Assert.assertEquals(jsonNode.get(1).textValue(), "value2");
+    Assert.assertEquals(jsonNode.get(0).asString(), "value1");
+    Assert.assertEquals(jsonNode.get(1).asString(), "value2");
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     patchOp = PatchOperation.replace("path1", "value1");
@@ -485,7 +466,6 @@ public class PatchOpTestCase
 
   /**
    * test boolean methods.
-   * @throws Exception error
    */
   @Test
   public void testBooleanPatchOps() throws Exception
@@ -505,7 +485,6 @@ public class PatchOpTestCase
 
   /**
    * test double methods.
-   * @throws Exception error
    */
   @Test
   public void testDoublePatchOps() throws Exception
@@ -544,7 +523,6 @@ public class PatchOpTestCase
 
   /**
    * test integer methods.
-   * @throws Exception error
    */
   @Test
   public void testIntegerPatchOps() throws Exception
@@ -583,7 +561,6 @@ public class PatchOpTestCase
 
   /**
    * test long methods.
-   * @throws Exception error
    */
   @Test
   public void testLongPatchOps() throws Exception
@@ -622,7 +599,6 @@ public class PatchOpTestCase
 
   /**
    * test date methods.
-   * @throws Exception error
    */
   @Test
   public void testDatePatchOps() throws Exception
@@ -657,7 +633,7 @@ public class PatchOpTestCase
     patchOp = PatchOperation.replace("path1", d5);
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.REPLACE);
     Assert.assertEquals(patchOp.getValue(String.class),
-        GenericScimResource.getDateJsonNode(d5).textValue());
+        GenericScimResource.getDateJsonNode(d5).asString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     Date d6 = new Date(89233675240L);
@@ -665,13 +641,12 @@ public class PatchOpTestCase
         Path.fromString("path1"), d6);
     Assert.assertEquals(patchOp.getOpType(), PatchOpType.REPLACE);
     Assert.assertEquals(patchOp.getValue(String.class),
-        GenericScimResource.getDateJsonNode(d6).textValue());
+        GenericScimResource.getDateJsonNode(d6).asString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
   }
 
   /**
    * test binary methods.
-   * @throws Exception error
    */
   @Test
   public void testBinaryPatchOps() throws Exception
@@ -684,9 +659,9 @@ public class PatchOpTestCase
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertTrue(Arrays.equals(Base64Variants.getDefaultVariant().
-        decode(jsonNode.get(0).textValue()), ba1));
+        decode(jsonNode.get(0).asString()), ba1));
     Assert.assertTrue(Arrays.equals(Base64Variants.getDefaultVariant().
-        decode(jsonNode.get(1).textValue()), ba2));
+        decode(jsonNode.get(1).asString()), ba2));
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     byte[] ba3 = new byte[] {0x03, 0x04, 0x05};
@@ -697,9 +672,9 @@ public class PatchOpTestCase
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertTrue(Arrays.equals(Base64Variants.getDefaultVariant().
-        decode(jsonNode.get(0).textValue()), ba3));
+        decode(jsonNode.get(0).asString()), ba3));
     Assert.assertTrue(Arrays.equals(Base64Variants.getDefaultVariant().
-        decode(jsonNode.get(1).textValue()), ba4));
+        decode(jsonNode.get(1).asString()), ba4));
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     byte[] ba5 = new byte[] {0x06, 0x07, 0x08};
@@ -718,7 +693,6 @@ public class PatchOpTestCase
 
   /**
    * test URI methods.
-   * @throws Exception error
    */
   @Test
   public void testURIPatchOps() throws Exception
@@ -731,8 +705,8 @@ public class PatchOpTestCase
     JsonNode jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertEquals(jsonNode.size(), 2);
-    Assert.assertEquals(jsonNode.get(0).textValue(), uri1.toString());
-    Assert.assertEquals(jsonNode.get(1).textValue(), uri2.toString());
+    Assert.assertEquals(jsonNode.get(0).asString(), uri1.toString());
+    Assert.assertEquals(jsonNode.get(1).asString(), uri2.toString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     URI uri3 = new URI("http://localhost:8080/apps/app2");
@@ -743,8 +717,8 @@ public class PatchOpTestCase
     jsonNode = patchOp.getJsonNode();
     Assert.assertTrue(jsonNode.isArray());
     Assert.assertEquals(jsonNode.size(), 2);
-    Assert.assertEquals(jsonNode.get(0).textValue(), uri3.toString());
-    Assert.assertEquals(jsonNode.get(1).textValue(), uri4.toString());
+    Assert.assertEquals(jsonNode.get(0).asString(), uri3.toString());
+    Assert.assertEquals(jsonNode.get(1).asString(), uri4.toString());
     Assert.assertEquals(patchOp.getPath(), Path.fromString("path1"));
 
     URI uri5 = new URI("http://localhost:8080/apps/app3");
@@ -774,32 +748,32 @@ public class PatchOpTestCase
   {
     // Null or empty values should not be permitted.
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.add("attr", null));
+        () -> PatchOperation.add("attr", null));
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.replace("attr", (String) null));
+        () -> PatchOperation.replace("attr", (String) null));
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.create(PatchOpType.ADD, "attr", null));
+        () -> PatchOperation.create(PatchOpType.ADD, "attr", null));
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.create(PatchOpType.REPLACE, "attr", null));
+        () -> PatchOperation.create(PatchOpType.REPLACE, "attr", null));
 
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.add("attr", EMPTY_OBJECT));
+        () -> PatchOperation.add("attr", EMPTY_OBJECT));
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.replace("attr", EMPTY_OBJECT));
+        () -> PatchOperation.replace("attr", EMPTY_OBJECT));
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.create(PatchOpType.ADD, "attr", EMPTY_OBJECT));
+        () -> PatchOperation.create(PatchOpType.ADD, "attr", EMPTY_OBJECT));
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.create(PatchOpType.REPLACE, "attr", EMPTY_OBJECT));
+        () -> PatchOperation.create(PatchOpType.REPLACE, "attr", EMPTY_OBJECT));
 
     JsonNode nullNode = NullNode.getInstance();
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.add("attr", nullNode));
+        () -> PatchOperation.add("attr", nullNode));
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.replace("attr", nullNode));
+        () -> PatchOperation.replace("attr", nullNode));
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.create(PatchOpType.ADD, "attr", nullNode));
+        () -> PatchOperation.create(PatchOpType.ADD, "attr", nullNode));
     assertThrows(IllegalArgumentException.class,
-            () -> PatchOperation.create(PatchOpType.REPLACE, "attr", nullNode));
+        () -> PatchOperation.create(PatchOpType.REPLACE, "attr", nullNode));
 
     // Empty array values should be accepted.
     PatchOperation.add("myArray", EMPTY_ARRAY);
@@ -967,52 +941,52 @@ public class PatchOpTestCase
     PatchOperation operation2;
 
     operation = PatchOperation.addStringValues("backupEmails",
-            Arrays.asList("shady@example.com", "rabbit@example.com"));
+        Arrays.asList("shady@example.com", "rabbit@example.com"));
     operation2 = PatchOperation.addStringValues("backupEmails",
-            "shady@example.com", "rabbit@example.com");
+        "shady@example.com", "rabbit@example.com");
     assertEquals(operation, operation2);
 
     operation = PatchOperation.addDoubleValues("weightHistoryLbs",
-            Arrays.asList(162.1, 165.0, 164.2));
+        Arrays.asList(162.1, 165.0, 164.2));
     operation2 = PatchOperation.addDoubleValues("weightHistoryLbs",
-            162.1, 165.0, 164.2);
+        162.1, 165.0, 164.2);
     assertEquals(operation, operation2);
 
     operation = PatchOperation.addIntegerValues("siblingAges",
-            Arrays.asList(13, 13, 24));
+        Arrays.asList(13, 13, 24));
     operation2 = PatchOperation.addIntegerValues("siblingAges",
-            13, 13, 24);
+        13, 13, 24);
     assertEquals(operation, operation2);
 
     operation = PatchOperation.addLongValues("favoritePrimes",
-            Arrays.asList(11L, 19L, 83L));
+        Arrays.asList(11L, 19L, 83L));
     operation2 = PatchOperation.addLongValues("favoritePrimes",
-            11L, 19L, 83L);
+        11L, 19L, 83L);
     assertEquals(operation, operation2);
 
     operation = PatchOperation.addDateValues("commitTimestamps",
-            Arrays.asList(new Date(1426901922000L), new Date(1440085206000L)));
+        Arrays.asList(new Date(1426901922000L), new Date(1440085206000L)));
     operation2 = PatchOperation.addDateValues("commitTimestamps",
-            new Date(1426901922000L), new Date(1440085206000L));
+        new Date(1426901922000L), new Date(1440085206000L));
     assertEquals(operation, operation2);
 
     operation = PatchOperation.addBinaryValues("easterEgg",
-            Arrays.asList(
-                    new byte[] { 69, 97, 115, 116, 101, 114 },
-                    new byte[] { 101, 103, 103, 33 }
-            ));
-    operation2 = PatchOperation.addBinaryValues("easterEgg",
+        Arrays.asList(
             new byte[] { 69, 97, 115, 116, 101, 114 },
             new byte[] { 101, 103, 103, 33 }
+        ));
+    operation2 = PatchOperation.addBinaryValues("easterEgg",
+        new byte[] { 69, 97, 115, 116, 101, 114 },
+        new byte[] { 101, 103, 103, 33 }
     );
     assertEquals(operation, operation2);
 
     operation = PatchOperation.addURIValues("personalSites",
-            Arrays.asList(URI.create("https://example.com/"),
-                          URI.create("https://example.com/cool")));
+        Arrays.asList(URI.create("https://example.com/"),
+            URI.create("https://example.com/cool")));
     operation2 = PatchOperation.addURIValues("personalSites",
-            URI.create("https://example.com/"),
-            URI.create("https://example.com/cool"));
+        URI.create("https://example.com/"),
+        URI.create("https://example.com/cool"));
     assertEquals(operation, operation2);
   }
 
@@ -1031,7 +1005,7 @@ public class PatchOpTestCase
         PatchOperation.replace("name.givenName", "Gabe"),
         PatchOperation.remove("emails"),
         PatchOperation.replace("nickName", "thisPie"),
-        PatchOperation.add("title", TextNode.valueOf("CEO")),
+        PatchOperation.add("title", StringNode.valueOf("CEO")),
         PatchOperation.replace("password", "HL3"),
         PatchOperation.remove("password")
     );
@@ -1085,15 +1059,11 @@ public class PatchOpTestCase
     var invalidAddOp = PatchOperation.add("unknownField", IntNode.valueOf(100));
     PatchRequest invalidAddRequest = new PatchRequest(invalidAddOp);
 
-    // In Jackson 2.x, this results in an invalid data model and an exception.
     // As of Jackson 3.x, invalid attributes are ignored.
-    assertThatThrownBy(() -> invalidAddOp.applyToResource(complexUser))
-        .isInstanceOf(BadRequestException.class)
-        .hasMessageContaining("The update could not be applied to the")
-        .hasMessageContaining("resource.");
-    assertThatThrownBy(() -> invalidAddRequest.applyToResource(complexUser))
-        .isInstanceOf(BadRequestException.class)
-        .hasMessageContaining("The patch request resulted in an invalid object")
-        .hasMessageContaining("model.");
+    UserResource unchangedAgain = invalidAddOp.applyToResource(complexUser);
+    UserResource unchangedAgain2 = invalidAddRequest.applyToResource(complexUser);
+    assertThat(unchangedAgain)
+        .isEqualTo(complexUser)
+        .isEqualTo(unchangedAgain2);
   }
 }

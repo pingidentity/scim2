@@ -32,9 +32,9 @@
 
 package com.unboundid.scim2.client;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * An interface for handling the search result response. Methods will be called

@@ -43,7 +43,6 @@ import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

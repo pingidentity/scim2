@@ -31,20 +31,20 @@
  */
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
+import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-import java.io.IOException;
 import java.util.Calendar;
 
 /**
  * Deserializes SCIM 2 DateTime values to {@link Calendar} objects.
  */
-public class CalendarDeserializer extends JsonDeserializer<Calendar>
+public class CalendarDeserializer extends ValueDeserializer<Calendar>
 {
   /**
    * {@inheritDoc}
@@ -53,7 +53,22 @@ public class CalendarDeserializer extends JsonDeserializer<Calendar>
   @NotNull
   public Calendar deserialize(@NotNull final JsonParser jp,
                               @Nullable final DeserializationContext ctxt)
-      throws IOException
+  {
+    return parseAsCalendar(jp);
+  }
+
+  /**
+   * This method obtains the token that the provided JsonParser is pointing to,
+   * and interprets the value as a Calendar object.
+   *
+   * @param jp  The JSON parser.
+   * @return    The timestamp and timezone information as a Calendar.
+   *
+   * @throws ScimDeserializeException  If the value was not a timestamp.
+   */
+  @NotNull
+  public static Calendar parseAsCalendar(@NotNull final JsonParser jp)
+      throws ScimDeserializeException
   {
     // Some client requests may provide dates as a UNIX timestamp. To support
     // this, first attempt using a long. The timezone will be set to UTC.
@@ -62,20 +77,20 @@ public class CalendarDeserializer extends JsonDeserializer<Calendar>
       long timestamp = jp.getLongValue();
       return DateTimeUtils.parse(timestamp);
     }
-    catch (IOException e)
+    catch (JacksonException e)
     {
       // The value was not a UNIX timestamp. Continue.
     }
 
-    String dateStr = jp.getText();
+    String dateStr = jp.getString();
     try
     {
       return DateTimeUtils.parse(dateStr);
     }
     catch (IllegalArgumentException e)
     {
-      throw new InvalidFormatException(
-          jp, "SCIM SDK: unable to deserialize value", dateStr, Calendar.class);
+      throw new ScimDeserializeException(
+          "SCIM SDK: unable to deserialize date value", e);
     }
   }
 }

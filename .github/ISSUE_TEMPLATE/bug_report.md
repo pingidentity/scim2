@@ -19,4 +19,4 @@ A clear and concise description of what you expected to happen.
 **Additional context**
 Add any other context about the problem here. For example:
  - Java version: [e.g., Java 25]
- - SCIM 2 SDK version: [e.g., 5.0.0, master branch]
+ - SCIM 2 SDK version: [e.g., 6.0.0, master branch]

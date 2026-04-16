@@ -31,29 +31,27 @@
  */
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-import java.io.IOException;
 import java.util.Date;
 
 /**
  * Serializes a {@link Date} object to a SCIM 2 DateTime string.
  */
-public class DateSerializer extends JsonSerializer<Date>
+public class DateSerializer extends ValueSerializer<Date>
 {
   /**
    * {@inheritDoc}
    */
   @Override
   public void serialize(@NotNull final Date value,
-                        @NotNull final JsonGenerator jgen,
-                        @Nullable final SerializerProvider serializers)
-      throws IOException
+                        @NotNull final JsonGenerator gen,
+                        @Nullable final SerializationContext ctxt)
   {
-    jgen.writeString(DateTimeUtils.format(value));
+    gen.writeString(DateTimeUtils.format(value));
   }
 }

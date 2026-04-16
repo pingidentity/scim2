@@ -40,6 +40,7 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.utils.StaticUtils;
+import tools.jackson.core.JacksonException;
 
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Invocation;
@@ -48,7 +49,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -214,7 +214,7 @@ public class RequestBuilder<T extends RequestBuilder<T>>
 
       return exception;
     }
-    catch (ProcessingException ex)
+    catch (JacksonException | ProcessingException ex)
     {
       // The exception message likely contains unwanted details about why the
       // server failed to process the response, instead of the actual SCIM

@@ -37,6 +37,8 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.bulk.BulkRequest;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 
+import java.io.Serial;
+
 
 /**
  * This class represents a SCIM exception pertaining to an invalid state for
@@ -56,6 +58,9 @@ import com.unboundid.scim2.common.exceptions.BadRequestException;
  */
 public class BulkRequestException extends RuntimeException
 {
+  @Serial
+  private static final long serialVersionUID = -3269213834837860776L;
+
   /**
    * Constructs a bulk request exception.
    *

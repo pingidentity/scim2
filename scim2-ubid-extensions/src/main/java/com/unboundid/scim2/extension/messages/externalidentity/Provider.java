@@ -32,6 +32,7 @@
 
 package com.unboundid.scim2.extension.messages.externalidentity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -181,12 +182,7 @@ public final class Provider
   private String samlResponseBinding;
 
 
-  // private no-arg constructor for Jackson
-  private Provider()
-  {
-    this(new Builder());
-  }
-
+  @JsonCreator
   private Provider(@NotNull final Builder builder)
   {
     this.name = builder.name;

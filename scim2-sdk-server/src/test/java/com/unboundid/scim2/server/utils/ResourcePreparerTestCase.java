@@ -32,8 +32,6 @@
 
 package com.unboundid.scim2.server.utils;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
@@ -45,6 +43,8 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -194,13 +194,13 @@ public class ResourcePreparerTestCase
     testResource = new GenericScimResource(node);
     testPatch = new ArrayList<>();
     testPatch.add(PatchOperation.add(Path.fromString("alWays"),
-        new TextNode("test")));
+        new StringNode("test")));
     testPatch.add(PatchOperation.add(Path.fromString("neveR"),
-        new TextNode("test")));
+        new StringNode("test")));
     testPatch.add(PatchOperation.add(Path.fromString("defauLt"),
-        new TextNode("test")));
+        new StringNode("test")));
     testPatch.add(PatchOperation.add(Path.fromString("Request"),
-        new TextNode("test")));
+        new StringNode("test")));
   }
 
   /**

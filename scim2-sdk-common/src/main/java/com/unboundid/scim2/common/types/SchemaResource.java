@@ -170,6 +170,6 @@ public class SchemaResource extends BaseScimResource
   @Override
   public int hashCode()
   {
-    return Objects.hash(name, description, attributes);
+    return Objects.hash(super.hashCode(), name, description, attributes);
   }
 }

@@ -65,13 +65,12 @@ public final class DateTimeUtils
    *
    * When string timestamps are deserialized into Calendar objects, previous
    * releases would set timestamps in the default region as {@code GMT+00:00}.
-   * This property allows changing this behavior to use UTC instead.
-   * {@code GMT+00:00} is the default value.
+   * As of the 6.0.0 release, UTC is the default timezone used.
    *
    * @since 5.1.0
    */
   public static boolean USE_GMT_CALENDARS = StaticUtils.getProperty(
-      "com.unboundid.scim2.common.utils.DateTimeUtils.useGMTCalendars", true);
+      "com.unboundid.scim2.common.utils.DateTimeUtils.useGMTCalendars", false);
 
   /**
    * Formats a {@link Date} value as a SCIM 2 DateTime string.
@@ -155,7 +154,6 @@ public final class DateTimeUtils
     }
 
     // In previous releases, the default region was "GMT+00:00".
-    // This property allows using UTC as the default if desired.
     ZoneOffset offset = parsedTime.getOffset();
     TimeZone zone = USE_GMT_CALENDARS && offset.equals(ZoneOffset.ofHours(0))
         ? GMT : TimeZone.getTimeZone(offset);
@@ -170,7 +168,7 @@ public final class DateTimeUtils
    * be set to the UTC timezone.
    *
    * @param timestampMillis   The value representing the number of milliseconds
-   *                          after the epoch (January 1st, 1970, 12:00:00 UTC).
+   *                          after the epoch (January 1st, 1970, 12:00 AM UTC).
    * @return  The Calendar value.
    *
    * @since 5.0.0

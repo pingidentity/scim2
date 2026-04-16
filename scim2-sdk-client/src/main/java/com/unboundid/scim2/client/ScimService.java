@@ -32,7 +32,6 @@
 
 package com.unboundid.scim2.client;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.requests.BulkRequestBuilder;
 import com.unboundid.scim2.client.requests.CreateRequestBuilder;
 import com.unboundid.scim2.client.requests.DeleteRequestBuilder;
@@ -52,6 +51,7 @@ import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
@@ -99,9 +99,8 @@ public class ScimService implements ScimInterface
    */
   public ScimService(@NotNull final WebTarget baseTarget)
   {
-    this.baseTarget = baseTarget.register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper(),
-            JacksonJsonProvider.BASIC_ANNOTATIONS));
+    var mapper = JsonUtils.createJsonMapper();
+    this.baseTarget = baseTarget.register(new JacksonJsonProvider(mapper));
   }
 
   /**
@@ -535,12 +534,10 @@ public class ScimService implements ScimInterface
    * @param id       The resource identifier.
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
-   * @throws ScimException if an error occurs.
    */
   @NotNull
   public DeleteRequestBuilder deleteRequest(@NotNull final String endpoint,
                                             @NotNull final String id)
-      throws ScimException
   {
     return new DeleteRequestBuilder(baseTarget.path(endpoint).path(id));
   }
@@ -551,11 +548,9 @@ public class ScimService implements ScimInterface
    * @param url The URL of the resource to delete.
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
-   * @throws ScimException if an error occurs.
    */
   @NotNull
   public DeleteRequestBuilder deleteRequest(@NotNull final URI url)
-      throws ScimException
   {
     return new DeleteRequestBuilder(resolveWebTarget(url));
   }

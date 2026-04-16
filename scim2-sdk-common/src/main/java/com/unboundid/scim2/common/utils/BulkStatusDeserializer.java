@@ -32,14 +32,13 @@
 
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-
-import java.io.IOException;
+import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
 
 /**
  * Deserializer for the {@code status} field of a bulk operation contained
@@ -64,37 +63,33 @@ import java.io.IOException;
  * parsing the {@code status} value. Note that when the SCIM SDK serializes
  * objects into JSON, it always prints strings of the first form.
  */
-public class BulkStatusDeserializer extends JsonDeserializer<String>
+public class BulkStatusDeserializer extends ValueDeserializer<String>
 {
   /**
    * Implementation of the bulk status deserializer. See the class-level Javadoc
    * for more information.
-   * <br><br>
-   *
-   * {@inheritDoc}
    */
   @Override
   @NotNull
-  public String deserialize(@NotNull final JsonParser p,
+  public String deserialize(@NotNull final JsonParser parser,
                             @Nullable final DeserializationContext ctxt)
-      throws IOException
   {
-    final JsonNode statusNode = JsonUtils.getObjectReader().readTree(p);
+    final JsonNode statusNode = parser.readValueAsTree();
 
     // Check for { "status": "200" }.
-    if (statusNode.isTextual())
+    if (statusNode.isString() || statusNode.isNumber())
     {
-      return statusNode.asText();
+      return statusNode.asString();
     }
 
     // Check for the "status.code" sub-attribute.
     JsonNode nested = statusNode.path("code");
-    if (nested.isTextual())
+    if (nested.isString() || nested.isNumber())
     {
-      return nested.asText();
+      return nested.asString();
     }
 
-    throw new IOException(
+    throw new ScimDeserializeException(
         "Could not parse the 'status' field of the bulk operation response."
     );
   }

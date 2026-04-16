@@ -32,17 +32,11 @@
 
 package com.unboundid.scim2.common.bulk;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
@@ -54,13 +48,15 @@ import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.ETagConfig;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.Debug;
-import com.unboundid.scim2.common.utils.DebugType;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.BULK_PREFIX;
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
@@ -589,7 +585,7 @@ public abstract class BulkOperation
         return JsonUtils.getObjectReader().forType(PATCH_REF)
             .readValue(arrayNode);
       }
-      catch (IOException e)
+      catch (JacksonException e)
       {
         Debug.debugException(e);
         throw new BulkRequestException(
@@ -846,25 +842,6 @@ public abstract class BulkOperation
   }
 
   /**
-   * When deserializing a JSON into this class, there's a possibility that an
-   * unknown attribute is contained within the JSON. This method captures
-   * attempts to set undefined attributes and ignores them in the interest of
-   * preventing JsonProcessingException errors. This method should only be
-   * called by Jackson.
-   *
-   * @param key           The unknown attribute name.
-   * @param ignoredValue  The value of the attribute.
-   */
-  @JsonAnySetter
-  protected void setAny(@NotNull final String key,
-                        @NotNull final JsonNode ignoredValue)
-  {
-    // The value is not logged, since it's not needed and may contain PII.
-    Debug.debug(Level.WARNING, DebugType.OTHER,
-        "Attempted setting an undefined attribute: " + key);
-  }
-
-  /**
    * Retrieves a string representation of this bulk operation.
    *
    * @return  A string representation of this bulk operation.
@@ -873,16 +850,8 @@ public abstract class BulkOperation
   @NotNull
   public String toString()
   {
-    try
-    {
-      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
-          .writeValueAsString(this);
-    }
-    catch (JsonProcessingException e)
-    {
-      // This should never happen.
-      throw new RuntimeException(e);
-    }
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 
   /**

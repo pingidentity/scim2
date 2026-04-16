@@ -32,13 +32,6 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -47,8 +40,14 @@ import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.GenericScimObjectDeserializer;
 import com.unboundid.scim2.common.utils.GenericScimObjectSerializer;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -523,15 +522,8 @@ public class GenericScimResource implements ScimResource
   @NotNull
   public String toString()
   {
-    try
-    {
-      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
-          writeValueAsString(this);
-    }
-    catch (JsonProcessingException e)
-    {
-      throw new RuntimeException(e);
-    }
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 
   /**
@@ -611,7 +603,7 @@ public class GenericScimResource implements ScimResource
                                           @NotNull final String value)
       throws ScimException
   {
-    return replaceValue(path, JsonUtils.getJsonNodeFactory().textNode(value));
+    return replaceValue(path, JsonUtils.getJsonNodeFactory().stringNode(value));
   }
 
   /**
@@ -770,7 +762,7 @@ public class GenericScimResource implements ScimResource
       throws ScimException
   {
     JsonNode jsonNode = getValue(path);
-    return jsonNode.isNull() ? null : jsonNode.textValue();
+    return jsonNode.isNull() ? null : jsonNode.asString();
   }
 
   /**
@@ -826,7 +818,7 @@ public class GenericScimResource implements ScimResource
 
     for (JsonNode jsonNode : valueNode)
     {
-      values.add(jsonNode.textValue());
+      values.add(jsonNode.asString());
     }
     return values;
   }
@@ -2018,12 +2010,9 @@ public class GenericScimResource implements ScimResource
    *
    * @param date  The date to represent as a JsonNode.
    * @return      A JsonNode representing the date.
-   *
-   * @throws ScimException  If an error occurs while parsing the resource.
    */
   @NotNull
-  public static TextNode getDateJsonNode(@Nullable final Date date)
-      throws ScimException
+  public static StringNode getDateJsonNode(@Nullable final Date date)
   {
     return JsonUtils.valueToNode(date);
   }
@@ -2044,7 +2033,7 @@ public class GenericScimResource implements ScimResource
     {
       return JsonUtils.getObjectReader().forType(Date.class).readValue(node);
     }
-    catch (IOException ex)
+    catch (JacksonException ex)
     {
       throw new ServerErrorException(ex.getMessage());
     }
@@ -2273,7 +2262,7 @@ public class GenericScimResource implements ScimResource
     {
       return jsonNode.binaryValue();
     }
-    catch (IOException e)
+    catch (JacksonException e)
     {
       throw new ServerErrorException(e.getMessage());
     }
@@ -2349,7 +2338,7 @@ public class GenericScimResource implements ScimResource
         }
         values.add(value);
       }
-      catch (IOException e)
+      catch (JacksonException e)
       {
         throw new ServerErrorException(e.getMessage());
       }
@@ -2405,7 +2394,7 @@ public class GenericScimResource implements ScimResource
       throws ScimException
   {
     return replaceValue(path,
-        JsonUtils.getJsonNodeFactory().textNode(value.toString()));
+        JsonUtils.getJsonNodeFactory().stringNode(value.toString()));
   }
 
   /**
@@ -2575,7 +2564,7 @@ public class GenericScimResource implements ScimResource
     try
     {
       JsonNode jsonNode = getValue(path);
-      return jsonNode.isNull() ? null : new URI(jsonNode.textValue());
+      return jsonNode.isNull() ? null : new URI(jsonNode.asString());
     }
     catch (URISyntaxException ex)
     {
@@ -2641,7 +2630,7 @@ public class GenericScimResource implements ScimResource
 
       for (JsonNode jsonNode : valueNode)
       {
-        String uriString = jsonNode.textValue();
+        String uriString = jsonNode.asString();
         values.add(new URI(uriString));
       }
       return values;

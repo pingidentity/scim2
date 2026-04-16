@@ -32,10 +32,6 @@
 
 package com.unboundid.scim2.common.bulk;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
@@ -48,6 +44,10 @@ import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.Debug;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.beans.IntrospectionException;
 import java.util.HashMap;
@@ -222,7 +222,7 @@ public class BulkResourceMapper
     {
       return JsonUtils.nodeToValue(json, clazz);
     }
-    catch (JsonProcessingException e)
+    catch (JacksonException e)
     {
       throw new IllegalArgumentException(
           "Failed to convert bulk data into a " + clazz.getName(), e);
@@ -270,7 +270,7 @@ public class BulkResourceMapper
     Set<String> schemaSet = new HashSet<>();
     for (var value : arrayNode)
     {
-      schemaSet.add(value.asText());
+      schemaSet.add(value.asString());
     }
 
     return get(schemaSet);

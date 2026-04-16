@@ -32,7 +32,6 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
@@ -45,6 +44,7 @@ import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import tools.jackson.databind.node.StringNode;
 
 import java.util.List;
 
@@ -209,8 +209,8 @@ public class AddOperationValueFilterTestCase
     // request should also be forbidden.
     path = Path.fromString("photos[type eq \"thumbnail\"].value");
     PatchRequest requestWithConflict = new PatchRequest(
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/1.png")),
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/2.png"))
+        PatchOperation.add(path, StringNode.valueOf("https://example.com/1.png")),
+        PatchOperation.add(path, StringNode.valueOf("https://example.com/2.png"))
     );
     assertThatThrownBy(() -> requestWithConflict.applyToResource(new UserResource()))
         .isInstanceOf(BadRequestException.class)
@@ -225,7 +225,7 @@ public class AddOperationValueFilterTestCase
     );
     path = Path.fromString("addresses[type eq \"home\"].streetAddress");
     PatchRequest requestOnInvalidResource = new PatchRequest(
-        PatchOperation.add(path, TextNode.valueOf("aThirdStreet"))
+        PatchOperation.add(path, StringNode.valueOf("aThirdStreet"))
     );
     assertThatThrownBy(() -> requestOnInvalidResource.applyToResource(existingUser))
         .isInstanceOf(BadRequestException.class)
@@ -359,8 +359,8 @@ public class AddOperationValueFilterTestCase
     resource = new UserResource();
     path = Path.fromString("photos[type eq \"thumbnail\"].value");
     request = new PatchRequest(
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/1.png")),
-        PatchOperation.add(path, TextNode.valueOf("https://example.com/2.png"))
+        PatchOperation.add(path, StringNode.valueOf("https://example.com/1.png")),
+        PatchOperation.add(path, StringNode.valueOf("https://example.com/2.png"))
     );
     resource = request.applyToResource(resource);
     assertThat(resource.getPhotos())
@@ -374,6 +374,6 @@ public class AddOperationValueFilterTestCase
    */
   private static PatchRequest createAddRequest(Path path, String value)
   {
-    return new PatchRequest(PatchOperation.add(path, TextNode.valueOf(value)));
+    return new PatchRequest(PatchOperation.add(path, StringNode.valueOf(value)));
   }
 }
