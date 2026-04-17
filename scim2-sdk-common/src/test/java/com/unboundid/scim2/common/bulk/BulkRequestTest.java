@@ -36,7 +36,7 @@ import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.ScimResource;
-import com.unboundid.scim2.common.exceptions.BulkRequestException;
+import com.unboundid.scim2.common.exceptions.runtime.BulkRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Member;

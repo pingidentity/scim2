@@ -30,37 +30,33 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.common.exceptions;
+package com.unboundid.scim2.common.exceptions.runtime;
 
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-import com.unboundid.scim2.common.bulk.BulkRequest;
+import com.unboundid.scim2.common.bulk.BulkResponse;
+import com.unboundid.scim2.common.exceptions.ServerErrorException;
 
 
 /**
  * This class represents a SCIM exception pertaining to an invalid state for
- * bulk requests. This exception indicates that client-provided data in a bulk
- * request would have resulted in an invalid object, and is most likely to occur
- * when deserializing a bulk request JSON into a {@link BulkRequest}. This
- * exception type should generally be caught and re-thrown as a
- * {@link BadRequestException} to indicate invalid data from a client request.
- * <br><br>
+ * bulk responses. Specifically, this exception indicates that server-provided
+ * data in a bulk response would have resulted in an invalid bulk response
+ * object, and is most likely to occur when deserializing a bulk response JSON
+ * into a {@link BulkResponse}. This exception type should generally be caught
+ * and re-thrown as a {@link ServerErrorException} to indicate an unexpected
+ * malformed response from a server.
  *
- * This is defined as a runtime exception to avoid unnecessary try-catch blocks
- * for situations that are expected to be uncommon edge cases. This custom
- * exception type is defined so that applications may easily catch these
- * specific errors, such as in a Spring controller advice.
- *
- * @see BulkResponseException
+ * @see BulkRequestException
  */
-public class BulkRequestException extends RuntimeException
+public class BulkResponseException extends RuntimeException
 {
   /**
    * Constructs a bulk request exception.
    *
    * @param message  The error message for this SCIM bulk exception.
    */
-  public BulkRequestException(@NotNull final String message)
+  public BulkResponseException(@NotNull final String message)
   {
     super(message);
   }
@@ -74,8 +70,8 @@ public class BulkRequestException extends RuntimeException
    *                 permitted, and indicates that the cause is nonexistent or
    *                 unknown.
    */
-  public BulkRequestException(@NotNull final String message,
-                              @Nullable final Throwable cause)
+  public BulkResponseException(@NotNull final String message,
+                               @Nullable final Throwable cause)
   {
     super(message, cause);
   }
