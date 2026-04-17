@@ -34,14 +34,18 @@ package com.unboundid.scim2.common.messages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.GenericScimResource;
+import com.unboundid.scim2.common.utils.JsonUtils;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -60,9 +64,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * of a patch request in JSON form:
  * <pre>
  * {
- *   "schemas": [
- *     "urn:ietf:params:scim:api:messages:2.0:PatchOp"
- *   ],
+ *   "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
  *   "Operations": [
  *     {
  *       "op": "replace",
@@ -74,8 +76,8 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * </pre>
  *
  * This example request contains a single operation that sets the {@code active}
- * value to {@code true}. This request can be created with the following Java
- * code:
+ * value of a targeted SCIM resource to {@code true}. This request can be
+ * created with the following Java code:
  * <pre><code>
  *   PatchRequest request = new PatchRequest(
  *       PatchOperation.replace("active", true)
@@ -85,6 +87,20 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * All patch requests are performed atomically. RFC 7644 Section 3.5.2 states
  * that if any operation within the operation list fails, then the resource
  * SHALL not be updated at all.
+ * <br><br>
+ *
+ * A patch request object, as well as an individual patch operation, can be used
+ * to update a SCIM resource with the {@link #applyToResource(ScimResource)}
+ * methods. For example, a user's {@code active} status can be updated with the
+ * above patch request with the following:
+ * <pre><code>
+ *   UserResource user = new UserResource().setUserName("link");
+ *   UserResource updatedUser = request.applyToResource(user);
+ *
+ *   // An example representing an update from an individual patch operation.
+ *   PatchOperation patchOperation = request.getOperations().get(0);
+ *   UserResource firstUpdate = patchOperation.applyToResource(user);
+ * </code></pre>
  *
  * @see PatchOperation
  */
@@ -148,18 +164,58 @@ public class PatchRequest
   }
 
   /**
-   * Apply this patch request to the GenericScimResourceObject.
+   * Apply this patch request to the GenericScimResource.
+   * <br><br>
    *
-   * @param object The GenericScimResourceObject to apply this patch to.
+   * The {@link #applyToResource} method is likely a better choice if you have a
+   * {@link BaseScimResource} derived object. See the class-level Javadoc for
+   * more details.
+   *
+   * @param object The GenericScimResource that will be the target of this patch
+   *               request.
+   * @return  The {@code object} provided to this method.
    *
    * @throws ScimException If one or more patch operations are invalid.
    */
-  public void apply(@NotNull final GenericScimResource object)
+  @NotNull
+  public GenericScimResource apply(@NotNull final GenericScimResource object)
       throws ScimException
   {
     for (PatchOperation operation : this)
     {
       operation.apply(object.getObjectNode());
+    }
+
+    return object;
+  }
+
+  /**
+   * Apply this patch request to the provided ScimResource.
+   *
+   * @param <T>      The Java type of the SCIM resource.
+   * @param resource The resource that will be the target of this patch request.
+   * @return         The updated SCIM resource with the same Java type.
+   *
+   * @throws ScimException  If the update resulted in a malformed resource,
+   *                        e.g., a boolean value for a timestamp attribute.
+   */
+  @NotNull
+  public <T extends ScimResource> T applyToResource(@NotNull final T resource)
+      throws ScimException
+  {
+    try
+    {
+      // Use this instead of PatchOperation#applyToResource so that the Jackson
+      // parsing and conversion is only done once.
+      GenericScimResource updatedJson = apply(resource.asGenericScimResource());
+
+      return JsonUtils.getObjectReader().forType(resource.getClass())
+          .readValue(updatedJson.getObjectNode());
+    }
+    catch (IOException e)
+    {
+      throw new BadRequestException(
+          "The patch request resulted in an invalid object model.", e);
     }
   }
 

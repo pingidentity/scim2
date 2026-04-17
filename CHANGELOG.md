@@ -20,6 +20,24 @@ and HTTP 429 status codes.
 Added new `status()` and `statusInt()` method to all exception types. For example, to obtain a
 string of `"400"` corresponding to `400 BAD REQUEST`, use `BadRequestException.status()`.
 
+Simplified patch processing by adding `applyToResource()` on `PatchRequest` and `PatchOperation`.
+These are an improvement over the existing `apply()` variants, which require passing in `ObjectNode`
+or `GenericScimResource` instances. Conversely, the new methods instead accept any ScimResource,
+which is useful since SCIM patch updates almost always target a SCIM resource. For example:
+```
+// Before:
+UserResource user = getUser();
+GenericScimResource genericUser = user.asGenericScimResource();
+patchRequest.apply(genericUser);
+UserResource updatedUser =
+    JsonUtils.nodeToValue(genericUser.getObjectNode(), UserResource.class);
+
+// New in 5.1.0:
+UserResource user = getUser();
+UserResource updatedUser = patchRequest.applyToResource(user);
+```
+The existing `apply()` methods are not deprecated and may still be used.
+
 ## v5.0.0 - 2025-Dec-15
 For consistency with other open source Ping Identity software, the UnboundID SCIM 2 SDK for Java is
 now available under the terms of the Apache License (version 2.0). For legacy compatibility, the
