@@ -91,8 +91,8 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *
  * A patch request object, as well as an individual patch operation, can be used
  * to update a SCIM resource with the {@link #applyToResource(ScimResource)}
- * methods. For example, a user's {@code active} status can be updated with the
- * above patch request with the following:
+ * methods. For example, using the {@code request} object created above, a
+ * user's {@code active} status can be updated with:
  * <pre><code>
  *   UserResource user = new UserResource().setUserName("link");
  *   UserResource updatedUser = request.applyToResource(user);
