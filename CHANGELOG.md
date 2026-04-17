@@ -20,10 +20,10 @@ and HTTP 429 status codes.
 Added new `status()` and `statusInt()` method to all exception types. For example, to obtain a
 string of `"400"` corresponding to `400 BAD REQUEST`, use `BadRequestException.status()`.
 
-Simplified patch processing by adding `applyToResource()` on `PatchRequest` and `PatchOperation`.
-These are an improvement over the existing `apply()` variants, which require passing in `ObjectNode`
-or `GenericScimResource` instances. Conversely, the new methods instead accept any ScimResource,
-which is useful since SCIM patch updates almost always target a SCIM resource. For example:
+Simplified patch processing by adding `applyToResource()` on the `PatchRequest` and `PatchOperation`
+classes. These are an improvement over the existing `apply()` variants, which require passing in
+`ObjectNode` or `GenericScimResource` instances. Conversely, the new methods accept any ScimResource
+object, which is useful since SCIM patch updates almost always target a SCIM resource. For example:
 ```
 // Before:
 UserResource user = getUser();
