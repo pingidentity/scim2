@@ -48,7 +48,7 @@ import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-import com.unboundid.scim2.common.exceptions.BulkRequestException;
+import com.unboundid.scim2.common.exceptions.runtime.BulkRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.ETagConfig;

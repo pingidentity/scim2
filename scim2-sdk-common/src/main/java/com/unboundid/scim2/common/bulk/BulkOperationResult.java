@@ -45,7 +45,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-import com.unboundid.scim2.common.exceptions.BulkResponseException;
+import com.unboundid.scim2.common.exceptions.runtime.BulkResponseException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.types.ETagConfig;
