@@ -51,6 +51,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -64,6 +65,7 @@ import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -134,6 +136,10 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * If a {@code null} path is needed for an {@code add} or {@code replace}
  * operation, then use the {@link #add(JsonNode)} and
  * {@link #replace(ObjectNode)} methods.
+ * <br><br>
+ *
+ * For examples on applying patch updates to SCIM resource objects, see
+ * {@link PatchRequest}.
  *
  * @see PatchRequest
  */
@@ -1098,6 +1104,37 @@ public abstract class PatchOperation
    */
   public abstract void apply(@NotNull final ObjectNode node)
       throws ScimException;
+
+  /**
+   * Apply this patch operation to a {@link ScimResource} and return an updated
+   * resource.
+   *
+   * @param <T>       The Java type of this resource.
+   * @param resource  The original resource.
+   * @return          The updated resource.
+   *
+   * @throws ScimException  If the update resulted in a malformed resource,
+   *                        e.g., a boolean value for a timestamp attribute.
+   */
+  @NotNull
+  public <T extends ScimResource> T applyToResource(@NotNull final T resource)
+      throws ScimException
+  {
+    // Extract the JSON data and apply the change.
+    ObjectNode node = resource.asGenericScimResource().getObjectNode();
+    apply(node);
+
+    try
+    {
+      return JsonUtils.getObjectReader()
+          .forType(resource.getClass()).readValue(node);
+    }
+    catch (IOException e)
+    {
+      throw new BadRequestException(
+          "The update could not be applied to the resource.", e);
+    }
+  }
 
   /**
    * Retrieves a string representation of this patch operation.

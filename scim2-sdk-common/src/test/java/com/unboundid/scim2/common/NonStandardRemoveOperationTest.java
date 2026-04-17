@@ -38,7 +38,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
@@ -129,7 +128,7 @@ public class NonStandardRemoveOperationTest
     PatchOperation op;
     List<Member> member;
 
-    GroupResource origGroup = new GroupResource()
+    GroupResource group = new GroupResource()
         .setDisplayName("testGroup")
         .setMembers(new Member().setValue("ca11ab1e"),
                     new Member().setValue("c0a1e5ce"),
@@ -137,16 +136,15 @@ public class NonStandardRemoveOperationTest
                     new Member().setValue("e5ca1a7e"),
                     new Member().setValue("def1ec75"),
                     new Member().setValue("ba5eba11"));
-    ObjectNode group = origGroup.asGenericScimResource().getObjectNode();
 
     int groupSize = 6;
-    assertThat(group.get("members")).hasSize(groupSize);
+    assertThat(group.getMembers()).hasSize(groupSize);
 
     // Attempt removing an unrelated member.
     member = List.of(new Member().setValue("fa1afe1"));
     op = PatchOperation.remove("members").setRemoveOpValue(member, true);
-    op.apply(group);
-    assertThat(group.get("members")).hasSize(groupSize);
+    group = op.applyToResource(group);
+    assertThat(group.getMembers()).hasSize(groupSize);
 
     // Using the library methods, remove a member by specifying the "value"
     // field in the JSON.
@@ -154,8 +152,8 @@ public class NonStandardRemoveOperationTest
     member = List.of(new Member().setValue(memberID));
     op = PatchOperation.remove("members").setRemoveOpValue(member, true);
     groupSize--;
-    op.apply(group);
-    assertThat(group.get("members")).hasSize(groupSize);
+    group = op.applyToResource(group);
+    assertThat(group.getMembers()).hasSize(groupSize);
     assertThat(group.toString()).doesNotContain(memberID);
 
     // Remove multiple members in a single request.
@@ -165,8 +163,8 @@ public class NonStandardRemoveOperationTest
             new Member().setValue("50f7ba11")
         ), true);
     groupSize -= 2;
-    op.apply(group);
-    assertThat(group.get("members")).hasSize(groupSize);
+    group = op.applyToResource(group);
+    assertThat(group.getMembers()).hasSize(groupSize);
     assertThat(group.toString()).doesNotContain("c0a1e5ce", "50f7ba11");
 
     // Remove a member using the alternate JSON structure.
@@ -174,8 +172,8 @@ public class NonStandardRemoveOperationTest
     member = List.of(new Member().setValue(memberID));
     op = PatchOperation.remove("members").setRemoveOpValue(member, false);
     groupSize--;
-    op.apply(group);
-    assertThat(group.get("members")).hasSize(groupSize);
+    group = op.applyToResource(group);
+    assertThat(group.getMembers()).hasSize(groupSize);
     assertThat(group.toString()).doesNotContain(memberID);
 
     // Remove multiple members in a single request with the alternate JSON
@@ -186,9 +184,9 @@ public class NonStandardRemoveOperationTest
             new Member().setValue("ba5eba11")
         ), false);
     groupSize -= 2;
-    op.apply(group);
+    group = op.applyToResource(group);
     assertThat(groupSize).isEqualTo(0);
-    assertThat(group.get("members")).isNull();
+    assertThat(group.getMembers()).isNull();
     assertThat(group.toString()).doesNotContain("def1ec75", "ba5eba11");
 
     // Passing a non-initialized Member value to 'setRemoveOpValue()' should be
