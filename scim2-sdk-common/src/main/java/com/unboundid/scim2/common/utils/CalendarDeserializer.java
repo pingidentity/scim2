@@ -31,13 +31,13 @@
  */
 package com.unboundid.scim2.common.utils;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.ValueDeserializer;
-import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.util.Calendar;
 
@@ -53,6 +53,22 @@ public class CalendarDeserializer extends ValueDeserializer<Calendar>
   @NotNull
   public Calendar deserialize(@NotNull final JsonParser jp,
                               @Nullable final DeserializationContext ctxt)
+  {
+    return parseAsCalendar(jp);
+  }
+
+  /**
+   * This method obtains the token that the provided JsonParser is pointing to,
+   * and interprets the value as a Calendar object.
+   *
+   * @param jp  The JSON parser.
+   * @return    The timestamp and timezone information as a Calendar.
+   *
+   * @throws ScimDeserializeException  If the value could was not a timestamp.
+   */
+  @NotNull
+  public static Calendar parseAsCalendar(@NotNull final JsonParser jp)
+      throws ScimDeserializeException
   {
     // Some client requests may provide dates as a UNIX timestamp. To support
     // this, first attempt using a long. The timezone will be set to UTC.
@@ -74,7 +90,7 @@ public class CalendarDeserializer extends ValueDeserializer<Calendar>
     catch (IllegalArgumentException e)
     {
       throw new ScimDeserializeException(
-          "SCIM SDK: unable to deserialize value", e);
+          "SCIM SDK: unable to deserialize date value", e);
     }
   }
 }

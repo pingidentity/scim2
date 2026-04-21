@@ -31,12 +31,11 @@
  */
 package com.unboundid.scim2.common.utils;
 
-import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.annotations.Nullable;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.ValueDeserializer;
-import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.annotations.Nullable;
 
 import java.util.Date;
 
@@ -53,14 +52,6 @@ public class DateDeserializer extends ValueDeserializer<Date>
   public Date deserialize(@NotNull final JsonParser jp,
                           @Nullable final DeserializationContext ctxt)
   {
-    String dateStr = jp.getString();
-    try
-    {
-      return DateTimeUtils.parse(dateStr).getTime();
-    }
-    catch (IllegalArgumentException e)
-    {
-      throw new ScimDeserializeException("Unable to deserialize date value", e);
-    }
+    return CalendarDeserializer.parseAsCalendar(jp).getTime();
   }
 }

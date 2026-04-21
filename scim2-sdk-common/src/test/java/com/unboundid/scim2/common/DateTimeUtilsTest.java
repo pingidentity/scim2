@@ -32,6 +32,7 @@
 
 package com.unboundid.scim2.common;
 
+import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
@@ -214,7 +215,8 @@ public class DateTimeUtilsTest
     var reader = JsonUtils.getObjectReader().forType(UserResource.class);
     assertThatThrownBy(() -> reader.readValue(json))
         .isInstanceOf(JacksonException.class)
-        .hasMessageStartingWith("SCIM SDK: unable to deserialize value");
+        .hasCauseInstanceOf(ScimDeserializeException.class)
+        .hasMessageStartingWith("SCIM SDK: unable to deserialize date value");
   }
 
   /**
