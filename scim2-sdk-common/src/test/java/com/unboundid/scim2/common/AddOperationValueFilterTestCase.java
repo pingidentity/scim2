@@ -44,7 +44,6 @@ import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.node.StringNode;
 
 import java.util.List;
@@ -107,7 +106,7 @@ public class AddOperationValueFilterTestCase
     {
       Path newPath = Path.fromString("roles[" + unsupportedFilter + "].value");
       PatchRequest request = createAddRequest(newPath, "newValue");
-      assertThatThrownBy(() -> applyPatchRequest(request, new UserResource()))
+      assertThatThrownBy(() -> request.applyToResource(new UserResource()))
           .isInstanceOf(BadRequestException.class);
     }
   }
@@ -133,7 +132,7 @@ public class AddOperationValueFilterTestCase
     assertThat(resource.getEmails()).hasSize(2);
     path = Path.fromString("emails[type eq \"work\"].value");
     request = createAddRequest(path, "sissel@example.com");
-    resource = applyPatchRequest(request, resource);
+    resource = request.applyToResource(resource);
     assertThat(resource.getEmails())
         .hasSize(3)
         .contains(new Email().setValue("sissel@example.com").setType("work"));
@@ -144,7 +143,7 @@ public class AddOperationValueFilterTestCase
     assertThat(resource.getAddresses()).isNullOrEmpty();
     path = Path.fromString("addresses[type eq \"secret\"].streetAddress");
     request = createAddRequest(path, "The Batcave");
-    resource = applyPatchRequest(request, resource);
+    resource = request.applyToResource(resource);
     assertThat(resource.getAddresses())
         .hasSize(1)
         .containsOnly(
@@ -158,7 +157,7 @@ public class AddOperationValueFilterTestCase
     );
     path = Path.fromString("addresses[type eq \"home\"].country");
     request = createAddRequest(path, "US");
-    resource = applyPatchRequest(request, resource);
+    resource = request.applyToResource(resource);
     assertThat(resource.getAddresses()).hasSize(1);
     var address = resource.getAddresses().get(0);
     assertThat(address.getCountry()).isEqualTo("US");
@@ -170,7 +169,7 @@ public class AddOperationValueFilterTestCase
         "emails[type eq \"work\"].value[display eq \"Special Email\"]");
     assertThatThrownBy(() -> {
       PatchRequest req = createAddRequest(multipleFilter, "bob@example.com");
-      applyPatchRequest(req, new UserResource());
+      req.applyToResource(new UserResource());
     }).isInstanceOf(IllegalArgumentException.class)
       .hasCauseInstanceOf(BadRequestException.class);
 
@@ -180,7 +179,7 @@ public class AddOperationValueFilterTestCase
         "emails[type eq \"work\"].display[value eq \"bob@example.com\"]");
     assertThatThrownBy(() -> {
       PatchRequest req = createAddRequest(otherFilter, "Special Email");
-      applyPatchRequest(req, new UserResource());
+      req.applyToResource(new UserResource());
     }).isInstanceOf(BadRequestException.class)
       .hasMessageContaining(
           "only allowed to contain a single value selection filter");
@@ -189,7 +188,7 @@ public class AddOperationValueFilterTestCase
     // element (i.e., path.size() == 1).
     Path singleElement = Path.fromString("ims[type eq \"skype\"]");
     PatchRequest singleElementRequest = createAddRequest(singleElement, "invalid");
-    assertThatThrownBy(() -> applyPatchRequest(singleElementRequest, new UserResource()))
+    assertThatThrownBy(() -> singleElementRequest.applyToResource(new UserResource()))
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("needs to be 'attribute[filter].subAttribute'");
 
@@ -201,7 +200,7 @@ public class AddOperationValueFilterTestCase
     );
     path = Path.fromString("addresses[type eq \"home\"].streetAddress");
     PatchRequest existingSubAttrRequest = createAddRequest(path, "7 Mile Rd.");
-    assertThatThrownBy(() -> applyPatchRequest(existingSubAttrRequest, userWithStreet))
+    assertThatThrownBy(() -> existingSubAttrRequest.applyToResource(userWithStreet))
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("The add operation attempted to add a new 'streetAddress' field")
         .hasMessageContaining("already has a 'streetAddress' defined");
@@ -213,7 +212,7 @@ public class AddOperationValueFilterTestCase
         PatchOperation.add(path, StringNode.valueOf("https://example.com/1.png")),
         PatchOperation.add(path, StringNode.valueOf("https://example.com/2.png"))
     );
-    assertThatThrownBy(() -> applyPatchRequest(requestWithConflict, new UserResource()))
+    assertThatThrownBy(() -> requestWithConflict.applyToResource(new UserResource()))
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("The add operation attempted to add a new 'value' field")
         .hasMessageContaining("already has a 'value' defined");
@@ -228,7 +227,7 @@ public class AddOperationValueFilterTestCase
     PatchRequest requestOnInvalidResource = new PatchRequest(
         PatchOperation.add(path, StringNode.valueOf("aThirdStreet"))
     );
-    assertThatThrownBy(() -> applyPatchRequest(requestOnInvalidResource, existingUser))
+    assertThatThrownBy(() -> requestOnInvalidResource.applyToResource(existingUser))
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("The operation could not be applied on the resource because")
         .hasMessageContaining("the value filter matched more than one element in")
@@ -240,7 +239,7 @@ public class AddOperationValueFilterTestCase
     PatchRequest improperFormat = new PatchRequest(
         PatchOperation.addStringValues(path, "home@example.com")
     );
-    assertThatThrownBy(() -> applyPatchRequest(improperFormat, new UserResource()))
+    assertThatThrownBy(() -> improperFormat.applyToResource(new UserResource()))
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("cannot set the 'value' field to an array");
 
@@ -250,7 +249,7 @@ public class AddOperationValueFilterTestCase
     Path singleValuedAttr =
         Path.fromString("preferredLanguage[type eq \"work\"].value");
     PatchRequest invalidAttr = createAddRequest(singleValuedAttr, "en-US");
-    assertThatThrownBy(() -> applyPatchRequest(invalidAttr, userWithLanguage))
+    assertThatThrownBy(() -> invalidAttr.applyToResource(userWithLanguage))
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("could not be processed")
         .hasMessageContaining("value selection filter was provided");
@@ -258,8 +257,8 @@ public class AddOperationValueFilterTestCase
     // Perform another add on a single-valued attribute when it does not have a
     // pre-existing value.
     PatchRequest invalidAttr2 = createAddRequest(singleValuedAttr, "en-US");
-    assertThatThrownBy(() -> applyPatchRequest(invalidAttr2, new UserResource()))
-        .isInstanceOf(JacksonException.class);
+    assertThatThrownBy(() -> invalidAttr2.applyToResource(new UserResource()))
+        .isInstanceOf(ScimException.class);
 
     // Value filters must be the first element in the path.
     Path nestedFilter = Path.fromString("parent.examples[type eq \"best\"].value");
@@ -272,7 +271,7 @@ public class AddOperationValueFilterTestCase
     assertThatThrownBy(() -> {
       Path emptyFilterPath = Path.fromString("entitlements[].value");
       PatchRequest emptyFilterReq = createAddRequest(emptyFilterPath, "ent1");
-      applyPatchRequest(emptyFilterReq, new UserResource());
+      emptyFilterReq.applyToResource(new UserResource());
     }).isInstanceOf(BadRequestException.class);
   }
 
@@ -318,7 +317,7 @@ public class AddOperationValueFilterTestCase
     );
     Path path = Path.fromString("emails[type eq \"home\"].value");
     PatchRequest request = createAddRequest(path, "yomiel@example.com");
-    resource = applyPatchRequest(request, resource);
+    resource = request.applyToResource(resource);
 
     // Deserialize the new resource into JSON.
     String resourceString = JsonUtils.valueToNode(resource).toString();
@@ -349,7 +348,7 @@ public class AddOperationValueFilterTestCase
     );
     path = Path.fromString("phoneNumbers[type eq \"mobile\"].value");
     request = createAddRequest(path, "+1 271-828-1828");
-    resource = applyPatchRequest(request, resource);
+    resource = request.applyToResource(resource);
     assertThat(resource.getPhoneNumbers())
         .hasSize(2)
         .containsExactly(
@@ -363,7 +362,7 @@ public class AddOperationValueFilterTestCase
         PatchOperation.add(path, StringNode.valueOf("https://example.com/1.png")),
         PatchOperation.add(path, StringNode.valueOf("https://example.com/2.png"))
     );
-    resource = applyPatchRequest(request, resource);
+    resource = request.applyToResource(resource);
     assertThat(resource.getPhotos())
         .filteredOn(photo -> "thumbnail".equals(photo.getType()))
         .hasSize(2);
@@ -376,18 +375,5 @@ public class AddOperationValueFilterTestCase
   private static PatchRequest createAddRequest(Path path, String value)
   {
     return new PatchRequest(PatchOperation.add(path, StringNode.valueOf(value)));
-  }
-
-  /**
-   * This method applies a patch request to a UserResource object and returns
-   * a new UserResource reflecting the modifications.
-   */
-  private static UserResource applyPatchRequest(PatchRequest request,
-                                                UserResource userResource)
-      throws JacksonException, ScimException
-  {
-    GenericScimResource user = userResource.asGenericScimResource();
-    request.apply(user);
-    return JsonUtils.nodeToValue(user.getObjectNode(), UserResource.class);
   }
 }

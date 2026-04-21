@@ -33,7 +33,7 @@
 package com.unboundid.scim2.common.bulk;
 
 import com.unboundid.scim2.common.ScimResource;
-import com.unboundid.scim2.common.exceptions.BulkRequestException;
+import com.unboundid.scim2.common.exceptions.runtime.BulkRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Member;

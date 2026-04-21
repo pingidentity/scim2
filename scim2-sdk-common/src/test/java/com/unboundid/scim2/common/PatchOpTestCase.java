@@ -36,22 +36,23 @@ import tools.jackson.core.Base64Variants;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.IntNode;
 import tools.jackson.databind.node.NullNode;
 import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
-import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.PatchOpType;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.Address;
 import com.unboundid.scim2.common.types.Email;
+import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.Photo;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import tools.jackson.databind.node.StringNode;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
@@ -75,12 +76,9 @@ public class PatchOpTestCase
 
   /**
    * Test patch request.
-   *
-   * @throws IOException If an error occurs.
-   * @throws ScimException If an error occurs.
    */
   @Test
-  public void getTestPatch() throws IOException, ScimException
+  public void getTestPatch() throws Exception
   {
     PatchRequest patchOp = JsonUtils.getObjectReader().
         forType(PatchRequest.class).
@@ -369,11 +367,9 @@ public class PatchOpTestCase
 
   /**
    * Test bad patch requests.
-   *
-   * @throws IOException If an error occurs.
    */
   @Test
-  public void getTestBadPatch() throws IOException
+  public void getTestBadPatch()
   {
     final var reader = JsonUtils.getObjectReader().forType(PatchRequest.class);
 
@@ -823,7 +819,7 @@ public class PatchOpTestCase
     request = new PatchRequest(
         PatchOperation.add("emails", EMPTY_ARRAY)
     );
-    user = applyPatchRequest(user, request);
+    user = request.applyToResource(user);
     assertThat(user.getEmails()).hasSize(1);
 
     // Replace the attribute with an empty array. This should delete all email
@@ -831,7 +827,7 @@ public class PatchOpTestCase
     request = new PatchRequest(
         PatchOperation.replace("emails", EMPTY_ARRAY)
     );
-    user = applyPatchRequest(user, request);
+    user = request.applyToResource(user);
     assertThat(user.getEmails()).isNull();
 
     // Apply an "empty" value to a resource that already does not have a value
@@ -840,14 +836,14 @@ public class PatchOpTestCase
     request = new PatchRequest(
         PatchOperation.add("addresses", EMPTY_ARRAY)
     );
-    user = applyPatchRequest(user, request);
+    user = request.applyToResource(user);
     assertThat(user.getAddresses()).isNull();
 
     // Delete all attribute values when none previously exist.
     request = new PatchRequest(
         PatchOperation.replace("addresses", EMPTY_ARRAY)
     );
-    user = applyPatchRequest(user, request);
+    user = request.applyToResource(user);
     assertThat(user.getAddresses()).isNull();
 
     // If multiple values exist on a resource, the behavior of an 'add' should
@@ -861,12 +857,12 @@ public class PatchOpTestCase
     request = new PatchRequest(
         PatchOperation.add("photos", EMPTY_ARRAY)
     );
-    user = applyPatchRequest(user, request);
+    user = request.applyToResource(user);
     assertThat(user.getPhotos()).hasSize(3);
     request = new PatchRequest(
         PatchOperation.replace("photos", EMPTY_ARRAY)
     );
-    user = applyPatchRequest(user, request);
+    user = request.applyToResource(user);
     assertThat(user.getPhotos()).isNull();
   }
 
@@ -891,7 +887,7 @@ public class PatchOpTestCase
     request = new PatchRequest(
         PatchOperation.replace("emails[type eq \"home\"]", EMPTY_ARRAY)
     );
-    user = applyPatchRequest(user, request);
+    user = request.applyToResource(user);
     assertThat(user.getEmails()).hasSize(3);
     assertThat(user.getEmails()).noneMatch(
         email -> "home".equalsIgnoreCase(email.getType())
@@ -901,7 +897,7 @@ public class PatchOpTestCase
     request = new PatchRequest(
         PatchOperation.replace("emails[type eq \"work\"]", EMPTY_ARRAY)
     );
-    user = applyPatchRequest(user, request);
+    user = request.applyToResource(user);
     assertThat(user.getEmails()).hasSize(1);
     assertThat(user.getEmails()).first().matches(
         email -> "other".equalsIgnoreCase(email.getType())
@@ -911,7 +907,7 @@ public class PatchOpTestCase
     request = new PatchRequest(
         PatchOperation.replace("emails[type eq \"other\"]", EMPTY_ARRAY)
     );
-    user = applyPatchRequest(user, request);
+    user = request.applyToResource(user);
     assertThat(user.getEmails()).isNull();
 
     // Send a delete request that does not match any values on the resource.
@@ -923,7 +919,7 @@ public class PatchOpTestCase
     PatchRequest unmatchedRequest = new PatchRequest(
         PatchOperation.replace("addresses[type eq \"work\"]", EMPTY_ARRAY)
     );
-    assertThatThrownBy(() -> applyPatchRequest(newUser, unmatchedRequest))
+    assertThatThrownBy(() -> unmatchedRequest.applyToResource(newUser))
         .isInstanceOf(BadRequestException.class)
         .satisfies(ex -> {
           var e = (BadRequestException) ex;
@@ -939,7 +935,7 @@ public class PatchOpTestCase
     PatchRequest emailRequest = new PatchRequest(
         PatchOperation.replace("emails[type eq \"home\"]", EMPTY_ARRAY)
     );
-    assertThatThrownBy(() -> applyPatchRequest(emptyUser, emailRequest))
+    assertThatThrownBy(() -> emailRequest.applyToResource(emptyUser))
         .isInstanceOf(BadRequestException.class)
         .satisfies(ex -> {
           var e = (BadRequestException) ex;
@@ -1014,15 +1010,79 @@ public class PatchOpTestCase
   }
 
   /**
-   * This method applies a patch request to a UserResource object and returns
-   * a new UserResource reflecting the modifications.
+   * Tests for {@link PatchOperation#applyToResource} and
+   * {@link PatchRequest#applyToResource}.
    */
-  private static UserResource applyPatchRequest(UserResource userResource,
-                                                PatchRequest request)
-      throws JacksonException, ScimException
+  @Test
+  public void testApplyingScimResources() throws Exception
   {
-    GenericScimResource user = userResource.asGenericScimResource();
-    request.apply(user);
-    return JsonUtils.nodeToValue(user.getObjectNode(), UserResource.class);
+    UserResource source1 = new UserResource()
+        .setUserName("gaben")
+        .setEmails(new Email().setValue("gabeN@example.com"));
+
+    PatchRequest request = new PatchRequest(
+        PatchOperation.replace("name.givenName", "Gabe"),
+        PatchOperation.remove("emails"),
+        PatchOperation.replace("nickName", "thisPie"),
+        PatchOperation.add("title", StringNode.valueOf("CEO")),
+        PatchOperation.replace("password", "HL3"),
+        PatchOperation.remove("password")
+    );
+
+    // Test PatchRequest.applyToResource() by applying the patch request.
+    UserResource resultUser = request.applyToResource(source1);
+    UserResource complexUser = new UserResource()
+        .setUserName("gaben")
+        .setName(new Name().setGivenName("Gabe"))
+        .setNickName("thisPie")
+        .setTitle("CEO");
+    assertThat(resultUser).isEqualTo(complexUser);
+
+    // Test PatchOperation.applyToResource() by applying the list of patch
+    // operations directly against the resource.
+    UserResource source2 = new UserResource()
+        .setUserName("gaben")
+        .setEmails(new Email().setValue("gabeN@example.com"));
+    for (PatchOperation op : request)
+    {
+      source2 = op.applyToResource(source2);
+    }
+    assertThat(source2)
+        .isEqualTo(complexUser)
+        .isEqualTo(resultUser);
+
+    // Try removing an attribute that is not present. This should result in no
+    // change. Check against both the PatchOperation and PatchRequest variants.
+    PatchOperation removeNonExistingOp = PatchOperation.remove("displayName");
+    UserResource unchanged = removeNonExistingOp.applyToResource(complexUser);
+    UserResource unchanged2 =
+        new PatchRequest(removeNonExistingOp).applyToResource(complexUser);
+    assertThat(complexUser)
+        .isEqualTo(unchanged)
+        .isEqualTo(unchanged2);
+
+    // Attempt setting a field to an invalid format.
+    var invalidFormatOp = PatchOperation.add("addresses", IntNode.valueOf(200));
+    PatchRequest invalidFormatRequest = new PatchRequest(invalidFormatOp);
+
+    assertThatThrownBy(() -> invalidFormatOp.applyToResource(complexUser))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("The update could not be applied to the")
+        .hasMessageContaining("resource.");
+    assertThatThrownBy(() -> invalidFormatRequest.applyToResource(complexUser))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("The patch request resulted in an invalid object")
+        .hasMessageContaining("model.");
+
+    // Attempt adding an unknown field.
+    var invalidAddOp = PatchOperation.add("unknownField", IntNode.valueOf(100));
+    PatchRequest invalidAddRequest = new PatchRequest(invalidAddOp);
+
+    // As of Jackson 3.x, invalid attributes are ignored.
+    UserResource unchangedAgain = invalidAddOp.applyToResource(complexUser);
+    UserResource unchangedAgain2 = invalidAddRequest.applyToResource(complexUser);
+    assertThat(unchangedAgain)
+        .isEqualTo(complexUser)
+        .isEqualTo(unchangedAgain2);
   }
 }

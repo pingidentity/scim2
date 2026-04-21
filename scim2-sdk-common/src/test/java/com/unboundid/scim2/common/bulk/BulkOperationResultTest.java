@@ -33,7 +33,7 @@
 package com.unboundid.scim2.common.bulk;
 
 import com.unboundid.scim2.common.GenericScimResource;
-import com.unboundid.scim2.common.exceptions.BulkResponseException;
+import com.unboundid.scim2.common.exceptions.runtime.BulkResponseException;
 import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.RateLimitException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
