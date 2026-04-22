@@ -155,5 +155,19 @@ public class ErrorResponseTest
     BadRequestException e = BadRequestException.invalidSyntax(
         "Request is unparsable, syntactically incorrect, or violates schema.");
     assertThat(e.getScimError().toString()).isEqualTo(expectedJSON);
+
+    // Check the case where the same error message has an ID.
+    String jsonWithID = """
+        {
+          "schemas": ["urn:ietf:params:scim:api:messages:2.0:Error"],
+          "id": "353dcc28-f5c5-4d8b-8c11-d33e274e1fd2",
+          "scimType": "invalidSyntax",
+          "detail": "Request is unparsable, syntactically incorrect, or violates schema.",
+          "status": "400"
+        }""";
+    String expectedJSONithID = JsonUtils.getObjectReader().readTree(jsonWithID)
+        .toPrettyString();
+    errorResponse.setId("353dcc28-f5c5-4d8b-8c11-d33e274e1fd2");
+    assertThat(errorResponse.toString()).isEqualTo(expectedJSONithID);
   }
 }
