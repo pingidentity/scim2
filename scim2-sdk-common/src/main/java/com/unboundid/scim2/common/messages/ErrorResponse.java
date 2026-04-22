@@ -75,7 +75,6 @@ import java.util.Objects;
  * <pre>
  *   {
  *      "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *      "id": "39b8ade3-b361-4f34-8711-c8ef3d019201",
  *      "scimType": "mutability",
  *      "detail": "The 'id' attribute is read-only and cannot be modified.",
  *      "status": "400"
@@ -87,7 +86,7 @@ import java.util.Objects;
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:Error",
     name="Error Response", description = "SCIM 2.0 Error Response")
-@JsonPropertyOrder({"schemas", "id", "scimType", "detail", "status"})
+@JsonPropertyOrder({"schemas", "scimType", "detail", "status"})
 public class ErrorResponse extends BaseScimResource
 {
   @Nullable
