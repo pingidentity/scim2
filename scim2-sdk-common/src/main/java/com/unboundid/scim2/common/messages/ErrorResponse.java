@@ -86,7 +86,7 @@ import java.util.Objects;
  */
 @Schema(id="urn:ietf:params:scim:api:messages:2.0:Error",
     name="Error Response", description = "SCIM 2.0 Error Response")
-@JsonPropertyOrder({"schemas", "scimType", "detail", "status"})
+@JsonPropertyOrder({"schemas", "id", "scimType", "detail", "status"})
 public class ErrorResponse extends BaseScimResource
 {
   @Nullable
