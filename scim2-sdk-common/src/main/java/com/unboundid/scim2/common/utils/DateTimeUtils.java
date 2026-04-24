@@ -60,6 +60,20 @@ public final class DateTimeUtils
   private static final TimeZone GMT = TimeZone.getTimeZone("GMT+00:00");
 
   /**
+   * Property that allows toggling the default region between UTC and GMT.
+   * <br><br>
+   *
+   * When string timestamps are deserialized into Calendar objects, previous
+   * releases would set timestamps in the default region as {@code GMT+00:00}.
+   * This property allows changing this behavior to use UTC instead.
+   * {@code GMT+00:00} is the default value.
+   *
+   * @since 5.1.0
+   */
+  public static boolean USE_GMT_CALENDARS = StaticUtils.getProperty(
+      "com.unboundid.scim2.common.utils.DateTimeUtils.useGMTCalendars", true);
+
+  /**
    * Formats a {@link Date} value as a SCIM 2 DateTime string.
    * This will use UTC as the time zone.
    *
@@ -140,14 +154,14 @@ public final class DateTimeUtils
       throw new IllegalArgumentException(e);
     }
 
-    // Extract the timestamp and timezone. Timezones in the default region
-    // should be considered as "GMT+00:00" for backward compatibility.
-    Date timestamp = Date.from(parsedTime.toInstant());
-    TimeZone zone = parsedTime.getOffset().equals(ZoneOffset.ofHours(0))
-        ? GMT : TimeZone.getTimeZone(parsedTime.getOffset());
+    // In previous releases, the default region was "GMT+00:00".
+    // This property allows using UTC as the default if desired.
+    ZoneOffset offset = parsedTime.getOffset();
+    TimeZone zone = USE_GMT_CALENDARS && offset.equals(ZoneOffset.ofHours(0))
+        ? GMT : TimeZone.getTimeZone(offset);
 
     Calendar calendar = Calendar.getInstance(zone);
-    calendar.setTime(timestamp);
+    calendar.setTime(Date.from(parsedTime.toInstant()));
     return calendar;
   }
 
