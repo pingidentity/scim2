@@ -41,6 +41,7 @@ import com.unboundid.scim2.common.bulk.BulkRequest;
 import com.unboundid.scim2.common.bulk.BulkResponse;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.server.annotations.ResourceType;
+
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;

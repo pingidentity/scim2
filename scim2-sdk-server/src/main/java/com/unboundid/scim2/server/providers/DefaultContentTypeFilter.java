@@ -33,6 +33,7 @@
 package com.unboundid.scim2.server.providers;
 
 import com.unboundid.scim2.common.annotations.NotNull;
+
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.Priorities;

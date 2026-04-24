@@ -41,11 +41,11 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
-import com.unboundid.scim2.common.exceptions.runtime.BulkRequestException;
-import com.unboundid.scim2.common.exceptions.runtime.BulkResponseException;
 import com.unboundid.scim2.common.exceptions.ContentTooLargeException;
 import com.unboundid.scim2.common.exceptions.RateLimitException;
 import com.unboundid.scim2.common.exceptions.ResourceConflictException;
+import com.unboundid.scim2.common.exceptions.runtime.BulkRequestException;
+import com.unboundid.scim2.common.exceptions.runtime.BulkResponseException;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 

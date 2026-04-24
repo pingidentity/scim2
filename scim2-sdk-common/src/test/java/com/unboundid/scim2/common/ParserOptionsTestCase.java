@@ -32,16 +32,13 @@
 
 package com.unboundid.scim2.common;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
-
-import org.testng.annotations.Test;
-
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.Parser;
+import org.testng.annotations.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 /**
@@ -63,42 +60,32 @@ public class ParserOptionsTestCase
     String filterString = attributeWithSemicolon + " eq 123";
 
     // Verify filter is rejected by default
-    assertFalse(
-        Parser.getOptions().getExtendedAttributeNameCharacters().contains(';'));
-    try
-    {
-      Parser.parseFilter(filterString);
-      fail("Parser should have rejected '" + filterString + "'");
-    }
-    catch (BadRequestException ex)
-    {
-      assertTrue(
-          ex.getMessage().startsWith("Unexpected character ';' at position 9"));
-    }
+    assertThat(Parser.getOptions().getExtendedAttributeNameCharacters())
+        .doesNotContain(';');
+    assertThatThrownBy(() -> Parser.parseFilter(filterString))
+        .isInstanceOfSatisfying(BadRequestException.class, ex ->
+            assertThat(ex.getMessage())
+                .startsWith("Unexpected character ';' at position 9"));
 
     // Verify filter is permitted after we specify the option.
     Parser.getOptions().addExtendedAttributeNameCharacters(';');
-    assertTrue(
-        Parser.getOptions().getExtendedAttributeNameCharacters().contains(';'));
+    assertThat(Parser.getOptions().getExtendedAttributeNameCharacters())
+        .contains(';');
 
     Filter filter = Parser.parseFilter(filterString);
-    assertEquals(filter.getAttributePath().toString(), attributeWithSemicolon);
-    assertEquals(filter.getFilterType().toString(), "eq");
-    assertEquals(filter.getComparisonValue().toString(), "123");
+    assertThat(filter.getAttributePath()).asString()
+        .isEqualTo(attributeWithSemicolon);
+    assertThat(filter.getFilterType()).asString().isEqualTo("eq");
+    assertThat(filter.getComparisonValue()).asString().isEqualTo("123");
 
     // Verify attribute is rejected after we remove the option.
     Parser.getOptions().clearExtendedAttributeNameCharacters();
-    assertFalse(
-        Parser.getOptions().getExtendedAttributeNameCharacters().contains(';'));
-    try
-    {
-      Parser.parseFilter(filterString);
-      fail("Parser should have rejected '" + filterString + "'");
-    }
-    catch (BadRequestException ex)
-    {
-      assertTrue(
-          ex.getMessage().startsWith("Unexpected character ';' at position 9"));
-    }
+    assertThat(Parser.getOptions().getExtendedAttributeNameCharacters())
+        .doesNotContain(';');
+
+    assertThatThrownBy(() -> Parser.parseFilter(filterString))
+        .isInstanceOfSatisfying(BadRequestException.class, ex ->
+            assertThat(ex.getMessage())
+                .startsWith("Unexpected character ';' at position 9"));
   }
 }

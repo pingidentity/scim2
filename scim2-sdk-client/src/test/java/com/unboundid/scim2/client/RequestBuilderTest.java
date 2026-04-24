@@ -39,8 +39,9 @@ import com.unboundid.scim2.client.requests.ReplaceRequestBuilder;
 import com.unboundid.scim2.client.requests.SearchRequestBuilder;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.types.UserResource;
-import jakarta.ws.rs.client.WebTarget;
 import org.testng.annotations.Test;
+
+import jakarta.ws.rs.client.WebTarget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

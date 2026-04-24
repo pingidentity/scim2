@@ -32,10 +32,10 @@
 
 package com.unboundid.scim2.common.types;
 
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
-import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.util.Objects;
 

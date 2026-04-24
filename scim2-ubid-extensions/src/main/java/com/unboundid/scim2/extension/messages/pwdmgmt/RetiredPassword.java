@@ -32,9 +32,9 @@
 
 package com.unboundid.scim2.extension.messages.pwdmgmt;
 
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.util.Date;
 import java.util.Objects;

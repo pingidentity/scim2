@@ -33,12 +33,12 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.annotations.Schema;
-import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.SchemaResource;
 
 import javax.lang.model.type.NullType;

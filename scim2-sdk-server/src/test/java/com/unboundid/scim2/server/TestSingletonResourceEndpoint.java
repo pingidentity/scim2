@@ -43,9 +43,9 @@ import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.utils.ResourcePreparer;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
-import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.utils.SimpleSearchResults;
 
 import jakarta.ws.rs.Consumes;
