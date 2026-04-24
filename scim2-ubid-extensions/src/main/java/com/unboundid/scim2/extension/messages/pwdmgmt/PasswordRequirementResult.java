@@ -35,10 +35,10 @@ package com.unboundid.scim2.extension.messages.pwdmgmt;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.AttributeDefinition;
-import com.unboundid.scim2.common.annotations.Attribute;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

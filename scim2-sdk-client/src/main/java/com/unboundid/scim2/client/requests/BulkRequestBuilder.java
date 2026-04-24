@@ -34,10 +34,11 @@ package com.unboundid.scim2.client.requests;
 
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.bulk.BulkOperation;
 import com.unboundid.scim2.common.bulk.BulkRequest;
 import com.unboundid.scim2.common.bulk.BulkResponse;
+import com.unboundid.scim2.common.exceptions.ScimException;
+
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;

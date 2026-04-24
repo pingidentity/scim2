@@ -47,7 +47,6 @@ import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.GenericScimObjectDeserializer;
 import com.unboundid.scim2.common.utils.GenericScimObjectSerializer;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
 import java.io.IOException;
 import java.net.URI;
@@ -59,6 +58,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+
+import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
 /**
  * A generic SCIM object. This class can be used if you have no Java object

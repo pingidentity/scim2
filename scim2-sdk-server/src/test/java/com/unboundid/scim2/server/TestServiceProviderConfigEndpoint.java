@@ -33,6 +33,7 @@
 package com.unboundid.scim2.server;
 
 import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.AuthenticationScheme;
 import com.unboundid.scim2.common.types.BulkConfig;
 import com.unboundid.scim2.common.types.ChangePasswordConfig;
@@ -41,7 +42,6 @@ import com.unboundid.scim2.common.types.FilterConfig;
 import com.unboundid.scim2.common.types.PaginationConfig;
 import com.unboundid.scim2.common.types.PatchConfig;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
-import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.SortConfig;
 import com.unboundid.scim2.server.resources.AbstractServiceProviderConfigEndpoint;
 
