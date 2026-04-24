@@ -46,6 +46,17 @@ have been updated so that they can be toggled by a Java system property as well.
 changing these values without requiring a code change. Note that if the system property value is
 changed at runtime, a restart is required for the change to take effect.
 
+Deprecated the `com.unboundid.scim2.server.PATCH` annotation class. At the time this class was
+written, JAX-RS did not support a PATCH annotation like it did for other HTTP methods. Now, the
+`jakarta.ws.rs.PATCH` is a better choice that should be used instead.
+
+Deprecated getters and setters in the `MapperFactory.java` class. In the upcoming Jackson 3 release,
+many of the referenced classes (e.g., `SerializationFeature.java`) have been renamed. The
+MapperFactory now supports an alternate scheme for adding customizations with the `createBuilder()`
+method. This provides access to a `JsonMapper.Builder` object that can directly take customizations.
+If your application does not make customizations to the SCIM SDK's object mapper instance, then
+there is no change required. See the class-level documentation of `MapperFactory` for more info.
+
 ## v5.0.0 - 2025-Dec-15
 For consistency with other open source Ping Identity software, the UnboundID SCIM 2 SDK for Java is
 now available under the terms of the Apache License (version 2.0). For legacy compatibility, the

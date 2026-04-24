@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -1244,6 +1245,23 @@ public class JsonUtils
   public static ObjectMapper createObjectMapper()
   {
     return mapperFactory.createObjectMapper();
+  }
+
+  /**
+   * This method returns the initial, default configuration for the JsonMapper
+   * builder used by the SCIM SDK to customize the way it serializes and
+   * deserializes data between JSON and object form. For more details on how
+   * to update the SCIM SDK's configuration, see {@link MapperFactory}.
+   *
+   * @return  A JsonMapper builder with the default settings used by the
+   *          UnboundID SCIM SDK.
+   *
+   * @since 5.1.0
+   */
+  @NotNull
+  public static JsonMapper.Builder getInitialMapperConfig()
+  {
+    return new MapperFactory().createBuilder();
   }
 
   /**
