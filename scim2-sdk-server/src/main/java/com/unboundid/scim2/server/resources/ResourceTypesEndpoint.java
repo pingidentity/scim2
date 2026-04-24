@@ -36,12 +36,12 @@ import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-import com.unboundid.scim2.common.filters.Filter;
-import com.unboundid.scim2.common.messages.ListResponse;
-import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.filters.Filter;
+import com.unboundid.scim2.common.messages.ListResponse;
+import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.utils.ResourcePreparer;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
@@ -165,11 +165,9 @@ public class ResourceTypesEndpoint
    * resource classes with the ResourceType annotation.
    *
    * @return All resource types defined at the service provider.
-   * @throws ScimException If an error occurs.
    */
   @NotNull
   public Collection<ResourceTypeResource> getResourceTypes()
-      throws ScimException
   {
     Set<ResourceTypeResource> resourceTypes = new HashSet<>();
     for (Class<?> resourceClass : application.getClasses())

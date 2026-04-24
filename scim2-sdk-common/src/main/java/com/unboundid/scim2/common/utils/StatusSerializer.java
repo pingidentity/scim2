@@ -32,12 +32,12 @@
 
 package com.unboundid.scim2.common.utils;
 
-import tools.jackson.core.JsonGenerator;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.SerializationContext;
-import tools.jackson.databind.ValueSerializer;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 /**
  * Serializes {@link com.unboundid.scim2.common.messages.ErrorResponse}'s
@@ -50,10 +50,10 @@ public class StatusSerializer extends ValueSerializer<Integer>
    */
   @Override
   public void serialize(@Nullable final Integer value,
-                        @NotNull final JsonGenerator jgen,
+                        @NotNull final JsonGenerator gen,
                         @Nullable final SerializationContext ctxt)
       throws JacksonException
   {
-    jgen.writeString(String.valueOf(value));
+    gen.writeString(String.valueOf(value));
   }
 }

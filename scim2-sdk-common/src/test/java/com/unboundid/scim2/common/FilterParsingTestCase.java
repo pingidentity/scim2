@@ -37,9 +37,9 @@ import com.unboundid.scim2.common.filters.Filter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import static com.unboundid.scim2.common.filters.Filter.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
-import static com.unboundid.scim2.common.filters.Filter.*;
 
 
 

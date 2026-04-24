@@ -32,14 +32,14 @@
 
 package com.unboundid.scim2.extension.messages.pwdmgmt;
 
-import tools.jackson.databind.annotation.JsonSerialize;
-import com.unboundid.scim2.common.annotations.Nullable;
-import com.unboundid.scim2.common.utils.JsonRefBeanSerializer;
-import com.unboundid.scim2.common.types.JsonReference;
-import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.BaseScimResource;
-import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.annotations.Attribute;
+import com.unboundid.scim2.common.annotations.Nullable;
+import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.JsonReference;
+import com.unboundid.scim2.common.utils.JsonRefBeanSerializer;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Calendar;
 import java.util.List;

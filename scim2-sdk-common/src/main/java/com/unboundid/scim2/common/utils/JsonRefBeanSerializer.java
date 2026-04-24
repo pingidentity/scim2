@@ -32,11 +32,11 @@
 
 package com.unboundid.scim2.common.utils;
 
+import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.types.JsonReference;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ValueSerializer;
-import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.types.JsonReference;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

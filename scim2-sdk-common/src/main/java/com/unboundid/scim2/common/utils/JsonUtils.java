@@ -69,7 +69,7 @@ public class JsonUtils
   private static MapperFactory mapperFactory = new MapperFactory();
 
   @NotNull
-  private static ObjectMapper SDK_OBJECT_MAPPER = createObjectMapper();
+  private static JsonMapper SDK_OBJECT_MAPPER = createJsonMapper();
 
   /**
    * This represents the base class for handling SCIM JSON data. Subclasses
@@ -1219,31 +1219,34 @@ public class JsonUtils
   }
 
   /**
-   * Creates a configured SCIM-compatible Jackson ObjectMapper. Creating new
-   * ObjectMapper instances are expensive, so instances should be shared if
-   * possible. Alternatively, consider using one of the
+   * Creates a configured SCIM-compatible Jackson JsonMapper. Consider using the
    * {@link #getObjectReader}, {@link #getObjectWriter},
    * {@link #getJsonNodeFactory}, or {@link #valueToNode} methods, which use the
-   * SCIM 2 SDK's ObjectMapper singleton.
+   * SCIM 2 SDK's JsonMapper singleton.
    *
-   * @return an Object Mapper with the correct options set for serializing
-   *     and deserializing SCIM JSON objects.
-   */
-  @NotNull
-  public static JsonMapper createObjectMapper()
-  {
-    return createJsonMapper();
-  }
-
-  /**
-   * TODO: Fill this out and mention objectmapper is an alias.
+   * @return A JsonMapper with the correct options set for serializing
+   *         and deserializing SCIM JSON objects.
    *
-   * @return A JsonMapper.
+   * @since 6.0.0
    */
   @NotNull
   public static JsonMapper createJsonMapper()
   {
     return mapperFactory.createObjectMapper();
+  }
+
+  /**
+   * Creates a configured SCIM-compatible Jackson JsonMapper. This method is
+   * equivalent to {@link #createJsonMapper()}, and exists for backward
+   * compatibility.
+   *
+   * @return A JsonMapper with the correct options set for serializing
+   *         and deserializing SCIM JSON objects.
+   */
+  @NotNull
+  public static JsonMapper createObjectMapper()
+  {
+    return createJsonMapper();
   }
 
   /**

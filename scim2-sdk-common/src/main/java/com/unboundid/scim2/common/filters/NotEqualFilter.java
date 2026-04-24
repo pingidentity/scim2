@@ -32,11 +32,11 @@
 
 package com.unboundid.scim2.common.filters;
 
-import tools.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import tools.jackson.databind.node.ValueNode;
 
 import java.util.Objects;
 

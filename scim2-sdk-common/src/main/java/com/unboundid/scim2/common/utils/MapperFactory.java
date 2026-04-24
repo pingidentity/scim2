@@ -33,6 +33,7 @@
 package com.unboundid.scim2.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.unboundid.scim2.common.annotations.NotNull;
 import tools.jackson.core.json.JsonReadFeature;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.MapperFeature;
@@ -40,7 +41,6 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
-import com.unboundid.scim2.common.annotations.NotNull;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -221,15 +221,14 @@ public class MapperFactory
     // Do not care about case when de-serializing POJOs.
     builder.enable(ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 
-    // Preserve original behavior from Jackson 2.x. This ensures, for example,
-    // that "userName" is one of the first attributes listed when printing a
-    // UserResource.
-    builder.disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
-
     // Don't serialize POJO nulls as JSON nulls.
     var nonNull = JsonInclude.Include.NON_NULL;
     builder.changeDefaultPropertyInclusion(v -> v.withValueInclusion(nonNull))
         .changeDefaultPropertyInclusion(v -> v.withContentInclusion(nonNull));
+
+    // Preserve the form that we used to print JSON in previous releases. This
+    // ensures that serialized SCIM resources have JSON consistent with the RFC.
+    builder.disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
 
     // Only use xsd:dateTime format for dates.
     SimpleModule dateTimeModule = new SimpleModule();

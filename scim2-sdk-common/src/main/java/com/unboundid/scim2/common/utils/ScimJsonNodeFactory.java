@@ -32,9 +32,9 @@
 
 package com.unboundid.scim2.common.utils;
 
+import com.unboundid.scim2.common.annotations.NotNull;
 import tools.jackson.databind.node.JsonNodeFactory;
 import tools.jackson.databind.node.ObjectNode;
-import com.unboundid.scim2.common.annotations.NotNull;
 
 /**
  * This class represents a Jackson {@link JsonNodeFactory} implementation that

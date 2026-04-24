@@ -52,7 +52,7 @@ with SCIM 2.0 clients or servers:
 ## Supported Versions
 As of version 4.0.0, the UnboundID SCIM SDK requires Java SE 17 or greater.
 
-As of version 6.0.0, the library also uses Jackson 3 for JSON serialization and deserialization. For
+As of version 6.0.0, the library uses Jackson 3 for JSON serialization and deserialization. For
 Jackson 2.x support, use the latest release before 6.0.0.
 
 ## Structure
@@ -205,7 +205,7 @@ Note that Ping Identity does not accept third-party code contributions.
 ## License
 As of the 5.0.0 release, the UnboundID SCIM SDK is available under the terms of the following
 licenses:
-* The [Apache License, version 2.0](LICENSE.md) (recommended).
+* The [Apache License, version 2.0](LICENSE.md) (recommended)
 * The GNU General Public License version 2 ([GPLv2](resource/LICENSE-GPLv2.txt))
 * The GNU Lesser General Public License version 2.1 ([LGPLv2.1](resource/LICENSE-LGPLv2.1.txt))
 * The legacy [UnboundID Free Use License](resource/LICENSE-UnboundID-SCIM2.txt)

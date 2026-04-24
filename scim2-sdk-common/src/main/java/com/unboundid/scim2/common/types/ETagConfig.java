@@ -80,7 +80,7 @@ public class ETagConfig
   private final boolean supported;
 
   /**
-   * Create a new complex type that specifies Etag configuration options.
+   * Create a new complex type that specifies ETag configuration options.
    *
    * @param supported Boolean value specifying whether the operation is
    *                  supported.

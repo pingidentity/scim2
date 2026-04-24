@@ -32,10 +32,6 @@
 
 package com.unboundid.scim2.server;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.node.StringNode;
-import tools.jackson.jakarta.rs.cfg.JakartaRSFeature;
-import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 import com.unboundid.scim2.client.ScimInterface;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.client.ScimServiceException;
@@ -87,6 +83,10 @@ import org.glassfish.jersey.test.JerseyTestNg;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.StringNode;
+import tools.jackson.jakarta.rs.cfg.JakartaRSFeature;
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Entity;

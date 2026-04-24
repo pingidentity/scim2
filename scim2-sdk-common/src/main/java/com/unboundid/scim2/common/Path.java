@@ -38,8 +38,8 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.Parser;
+import com.unboundid.scim2.common.utils.SchemaUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

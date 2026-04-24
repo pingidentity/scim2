@@ -121,6 +121,6 @@ public abstract class ComparisonFilter extends Filter
     builder.append(' ');
     builder.append(getFilterType().getStringValue());
     builder.append(' ');
-    builder.append(filterValue.toString());
+    builder.append(filterValue);
   }
 }

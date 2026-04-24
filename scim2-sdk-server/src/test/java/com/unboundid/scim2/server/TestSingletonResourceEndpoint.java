@@ -32,8 +32,6 @@
 
 package com.unboundid.scim2.server;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -43,10 +41,12 @@ import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.utils.ResourcePreparer;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
-import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.utils.SimpleSearchResults;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ObjectNode;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;

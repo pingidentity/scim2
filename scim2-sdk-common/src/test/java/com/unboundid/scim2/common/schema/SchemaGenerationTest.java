@@ -32,15 +32,15 @@
 
 package com.unboundid.scim2.common.schema;
 
-import tools.jackson.databind.ObjectMapper;
-import com.unboundid.scim2.common.types.AttributeDefinition;
-import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.schema.testobjects.TestObject1;
 import com.unboundid.scim2.common.schema.testobjects.TestObject2;
 import com.unboundid.scim2.common.schema.testobjects.TestObject3;
+import com.unboundid.scim2.common.types.AttributeDefinition;
+import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Collection;
 import java.util.HashSet;

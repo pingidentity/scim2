@@ -35,11 +35,11 @@ package com.unboundid.scim2.common.messages;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.unboundid.scim2.common.BaseScimResource;
+import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
-import com.unboundid.scim2.common.annotations.Attribute;
-import com.unboundid.scim2.common.BaseScimResource;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -31,10 +31,10 @@
  */
 package com.unboundid.scim2.common.utils;
 
-import tools.jackson.core.JsonGenerator;
-import tools.jackson.databind.SerializationContext;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ValueSerializer;
 
 import java.util.Calendar;
@@ -49,9 +49,9 @@ public class CalendarSerializer extends ValueSerializer<Calendar>
    */
   @Override
   public void serialize(@NotNull final Calendar value,
-                        @NotNull final JsonGenerator jgen,
+                        @NotNull final JsonGenerator gen,
                         @Nullable final SerializationContext ctxt)
   {
-    jgen.writeString(DateTimeUtils.format(value));
+    gen.writeString(DateTimeUtils.format(value));
   }
 }

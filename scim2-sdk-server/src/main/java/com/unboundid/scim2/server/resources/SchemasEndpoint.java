@@ -36,12 +36,12 @@ import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-import com.unboundid.scim2.common.filters.Filter;
-import com.unboundid.scim2.common.messages.ListResponse;
-import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.filters.Filter;
+import com.unboundid.scim2.common.messages.ListResponse;
+import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.server.annotations.ResourceType;
 import com.unboundid.scim2.server.utils.ResourcePreparer;
 import com.unboundid.scim2.server.utils.ResourceTypeDefinition;
@@ -56,7 +56,6 @@ import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriInfo;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -164,10 +163,9 @@ public class SchemasEndpoint
    * of all JAX-RS resource classes with the ResourceType annotation.
    *
    * @return All schemas defined at the service provider.
-   * @throws ScimException If an error occurs.
    */
   @NotNull
-  public Collection<SchemaResource> getSchemas() throws ScimException
+  public Collection<SchemaResource> getSchemas()
   {
     Set<SchemaResource> schemas = new HashSet<>();
     for (Class<?> resourceClass : application.getClasses())

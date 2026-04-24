@@ -170,7 +170,7 @@ public final class Debug
 
   // The set of debug types for which debugging is enabled.
   @NotNull
-  private static EnumSet<DebugType> debugTypes;
+  private static EnumSet<DebugType> debugTypes = EnumSet.allOf(DebugType.class);
 
 
 
@@ -200,7 +200,6 @@ public final class Debug
   {
     includeStackTrace = false;
     debugEnabled      = false;
-    debugTypes        = EnumSet.allOf(DebugType.class);
 
     logger.setLevel(Level.ALL);
   }

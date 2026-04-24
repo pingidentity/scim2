@@ -35,10 +35,10 @@ package com.unboundid.scim2.common.utils;
 
 import com.unboundid.scim2.common.annotations.NotNull;
 import tools.jackson.core.ErrorReportConfiguration;
-import tools.jackson.core.json.JsonFactory;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.io.ContentReference;
 import tools.jackson.core.io.IOContext;
+import tools.jackson.core.json.JsonFactory;
 
 import java.io.Reader;
 

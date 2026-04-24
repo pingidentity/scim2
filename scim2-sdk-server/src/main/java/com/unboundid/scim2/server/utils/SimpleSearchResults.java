@@ -46,7 +46,6 @@ import com.unboundid.scim2.server.ListResponseWriter;
 
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -258,7 +257,6 @@ public class SimpleSearchResults<T extends ScimResource>
   @Override
   @SuppressWarnings("unchecked")
   public void write(@NotNull final ListResponseWriter<T> os)
-      throws IOException
   {
     if (resourceComparator != null)
     {

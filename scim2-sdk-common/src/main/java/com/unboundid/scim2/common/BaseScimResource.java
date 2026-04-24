@@ -92,22 +92,15 @@ public abstract class BaseScimResource
    * subclasses of BaseScimResource.
    * <br><br>
    *
-   * Before supporting version 3.x of the Jackson library, the SCIM SDK strictly
-   * enforced deserialization errors when unknown attributes were present in a
-   * JSON payload that was being converted to an object. This was aligned with
-   * Jackson's default behavior to immediately report problems instead of
-   * potentially hiding data loss errors. However, the default value of the
-   * {@code FAIL_ON_UNKNOWN_PROPERTIES} Jackson setting was changed in Jackson
-   * 3.0.0 to be {@code false} to avoid throwing errors. Thus, as of the 6.0.0
-   * release of the SCIM SDK, ignoring unknown attributes during deserialization
-   * is the default behavior to be aligned with Jackson.
-   * <br><br>
-   *
-   * It is strongly encouraged to align your application with this behavior to
-   * avoid rejecting requests/responses from SCIM 2 clients or services that may
-   * not be fully compliant. However, if necessary, this property may be set to
-   * {@code false} to allow the SCIM SDK to report unknown attributes detected
-   * while deserializing a JSON into a BaseScimResource-based class.
+   * Since Jackson 3.0.0, JSON processing that encounters extra unknown fields
+   * or attributes will ignore these extra fields by default. As a result, since
+   * version 6.0.0, the SCIM SDK ignores any unknown fields that appear in the
+   * JSON and are not formatted as schema extensions. It is strongly encouraged
+   * to align your application with this behavior. However, if using the old
+   * behavior (throwing exceptions for unknown attributes) is necessary, set
+   * this property to {@code false}. This can be helpful for determining if a
+   * SCIM service is returning extra non-standard fields, but could result in
+   * increased request failure rate.
    *
    * @since 4.0.0
    */
@@ -228,7 +221,6 @@ public abstract class BaseScimResource
    */
   public void setSchemaUrns(@NotNull final Collection<String> schemaUrns)
   {
-    Objects.requireNonNull(schemaUrns);
     this.schemaUrns = new LinkedHashSet<>(schemaUrns);
   }
 
@@ -248,13 +240,8 @@ public abstract class BaseScimResource
    * Schema extension data is always handled.
    * <br><br>
    *
-   * Since Jackson 3.0.0, JSON processing ignores unknown fields by default.
-   * As a result, since version 6.0.0, the SCIM SDK ignores any unknown fields
-   * that appear in the JSON. However, if the old behavior (throwing exceptions
-   * for unknown attributes) is desired, set the {@link #IGNORE_UNKNOWN_FIELDS}
-   * flag to {@code false}. This can be helpful for determining if a SCIM
-   * service is returning extra non-standard fields, but could result in
-   * increased request failure rate.
+   * For more information on customizing the way this method treats unknown
+   * attribute data, see {@link #IGNORE_UNKNOWN_FIELDS}.
    *
    * @param key    The name of the unknown field.
    * @param value  The value of the field.

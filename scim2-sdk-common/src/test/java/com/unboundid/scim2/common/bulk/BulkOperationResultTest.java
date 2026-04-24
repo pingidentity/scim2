@@ -33,11 +33,11 @@
 package com.unboundid.scim2.common.bulk;
 
 import com.unboundid.scim2.common.GenericScimResource;
-import com.unboundid.scim2.common.exceptions.runtime.BulkResponseException;
 import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.RateLimitException;
 import com.unboundid.scim2.common.exceptions.ResourceNotFoundException;
 import com.unboundid.scim2.common.exceptions.ServerErrorException;
+import com.unboundid.scim2.common.exceptions.runtime.BulkResponseException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.types.GroupResource;
@@ -96,6 +96,15 @@ public class BulkOperationResultTest
     assertThat(result.getResponse()).isNull();
     assertThat(result.getResponseAsScimResource()).isNull();
     assertThat(result.getStatus()).isEqualTo("201");
+
+    // The associated "statusInt" value should not be printed in the JSON.
+    assertThat(result.toString()).doesNotContain("statusInt");
+
+    // Test the same JSON again, but with an integer status.
+    String intVal = postJson.replace("\"status\": \"201\"", "\"status\": 201");
+    BulkOperationResult resultWithInt = reader.readValue(intVal);
+    assertThat(resultWithInt).isEqualTo(result);
+    assertThat(resultWithInt.getStatus()).isEqualTo("201");
 
     // The associated "statusInt" value should not be printed in the JSON.
     assertThat(result.toString()).doesNotContain("statusInt");
@@ -566,33 +575,5 @@ public class BulkOperationResultTest
     );
     assertThat(delete.copy()).isEqualTo(delete);
     assertThat(delete.copy() == delete).isFalse();
-  }
-
-  /**
-   * Test {@link BulkOperationResult#setAny}.
-   */
-  @Test
-  public void testSetAny()
-  {
-    // Bulk operations should always ignore unknown fields when deserializing,
-    // so the @JsonAnySetter method should effectively be a no-op. Ensure this
-    // is the case by showing that valid keys/fields make no update.
-    BulkOperationResult result = new BulkOperationResult(
-        POST,
-        "201",
-        "https://example.com/Users/userID",
-        null,
-        null,
-        null
-    );
-    var result2 = result.copy();
-    result.setAny("method", StringNode.valueOf("fieldDoesNotExist"));
-    assertThat(result).isEqualTo(result2);
-
-    result.setAny("status", StringNode.valueOf("200"));
-    assertThat(result.getStatus())
-        .isNotEqualTo("200")
-        .isEqualTo("201");
-    assertThat(result).isEqualTo(result2);
   }
 }

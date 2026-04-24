@@ -534,12 +534,10 @@ public class ScimService implements ScimInterface
    * @param id       The resource identifier.
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
-   * @throws ScimException if an error occurs.
    */
   @NotNull
   public DeleteRequestBuilder deleteRequest(@NotNull final String endpoint,
                                             @NotNull final String id)
-      throws ScimException
   {
     return new DeleteRequestBuilder(baseTarget.path(endpoint).path(id));
   }
@@ -550,11 +548,9 @@ public class ScimService implements ScimInterface
    * @param url The URL of the resource to delete.
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
-   * @throws ScimException if an error occurs.
    */
   @NotNull
   public DeleteRequestBuilder deleteRequest(@NotNull final URI url)
-      throws ScimException
   {
     return new DeleteRequestBuilder(resolveWebTarget(url));
   }

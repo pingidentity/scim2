@@ -2019,11 +2019,11 @@ public class GenericScimResource implements ScimResource
    * @param date  The date to represent as a JsonNode.
    * @return      A JsonNode representing the date.
    *
-   * @throws ScimException  If an error occurs while parsing the resource.
+   * @throws JacksonException  If an error occurs while parsing the resource.
    */
   @NotNull
   public static StringNode getDateJsonNode(@Nullable final Date date)
-      throws ScimException
+      throws JacksonException
   {
     return JsonUtils.valueToNode(date);
   }

@@ -32,8 +32,6 @@
 
 package com.unboundid.scim2.common.utils;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -56,6 +54,8 @@ import com.unboundid.scim2.common.filters.OrFilter;
 import com.unboundid.scim2.common.filters.PresentFilter;
 import com.unboundid.scim2.common.filters.StartsWithFilter;
 import com.unboundid.scim2.common.types.AttributeDefinition;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.ArrayList;
 import java.util.Collections;

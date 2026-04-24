@@ -32,11 +32,11 @@
 
 package com.unboundid.scim2.server.providers;
 
-import tools.jackson.core.JacksonException;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.server.utils.ServerUtils;
+import tools.jackson.core.JacksonException;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -46,7 +46,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * A JAX-RS ExceptionMapper for to convert Jackson JacksonException to
+ * A JAX-RS ExceptionMapper that converts JacksonException errors to
  * SCIM ErrorResponses.
  */
 @Provider

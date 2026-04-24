@@ -436,22 +436,4 @@ public class BulkOperationTest
     assertThat(put.equals(other)).isFalse();
     other.setVersion("versionValue");
   }
-
-  /**
-   * Test {@link BulkOperation#setAny}.
-   */
-  @Test
-  public void testSetAny()
-  {
-    // Bulk operations should always ignore unknown fields when deserializing,
-    // so the @JsonAnySetter method should effectively be a no-op. Ensure this
-    // is the case by showing that valid keys/fields make no update.
-    BulkOperation operation = BulkOperation.post("/Users", new UserResource());
-    var operation2 = operation.copy();
-    operation.setAny("method", StringNode.valueOf("DELETE"));
-    assertThat(operation).isEqualTo(operation2);
-
-    operation.setAny("doesNotExist", StringNode.valueOf("Other"));
-    assertThat(operation).isEqualTo(operation2);
-  }
 }

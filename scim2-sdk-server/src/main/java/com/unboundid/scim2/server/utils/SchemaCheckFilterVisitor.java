@@ -169,7 +169,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final EqualFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     return visitComparisonFilter(filter, param);
   }
@@ -182,7 +181,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final NotEqualFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     return visitComparisonFilter(filter, param);
   }
@@ -195,7 +193,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final ContainsFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     return visitComparisonFilter(filter, param);
   }
@@ -208,7 +205,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final StartsWithFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     return visitComparisonFilter(filter, param);
   }
@@ -221,7 +217,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final EndsWithFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     return visitComparisonFilter(filter, param);
   }
@@ -234,7 +229,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final PresentFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     checkAttributePath(filter.getAttributePath());
     return filter;
@@ -248,7 +242,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final GreaterThanFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     return visitComparisonFilter(filter, param);
   }
@@ -261,7 +254,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final GreaterThanOrEqualFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     return visitComparisonFilter(filter, param);
   }
@@ -274,7 +266,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final LessThanFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     return visitComparisonFilter(filter, param);
   }
@@ -287,7 +278,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final LessThanOrEqualFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     return visitComparisonFilter(filter, param);
   }
@@ -348,7 +338,6 @@ public final class SchemaCheckFilterVisitor
   @NotNull
   public Filter visit(@NotNull final ComplexValueFilter filter,
                       @Nullable final Object param)
-      throws ScimException
   {
     checkAttributePath(filter.getAttributePath());
     return filter;

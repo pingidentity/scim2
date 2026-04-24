@@ -32,12 +32,12 @@
 
 package com.unboundid.scim2.extension.messages.externalidentity;
 
-import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.AttributeDefinition;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Objects;
 

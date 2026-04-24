@@ -49,7 +49,6 @@ import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -433,11 +432,11 @@ public abstract class ModifyRequestBuilder<T extends ModifyRequestBuilder<T>>
    * @param path The path to the attribute whose value to remove.
    *
    * @return This patch operation request.
-   * @throws ScimException If the path is invalid.
+   * @throws IllegalArgumentException If the path is invalid.
    */
   @NotNull
   public T removeValues(@NotNull final Path path)
-      throws ScimException
+      throws IllegalArgumentException
   {
     return addOperation(PatchOperation.remove(path));
   }

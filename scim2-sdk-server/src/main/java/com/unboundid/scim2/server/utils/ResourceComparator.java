@@ -32,8 +32,6 @@
 
 package com.unboundid.scim2.server.utils;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
@@ -43,6 +41,8 @@ import com.unboundid.scim2.common.messages.SortOrder;
 import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.utils.Debug;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Comparator;
 import java.util.List;
