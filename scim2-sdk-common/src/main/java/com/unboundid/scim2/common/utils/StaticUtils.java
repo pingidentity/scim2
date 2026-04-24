@@ -283,4 +283,44 @@ public final class StaticUtils
 
     return list;
   }
+
+
+  /**
+   * Evaluates whether the provided JVM system property name is set to a boolean
+   * value, where the comparison is case-insensitive. If the system property is
+   * not defined or cannot be obtained (e.g., due to security manager
+   * protections), the default value will be used.
+   *
+   * @param name          The name of the system property.
+   * @param defaultValue  The value that should be used if the property is not
+   *                      defined or cannot be fetched.
+   *
+   * @return  The property value as a boolean if the system property exists and
+   *          is obtainable.
+   */
+  public static boolean getProperty(@NotNull final String name,
+                                    final boolean defaultValue)
+  {
+    String property;
+    try
+    {
+      property = System.getProperty(name);
+    }
+    catch (Throwable t)
+    {
+      Debug.debugException(t);
+      property = null;
+    }
+
+    if ("true".equalsIgnoreCase(property))
+    {
+      return true;
+    }
+    else if ("false".equalsIgnoreCase(property))
+    {
+      return false;
+    }
+
+    return defaultValue;
+  }
 }
