@@ -58,6 +58,9 @@ public class DateTimeUtilsTest
 {
   private static final TimeZone GMT = TimeZone.getTimeZone("GMT+00:00");
 
+  /**
+   * Reset the system property value.
+   */
   @AfterMethod
   public void tearDown()
   {
@@ -67,6 +70,9 @@ public class DateTimeUtilsTest
         "com.unboundid.scim2.common.utils.DateTimeUtils.useGMTCalendars", true);
   }
 
+  /**
+   * Tests the {@link DateTimeUtils#USE_GMT_CALENDARS} property.
+   */
   @SuppressWarnings("DataFlowIssue")
   @Test
   public void testGMTProperty() throws Exception
