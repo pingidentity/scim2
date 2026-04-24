@@ -87,6 +87,14 @@ UserResource updatedUser = patchRequest.applyToResource(user);
 ```
 The existing `apply()` methods are not deprecated and may still be used.
 
+Added a system property that can use the UTC timezone when converting ISO timestamps from JSON data
+into Calendar objects. The "GMT+00:00" timezone is still the default. The value may also be updated
+directly via the public `DateTimeUtils.USE_GMT_CALENDARS` variable. Note that existing properties,
+`BaseScimResource.IGNORE_UNKOWN_FIELDS` and `PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY`,
+have been updated so that they can be toggled by a Java system property as well. This allows
+changing these values without requiring a code change. Note that if the system property value is
+changed at runtime, a restart is required for the change to take effect.
+
 ## v5.0.0 - 2025-Dec-15
 For consistency with other open source Ping Identity software, the UnboundID SCIM 2 SDK for Java is
 now available under the terms of the Apache License (version 2.0). For legacy compatibility, the

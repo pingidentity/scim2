@@ -74,6 +74,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import static com.unboundid.scim2.common.utils.StaticUtils.getProperty;
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
 /**
@@ -2486,5 +2487,8 @@ public abstract class PatchOperation
    *
    * @since 3.2.0
    */
-  public static boolean APPEND_NEW_PATCH_VALUES_PROPERTY = false;
+  public static boolean APPEND_NEW_PATCH_VALUES_PROPERTY = getProperty(
+      "com.unboundid.scim2.common.messages.PatchOperation.appendPatchValues",
+      false
+  );
 }

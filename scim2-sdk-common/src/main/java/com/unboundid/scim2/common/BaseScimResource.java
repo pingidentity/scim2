@@ -45,6 +45,7 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
+import com.unboundid.scim2.common.utils.StaticUtils;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ObjectNode;
@@ -104,7 +105,8 @@ public abstract class BaseScimResource
    *
    * @since 4.0.0
    */
-  public static boolean IGNORE_UNKNOWN_FIELDS = true;
+  public static boolean IGNORE_UNKNOWN_FIELDS = StaticUtils.getProperty(
+      "com.unboundid.scim2.common.BaseScimResource.ignoreUnknownFields", true);
 
   @Nullable
   private String id;

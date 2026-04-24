@@ -35,6 +35,7 @@ package com.unboundid.scim2.common;
 import com.unboundid.scim2.common.utils.StaticUtils;
 import org.testng.annotations.Test;
 
+import static com.unboundid.scim2.common.utils.StaticUtils.getProperty;
 import static com.unboundid.scim2.common.utils.StaticUtils.splitCommaSeparatedString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -121,5 +122,47 @@ public class StaticUtilsTest
     assertThat(StaticUtils.toLowerCase("lowerstring")).isEqualTo("lowerstring");
     assertThat(StaticUtils.toLowerCase("sPoNgEbOb tExT"))
         .isEqualTo("spongebob text");
+  }
+
+  /**
+   * Test for the {@link StaticUtils#getProperty} method.
+   */
+  @Test
+  public void testBooleanSystemPropertyEnabled()
+  {
+    String propertyName = "StaticUtilsTest_" + System.currentTimeMillis();
+
+    try
+    {
+      // A property that does not exist should use the default value.
+      assertThat(getProperty(propertyName, false)).isFalse();
+      assertThat(getProperty(propertyName, true)).isTrue();
+
+      // Set the system property to true. The default value should not be used.
+      System.setProperty(propertyName, "TRUE");
+      assertThat(getProperty(propertyName, false)).isTrue();
+      System.setProperty(propertyName, "true");
+      assertThat(getProperty(propertyName, false)).isTrue();
+
+      // Set the system property to false.
+      System.setProperty(propertyName, "FALSE");
+      assertThat(getProperty(propertyName, true)).isFalse();
+      System.setProperty(propertyName, "false");
+      assertThat(getProperty(propertyName, true)).isFalse();
+
+      // Values that are not well-defined should use the default value.
+      System.setProperty(propertyName, "other");
+      assertThat(getProperty(propertyName, true)).isTrue();
+      assertThat(getProperty(propertyName, false)).isFalse();
+
+      // A well-defined system property that is not set to a boolean string
+      // should use the default value.
+      assertThat(getProperty("java.vm.vendor", false)).isFalse();
+      assertThat(getProperty("java.vm.vendor", true)).isTrue();
+    }
+    finally
+    {
+      System.clearProperty(propertyName);
+    }
   }
 }

@@ -152,7 +152,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *     "status": "201",
  *     "response": {
  *       "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
- *       "userName": "Whiplash!"
+ *       "userName": "Whiplash!",
  *       "id": "5b261bdf",
  *       "meta": {
  *         "created": "1970-01-01T13:00:00Z"

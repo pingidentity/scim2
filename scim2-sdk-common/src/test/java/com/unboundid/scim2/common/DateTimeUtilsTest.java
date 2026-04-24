@@ -36,6 +36,8 @@ import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import com.unboundid.scim2.common.utils.StaticUtils;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import tools.jackson.core.JacksonException;
@@ -55,7 +57,55 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 public class DateTimeUtilsTest
 {
-  private static final TimeZone GMT = TimeZone.getTimeZone("GMT+00:00");
+  // In previous releases, this was "GMT+00:00". Now it's UTC.
+  private static final TimeZone GMT = TimeZone.getTimeZone(ZoneOffset.UTC);
+
+  /**
+   * Reset the value of the system property.
+   */
+  @AfterMethod
+  public void tearDown()
+  {
+    // The variable must be public and non-final so that it may be modified by
+    // applications.
+    DateTimeUtils.USE_GMT_CALENDARS = StaticUtils.getProperty(
+        "com.unboundid.scim2.common.utils.DateTimeUtils.useGMTCalendars", false);
+  }
+
+  /**
+   * Validate updates to the {@link DateTimeUtils#USE_GMT_CALENDARS} system
+   * property.
+   */
+  @SuppressWarnings("DataFlowIssue")
+  @Test
+  public void testGMTProperty() throws Exception
+  {
+    // A SCIM resource that has a timestamp in the default timezone.
+    String userJSON = """
+        {
+          "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+          "userName": "Whiplash!",
+          "id": "5b261bdf",
+          "meta": {
+            "created": "1970-01-01T13:00:00Z"
+          }
+        }""";
+
+    // When the property is disabled, deserialized timestamps should be UTC.
+    DateTimeUtils.USE_GMT_CALENDARS = false;
+    UserResource user = JsonUtils.getObjectReader().forType(UserResource.class)
+        .readValue(userJSON);
+    assertThat(user.getMeta().getCreated().getTimeZone())
+        .isEqualTo(TimeZone.getTimeZone(ZoneOffset.UTC));
+
+    // When the property is enabled, timestamps should use the legacy value.
+    DateTimeUtils.USE_GMT_CALENDARS = true;
+    user = JsonUtils.getObjectReader().forType(UserResource.class)
+        .readValue(userJSON);
+    assertThat(user.getMeta().getCreated().getTimeZone())
+        .isEqualTo(TimeZone.getTimeZone("GMT+00:00"))
+        .isNotEqualTo(TimeZone.getTimeZone("GMT"));
+  }
 
   /**
    * Validate {@link DateTimeUtils#format(Date, TimeZone)}.
