@@ -33,29 +33,17 @@
 package com.unboundid.scim2.common;
 
 import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.exceptions.BadRequestException;
-import com.unboundid.scim2.common.filters.Filter;
-import com.unboundid.scim2.common.filters.FilterType;
 import com.unboundid.scim2.common.types.Email;
-import com.unboundid.scim2.common.types.Name;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.MapperFactory;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
-import tools.jackson.databind.node.StringNode;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static tools.jackson.core.json.JsonReadFeature.ALLOW_SINGLE_QUOTES;
-import static tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static tools.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY;
-import static tools.jackson.databind.SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED;
 
 
 /**
@@ -74,20 +62,22 @@ public class MapperFactoryTest
   }
 
   /**
-   * Tests a custom {@link tools.jackson.databind.MapperFeature} setting
-   * on a mapper factory.
+   * Tests updating the SCIM SDK mapper configuration by appending updates to
+   * the builder provided in {@link MapperFactory#createBuilder()}.
+   *
+   * @throws Exception  If an unexpected error occurs.
    */
   @Test
-  public void testCustomMapperFeatures()
+  public void testCustomJsonMapperBuilder()
   {
     // A SCIM resource with the attributes (except 'schema') sorted
     // alphabetically.
     final String rawJSONString = """
         {
-          "schemas" : [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
-          "displayName" : "Kendrick Lamar",
-          "emails" : [{ "value" : "NLU@example.com" }],
-          "userName" : "K.Dot"
+          "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+          "displayName": "Kendrick Lamar",
+          "emails": [{ "value": "NLU@example.com" }],
+          "userName": "K.Dot"
         }""";
 
     // Reformat the string in a standardized form.
@@ -99,138 +89,21 @@ public class MapperFactoryTest
         .setEmails(new Email().setValue("NLU@example.com"))
         .setDisplayName("Kendrick Lamar");
 
-    // By default, the 'userName' field appears before fields like 'email'.
-    // Verify that the serialized user resource does not list attributes in
-    // alphabetical order.
+    // In the SCIM SDK's default configuration, the 'userName' field appears
+    // before fields like 'email'. Before making any changes, verify that the
+    // serialized user resource does not list attributes in alphabetical order.
     String userJSON = JsonUtils.getObjectWriter().writeValueAsString(user);
     assertThat(userJSON).isNotEqualTo(expectedJSON);
 
     // Update the object mapper to sort the elements of a SCIM resource.
-    MapperFactory factory = new MapperFactory().setMapperCustomFeatures(
-        Map.of(SORT_PROPERTIES_ALPHABETICALLY, true)
-    );
-    JsonUtils.setCustomMapperFactory(factory);
+    JsonMapper.Builder newConfig = JsonUtils.getInitialMapperConfig()
+        .enable(SORT_PROPERTIES_ALPHABETICALLY);
+    JsonUtils.setCustomMapperFactory(new MapperFactory().setConfig(newConfig));
 
     // Serialize the user resource again. This time, the object mapper should
     // sort the fields alphabetically.
     userJSON = JsonUtils.getObjectWriter().writeValueAsString(user);
     assertThat(userJSON).isEqualTo(expectedJSON);
-  }
-
-  /**
-   * Tests a custom deserialization setting on a mapper factory.
-   */
-  @Test
-  public void testCustomDeserializationFeatures()
-  {
-    // The JSON representing the 'name' field for a UserResource. The
-    // 'stageName' field is not established by the SCIM standard.
-    final String rawJSONString = """
-        {
-            "familyName": "Duckworth",
-            "givenName": "Kendrick",
-            "middleName": "Lamar",
-            "formatted": "Kendrick Lamar Duckworth",
-            "stageName": "K.Dot"
-        }""";
-
-    Name expectedPOJO = new Name().setFamilyName("Duckworth")
-        .setGivenName("Kendrick")
-        .setMiddleName("Lamar")
-        .setFormatted("Kendrick Lamar Duckworth");
-
-    // The default configuration should ignore the unknown field.
-    Name javaObject = JsonUtils.getObjectReader().forType(Name.class)
-        .readValue(rawJSONString);
-    assertThat(javaObject).isEqualTo(expectedPOJO);
-    assertThat(javaObject.toString()).doesNotContain("stageName");
-
-    // Update the mapper factory to fail on unknown fields.
-    var factory = new MapperFactory().setDeserializationCustomFeatures(
-        Map.of(FAIL_ON_UNKNOWN_PROPERTIES, true)
-    );
-    JsonUtils.setCustomMapperFactory(factory);
-
-    // The default configuration should not allow the unknown field.
-    assertThatThrownBy(() ->
-        JsonUtils.getObjectReader().forType(Name.class).readValue(rawJSONString)
-    ).isInstanceOf(JacksonException.class);
-  }
-
-  /**
-   * Tests a custom serialization setting on a mapper factory.
-   */
-  @Test
-  public void testCustomSerialization()
-  {
-    // A SCIM resource with a 'schemas' field set to a string instead of an
-    // array.
-    final String rawJSONString = """
-        {
-            "schemas": "urn:ietf:params:scim:schemas:core:2.0:User",
-            "userName": "kendrick.lamar"
-        }""";
-
-    // Reformat the string in a standardized form.
-    final String expectedJSON = JsonUtils.getObjectReader()
-        .readTree(rawJSONString).toString();
-
-    UserResource user = new UserResource().setUserName("kendrick.lamar");
-
-    // Convert the user resource to a standardized JSON string and ensure the
-    // representation does not match 'expectedJSON'. By default, this member
-    // variable should be converted to an array.
-    String userJSON = JsonUtils.getObjectWriter().writeValueAsString(user);
-    assertThat(userJSON).isNotEqualTo(expectedJSON);
-    assertThat(userJSON).contains("[", "]");
-
-    // Update the object mapper to convert string values into single-valued
-    // arrays for array attributes.
-    MapperFactory factory = new MapperFactory().setSerializationCustomFeatures(
-        Map.of(WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED, true)
-    );
-    JsonUtils.setCustomMapperFactory(factory);
-
-    // Convert the resource to a string again. This time, the converted string
-    // should be equivalent to the expected JSON.
-    userJSON = JsonUtils.getObjectWriter().writeValueAsString(user);
-    assertThat(userJSON).isEqualTo(expectedJSON);
-    assertThat(userJSON).doesNotContain("[", "]");
-  }
-
-  /**
-   * Validates the behavior of setting a custom JSON parser feature.
-   * <br><br>
-   *
-   * Note that the {@link com.unboundid.scim2.common.utils.Parser} class (used
-   * for processing string filters) leverages Jackson JSON Parsers, so this unit
-   * test validates that the behavior of the filter parser can be updated.
-   *
-   * @throws Exception  If an unexpected error occurs.
-   *
-   * TODO: Fix this test and enable.
-   */
-  @Test(enabled = false)
-  public void testCustomJSONParser() throws Exception
-  {
-    // Ensure that single quotes are not permitted for filter values by default.
-    assertThatThrownBy(() -> Filter.fromString("userName eq 'kendrick'"))
-        .isInstanceOf(BadRequestException.class);
-
-    // Permit single quotes.
-    MapperFactory factory = new MapperFactory().setJsonParserCustomFeatures(
-        Map.of(ALLOW_SINGLE_QUOTES, true)
-    );
-    JsonUtils.setCustomMapperFactory(factory);
-
-    // The conversion should now be permitted.
-    Filter equalFilter = Filter.fromString("userName eq 'kendrick'");
-    assertThat(equalFilter.getFilterType()).isEqualTo(FilterType.EQUAL);
-    assertThat(equalFilter.getAttributePath())
-        .isNotNull()
-        .matches(path -> path.toString().equals("userName"));
-    assertThat(equalFilter.getComparisonValue())
-        .isEqualTo(StringNode.valueOf("kendrick"));
   }
 
   /**

@@ -1249,6 +1249,23 @@ public class JsonUtils
   }
 
   /**
+   * This method returns the initial, default configuration for the JsonMapper
+   * builder used by the SCIM SDK to customize the way it serializes and
+   * deserializes data between JSON and object form. For more details on how
+   * to update the SCIM SDK's configuration, see {@link MapperFactory}.
+   *
+   * @return  A JsonMapper builder with the default settings used by the
+   *          UnboundID SCIM SDK.
+   *
+   * @since 5.1.0
+   */
+  @NotNull
+  public static JsonMapper.Builder getInitialMapperConfig()
+  {
+    return new MapperFactory().createBuilder();
+  }
+
+  /**
    * Sets the MapperFactory used to create the object mappers used by the SCIM 2
    * SDK.  If this method is called, it should be called prior to the first use
    * of any other method that may use an ObjectMapper (most of the methods of
