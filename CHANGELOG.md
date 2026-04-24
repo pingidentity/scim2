@@ -50,6 +50,16 @@ If your application does not make customizations to the SCIM SDK's object mapper
 there is no change required. See the class-level documentation of `MapperFactory` for more
 information.
 
+Added support for a system property that can use the UTC timezone when converting ISO timestamps
+from JSON data into Calendar objects. The GMT timezone is the default, but this behavior will be
+changed in an upcoming release. The value may also be updated directly via the public
+`DateTimeUtils.USE_GMT_CALENDARS` variable. Note that other existing properties, namely the
+`BaseScimResource.IGNORE_UNKOWN_FIELDS` and `PatchOperation.APPEND_NEW_PATCH_VALUES_PROPERTY`
+properties, have been updated so that they can be toggled by a Java system property as well. This
+allows changing the behavior of the SDK in an environment without requiring a code change. Note that
+if the system property value is changed at runtime, a restart is required for the change to take
+effect.
+
 ## v5.0.0 - 2025-Dec-15
 For consistency with other open source Ping Identity software, the UnboundID SCIM 2 SDK for Java is
 now available under the terms of the Apache License (version 2.0). For legacy compatibility, the
