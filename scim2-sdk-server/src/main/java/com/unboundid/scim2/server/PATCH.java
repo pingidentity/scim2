@@ -40,7 +40,12 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates that the annotated method responds to HTTP PATCH requests.
+ *
+ * @deprecated  At the time this class was created, JAX-RS did not provide a
+ *              PATCH annotation. JAX-RS now has the {@link jakarta.ws.rs.PATCH}
+ *              class, so applications should use leverage this instead.
  */
+@Deprecated(since = "5.1.0")
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @HttpMethod("PATCH")

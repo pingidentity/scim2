@@ -47,6 +47,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES;
 
@@ -63,28 +64,20 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
  * SDK will ignore {@code null} fields from the object.
  * <br><br>
  *
- * If your project would benefit from enabling or disabling certain Jackson
- * features on the SCIM SDK's object mapper, use one of the following methods:
- * <ul>
- *   <li> {@link #setMapperCustomFeatures}
- *   <li> {@link #setDeserializationCustomFeatures}
- *   <li> {@link #setSerializationCustomFeatures}
- *   <li> {@link #setJsonParserCustomFeatures}
- *   <li> {@link #setJsonGeneratorCustomFeatures}
- * </ul>
- *
- * For example, to disable the
+ * The SCIM SDK provides access to the initial builder used for the shared
+ * object mapper in the {@link #createBuilder()} method. If your application
+ * needs to modify the default object mapper settings, then this method may be
+ * used as a starting point. For example, to disable the Jackson
  * {@link MapperFeature#ACCEPT_CASE_INSENSITIVE_PROPERTIES} property, use the
  * following Java code:
  * <pre><code>
- *   MapperFactory newFactory = new MapperFactory();
- *   newFactory.setMapperCustomFeatures(
- *       Map.of(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, false)
- *   );
+ *   JsonMapper.Builder newConfig = JsonUtils.getInitialMapperConfig()
+ *       .disable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
  *
- *   // Register the new MapperFactory with the SCIM SDK.
- *   JsonUtils.setCustomMapperFactory(newFactory);
+ *   // Register a new MapperFactory with the desired settings.
+ *   JsonUtils.setCustomMapperFactory(new MapperFactory().setConfig(newConfig));
  * </code></pre>
+ * <br><br>
  *
  * If your desired customization is more complicated than enabling/disabling
  * Jackson features, an alternative is to create a custom {@code MapperFactory}
@@ -95,20 +88,20 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
  * <pre><code>
  *   public class CustomMapperFactory extends MapperFactory
  *   {
- *    {@literal @}Override
+ *     &#064;Override
  *     public ObjectMapper createObjectMapper()
  *     {
- *       // Fetch the initial object mapper from the superclass, then add your
- *       // customizations. Do not instantiate a new ObjectMapper.
- *       ObjectMapper mapper = super.createObjectMapper();
+ *       // Fetch the initial builder from the superclass, then add your
+ *       // customizations. Do not instantiate a new builder.
+ *       JsonMapper.Builder builder = super.createBuilder();
  *
  *       // Add the desired customizations.
  *       SimpleModule module = new SimpleModule();
  *       module.addSerializer(DesiredClass.class, new CustomSerializer());
  *       module.addDeserializer(DesiredClass.class, new CustomDeserializer());
- *       mapper.registerModule(module);
+ *       builder.addModule(module);
  *
- *       return mapper;
+ *       return builder.build();
  *     }
  *   }
  * </code></pre>
@@ -142,6 +135,13 @@ public class MapperFactory
       Collections.emptyMap();
 
   /**
+   * The JsonMapper builder with the appropriate configuration for creating new
+   * object mappers.
+   */
+  @NotNull
+  private JsonMapper.Builder mapperConfigBuilder = createBuilder();
+
+  /**
    * Sets custom deserialization features for any JSON ObjectMapper that is
    * used and returned by the SCIM 2 SDK.  This class should be used
    * to configure any object mapper customizations needed prior to using
@@ -149,12 +149,20 @@ public class MapperFactory
    *
    * @param customFeatures The list of custom deserialization feature settings.
    * @return this object.
+   *
+   * @deprecated  Use {@link #createBuilder()} to make updates to a builder
+   *              instance instead. See the class-level Javadoc for more info.
    */
+  @Deprecated(since = "5.1.0")
   @NotNull
   public MapperFactory setDeserializationCustomFeatures(
       @NotNull final Map<DeserializationFeature, Boolean> customFeatures)
   {
     deserializationCustomFeatures = customFeatures;
+
+    // Once a custom feature has been set, reinitialize the stored builder
+    // instance so that it is updated with the desired configuration.
+    mapperConfigBuilder = createBuilder();
     return this;
   }
 
@@ -166,12 +174,17 @@ public class MapperFactory
    *
    * @param customFeatures The list of custom JSON generator feature settings.
    * @return this object.
+   *
+   * @deprecated  Use {@link #createBuilder()} to make updates to a builder
+   *              instance instead. See the class-level Javadoc for more info.
    */
+  @Deprecated(since = "5.1.0")
   @NotNull
   public MapperFactory setJsonGeneratorCustomFeatures(
       @NotNull final Map<JsonGenerator.Feature, Boolean> customFeatures)
   {
     jsonGeneratorCustomFeatures = customFeatures;
+    mapperConfigBuilder = createBuilder();
     return this;
   }
 
@@ -183,12 +196,17 @@ public class MapperFactory
    *
    * @param customFeatures The list of custom JSON parser feature settings.
    * @return this object.
+   *
+   * @deprecated  Use {@link #createBuilder()} to make updates to a builder
+   *              instance instead. See the class-level Javadoc for more info.
    */
+  @Deprecated(since = "5.1.0")
   @NotNull
   public MapperFactory setJsonParserCustomFeatures(
       @NotNull final Map<JsonParser.Feature, Boolean> customFeatures)
   {
     jsonParserCustomFeatures = customFeatures;
+    mapperConfigBuilder = createBuilder();
     return this;
   }
 
@@ -200,12 +218,17 @@ public class MapperFactory
    *
    * @param customFeatures The list of custom mapper feature settings.
    * @return this object.
+   *
+   * @deprecated  Use {@link #createBuilder()} to make updates to a builder
+   *              instance instead. See the class-level Javadoc for more info.
    */
+  @Deprecated(since = "5.1.0")
   @NotNull
   public MapperFactory setMapperCustomFeatures(
       @NotNull final Map<MapperFeature, Boolean> customFeatures)
   {
     mapperCustomFeatures = customFeatures;
+    mapperConfigBuilder = createBuilder();
     return this;
   }
 
@@ -217,26 +240,30 @@ public class MapperFactory
    *
    * @param customFeatures The list of custom serialization feature settings.
    * @return this object.
+   *
+   * @deprecated  Use {@link #createBuilder()} to make updates to a builder
+   *              instance instead. See the class-level Javadoc for more info.
   */
+  @Deprecated(since = "5.1.0")
   @NotNull
   public MapperFactory setSerializationCustomFeatures(
       @NotNull final Map<SerializationFeature, Boolean> customFeatures)
   {
     serializationCustomFeatures = customFeatures;
+    mapperConfigBuilder = createBuilder();
     return this;
   }
 
   /**
-   * Creates a custom SCIM compatible Jackson ObjectMapper. Creating new
-   * ObjectMapper instances are expensive so instances should be shared if
-   * possible. This can be used to set the factory used to build new instances
-   * of the object mapper used by the SCIM 2 SDK.
+   * Creates a SCIM compatible {@link JsonMapper} builder instance. This
+   * contains the mapper configuration that is used by the SCIM SDK.
    *
-   * @return an Object Mapper with the correct options set for serializing
-   *     and deserializing SCIM JSON objects.
+   * @return  A builder object with the initial SCIM SDK mapper configuration.
+   *
+   * @since 5.1.0
    */
   @NotNull
-  public ObjectMapper createObjectMapper()
+  public JsonMapper.Builder createBuilder()
   {
     // Create a new object mapper with case-insensitive settings.
     JsonMapper.Builder builder = JsonMapper.builder(new ScimJsonFactory());
@@ -269,6 +296,36 @@ public class MapperFactory
     jsonParserCustomFeatures.forEach(builder::configure);
     serializationCustomFeatures.forEach(builder::configure);
 
-    return builder.build();
+    return builder;
+  }
+
+  /**
+   * Sets the provided mapper configuration on this MapperFactory.
+   *
+   * @param builder  The builder containing the ObjectMapper configuration.
+   * @return  This instance.
+   *
+   * @since 5.1.0
+   */
+  @NotNull
+  public MapperFactory setConfig(@NotNull final JsonMapper.Builder builder)
+  {
+    mapperConfigBuilder = Objects.requireNonNull(builder);
+    return this;
+  }
+
+  /**
+   * Creates a custom SCIM compatible Jackson ObjectMapper. Creating new
+   * ObjectMapper instances are expensive so instances should be shared if
+   * possible. This can be used to set the factory used to build new instances
+   * of the object mapper used by the SCIM 2 SDK.
+   *
+   * @return an Object Mapper with the correct options set for serializing
+   *     and deserializing SCIM JSON objects.
+   */
+  @NotNull
+  public ObjectMapper createObjectMapper()
+  {
+    return mapperConfigBuilder.build();
   }
 }

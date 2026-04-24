@@ -34,6 +34,7 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.annotations.NotNull;
@@ -62,6 +63,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * This class contains tests that validate customization of the
  * {@link MapperFactory} and its object mapper.
  */
+@SuppressWarnings("deprecation")
 public class MapperFactoryTest
 {
   /**
@@ -71,6 +73,52 @@ public class MapperFactoryTest
   public void tearDown()
   {
     JsonUtils.setCustomMapperFactory(new MapperFactory());
+  }
+
+  /**
+   * Tests updating the SCIM SDK mapper configuration by appending configuration
+   * settings to the builder provided in {@link MapperFactory#createBuilder()}.
+   * This test is based on {@link #testCustomMapperFeatures}.
+   *
+   * @throws Exception  If an unexpected error occurs.
+   */
+  @Test
+  public void testCustomJsonMapperBuilder() throws Exception
+  {
+    // A SCIM resource with the attributes (except 'schema') sorted
+    // alphabetically.
+    final String rawJSONString = """
+        {
+          "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+          "displayName": "Kendrick Lamar",
+          "emails": [{ "value": "NLU@example.com" }],
+          "userName": "K.Dot"
+        }""";
+
+    // Reformat the string in a standardized form.
+    final String expectedJSON = JsonUtils.getObjectReader()
+        .readTree(rawJSONString).toString();
+
+    UserResource user = new UserResource()
+        .setUserName("K.Dot")
+        .setEmails(new Email().setValue("NLU@example.com"))
+        .setDisplayName("Kendrick Lamar");
+
+    // In the SCIM SDK's default configuration, the 'userName' field appears
+    // before fields like 'email'. Before making any changes, verify that the
+    // serialized user resource does not list attributes in alphabetical order.
+    String userJSON = JsonUtils.getObjectWriter().writeValueAsString(user);
+    assertThat(userJSON).isNotEqualTo(expectedJSON);
+
+    // Update the object mapper to sort the elements of a SCIM resource.
+    JsonMapper.Builder newConfig = JsonUtils.getInitialMapperConfig()
+        .enable(SORT_PROPERTIES_ALPHABETICALLY);
+    JsonUtils.setCustomMapperFactory(new MapperFactory().setConfig(newConfig));
+
+    // Serialize the user resource again. This time, the object mapper should
+    // sort the fields alphabetically.
+    userJSON = JsonUtils.getObjectWriter().writeValueAsString(user);
+    assertThat(userJSON).isEqualTo(expectedJSON);
   }
 
   /**
