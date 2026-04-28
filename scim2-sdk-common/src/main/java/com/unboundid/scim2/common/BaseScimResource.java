@@ -46,7 +46,6 @@ import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -93,15 +92,13 @@ public abstract class BaseScimResource
    * subclasses of BaseScimResource.
    * <br><br>
    *
-   * Since Jackson 3.0.0, JSON processing that encounters extra unknown fields
-   * or attributes will ignore these extra fields by default. As a result, since
-   * version 6.0.0, the SCIM SDK ignores any unknown fields that appear in the
-   * JSON and are not formatted as schema extensions. It is strongly encouraged
-   * to align your application with this behavior. However, if using the old
-   * behavior (throwing exceptions for unknown attributes) is necessary, set
-   * this property to {@code false}. This can be helpful for determining if a
-   * SCIM service is returning extra non-standard fields, but could result in
-   * increased request failure rate.
+   * Since Jackson 3.0.0, extra unknown fields/attributes found in JSON are
+   * ignored by default. For alignment with Jackson, this property is set to
+   * {@code true} (as of version 6.0.0) so that unknown fields in the JSON
+   * representation of a BaseScimResource are also ignored (if they are not a
+   * schema extension). It is strongly encouraged to avoid changing this
+   * setting, as updates to the SCIM standard can cause new fields to be added
+   * (e.g., RFC 9865 added fields like {@code nextCursor} to ListResponse).
    *
    * @since 4.0.0
    */
@@ -238,12 +235,7 @@ public abstract class BaseScimResource
   /**
    * This method is used by Jackson when deserializing JSON data into a Java
    * object. This will be called for schema extensions and any unknown fields
-   * (i.e., any fields in the JSON that are not defined in the Java class).
-   * Schema extension data is always handled.
-   * <br><br>
-   *
-   * For more information on customizing the way this method treats unknown
-   * attribute data, see {@link #IGNORE_UNKNOWN_FIELDS}.
+   * that are not defined in the Java class.
    *
    * @param key    The name of the unknown field.
    * @param value  The value of the field.
@@ -392,16 +384,8 @@ public abstract class BaseScimResource
   @JsonIgnore
   public <T> T getExtension(@NotNull final Class<T> clazz)
   {
-    try
-    {
-      JsonNode extNode =
-          extensionObjectNode.get(getSchemaUrnOrThrowException(clazz));
-      return (extNode == null) ? null : JsonUtils.nodeToValue(extNode, clazz);
-    }
-    catch (JacksonException ex)
-    {
-      throw new RuntimeException(ex);
-    }
+    JsonNode ext = extensionObjectNode.get(getSchemaUrnOrThrowException(clazz));
+    return (ext == null) ? null : JsonUtils.nodeToValue(ext, clazz);
   }
 
   /**
@@ -557,14 +541,7 @@ public abstract class BaseScimResource
   @NotNull
   public String toString()
   {
-    try
-    {
-      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
-          writeValueAsString(this);
-    }
-    catch (JacksonException e)
-    {
-      throw new RuntimeException(e);
-    }
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 }

@@ -65,8 +65,8 @@ public final class DateTimeUtils
    *
    * When string timestamps are deserialized into Calendar objects, previous
    * releases would set timestamps in the default region as {@code GMT+00:00}.
-   * This property allows changing this behavior to use UTC instead. As of
-   * the 6.0.0 release, UTC is the default timezone used.
+   * This property allows restoring this behavior. As of the 6.0.0 release, UTC
+   * is the default timezone used.
    *
    * @since 5.1.0
    */

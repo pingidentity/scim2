@@ -214,7 +214,7 @@ public class RequestBuilder<T extends RequestBuilder<T>>
 
       return exception;
     }
-    catch (ProcessingException | JacksonException ex)
+    catch (JacksonException | ProcessingException ex)
     {
       // The exception message likely contains unwanted details about why the
       // server failed to process the response, instead of the actual SCIM

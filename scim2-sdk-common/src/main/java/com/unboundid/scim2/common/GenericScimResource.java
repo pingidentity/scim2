@@ -523,15 +523,8 @@ public class GenericScimResource implements ScimResource
   @NotNull
   public String toString()
   {
-    try
-    {
-      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
-          writeValueAsString(this);
-    }
-    catch (JacksonException e)
-    {
-      throw new RuntimeException(e);
-    }
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 
   /**

@@ -46,7 +46,6 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.types.ETagConfig;
 import com.unboundid.scim2.common.utils.BulkStatusDeserializer;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -634,16 +633,8 @@ public class BulkOperationResult
   @NotNull
   public String toString()
   {
-    try
-    {
-      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
-          .writeValueAsString(this);
-    }
-    catch (JacksonException e)
-    {
-      // This should never happen.
-      throw new RuntimeException(e);
-    }
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 
   /**

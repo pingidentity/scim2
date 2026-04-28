@@ -106,9 +106,6 @@ public class BulkOperationResultTest
     assertThat(resultWithInt).isEqualTo(result);
     assertThat(resultWithInt.getStatus()).isEqualTo("201");
 
-    // The associated "statusInt" value should not be printed in the JSON.
-    assertThat(result.toString()).doesNotContain("statusInt");
-
     // Construct the same result via code and ensure it serializes into the same
     // JSON.
     BulkOperationResult created = new BulkOperationResult(

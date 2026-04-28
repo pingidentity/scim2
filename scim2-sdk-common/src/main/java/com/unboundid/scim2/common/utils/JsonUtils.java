@@ -631,8 +631,8 @@ public class JsonUtils
    *   }
    * </pre>
    *
-   * Calling this method with path of {@code emails.value} will return a list of
-   * all StringNodes of the {@code value} field in the {@code emails} array:
+   * Calling this method with a path of {@code emails.value} will return a list
+   * of all StringNodes of the {@code value} field in the {@code emails} array:
    *
    * <pre>
    *   [ StringNode("bob@work.com"), StringNode("bob@home.com") ]
@@ -657,7 +657,7 @@ public class JsonUtils
    *   }
    * </pre>
    *
-   * Calling this method with path of {@code books.authors} will return a list
+   * Calling this method with a path of {@code books.authors} will return a list
    * of all ArrayNodes of the {@code authors} field in the {@code books} array:
    *
    * <pre>
@@ -1237,7 +1237,7 @@ public class JsonUtils
   /**
    * Creates a configured SCIM-compatible Jackson JsonMapper. This method is
    * equivalent to {@link #createJsonMapper()}, and exists for backward
-   * compatibility.
+   * compatibility with previous releases that used this method name.
    *
    * @return A JsonMapper with the correct options set for serializing
    *         and deserializing SCIM JSON objects.

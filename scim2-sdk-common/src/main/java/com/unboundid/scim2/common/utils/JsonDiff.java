@@ -521,8 +521,7 @@ public class JsonDiff
   public boolean isSameType(@NotNull final JsonNode n1,
                             @NotNull final JsonNode n2)
   {
-    return (n1.getNodeType() == n2.getNodeType() ||
-        ((n1.isString() || n1.isBinary()) &&
-            (n2.isString() || n2.isBinary())));
+    return n1.getNodeType() == n2.getNodeType() ||
+        ((n1.isString() || n1.isBinary()) && (n2.isString() || n2.isBinary()));
   }
 }

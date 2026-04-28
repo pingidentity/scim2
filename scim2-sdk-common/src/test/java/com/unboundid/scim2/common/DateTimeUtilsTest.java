@@ -57,7 +57,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 public class DateTimeUtilsTest
 {
-  // In previous releases, this was "GMT+00:00". Now it's UTC.
+  // In previous releases, this was "GMT+00:00". Now it represents UTC.
   private static final TimeZone GMT = TimeZone.getTimeZone(ZoneOffset.UTC);
 
   /**

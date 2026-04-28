@@ -425,7 +425,7 @@ public class SearchRequestBuilder
           }
         }
       }
-      catch (JacksonException | IOException e)
+      catch (IOException | JacksonException e)
       {
         throw new ResponseProcessingException(response, e);
       }

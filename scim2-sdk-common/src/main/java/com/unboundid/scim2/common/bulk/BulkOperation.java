@@ -850,16 +850,8 @@ public abstract class BulkOperation
   @NotNull
   public String toString()
   {
-    try
-    {
-      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
-          .writeValueAsString(this);
-    }
-    catch (JacksonException e)
-    {
-      // This should never happen.
-      throw new RuntimeException(e);
-    }
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 
   /**

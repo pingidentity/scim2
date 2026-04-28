@@ -3,53 +3,64 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## 6.0.0 - TBD
-The UnboundID SCIM SDK now requires using Jackson 3.1.2. Jackson 3 contains many
-backwards-incompatible API changes, so Jackson 2.x is no longer supported. Notable changes in
-Jackson 3.x include:
+The UnboundID SCIM SDK now requires using version 3 of the Jackson library (this release ships with
+v3.1.2). This change aligns the SCIM SDK with HTTP libraries such as Spring Framework 7/Spring
+Boot 4, which are moving away from Jackson 2.x. Since Jackson 3 contains many backwards-incompatible
+API changes, Jackson 2.x is no longer supported. Jackson 3 contains many design changes and updated
+default values, but the most notable ones for the UnboundID SCIM SDK have been highlighted below:
 * `DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES` has been set to `false` by default in
-  Jackson 3. The SCIM SDK will preserve this default setting, and no longer throws exceptions when
-  extra unknown fields are contained within a SCIM JSON request or response. Instead, the additional
-  fields are ignored.
+  Jackson 3. This marks a major shift: now, when a JSON representing a resource contains extra
+  fields, the unknown fields are ignored instead of causing exceptions. This behavior provides
+  better resilience for applications interacting with external APIs that may add new fields over
+  time. The SCIM SDK has been updated to use this new setting and will not enforce strict compliance.
+
 * Jackson exception objects are no longer checked exceptions. In Jackson 2.x, exceptions were based
-  on `java.io.IOException`, but they are now based on `java.lang.RuntimeException` in Jackson 3.x.
-  The SCIM SDK still highlights places where a `JacksonException` is thrown, but it is no longer
-  mandatory to surround these in a try/catch block, though these blocks are likely still useful
-  whenever a descriptive error message should be returned.
+  on `java.io.IOException`, but in Jackson 3.x, they are based on `java.lang.RuntimeException`. The
+  SCIM SDK still highlights places where a `JacksonException` is thrown, but it is no longer
+  mandatory to surround these in a try/catch block. These blocks are likely still useful in some
+  cases whenever a descriptive error message should be returned.
+
 * Jackson ObjectMappers are now "read-only", and their configuration cannot be modified after they
   have been built with `JsonMapper.Builder.build()`. To avoid managing object mappers for SCIM uses,
-  use `JsonUtils.createJsonMapper()` instead. Applications should generally lean on this existing
-  object mapper instead of declaring their own. If you need to customize this object mapper's
-  settings, see `MapperFactory.java`.
-* Many Jackson classes have been moved or renamed. `TextNode` objects are now `StringNode`, and
-  `JsonProcessingException` objects from Jackson 2.x no longer exist. The only class removed from
-  the UnboundID SCIM SDK in this release is not related to Jackson (see below).
+  always use `JsonUtils.createJsonMapper()` instead of `new ObjectMapper()` when possible. If you
+  need to customize this object mapper's settings, see `MapperFactory.java`.
 
-Updated the default value of the `BaseScimResource.IGNORE_UNKNOWN_FIELDS` property to `true`. This
-change is intended to align with Jackson 3.0's new default setting for `FAIL_ON_UNKNOWN_PROPERTIES`
-(referenced above), which ignore unknown JSON fields instead of throwing exceptions. To restore the
-behavior prior to this release, set the "<insert>" Java
-system property to `false`, or add the following line of code to your project:
+* Many Jackson classes have been moved or renamed. `TextNode` objects are now `StringNode`, and
+  `JsonProcessingException` objects from Jackson 2.x no longer exist (these can be replaced with
+  `JacksonException`). SCIM SDK classes removed or renamed in this release are listed below.
+
+
+The default values of two configurable SCIM SDK properties have been updated in this release:
+* `BaseScimResource.IGNORE_UNKNOWN_FIELDS` is now `true` by default so that unknown JSON fields on
+  BaseScimResource fields are ignored instead of throwing exceptions. This change is intended to
+  align with Jackson 3's new default setting for `FAIL_ON_UNKNOWN_PROPERTIES` (referenced above).
+* `DateTimeUtils.USE_GMT_CALENDARS` is now `false` so that Calendars use the `UTC` timezone when
+  they are initialized from a JSON timestamp. This is intended to provide better default values,
+  since it is common to use UTC instead of "GMT+00:00", which complicated equals() checks in tests.
+* To restore the previous behavior of these properties, reset the values of the
+  "com.unboundid.scim2.common.BaseScimResource.ignoreUnknownFields" and/or
+  "com.unboundid.scim2.common.utils.DateTimeUtils.useGMTCalendars" system properties, or add one of
+  the following lines of code to your project:
 ```
 BaseScimResource.IGNORE_UNKNOWN_FIELDS = false;
+DateTimeUtils.USE_GMT_CALENDARS = true;
 ```
 
 &nbsp;
 
-Updated the SCIM SDK to use UTC by default whenever a string timestamp is deserialized into a
-Calendar object. This is intended to align with better default settings, since it is very common to
-use UTC for the default timezone instead of "GMT+00:00". To restore the behavior prior to this
-release, set the "<insert>" Java system property, or the
-`DateTimeUtils.USE_GMT_CALENDARS` field, to `true` as described for the `IGNORE_UNKNOWN_FIELDS`
-property above.
+Removed the `com.unboundid.scim2.server.PATCH` annotation class from scim2-sdk-server, which was
+deprecated in 5.1.0. Applications should use the `jakarta.ws.rs.PATCH` annotation instead.
 
-Removed the `com.unboundid.scim2.server.PATCH` annotation class, which was deprecated in 5.1.0.
-Applications should use the `jakarta.ws.rs.PATCH` annotation instead.
-
-Removed several deprecated fields in the `MapperFactory` class. Customizations should be appended
-directly to the `JsonMapper.Builder` object instead, as described by the class-level Javadoc.
+Removed several fields in the `MapperFactory` class that were deprecated in 5.1.0. Customizations
+should be appended to the `JsonMapper.Builder` object as described by the class-level Javadoc.
 
 Renamed `JsonProcessingExceptionMapper.java` to `JacksonExceptionMapper.java` to reflect the new
 naming convention in Jackson.
+
+Removed `throws ScimException` from several methods which no longer threw them. Note that the SCIM
+SDK still defines this and its subclasses as a checked exception, so this was not changed like
+Jackson exceptions were. ScimExceptions generally indicate failure cases that should be explicitly
+handled, such as invalid client requests.
 
 ## v5.1.0 - TBD
 Added support for bulk operations, requests, and responses as defined by the SCIM standard. To get

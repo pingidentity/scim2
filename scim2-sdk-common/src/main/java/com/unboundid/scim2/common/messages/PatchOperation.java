@@ -1140,8 +1140,8 @@ public abstract class PatchOperation
   @NotNull
   public String toString()
   {
-    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
-        writeValueAsString(this);
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 
   /**
