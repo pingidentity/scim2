@@ -197,7 +197,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *   // Set the JSON payload value.
  *   UserResource user = new UserResource().setUserName("Whiplash!");
  *   user.setId("5b261bdf");
- *   user.setMeta(new Meta().setCreated(Calendar.getInstance()));
+ *   user.setMeta(new Meta().setCreatedMillis(Duration.ofHours(13).toMillis()));
  *   successResult.setResponse(user);
  *
  *   BulkResponse response = new BulkResponse(failedResult, successResult);
@@ -276,7 +276,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *       try
  *       {
  *         UserResource createdUser = validateAndCreateUser(user);
- *         String location = createdUser.getMeta().getLocation().toString();
+ *         String location = createdUser.getMeta().getLocationString();
  *         return new BulkOperationResult(op, HTTP_STATUS_CREATED, location);
  *       }
  *       catch (ScimException e)
@@ -390,8 +390,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * dependencies. If a circular reference is contained within a request via
  * {@code bulkId} fields of the {@link BulkOperation} objects, the service
  * provider MUST try to resolve it, but MAY stop at a failed attempt with a
- * {@link ResourceConflictException}. A simple example of
- * a circular bulk request can be seen in
+ * {@link ResourceConflictException}. An example of this is shown in
  * <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.7.1">
  * RFC 7644 Section 3.7.1</a>. Note that if a SCIM service allows creating loops
  * in the graph representation of their groups, the linked example can be
