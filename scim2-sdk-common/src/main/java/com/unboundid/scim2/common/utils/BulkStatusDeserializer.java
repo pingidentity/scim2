@@ -68,40 +68,37 @@ public class BulkStatusDeserializer extends ValueDeserializer<String>
   /**
    * Implementation of the bulk status deserializer. See the class-level Javadoc
    * for more information.
-   * <br><br>
-   *
-   * {@inheritDoc}
    */
   @Override
   @NotNull
-  public String deserialize(@NotNull final JsonParser p,
+  public String deserialize(@NotNull final JsonParser parser,
                             @Nullable final DeserializationContext ctxt)
   {
     // Check for the most common form: { "status": "200" }
-    String standardValue = p.getValueAsString();
+    String standardValue = parser.getValueAsString();
     if (standardValue != null)
     {
       return standardValue;
     }
 
     // Check for a nested view: { "status": { "code": "200" } }
-    String nextField = p.nextName();
+    String nextField = parser.nextName();
     if (!"code".equals(nextField))
     {
       throw new ScimDeserializeException(
           "Could not parse the 'status' field of the bulk operation response.");
     }
 
-    String statusValue = p.nextStringValue();
+    String statusValue = parser.nextStringValue();
 
     // The parser still points to the status value. Before returning, navigate
     // to the closing brace.
     JsonToken token;
     do
     {
-      token = p.nextToken();
+      token = parser.nextToken();
     }
-    while (!p.isClosed() && token != JsonToken.END_OBJECT);
+    while (!parser.isClosed() && token != JsonToken.END_OBJECT);
     return statusValue;
   }
 }

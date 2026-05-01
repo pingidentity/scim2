@@ -438,7 +438,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter eq(@NotNull final String attributePath,
-                          @Nullable final Boolean filterValue)
+                          @NotNull final Boolean filterValue)
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
@@ -472,7 +472,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter eq(@NotNull final String attributePath,
-                          @Nullable final Date filterValue)
+                          @NotNull final Date filterValue)
       throws BadRequestException
   {
     return new EqualFilter(Path.fromString(attributePath),
@@ -589,7 +589,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter ne(@NotNull final String attributePath,
-                          @Nullable final Boolean filterValue)
+                          @NotNull final Boolean filterValue)
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
@@ -623,7 +623,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter ne(@NotNull final String attributePath,
-                          @Nullable final Date filterValue)
+                          @NotNull final Date filterValue)
       throws BadRequestException
   {
     return new NotEqualFilter(Path.fromString(attributePath),
@@ -859,7 +859,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter gt(@NotNull final String attributePath,
-                          @Nullable final Date filterValue)
+                          @NotNull final Date filterValue)
       throws BadRequestException
   {
     return new GreaterThanFilter(Path.fromString(attributePath),
@@ -976,7 +976,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter ge(@NotNull final String attributePath,
-                          @Nullable final Date filterValue)
+                          @NotNull final Date filterValue)
       throws BadRequestException
   {
     return new GreaterThanOrEqualFilter(Path.fromString(attributePath),
@@ -1093,7 +1093,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter lt(@NotNull final String attributePath,
-                          @Nullable final Date filterValue)
+                          @NotNull final Date filterValue)
       throws BadRequestException
   {
     return new LessThanFilter(Path.fromString(attributePath),
@@ -1210,7 +1210,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter le(@NotNull final String attributePath,
-                          @Nullable final Date filterValue)
+                          @NotNull final Date filterValue)
       throws BadRequestException
   {
     return new LessThanOrEqualFilter(Path.fromString(attributePath),
@@ -1395,7 +1395,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter hasComplexValue(@NotNull final Path attributePath,
-                                       @Nullable final Filter valueFilter)
+                                       @NotNull final Filter valueFilter)
   {
     return Filter.complex(attributePath, valueFilter);
   }
@@ -1412,7 +1412,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter hasComplexValue(@NotNull final String attributePath,
-                                       @Nullable final Filter valueFilter)
+                                       @NotNull final Filter valueFilter)
       throws BadRequestException
   {
     return Filter.complex(attributePath, valueFilter);
@@ -1430,7 +1430,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter hasComplexValue(@NotNull final String attributePath,
-                                       @Nullable final String valueFilter)
+                                       @NotNull final String valueFilter)
       throws BadRequestException
   {
     return Filter.complex(attributePath, valueFilter);
@@ -1454,7 +1454,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter complex(@NotNull final Path attributePath,
-                               @Nullable final Filter valueFilter)
+                               @NotNull final Filter valueFilter)
   {
     return new ComplexValueFilter(attributePath, valueFilter);
   }
@@ -1478,7 +1478,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter complex(@NotNull final String attributePath,
-                               @Nullable final Filter valueFilter)
+                               @NotNull final Filter valueFilter)
       throws BadRequestException
   {
     return new ComplexValueFilter(Path.fromString(attributePath), valueFilter);
@@ -1503,7 +1503,7 @@ public abstract class Filter
    */
   @NotNull
   public static Filter complex(@NotNull final String attributePath,
-                               @Nullable final String valueFilter)
+                               @NotNull final String valueFilter)
       throws BadRequestException
   {
     return new ComplexValueFilter(Path.fromString(attributePath),

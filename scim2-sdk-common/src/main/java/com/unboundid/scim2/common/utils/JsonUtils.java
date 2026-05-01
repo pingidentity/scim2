@@ -940,8 +940,6 @@ public class JsonUtils
     return new JsonDiff().diff(source, target, removeMissing);
   }
 
-
-
   /**
    * Try to parse out a date from a JSON text node.
    *

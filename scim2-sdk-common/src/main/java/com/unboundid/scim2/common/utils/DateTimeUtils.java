@@ -169,7 +169,7 @@ public final class DateTimeUtils
    * be set to the UTC timezone.
    *
    * @param timestampMillis   The value representing the number of milliseconds
-   *                          after the epoch (January 1st, 1970, 12:00:00 UTC).
+   *                          after the epoch (January 1st, 1970, 12:00 AM UTC).
    * @return  The Calendar value.
    *
    * @since 5.0.0

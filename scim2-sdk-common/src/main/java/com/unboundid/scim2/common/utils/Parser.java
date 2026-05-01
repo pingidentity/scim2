@@ -799,7 +799,7 @@ public class Parser
    * @return The last operator encountered that signaled the end of the group.
    * @throws BadRequestException If the filter string could not be parsed.
    */
-  @NotNull
+  @Nullable
   private static String closeGrouping(@NotNull final Stack<String> operators,
                                       @NotNull final Stack<Filter> output,
                                       final boolean isAtTheEnd)
