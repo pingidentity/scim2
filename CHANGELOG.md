@@ -9,7 +9,7 @@ documentation in the `BulkRequest.java` class, which provides a comprehensive ov
 operations are defined and utilized in the SCIM standard. It also includes notes on how to interface
 with the new classes, general structures for handling bulk data, useful utility methods, and more.
 
-Updated Jackson to 2.21.2.
+Updated Jackson to 2.21.3.
 
 Updated `ErrorResponse.java` to print attributes in an order that is more consistent with the
 example JSON objects presented in RFC 7644. Now, `status` is the last attribute printed.
