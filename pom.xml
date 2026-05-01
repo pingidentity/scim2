@@ -84,13 +84,13 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compileSource>17</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
-    <jackson.version>2.21.2</jackson.version>
+    <jackson.version>2.21.3</jackson.version>
     <jackson-annotations.version>2.21</jackson-annotations.version>
     <jakarta-rs.version>4.0.0</jakarta-rs.version>
     <jersey.version>4.0.2</jersey.version>
     <testng.version>7.12.0</testng.version>
     <assertj.version>3.27.7</assertj.version>
-    <maven.surefire.version>3.5.4</maven.surefire.version>
+    <maven.surefire.version>3.5.5</maven.surefire.version>
   </properties>
 
   <profiles>
@@ -113,7 +113,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>3.2.8</version>
             <executions>
               <execution>
                 <id>sign-resources</id>
@@ -167,7 +166,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.14.1</version>
+          <version>3.15.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -208,12 +207,16 @@
         </plugin>
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.3.1</version>
+          <version>3.5.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>3.2.8</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>buildnumber-maven-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.3.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -327,9 +330,7 @@
         <configuration>
           <tagNameFormat>scim-@{project.version}</tagNameFormat>
           <goals>deploy</goals>
-          <useReleaseProfile>false</useReleaseProfile>
           <checkModificationExcludeList>pom.xml</checkModificationExcludeList>
-          <waitBeforeTagging>3</waitBeforeTagging>
         </configuration>
       </plugin>
       <plugin>
