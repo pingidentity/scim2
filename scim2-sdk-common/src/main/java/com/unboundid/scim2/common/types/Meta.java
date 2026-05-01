@@ -32,9 +32,11 @@
 
 package com.unboundid.scim2.common.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
+import com.unboundid.scim2.common.utils.DateTimeUtils;
 
 import java.net.URI;
 import java.util.Calendar;
@@ -50,10 +52,10 @@ import java.util.Objects;
  *    "id": "fa1afe1",
  *    "meta": {
  *      "resourceType": "User",
- *      "created": "1970-01-01T11:00:00.00Z",
+ *      "created": "1970-01-01T00:00:00.00Z",
  *      "lastModified": "1970-01-01T11:00:00.00Z",
  *      "location": "https://example.com/v2/Users/fa1afe1",
- *      "version": "W/\"e180ee84f0671b1\""
+ *      "version": "e180ee84f0671b1"
  *    }
  *  }
  * </pre>
@@ -72,17 +74,18 @@ import java.util.Objects;
  * any {@link com.unboundid.scim2.common.ScimResource} object:
  * <pre><code>
  *  // Represents January 1st at 11:00 AM.
- *  final Calendar calendar = Calendar.getInstance();
- *  calendar.set(getCurrentYear(), Calendar.JANUARY, 1, 11, 0);
+ *  final Calendar lastModified = Calendar.getInstance(ZoneOffset.UTC);
+ *  lastModified.clear();
+ *  lastModified.set(getCurrentYear(), Calendar.JANUARY, 1, 11, 0);
  *
  *  UserResource user = new UserResource();
  *  user.setId("fa1afe1");
  *  user.setMeta(new Meta()
  *      .setResourceType("User")
- *      .setCreated(calendar)
- *      .setLastModified(calendar)
- *      .setLocation(new URI("https://example.com/v2/Users/fa1afe1"))
- *      .setVersion("W/\"e180ee84f0671b1\"")
+ *      .setCreatedMillis(0L)
+ *      .setLastModified(lastModified)
+ *      .setLocationString("https://example.com/v2/Users/fa1afe1")
+ *      .setVersion("e180ee84f0671b1")
  *  );
  * </code></pre>
  */
@@ -144,6 +147,22 @@ public class Meta
   }
 
   /**
+   * Sets the timestamp of when the SCIM object was created. The timezone will
+   * be set to UTC.
+   *
+   * @param createdMillis The UNIX timestamp representing the time that the SCIM
+   *                      resource was created.
+   * @return  This {@code Meta} object.
+   *
+   * @since 5.1.0
+   */
+  @NotNull
+  public Meta setCreatedMillis(final long createdMillis)
+  {
+    return setCreated(DateTimeUtils.parse(createdMillis));
+  }
+
+  /**
    * Gets the timestamp for the last modification.
    *
    * @return the timestamp of the last modification.
@@ -168,6 +187,22 @@ public class Meta
   }
 
   /**
+   * Sets the timestamp of the last modification. The timezone will be set to
+   * UTC.
+   *
+   * @param lastModifiedMillis The UNIX timestamp representing the time when the
+   *                           SCIM resource was last updated.
+   * @return  This {@code Meta} object.
+   *
+   * @since 5.1.0
+   */
+  @NotNull
+  public Meta setLastModifiedMillis(final long lastModifiedMillis)
+  {
+    return setLastModified(DateTimeUtils.parse(lastModifiedMillis));
+  }
+
+  /**
    * Gets the location URI of the SCIM object.
    *
    * @return the location URI of the SCIM object.
@@ -176,6 +211,18 @@ public class Meta
   public URI getLocation()
   {
     return location;
+  }
+
+  /**
+   * Alternative to {@link #getLocation()} which returns a string.
+   *
+   * @return The location URI of the SCIM object.
+   */
+  @Nullable
+  @JsonIgnore
+  public String getLocationString()
+  {
+    return (location == null) ? null : location.toString();
   }
 
   /**
@@ -189,6 +236,21 @@ public class Meta
   {
     this.location = location;
     return this;
+  }
+
+  /**
+   * Alternative to {@link #setLocation} that accepts a string value.
+   *
+   * @param location  The location URI of the SCIM object.
+   * @return  This {@code Meta} object.
+   *
+   * @throws IllegalArgumentException  If the string was not a valid URI.
+   */
+  @NotNull
+  public Meta setLocationString(@Nullable final String location)
+      throws IllegalArgumentException
+  {
+    return setLocation((location == null) ? null : URI.create(location));
   }
 
   /**
