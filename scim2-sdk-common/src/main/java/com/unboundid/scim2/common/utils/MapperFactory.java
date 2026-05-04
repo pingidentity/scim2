@@ -133,9 +133,7 @@ public class MapperFactory
     builder.enable(ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 
     // Don't serialize POJO nulls as JSON nulls.
-    var nonNull = JsonInclude.Include.NON_NULL;
-    builder.changeDefaultPropertyInclusion(v -> v.withValueInclusion(nonNull))
-        .changeDefaultPropertyInclusion(v -> v.withContentInclusion(nonNull));
+    builder.changeDefaultPropertyInclusion(v -> JsonInclude.Value.ALL_NON_NULL);
 
     // Preserve the form that we used to print JSON in previous releases. This
     // ensures that serialized SCIM resources have JSON consistent with the RFC.

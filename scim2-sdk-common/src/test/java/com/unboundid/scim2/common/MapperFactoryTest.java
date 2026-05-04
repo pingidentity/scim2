@@ -64,8 +64,6 @@ public class MapperFactoryTest
   /**
    * Tests updating the SCIM SDK mapper configuration by appending updates to
    * the builder provided in {@link MapperFactory#createBuilder()}.
-   *
-   * @throws Exception  If an unexpected error occurs.
    */
   @Test
   public void testCustomJsonMapperBuilder()

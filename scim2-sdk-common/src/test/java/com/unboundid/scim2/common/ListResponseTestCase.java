@@ -49,7 +49,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.testng.Assert.assertEquals;
 
 /**
  * Test for list responses.
@@ -79,10 +78,10 @@ public class ListResponseTestCase
 
     String serialized = JsonUtils.getObjectWriter().
         writeValueAsString(response);
-    assertEquals(JsonUtils.getObjectReader().forType(
-            new TypeReference<ListResponse<ResourceTypeResource>>() {}).
-            readValue(serialized),
-        response);
+    ListResponse<ResourceTypeResource> pojo = JsonUtils.getObjectReader()
+        .forType(new TypeReference<ListResponse<ResourceTypeResource>>(){})
+        .readValue(serialized);
+    assertThat(pojo).isEqualTo(response);
   }
 
 
@@ -323,7 +322,7 @@ public class ListResponseTestCase
    * {@code totalResults} or {@code itemsPerPage} are zero.
    */
   @Test
-  public void testDeserializingNullResourcesArray() throws Exception
+  public void testDeserializingNullResourcesArray()
   {
     // The object reader that will be used to serialize JSON strings into
     // ListResponse objects.
@@ -439,7 +438,7 @@ public class ListResponseTestCase
    * RFC 9865.
    */
   @Test
-  public void testCursorPagination() throws Exception
+  public void testCursorPagination()
   {
     String json = """
         {

@@ -70,10 +70,9 @@ public class RuntimeExceptionMapper implements
   {
     ErrorResponse errorResponse;
 
-    if (exception instanceof WebApplicationException)
+    if (exception instanceof WebApplicationException w)
     {
-      if (exception.getCause() != null && exception.getCause()
-          instanceof NoContentException)
+      if (exception.getCause() instanceof NoContentException)
       {
         errorResponse = new ErrorResponse(400);
         errorResponse.setScimType(BadRequestException.INVALID_SYNTAX);
@@ -82,8 +81,7 @@ public class RuntimeExceptionMapper implements
       }
       else
       {
-        errorResponse = new ErrorResponse(
-            ((WebApplicationException) exception).getResponse().getStatus());
+        errorResponse = new ErrorResponse(w.getResponse().getStatus());
         errorResponse.setDetail(exception.getMessage());
       }
     }
