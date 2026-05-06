@@ -34,7 +34,6 @@ package com.unboundid.scim2.common.utils;
 
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ValueSerializer;
@@ -52,7 +51,6 @@ public class StatusSerializer extends ValueSerializer<Integer>
   public void serialize(@Nullable final Integer value,
                         @NotNull final JsonGenerator gen,
                         @Nullable final SerializationContext ctxt)
-      throws JacksonException
   {
     gen.writeString(String.valueOf(value));
   }

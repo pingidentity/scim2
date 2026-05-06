@@ -35,15 +35,22 @@ package com.unboundid.scim2.common.exceptions.runtime;
 
 import com.unboundid.scim2.common.annotations.NotNull;
 
+import java.io.Serial;
+
 /**
  * This exception class is used when the SCIM SDK encounters a failure to
  * deserialize JSON data into an object. It is generally thrown from custom
  * deserializer implementations in the SCIM SDK (e.g.,
  * {@link com.unboundid.scim2.common.utils.StatusDeserializer}), and is
  * typically caused by malformed JSON data.
+ *
+ * @since 6.0.0
  */
 public class ScimDeserializeException extends RuntimeException
 {
+  @Serial
+  private static final long serialVersionUID = -7335351834824793369L;
+
   /**
    * Constructs a new exception indicating a failure to deserialize SCIM
    * resource data.

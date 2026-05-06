@@ -1271,7 +1271,7 @@ public class JsonUtils
    *
    * @param customMapperFactory the custom JSON object mapper.
    */
-  public static void setCustomMapperFactory(
+  public static synchronized void setCustomMapperFactory(
       @NotNull final MapperFactory customMapperFactory)
   {
     JsonUtils.mapperFactory = customMapperFactory;

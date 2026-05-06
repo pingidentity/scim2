@@ -72,11 +72,8 @@ public class ListResponseWriter<T extends ScimResource>
    * output stream.
    *
    * @param outputStream The output stream to write to.
-   * @throws JacksonException If an exception occurs while writing to the output
-   * stream.
    */
   public ListResponseWriter(@NotNull final OutputStream outputStream)
-      throws JacksonException
   {
     jsonGenerator = JsonUtils.getObjectWriter().createGenerator(outputStream);
     deferredFields = JsonUtils.getJsonNodeFactory().objectNode();
@@ -155,6 +152,7 @@ public class ListResponseWriter<T extends ScimResource>
    * stream.
    */
   public void nextCursor(@NotNull final String nextCursor)
+      throws JacksonException
   {
     if (startedResourcesArray.get())
     {

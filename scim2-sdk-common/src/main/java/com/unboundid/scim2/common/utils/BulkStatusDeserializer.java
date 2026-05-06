@@ -36,8 +36,8 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
 import tools.jackson.core.JsonParser;
-import tools.jackson.core.JsonToken;
 import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ValueDeserializer;
 
 /**
@@ -74,31 +74,23 @@ public class BulkStatusDeserializer extends ValueDeserializer<String>
   public String deserialize(@NotNull final JsonParser parser,
                             @Nullable final DeserializationContext ctxt)
   {
-    // Check for the most common form: { "status": "200" }
-    String standardValue = parser.getValueAsString();
-    if (standardValue != null)
+    final JsonNode statusNode = parser.readValueAsTree();
+
+    // Check for { "status": "200" }.
+    if (statusNode.isString() || statusNode.isNumber())
     {
-      return standardValue;
+      return statusNode.asString();
     }
 
-    // Check for a nested view: { "status": { "code": "200" } }
-    String nextField = parser.nextName();
-    if (!"code".equals(nextField))
+    // Check for the "status.code" sub-attribute.
+    JsonNode nested = statusNode.path("code");
+    if (nested.isString() || nested.isNumber())
     {
-      throw new ScimDeserializeException(
-          "Could not parse the 'status' field of the bulk operation response.");
+      return nested.asString();
     }
 
-    String statusValue = parser.nextStringValue();
-
-    // The parser still points to the status value. Before returning, navigate
-    // to the closing brace.
-    JsonToken token;
-    do
-    {
-      token = parser.nextToken();
-    }
-    while (!parser.isClosed() && token != JsonToken.END_OBJECT);
-    return statusValue;
+    throw new ScimDeserializeException(
+        "Could not parse the 'status' field of the bulk operation response."
+    );
   }
 }

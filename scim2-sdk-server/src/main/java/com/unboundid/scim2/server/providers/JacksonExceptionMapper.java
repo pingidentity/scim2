@@ -34,6 +34,7 @@ package com.unboundid.scim2.server.providers;
 
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
+import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.server.utils.ServerUtils;
 import tools.jackson.core.JacksonException;
@@ -68,18 +69,25 @@ public class JacksonExceptionMapper implements
   public Response toResponse(@NotNull final JacksonException exception)
   {
     ErrorResponse errorResponse;
-    StringBuilder builder = new StringBuilder();
-    builder.append("Unable to parse request: ");
-    builder.append(exception.getOriginalMessage());
-    if (exception.getLocation() != null)
+    if (exception.getCause() instanceof ScimException scimException)
     {
-      builder.append(" at line: ");
-      builder.append(exception.getLocation().getLineNr());
-      builder.append(", column: ");
-      builder.append(exception.getLocation().getColumnNr());
+      errorResponse = scimException.getScimError();
     }
-    errorResponse =
-        BadRequestException.invalidSyntax(builder.toString()).getScimError();
+    else
+    {
+      StringBuilder builder = new StringBuilder();
+      builder.append("Unable to parse request: ");
+      builder.append(exception.getOriginalMessage());
+      if (exception.getLocation() != null)
+      {
+        builder.append(" at line: ");
+        builder.append(exception.getLocation().getLineNr());
+        builder.append(", column: ");
+        builder.append(exception.getLocation().getColumnNr());
+      }
+      errorResponse =
+          BadRequestException.invalidSyntax(builder.toString()).getScimError();
+    }
 
     return ServerUtils.setAcceptableType(
         Response.status(errorResponse.getStatus()).entity(errorResponse),

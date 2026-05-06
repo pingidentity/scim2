@@ -71,12 +71,22 @@ public class ScimFilterJsonParser extends ReaderBasedJsonParser
   }
 
   /**
-   * Provides a Jackson reader context based off of the settings established in
-   * the SCIM SDK's object mapper.
+   * Provides a Jackson reader context based on the settings established in the
+   * SCIM SDK's JsonMapper.
    */
   @NotNull
   private static ObjectReadContext getReadContext(@NotNull final Reader r)
   {
-    return JsonUtils.getObjectReader().createParser(r).objectReadContext();
+    // Create a parser to obtain access to an ObjectReadContext, then close the
+    // parser to avoid leaking an object on every invocation. When Jackson
+    // closes a parser, the underlying Reader, r, is not closed when the caller
+    // owns the resource, so this is safe. An alternative to this approach is to
+    // use SDK_OBJECT_MAPPER._deserializationContext() as the ObjectReadContext.
+    // However, this method is labelled for unit test usage only, so it is not
+    // guaranteed to be a stable API in future versions of Jackson.
+    var parser = JsonUtils.getObjectReader().createParser(r);
+    ObjectReadContext context = parser.objectReadContext();
+    parser.close();
+    return context;
   }
 }

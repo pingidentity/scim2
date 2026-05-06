@@ -137,7 +137,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     config.register(RuntimeExceptionMapper.class);
     config.register(JacksonExceptionMapper.class);
 
-    var provider = new JacksonJsonProvider(JsonUtils.createObjectMapper());
+    var provider = new JacksonJsonProvider(JsonUtils.createJsonMapper());
     provider.configure(JakartaRSFeature.ALLOW_EMPTY_INPUT, false);
     config.register(provider);
 
@@ -253,7 +253,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // Now with application/json
     WebTarget target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
 
     Response response = target.path("badPath").path("id").request().accept(
         MediaType.APPLICATION_JSON_TYPE,
@@ -280,7 +280,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // Now with application/json
     WebTarget target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
 
     Response response = target.path(ApiConstants.SCHEMAS_ENDPOINT).request().
         accept(MediaType.APPLICATION_JSON_TYPE,
@@ -309,7 +309,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // Now with application/json
     WebTarget target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
 
     Response response = target.path(ApiConstants.SCHEMAS_ENDPOINT).
         path(userSchema.getId()).request().
@@ -337,7 +337,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // Now with application/json
     WebTarget target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
 
     Response response = target.path(ApiConstants.RESOURCE_TYPES_ENDPOINT).
         request().accept(MediaType.APPLICATION_JSON_TYPE,
@@ -373,7 +373,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // Now with application/json
     WebTarget target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
 
     Response response = target.path(ApiConstants.RESOURCE_TYPES_ENDPOINT).
         path(resourceType.getId()).request().accept(
@@ -507,7 +507,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // Now with application/json
     WebTarget target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
 
     Set<String> excludedAttributes = new HashSet<>();
     excludedAttributes.add("addresses");
@@ -678,7 +678,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // Now with no accept header
     WebTarget target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
     try (Response response = target.path("SingletonUsers").path("deleteUser")
         .request().delete())
     {
@@ -688,7 +688,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // With invalid accept type (DS-14520)
     target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
     try (Response response = target.path("SingletonUsers").path("deleteUser").
         request().accept(MediaType.APPLICATION_ATOM_XML_TYPE).delete())
     {
@@ -855,7 +855,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   public void testInvalidJson()
   {
     WebTarget target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
 
     var request = target.path("SingletonUsers").request().
         accept(MEDIA_TYPE_SCIM);
@@ -893,7 +893,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   public void testInvalidMessage()
   {
     WebTarget target = target().register(
-        new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
 
     var request = target.path("SingletonUsers").path(".search").
         request().accept(MEDIA_TYPE_SCIM);
@@ -936,7 +936,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     try
     {
       WebTarget target = client.target(getBaseUri()).register(
-          new JacksonJsonProvider(JsonUtils.createObjectMapper()));
+          new JacksonJsonProvider(JsonUtils.createJsonMapper()));
 
       // No content-type header and no entity
       Invocation.Builder b = target.path("SingletonUsers").

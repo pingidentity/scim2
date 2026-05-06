@@ -64,7 +64,7 @@ public class CalendarDeserializer extends ValueDeserializer<Calendar>
    * @param jp  The JSON parser.
    * @return    The timestamp and timezone information as a Calendar.
    *
-   * @throws ScimDeserializeException  If the value could was not a timestamp.
+   * @throws ScimDeserializeException  If the value was not a timestamp.
    */
   @NotNull
   public static Calendar parseAsCalendar(@NotNull final JsonParser jp)

@@ -341,6 +341,30 @@ public class BulkRequestTest
         .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Bulk IDs may only be set for POST requests.")
         .hasMessageContaining("Invalid HTTP method: PUT");
+
+    // As of Jackson 3.0, bulk operations should still be parsed if they have
+    // extra fields.
+    String extraFields = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:BulkRequest" ],
+          "failOnErrors": 1,
+          "unknownTopLevelField": "extraData",
+          "Operations": [
+            {
+              "method": "PUT",
+              "path": "/Users",
+              "unknownSubField": "extraData",
+              "data": {
+                "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+                "userName": "Alice"
+              }
+            }
+          ]
+        }""";
+    BulkRequest extraFieldsRequest = reader.readValue(extraFields);
+    assertThat(extraFieldsRequest.toString())
+        .doesNotContain("unknown")
+        .doesNotContain("extraData");
   }
 
   /**

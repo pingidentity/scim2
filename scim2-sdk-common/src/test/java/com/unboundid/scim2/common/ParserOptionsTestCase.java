@@ -32,7 +32,6 @@
 
 package com.unboundid.scim2.common;
 
-
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.Parser;

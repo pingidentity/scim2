@@ -78,7 +78,7 @@ public class DateTimeUtilsTest
    */
   @SuppressWarnings("DataFlowIssue")
   @Test
-  public void testGMTProperty() throws Exception
+  public void testGMTProperty()
   {
     // A SCIM resource that has a timestamp in the default timezone.
     String userJSON = """

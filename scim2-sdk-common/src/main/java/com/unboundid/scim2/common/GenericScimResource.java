@@ -107,7 +107,6 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *
  * @see BaseScimResource
  */
-@SuppressWarnings("ClassCanBeRecord")
 @JsonDeserialize(using = GenericScimObjectDeserializer.class)
 @JsonSerialize(using = GenericScimObjectSerializer.class)
 public class GenericScimResource implements ScimResource
@@ -2011,12 +2010,9 @@ public class GenericScimResource implements ScimResource
    *
    * @param date  The date to represent as a JsonNode.
    * @return      A JsonNode representing the date.
-   *
-   * @throws JacksonException  If an error occurs while parsing the resource.
    */
   @NotNull
   public static StringNode getDateJsonNode(@Nullable final Date date)
-      throws JacksonException
   {
     return JsonUtils.valueToNode(date);
   }
