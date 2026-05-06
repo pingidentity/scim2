@@ -342,8 +342,7 @@ public class BulkRequestTest
         .hasMessageContaining("Bulk IDs may only be set for POST requests.")
         .hasMessageContaining("Invalid HTTP method: PUT");
 
-    // As of Jackson 3.0, bulk operations should still be parsed if they have
-    // extra fields.
+    // Requests and operations should still be parsed if they have extra fields.
     String extraFields = """
         {
           "schemas": [ "urn:ietf:params:scim:api:messages:2.0:BulkRequest" ],

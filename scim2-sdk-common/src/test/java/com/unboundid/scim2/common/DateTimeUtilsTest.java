@@ -187,10 +187,9 @@ public class DateTimeUtilsTest
    * <br><br>
    *
    * A SCIM server/service application processes incoming requests. A separate
-   * Java client application sends a request to the service. However, the Java
-   * client uses an ObjectMapper with default settings, which includes using the
-   * {@link DateTimeFeature#WRITE_DATES_AS_TIMESTAMPS} feature. Thus, the
-   * JSON sent by the client after serialization looks like:
+   * client application sends a request to the service. However, the client uses
+   * UNIX timestamps, which has been seen previously with applications that use
+   * settings like {@link DateTimeFeature#WRITE_DATES_AS_TIMESTAMPS}:
    * <pre>
    *   {
    *     "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
