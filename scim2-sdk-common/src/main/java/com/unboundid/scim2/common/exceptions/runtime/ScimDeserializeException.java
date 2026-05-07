@@ -34,6 +34,7 @@ package com.unboundid.scim2.common.exceptions.runtime;
 
 
 import com.unboundid.scim2.common.annotations.NotNull;
+import tools.jackson.core.JacksonException;
 
 import java.io.Serial;
 
@@ -46,7 +47,7 @@ import java.io.Serial;
  *
  * @since 6.0.0
  */
-public class ScimDeserializeException extends RuntimeException
+public class ScimDeserializeException extends JacksonException
 {
   @Serial
   private static final long serialVersionUID = -7335351834824793369L;

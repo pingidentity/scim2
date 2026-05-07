@@ -40,7 +40,6 @@ import com.unboundid.scim2.common.utils.StaticUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.cfg.DateTimeFeature;
 
 import java.time.ZoneOffset;
@@ -263,8 +262,7 @@ public class DateTimeUtilsTest
 
     var reader = JsonUtils.getObjectReader().forType(UserResource.class);
     assertThatThrownBy(() -> reader.readValue(json))
-        .isInstanceOf(JacksonException.class)
-        .hasCauseInstanceOf(ScimDeserializeException.class)
+        .isInstanceOf(ScimDeserializeException.class)
         .hasMessageStartingWith("SCIM SDK: unable to deserialize date value");
   }
 
