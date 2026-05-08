@@ -60,6 +60,9 @@ there is no change required. See the class-level documentation of `MapperFactory
 Added new convenience methods to `Meta.java` that accept UNIX timestamps and string location values
 to simplify interaction with other data types. Note that UNIX timestamps will use the UTC timezone.
 
+Added an `EMPTY_CURSOR` value to `ApiConstants.java`. This may be used for better code readability
+when evaluating empty cursors in a null-safe manner.
+
 ## v5.0.0 - 2025-Dec-15
 For consistency with other open source Ping Identity software, the UnboundID SCIM 2 SDK for Java is
 now available under the terms of the Apache License (version 2.0). For legacy compatibility, the

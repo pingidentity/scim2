@@ -140,7 +140,7 @@ public class SimpleSearchResults<T extends ScimResource>
     {
       // SimpleSearchResults uses a page identifier of a numerical string, for
       // simplicity and for parity with index-based pagination behavior.
-      if (nextCursorString == null || nextCursorString.isEmpty())
+      if (nextCursorString == null || EMPTY_CURSOR.equals(nextCursorString))
       {
         // This is requesting the first page of results. Return the ID for the
         // next page.

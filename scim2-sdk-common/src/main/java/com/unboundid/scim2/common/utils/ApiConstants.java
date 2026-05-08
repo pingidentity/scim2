@@ -155,6 +155,19 @@ public class ApiConstants
   public static final String QUERY_PARAMETER_PAGE_CURSOR = "cursor";
 
   /**
+   * A value representing an empty cursor. These are used by clients to request
+   * the first page of search results with cursor-based pagination. It may be
+   * used for null-safe evaluation with:
+   * <pre><code>
+   *   boolean isEmptyCursor = EMPTY_CURSOR.equals(cursor);
+   * </code></pre>
+   *
+   * @since 5.1.0
+   */
+  @NotNull
+  public static final String EMPTY_CURSOR = "";
+
+  /**
    * The HTTP query parameter used in a URI to specify the maximum size of
    * a page of results.
    */
