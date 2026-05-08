@@ -44,6 +44,8 @@ with SCIM 2.0 clients or servers:
   that thoroughly explains SCIM concepts and semantics, such as
   [service provider configuration](https://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent/latest/com/unboundid/scim2/common/types/ServiceProviderConfigResource.html)
   and [bulk requests](https://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent/latest/com/unboundid/scim2/common/bulk/BulkRequest.html).
+* The core `scim2-sdk-common` module only contains a dependency on Jackson, so this library won't
+  contribute to a complex dependency tree in your project.
 * As with other Java libraries, this SDK can be used in projects written in other JVM languages such
   as Kotlin and Scala.
 * Full support for interacting with Ping Identity SCIM services such as the
@@ -52,8 +54,9 @@ with SCIM 2.0 clients or servers:
 ## Supported Versions
 As of version 4.0.0, the UnboundID SCIM SDK requires Java SE 17 or greater.
 
-As of version 6.0.0, Jackson 3.x is leveraged for high performance JSON processing and for broad
-compatibility with other HTTP libraries. For Jackson 2 support, use the latest release before 6.0.0.
+As of version 6.0.0, [Jackson 3](https://github.com/FasterXML/jackson) is leveraged for high
+performance JSON processing and for broad compatibility with other HTTP libraries. For Jackson 2
+support, use the latest release before 6.0.0.
 
 ## Structure
 This library is separated into multiple modules to target specific use cases, and consists of the
