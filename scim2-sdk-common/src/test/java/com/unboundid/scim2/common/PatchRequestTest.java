@@ -32,10 +32,10 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import org.testng.annotations.Test;
+import tools.jackson.databind.node.StringNode;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,20 +54,20 @@ public class PatchRequestTest
   public void testConstructors() throws Exception
   {
     PatchRequest listRequest = new PatchRequest(Collections.singletonList(
-            PatchOperation.add("nickName", TextNode.valueOf("G"))
+        PatchOperation.add("nickName", StringNode.valueOf("G"))
     ));
     PatchRequest argsRequest = new PatchRequest(
-            PatchOperation.add("nickName", TextNode.valueOf("G"))
+        PatchOperation.add("nickName", StringNode.valueOf("G"))
     );
     assertEquals(listRequest, argsRequest);
 
     listRequest = new PatchRequest(Arrays.asList(
-            PatchOperation.add("displayName", TextNode.valueOf("myName")),
-            PatchOperation.replace("displayName", TextNode.valueOf("yourName"))
+        PatchOperation.add("displayName", StringNode.valueOf("myName")),
+        PatchOperation.replace("displayName", StringNode.valueOf("yourName"))
     ));
     argsRequest = new PatchRequest(
-            PatchOperation.add("displayName", TextNode.valueOf("myName")),
-            PatchOperation.replace("displayName", TextNode.valueOf("yourName"))
+        PatchOperation.add("displayName", StringNode.valueOf("myName")),
+        PatchOperation.replace("displayName", StringNode.valueOf("yourName"))
     );
     assertEquals(listRequest, argsRequest);
 
@@ -76,11 +76,11 @@ public class PatchRequestTest
 
     // The first parameter of the method should not accept null.
     assertThrows(NullPointerException.class,
-            () -> new PatchRequest(null, PatchOperation.remove("invalid")));
+        () -> new PatchRequest(null, PatchOperation.remove("invalid")));
 
     // Null arguments in the varargs method should be ignored.
     PatchRequest singleOperation = new PatchRequest(
-            PatchOperation.remove("password"), null, null
+        PatchOperation.remove("password"), null, null
     );
     assertEquals(singleOperation.getOperations().size(), 1);
   }

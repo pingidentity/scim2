@@ -32,8 +32,6 @@
 
 package com.unboundid.scim2.common.bulk;
 
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.ScimResource;
@@ -43,6 +41,8 @@ import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Set;
 
@@ -164,7 +164,7 @@ public class BulkResourceMapperTest
         }""";
     var gen = BulkResourceMapper.asScimResource(reader.readValue(customJson));
     assertThat(gen).isInstanceOfSatisfying(GenericScimResource.class, gsr -> {
-      assertThat(gsr.getObjectNode().get("userName").asText())
+      assertThat(gsr.getObjectNode().get("userName").asString())
           .isEqualTo("customName");
     });
 

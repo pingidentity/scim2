@@ -32,16 +32,15 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectReader;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -50,31 +49,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.testng.Assert.assertEquals;
 
 /**
  * Test for list responses.
  */
 public class ListResponseTestCase
 {
-  // An example ListResponse in JSON form.
-  private static final String SINGLE_ELEMENT_LIST_RESPONSE = """
-      {
-        "schemas": [
-          "urn:ietf:params:scim:api:messages:2.0:ListResponse"
-        ],
-        "totalResults": 2,
-        "itemsPerPage": 1,
-        "startIndex": 1,
-        "Resources": [
-          {
-            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
-            "userName": "Frieren"
-          }
-        ]
-      }""";
-
-
   /**
    * Test list response.
    *
@@ -98,10 +78,10 @@ public class ListResponseTestCase
 
     String serialized = JsonUtils.getObjectWriter().
         writeValueAsString(response);
-    assertEquals(JsonUtils.getObjectReader().forType(
-            new TypeReference<ListResponse<ResourceTypeResource>>() {}).
-            readValue(serialized),
-        response);
+    ListResponse<ResourceTypeResource> pojo = JsonUtils.getObjectReader()
+        .forType(new TypeReference<ListResponse<ResourceTypeResource>>(){})
+        .readValue(serialized);
+    assertThat(pojo).isEqualTo(response);
   }
 
 
@@ -110,23 +90,47 @@ public class ListResponseTestCase
    * into JSON form. In particular, this ensures that objects follow the form
    * described in the examples of RFC 7644, where the {@code Resources} array is
    * the final element in the JSON body.
-   *
-   * @throws Exception  If an unexpected error occurs.
    */
   @Test
-  public void testListResponseFormat() throws Exception
+  public void testSerialization()
   {
+    String singleUserListResponse = """
+      {
+        "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+        "totalResults": 2,
+        "itemsPerPage": 1,
+        "startIndex": 1,
+        "Resources": [
+          {
+            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "userName": "Frieren"
+          }
+        ]
+      }""";
+
     // Reformat the expected JSON to a standardized form.
     String expectedJSON =
-            JsonUtils.getObjectReader().readTree(SINGLE_ELEMENT_LIST_RESPONSE)
-                    .toString();
+        JsonUtils.getObjectReader().readTree(singleUserListResponse).toString();
 
     var list = List.of(new UserResource().setUserName("Frieren"));
     ListResponse<UserResource> listResponse = new ListResponse<>(2, list, 1, 1);
     String listResponseJSON =
-            JsonUtils.getObjectWriter().writeValueAsString(listResponse);
+        JsonUtils.getObjectWriter().writeValueAsString(listResponse);
+    assertThat(listResponseJSON).isEqualTo(expectedJSON);
 
-    assertEquals(listResponseJSON, expectedJSON);
+    // Test the case where an empty list response is serialized into JSON. This
+    // should explicitly print the empty array.
+    String emptyArray = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 0,
+          "Resources": []
+        }""";
+    expectedJSON = JsonUtils.getObjectReader().readTree(emptyArray).toString();
+
+    ListResponse<?> emptyObj = new ListResponse<>(0, null, null, List.of());
+    listResponseJSON = JsonUtils.getObjectWriter().writeValueAsString(emptyObj);
+    assertThat(listResponseJSON).isEqualTo(expectedJSON);
   }
 
 
@@ -191,7 +195,7 @@ public class ListResponseTestCase
    * are also of the expected Java type.
    */
   @Test
-  public void testDeserialization() throws Exception
+  public void testDeserialization()
   {
     String json = """
         {
@@ -280,12 +284,17 @@ public class ListResponseTestCase
           }]
         }""";
 
-    ObjectReader reader = JsonUtils.getObjectReader()
-        .forType(new TypeReference<ListResponse<UserResource>>(){});
-    assertThatThrownBy(() -> reader.readValue(invalidUser))
-        .isInstanceOf(JsonMappingException.class)
-        .hasMessageContaining("Core attribute hobby is undefined for schema")
-        .hasMessageContaining("urn:ietf:params:scim:schemas:core:2.0:User");
+    // As of the 6.0.0 release, the extra data should be ignored and the
+    // deserialization should succeed. The nested user should be equivalent to
+    // 'frieren' without the extra "hobby" attribute.
+    ListResponse<UserResource> extraAttr = JsonUtils.getObjectReader()
+        .forType(new TypeReference<ListResponse<UserResource>>(){})
+        .readValue(invalidUser);
+    expectedResult = new ListResponse<>(1, null, 1, List.of(frieren));
+    assertThat(extraAttr).isEqualTo(expectedResult);
+    assertThat(extraAttr.toString())
+        .doesNotContain("hobby")
+        .doesNotContain("magic");
 
     // A JSON string must have the required 'totalResults' field.
     String missingTotalResults = """
@@ -299,9 +308,11 @@ public class ListResponseTestCase
           }]
         }""";
 
+    ObjectReader reader = JsonUtils.getObjectReader()
+        .forType(new TypeReference<ListResponse<UserResource>>(){});
     String expectedError = "Missing required creator property 'totalResults'";
     assertThatThrownBy(() -> reader.readValue(missingTotalResults))
-        .isInstanceOf(JsonMappingException.class)
+        .isInstanceOf(JacksonException.class)
         .hasMessageContaining(expectedError);
   }
 
@@ -311,7 +322,7 @@ public class ListResponseTestCase
    * {@code totalResults} or {@code itemsPerPage} are zero.
    */
   @Test
-  public void testDeserializingNullResourcesArray() throws Exception
+  public void testDeserializingNullResourcesArray()
   {
     // The object reader that will be used to serialize JSON strings into
     // ListResponse objects.
@@ -377,8 +388,8 @@ public class ListResponseTestCase
           "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
           "totalResults": 1
         }""";
-    assertThatThrownBy(() -> reader.readValue(invalidJSON, ListResponse.class))
-        .isInstanceOf(JsonProcessingException.class)
+    assertThatThrownBy(() -> reader.readValue(invalidJSON))
+        .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Failed to create the ListResponse since it is")
         .hasMessageContaining("missing the 'Resources' property");
 
@@ -427,7 +438,7 @@ public class ListResponseTestCase
    * RFC 9865.
    */
   @Test
-  public void testCursorPagination() throws Exception
+  public void testCursorPagination()
   {
     String json = """
         {

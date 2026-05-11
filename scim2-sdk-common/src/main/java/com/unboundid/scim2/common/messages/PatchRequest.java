@@ -44,8 +44,8 @@ import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import tools.jackson.core.JacksonException;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -212,7 +212,7 @@ public class PatchRequest
       return JsonUtils.getObjectReader().forType(resource.getClass())
           .readValue(updatedJson.getObjectNode());
     }
-    catch (IOException e)
+    catch (JacksonException e)
     {
       throw new BadRequestException(
           "The patch request resulted in an invalid object model.", e);

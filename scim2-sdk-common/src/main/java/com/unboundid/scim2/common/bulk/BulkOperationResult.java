@@ -32,16 +32,11 @@
 
 package com.unboundid.scim2.common.bulk;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -50,12 +45,11 @@ import com.unboundid.scim2.common.exceptions.runtime.BulkResponseException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.common.types.ETagConfig;
 import com.unboundid.scim2.common.utils.BulkStatusDeserializer;
-import com.unboundid.scim2.common.utils.Debug;
-import com.unboundid.scim2.common.utils.DebugType;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Objects;
-import java.util.logging.Level;
 
 
 /**
@@ -635,39 +629,12 @@ public class BulkOperationResult
     return statusInt;
   }
 
-  /**
-   * When deserializing a JSON into this class, there's a possibility that an
-   * unknown attribute is contained within the JSON. This method captures
-   * attempts to set undefined attributes and ignores them in the interest of
-   * preventing JsonProcessingException errors. This method should only be
-   * called by Jackson.
-   *
-   * @param key           The unknown attribute name.
-   * @param ignoredValue  The value of the attribute.
-   */
-  @JsonAnySetter
-  protected void setAny(@NotNull final String key,
-                        @NotNull final JsonNode ignoredValue)
-  {
-    // The value is not logged, since it's not needed and may contain PII.
-    Debug.debug(Level.WARNING, DebugType.OTHER,
-        "Attempted setting an undefined attribute: " + key);
-  }
-
   @Override
   @NotNull
   public String toString()
   {
-    try
-    {
-      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
-          .writeValueAsString(this);
-    }
-    catch (JsonProcessingException e)
-    {
-      // This should never happen.
-      throw new RuntimeException(e);
-    }
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 
   /**

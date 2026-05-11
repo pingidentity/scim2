@@ -59,7 +59,6 @@ public final class StaticUtils
   }
 
 
-
   /**
    * Retrieves an all-lowercase version of the provided string.
    *
@@ -77,7 +76,6 @@ public final class StaticUtils
 
     return s.toLowerCase(Locale.ROOT);
   }
-
 
 
   /**
@@ -104,7 +102,6 @@ public final class StaticUtils
     }
     return sb.toString();
   }
-
 
 
   /**
@@ -134,7 +131,6 @@ public final class StaticUtils
   }
 
 
-
   /**
    * Convert an array to a linked hash set.
    *
@@ -150,7 +146,6 @@ public final class StaticUtils
     Collections.addAll(set, i);
     return set;
   }
-
 
 
   /**

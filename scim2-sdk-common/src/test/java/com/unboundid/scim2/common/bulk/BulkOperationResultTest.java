@@ -32,10 +32,6 @@
 
 package com.unboundid.scim2.common.bulk;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.exceptions.ForbiddenException;
 import com.unboundid.scim2.common.exceptions.RateLimitException;
@@ -48,6 +44,10 @@ import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
 import java.util.List;
 import java.util.UUID;
@@ -74,7 +74,7 @@ public class BulkOperationResultTest
    * JSON strings.
    */
   @Test
-  public void testDeserialization() throws Exception
+  public void testDeserialization()
   {
     final ObjectReader reader = JsonUtils.getObjectReader()
         .forType(BulkOperationResult.class);
@@ -99,6 +99,12 @@ public class BulkOperationResultTest
 
     // The associated "statusInt" value should not be printed in the JSON.
     assertThat(result.toString()).doesNotContain("statusInt");
+
+    // Test the same JSON again, but with an integer status.
+    String intVal = postJson.replace("\"status\": \"201\"", "\"status\": 201");
+    BulkOperationResult resultWithInt = reader.readValue(intVal);
+    assertThat(resultWithInt).isEqualTo(result);
+    assertThat(resultWithInt.getStatus()).isEqualTo("201");
 
     // Construct the same result via code and ensure it serializes into the same
     // JSON.
@@ -133,6 +139,20 @@ public class BulkOperationResultTest
     assertThat(result.getVersion()).isNull();
     assertThat(result.getResponse()).isNull();
     assertThat(result.getResponseAsScimResource()).isNull();
+
+    // Test another nested "status.code" field with extra data within it. This
+    // data should be ignored.
+    String nestedStatusWithExtraAttribute = """
+        {
+          "location": "https://example.com/v2/Users/92b...87a",
+          "method": "PUT",
+          "status": {
+              "code": "200",
+              "unknownAttr": "value"
+          }
+        }""";
+    var extraAttrResult = reader.readValue(nestedStatusWithExtraAttribute);
+    assertThat(extraAttrResult).isEqualTo(result);
 
     // Other forms for "status" should not be permitted.
     String invalidStatusJson = """
@@ -277,7 +297,7 @@ public class BulkOperationResultTest
     // An invalid resource should cause an exception.
     ObjectNode invalidNode = result.getResponse();
     assertThat(invalidNode).isNotNull();
-    invalidNode.set("emails", TextNode.valueOf("invalidSingleValue"));
+    invalidNode.set("emails", StringNode.valueOf("invalidSingleValue"));
     result.setResponse(invalidNode);
     assertThatThrownBy(result::getResponseAsScimResource)
         .isInstanceOf(BulkResponseException.class)
@@ -552,33 +572,5 @@ public class BulkOperationResultTest
     );
     assertThat(delete.copy()).isEqualTo(delete);
     assertThat(delete.copy() == delete).isFalse();
-  }
-
-  /**
-   * Test {@link BulkOperationResult#setAny}.
-   */
-  @Test
-  public void testSetAny()
-  {
-    // Bulk operations should always ignore unknown fields when deserializing,
-    // so the @JsonAnySetter method should effectively be a no-op. Ensure this
-    // is the case by showing that valid keys/fields make no update.
-    BulkOperationResult result = new BulkOperationResult(
-        POST,
-        "201",
-        "https://example.com/Users/userID",
-        null,
-        null,
-        null
-    );
-    var result2 = result.copy();
-    result.setAny("method", TextNode.valueOf("fieldDoesNotExist"));
-    assertThat(result).isEqualTo(result2);
-
-    result.setAny("status", TextNode.valueOf("200"));
-    assertThat(result.getStatus())
-        .isNotEqualTo("200")
-        .isEqualTo("201");
-    assertThat(result).isEqualTo(result2);
   }
 }

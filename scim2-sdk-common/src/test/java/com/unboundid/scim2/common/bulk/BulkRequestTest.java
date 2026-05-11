@@ -32,9 +32,6 @@
 
 package com.unboundid.scim2.common.bulk;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.exceptions.runtime.BulkRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
@@ -42,8 +39,9 @@ import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Member;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,15 +60,6 @@ import static org.assertj.core.api.Assertions.fail;
  */
 public class BulkRequestTest
 {
-  /**
-   * Resets a customizable property.
-   */
-  @AfterMethod
-  public void tearDown()
-  {
-    BaseScimResource.IGNORE_UNKNOWN_FIELDS = false;
-  }
-
   /**
    * Performs basic validation on the BulkRequest class.
    */
@@ -320,17 +309,6 @@ public class BulkRequestTest
     assertThatThrownBy(() -> reader.readValue(invalidJson))
         .isInstanceOf(JacksonException.class);
 
-    // If the configuration setting is set to allow unknown attributes without
-    // failing, then we should still have an exception to indicate that no data
-    // was successfully copied. In this test case, a user resource should appear
-    // to deserialize successfully into a BulkRequest.
-    //
-    // The method throws a BulkRequestException, but Jackson re-throws this as
-    // one of its own exception types.
-    BaseScimResource.IGNORE_UNKNOWN_FIELDS = true;
-    assertThatThrownBy(() -> reader.readValue(invalidJson))
-        .isInstanceOf(JacksonException.class);
-
     // Explicitly null values for both attributes should fail, as this is the
     // signal we use that the source JSON was most likely not an actual bulk
     // request.
@@ -363,6 +341,29 @@ public class BulkRequestTest
         .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Bulk IDs may only be set for POST requests.")
         .hasMessageContaining("Invalid HTTP method: PUT");
+
+    // Requests and operations should still be parsed if they have extra fields.
+    String extraFields = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:BulkRequest" ],
+          "failOnErrors": 1,
+          "unknownTopLevelField": "extraData",
+          "Operations": [
+            {
+              "method": "PUT",
+              "path": "/Users",
+              "unknownSubField": "extraData",
+              "data": {
+                "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+                "userName": "Alice"
+              }
+            }
+          ]
+        }""";
+    BulkRequest extraFieldsRequest = reader.readValue(extraFields);
+    assertThat(extraFieldsRequest.toString())
+        .doesNotContain("unknown")
+        .doesNotContain("extraData");
   }
 
   /**

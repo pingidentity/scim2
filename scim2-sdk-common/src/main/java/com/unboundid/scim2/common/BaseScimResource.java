@@ -37,9 +37,6 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
@@ -49,6 +46,8 @@ import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -93,23 +92,18 @@ public abstract class BaseScimResource
    * subclasses of BaseScimResource.
    * <br><br>
    *
-   * By default, the SCIM SDK can throw a {@code JsonMappingException} during
-   * the Jackson deserialization process if it is converting an object to a
-   * BaseScimResource or one of its subclasses. This occurs if the source JSON
-   * contains fields that are not defined on the Java object, and the field is
-   * also not a schema extension such as
-   * {@code urn:ietf:params:scim:schemas:extension:enterprise:2.0:User}.
-   * <br><br>
-   *
-   * If a SCIM service includes additional non-standard fields in their
-   * responses, it can cause these exceptions to be thrown when they are likely
-   * undesired. To avoid this problem, this property may be set to {@code true}
-   * so that unknown fields are ignored instead of causing exceptions.
+   * Since Jackson 3.0.0, extra unknown fields/attributes found in JSON are
+   * ignored by default. For alignment with Jackson, this property is set to
+   * {@code true} (as of version 6.0.0) so that unknown fields in the JSON
+   * representation of a BaseScimResource are also ignored (if they are not a
+   * schema extension). It is strongly encouraged to avoid changing this
+   * setting, as updates to the SCIM standard can cause new fields to be added
+   * (e.g., RFC 9865 added fields like {@code nextCursor} to ListResponse).
    *
    * @since 4.0.0
    */
   public static boolean IGNORE_UNKNOWN_FIELDS = StaticUtils.getProperty(
-      "com.unboundid.scim2.common.BaseScimResource.ignoreUnknownFields", false);
+      "com.unboundid.scim2.common.BaseScimResource.ignoreUnknownFields", true);
 
   @Nullable
   private String id;
@@ -226,7 +220,6 @@ public abstract class BaseScimResource
    */
   public void setSchemaUrns(@NotNull final Collection<String> schemaUrns)
   {
-    Objects.requireNonNull(schemaUrns);
     this.schemaUrns = new LinkedHashSet<>(schemaUrns);
   }
 
@@ -242,16 +235,7 @@ public abstract class BaseScimResource
   /**
    * This method is used by Jackson when deserializing JSON data into a Java
    * object. This will be called for schema extensions and any unknown fields
-   * (i.e., any fields in the JSON that are not defined in the Java class). If
-   * the unknown field is not a schema extension, then an exception will be
-   * thrown by default, indicating that the JSON representation of a resource
-   * could not be properly mapped to the schema defined by the Java object.
-   * <br><br>
-   *
-   * If it is better for your application to ignore unknown fields instead of
-   * throwing exceptions, set the {@link #IGNORE_UNKNOWN_FIELDS} flag to
-   * {@code true}. This is helpful when working with SCIM services that include
-   * additional non-standard fields in their responses.
+   * that are not defined in the Java class.
    *
    * @param key    The name of the unknown field.
    * @param value  The value of the field.
@@ -400,23 +384,8 @@ public abstract class BaseScimResource
   @JsonIgnore
   public <T> T getExtension(@NotNull final Class<T> clazz)
   {
-    try
-    {
-      JsonNode extensionNode =
-          extensionObjectNode.path(getSchemaUrnOrThrowException(clazz));
-      if (extensionNode.isMissingNode())
-      {
-        return null;
-      }
-      else
-      {
-        return JsonUtils.nodeToValue(extensionNode, clazz);
-      }
-    }
-    catch (JsonProcessingException ex)
-    {
-      throw new RuntimeException(ex);
-    }
+    JsonNode ext = extensionObjectNode.get(getSchemaUrnOrThrowException(clazz));
+    return (ext == null) ? null : JsonUtils.nodeToValue(ext, clazz);
   }
 
   /**
@@ -572,14 +541,7 @@ public abstract class BaseScimResource
   @NotNull
   public String toString()
   {
-    try
-    {
-      return JsonUtils.getObjectWriter().withDefaultPrettyPrinter().
-          writeValueAsString(this);
-    }
-    catch (JsonProcessingException e)
-    {
-      throw new RuntimeException(e);
-    }
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 }

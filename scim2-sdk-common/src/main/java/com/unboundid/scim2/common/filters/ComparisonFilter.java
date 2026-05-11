@@ -32,11 +32,11 @@
 
 package com.unboundid.scim2.common.filters;
 
-import com.fasterxml.jackson.databind.node.ValueNode;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import tools.jackson.databind.node.ValueNode;
 
 /**
  * This superclass represents filter types that are used to compare attribute
@@ -121,6 +121,6 @@ public abstract class ComparisonFilter extends Filter
     builder.append(' ');
     builder.append(getFilterType().getStringValue());
     builder.append(' ');
-    builder.append(filterValue.toString());
+    builder.append(filterValue);
   }
 }

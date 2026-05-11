@@ -165,11 +165,9 @@ public class ResourceTypesEndpoint
    * resource classes with the ResourceType annotation.
    *
    * @return All resource types defined at the service provider.
-   * @throws ScimException If an error occurs.
    */
   @NotNull
   public Collection<ResourceTypeResource> getResourceTypes()
-      throws ScimException
   {
     Set<ResourceTypeResource> resourceTypes = new HashSet<>();
     for (Class<?> resourceClass : application.getClasses())

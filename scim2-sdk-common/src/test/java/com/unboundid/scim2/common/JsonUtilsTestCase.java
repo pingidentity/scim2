@@ -34,9 +34,6 @@ package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
@@ -44,6 +41,8 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -455,7 +454,7 @@ public class JsonUtilsTestCase
     List<JsonNode> stringResult = JsonUtils.findMatchingPaths(
         Path.fromString("String"), gso.getObjectNode());
     assertEquals(stringResult.size(), 1);
-    assertEquals(stringResult.get(0).textValue(), "string");
+    assertEquals(stringResult.get(0).asString(), "string");
 
     List<JsonNode> intResult = JsonUtils.findMatchingPaths(
         Path.fromString("integeR"), gso.getObjectNode());
@@ -476,7 +475,7 @@ public class JsonUtilsTestCase
         Path.fromString("date"), gso.getObjectNode());
     assertEquals(dateResult.size(), 1);
     assertEquals(
-        DateTimeUtils.parse(dateResult.get(0).textValue()),
+        DateTimeUtils.parse(dateResult.get(0).asString()),
         DateTimeUtils.parse("2015-02-27T11:28:39Z"));
 
 
@@ -502,30 +501,30 @@ public class JsonUtilsTestCase
     List<JsonNode> stringResult = JsonUtils.findMatchingPaths(
         Path.fromString("array.complex.array.string"), gso.getObjectNode());
     assertEquals(stringResult.size(), 4);
-    assertEquals(stringResult.get(0).textValue(), "string");
+    assertEquals(stringResult.get(0).asString(), "string");
 
     stringResult = JsonUtils.findMatchingPaths(
         Path.fromString("array[id eq \"1\"].complex.array.string"),
         gso.getObjectNode());
     assertEquals(stringResult.size(), 2);
-    assertEquals(stringResult.get(0).textValue(), "string");
+    assertEquals(stringResult.get(0).asString(), "string");
 
     stringResult = JsonUtils.findMatchingPaths(
         Path.fromString("array.complex.array[id eq \"1\"].string"),
         gso.getObjectNode());
     assertEquals(stringResult.size(), 2);
-    assertEquals(stringResult.get(0).textValue(), "string");
+    assertEquals(stringResult.get(0).asString(), "string");
 
     stringResult = JsonUtils.findMatchingPaths(
         Path.fromString("array[id eq \"1\"].complex.arRay[id eq \"1\"].stRing"),
         gso.getObjectNode());
     assertEquals(stringResult.size(), 1);
-    assertEquals(stringResult.get(0).textValue(), "string");
+    assertEquals(stringResult.get(0).asString(), "string");
 
     stringResult = JsonUtils.findMatchingPaths(
         Path.fromString("complex.array.array.string"), gso.getObjectNode());
     assertEquals(stringResult.size(), 4);
-    assertEquals(stringResult.get(0).textValue(), "string");
+    assertEquals(stringResult.get(0).asString(), "string");
 
     List<JsonNode> mapResult = JsonUtils.findMatchingPaths(
         Path.fromString("array.complex"), gso.getObjectNode());
@@ -1142,26 +1141,7 @@ public class JsonUtilsTestCase
     ObjectNode objectNode = JsonUtils.valueToNode(map);
 
     Assert.assertFalse(objectNode.path("hasValue").isMissingNode());
-    Assert.assertEquals(objectNode.path("hasValue").textValue(), "value1");
+    Assert.assertEquals(objectNode.path("hasValue").asString(), "value1");
     Assert.assertTrue(objectNode.path("isNull").isMissingNode());
-  }
-
-  /**
-   * Test that a SCIM 2 SDK ObjectMapper can be copied without an exception
-   * thrown.
-   * <p>
-   * This test does not check if the copy is equivalent to the original because
-   * the ObjectMapper class does not have an {@code equals} method.
-   */
-  @Test
-  public void testScimObjectMapperCopy()
-  {
-    ObjectMapper mapper = JsonUtils.createObjectMapper();
-
-    // Copying the object mapper should not cause an exception.
-    ObjectMapper copy = mapper.copy();
-
-    // The copy should be a different object.
-    assertThat(mapper == copy).isFalse();
   }
 }

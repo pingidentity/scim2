@@ -44,6 +44,8 @@ with SCIM 2.0 clients or servers:
   that thoroughly explains SCIM concepts and semantics, such as
   [service provider configuration](https://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent/latest/com/unboundid/scim2/common/types/ServiceProviderConfigResource.html)
   and [bulk requests](https://javadoc.io/doc/com.unboundid.product.scim2/scim2-parent/latest/com/unboundid/scim2/common/bulk/BulkRequest.html).
+* The core `scim2-sdk-common` module only contains a dependency on Jackson, so this library won't
+  contribute to a complex dependency tree in your project.
 * As with other Java libraries, this SDK can be used in projects written in other JVM languages such
   as Kotlin and Scala.
 * Full support for interacting with Ping Identity SCIM services such as the
@@ -51,7 +53,10 @@ with SCIM 2.0 clients or servers:
 
 ## Supported Versions
 As of version 4.0.0, the UnboundID SCIM SDK requires Java SE 17 or greater.
-This library also depends on the Jackson 2.x libraries for JSON serialization and deserialization.
+
+As of version 6.0.0, [Jackson 3](https://github.com/FasterXML/jackson) is leveraged for high
+performance JSON processing and for broad compatibility with other HTTP libraries. For Jackson 2
+support, use the latest release before 6.0.0.
 
 ## Structure
 This library is separated into multiple modules to target specific use cases, and consists of the
@@ -72,9 +77,9 @@ More information on each section:
 * `scim2-sdk-client`: This component helps create SCIM 2 client applications using
   [JAX-RS](https://projects.eclipse.org/projects/ee4j.rest). For more information, see the
   [wiki](https://github.com/pingidentity/scim2/wiki/JAX-RS-Client-examples).
-* `scim2-sdk-server`: This component helps create SCIM 2 services using JAX-RS. If you are not using
-  JAX-RS and are using another solution (e.g., Spring), the `scim2-sdk-common` component is
-  generally a better choice and may be used directly.
+* `scim2-sdk-server`: This component helps create SCIM 2 services using JAX-RS. If you are using a
+  different solution (e.g., [Spring](https://spring.io/projects/spring-framework)),
+  the `scim2-sdk-common` component is generally a better choice and may be used directly.
 * `scim2-ubid-extensions`: Provides model classes specific to Ping Identity based constructs and
   SCIM extensions. This component is subject to API changes and should be considered experimental.
 * `scim2-parent`: The parent module for all of the other components.
@@ -203,7 +208,7 @@ Note that Ping Identity does not accept third-party code contributions.
 ## License
 As of the 5.0.0 release, the UnboundID SCIM SDK is available under the terms of the following
 licenses:
-* The [Apache License, version 2.0](LICENSE.md) (recommended).
+* The [Apache License, version 2.0](LICENSE.md) (recommended)
 * The GNU General Public License version 2 ([GPLv2](resource/LICENSE-GPLv2.txt))
 * The GNU Lesser General Public License version 2.1 ([LGPLv2.1](resource/LICENSE-LGPLv2.1.txt))
 * The legacy [UnboundID Free Use License](resource/LICENSE-UnboundID-SCIM2.txt)

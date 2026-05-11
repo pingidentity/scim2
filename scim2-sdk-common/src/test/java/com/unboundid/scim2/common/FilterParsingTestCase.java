@@ -210,12 +210,9 @@ public class FilterParsingTestCase
    *
    * @param  filterString  The string representation of the filter to
    *                       fromString.
-   *
-   * @throws Exception If the test fails.
    */
   @Test(dataProvider = "testInvalidFilterStrings")
   public void testParseInvalidFilter(final String filterString)
-      throws Exception
   {
     try
     {

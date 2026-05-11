@@ -375,6 +375,7 @@ public class ResourceTypeResource extends BaseScimResource
   @Override
   public int hashCode()
   {
-    return Objects.hash(name, description, endpoint, schema, schemaExtensions);
+    return Objects.hash(super.hashCode(), name, description, endpoint, schema,
+        schemaExtensions);
   }
 }

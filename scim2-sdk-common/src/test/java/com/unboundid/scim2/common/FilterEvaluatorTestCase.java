@@ -32,7 +32,6 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.ComparisonFilter;
 import com.unboundid.scim2.common.filters.Filter;
@@ -43,6 +42,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import tools.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.util.Date;

@@ -32,11 +32,11 @@
 
 package com.unboundid.scim2.client.requests;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unboundid.scim2.client.SearchResultHandler;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.messages.ListResponse;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.LinkedList;
 import java.util.List;

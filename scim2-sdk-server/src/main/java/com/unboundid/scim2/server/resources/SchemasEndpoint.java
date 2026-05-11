@@ -56,7 +56,6 @@ import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriInfo;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -164,10 +163,9 @@ public class SchemasEndpoint
    * of all JAX-RS resource classes with the ResourceType annotation.
    *
    * @return All schemas defined at the service provider.
-   * @throws ScimException If an error occurs.
    */
   @NotNull
-  public Collection<SchemaResource> getSchemas() throws ScimException
+  public Collection<SchemaResource> getSchemas()
   {
     Set<SchemaResource> schemas = new HashSet<>();
     for (Class<?> resourceClass : application.getClasses())

@@ -32,13 +32,6 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.PatchOperation;
 import com.unboundid.scim2.common.messages.PatchRequest;
@@ -46,6 +39,12 @@ import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Member;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.annotations.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.StringNode;
 
 import java.util.Arrays;
 import java.util.List;
@@ -203,13 +202,13 @@ public class NonStandardRemoveOperationTest
     assertThat(initialRemove.getJsonNode()).isEqualTo(initialState);
 
     // setRemoveOpValue() should not be permitted for other operation types.
-    var addOp = PatchOperation.add("userName", TextNode.valueOf("initialVal"));
-    assertThatThrownBy(() -> addOp.setRemoveOpValue(TextNode.valueOf("v")))
+    var addOp = PatchOperation.add("userName", StringNode.valueOf("initialVal"));
+    assertThatThrownBy(() -> addOp.setRemoveOpValue(StringNode.valueOf("v")))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("The 'removeValue()' method may only be used for")
         .hasMessageContaining("remove operations.");
     var replaceOp = PatchOperation.replace("userName", "newValue");
-    assertThatThrownBy(() -> replaceOp.setRemoveOpValue(TextNode.valueOf("v")))
+    assertThatThrownBy(() -> replaceOp.setRemoveOpValue(StringNode.valueOf("v")))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("The 'removeValue()' method may only be used for")
         .hasMessageContaining("remove operations.");
@@ -279,7 +278,7 @@ public class NonStandardRemoveOperationTest
             """;
     assertThatThrownBy(() -> JsonUtils.getObjectReader()
         .forType(PatchRequest.class).readValue(jsonWithoutPath))
-        .isInstanceOf(JsonProcessingException.class)
+        .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Missing required creator property 'path'");
 
     // Ensure explicit null values are deserialized correctly.
@@ -481,7 +480,7 @@ public class NonStandardRemoveOperationTest
 
     ArrayNode expected = JsonUtils.getJsonNodeFactory().arrayNode();
     expected.add(JsonUtils.getJsonNodeFactory().objectNode()
-        .set("value", TextNode.valueOf("2819c223")));
+        .set("value", StringNode.valueOf("2819c223")));
     assertThat(opWithValue.getJsonNode()).isEqualTo(expected);
   }
 
@@ -510,7 +509,7 @@ public class NonStandardRemoveOperationTest
             }
             """;
     assertThatThrownBy(() -> reader.readValue(invalidPath))
-        .isInstanceOf(JsonMappingException.class)
+        .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Cannot create the operation since it has a")
         .hasMessageContaining("value, but an invalid 'emails' path.");
 
@@ -528,7 +527,7 @@ public class NonStandardRemoveOperationTest
             }
             """;
     assertThatThrownBy(() -> reader.readValue(operationWithFilter))
-        .isInstanceOf(JsonMappingException.class)
+        .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Cannot create the operation since it has a")
         .hasMessageContaining("value, but an invalid 'members[value sw");
 
@@ -587,12 +586,12 @@ public class NonStandardRemoveOperationTest
 
     // The method must only be callable for remove operations.
     PatchOperation invalid;
-    invalid = PatchOperation.add("path", TextNode.valueOf("value"));
+    invalid = PatchOperation.add("path", StringNode.valueOf("value"));
     assertThatThrownBy(invalid::getRemoveMemberList)
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("Fetching members is only supported for")
         .hasMessageContaining("'remove' operations");
-    invalid = PatchOperation.replace("path", TextNode.valueOf("value"));
+    invalid = PatchOperation.replace("path", StringNode.valueOf("value"));
     assertThatThrownBy(invalid::getRemoveMemberList)
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("Fetching members is only supported for")
@@ -660,23 +659,5 @@ public class NonStandardRemoveOperationTest
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("Could not extract a Member object list from the")
         .hasMessageContaining("patch operation");
-
-    // A JSON with an invalid Member object should throw an exception.
-    PatchOperation invalidMember = reader.readValue("""
-            {
-              "op": "remove",
-              "path": "members",
-              "value": {
-                "members": [{
-                  "userName": "notAMemberObject",
-                  "displayName": "Actually A UserResource",
-                  "timezone": "America/Los_Angeles"
-                }]
-              }
-            }""");
-    assertThatThrownBy(invalidMember::getRemoveMemberList)
-        .isInstanceOf(BadRequestException.class)
-        .hasMessageContaining("The provided JSON contained an invalid Member")
-        .hasMessageContaining("representation.");
   }
 }

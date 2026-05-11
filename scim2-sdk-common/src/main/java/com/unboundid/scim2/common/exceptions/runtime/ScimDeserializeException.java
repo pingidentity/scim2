@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2026 Ping Identity Corporation
+ * Copyright 2026 Ping Identity Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /*
- * Copyright 2017-2026 Ping Identity Corporation
+ * Copyright 2026 Ping Identity Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (GPLv2 only)
@@ -30,48 +30,49 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
+package com.unboundid.scim2.common.exceptions.runtime;
 
-package com.unboundid.scim2.server.utils;
 
-import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.utils.JsonDiff;
-import com.unboundid.scim2.common.utils.JsonUtils;
-import tools.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+
+import java.io.Serial;
 
 /**
- * This class can be used to calculate the diffs between two SCIM
- * resources for the purpose of building a set of patch operations.
- * The comparison takes into account the SCIM schema of the resources
- * to be compared.
+ * This exception class is used when the SCIM SDK encounters a failure to
+ * deserialize JSON data into an object. It is generally thrown from custom
+ * deserializer implementations in the SCIM SDK (e.g.,
+ * {@link com.unboundid.scim2.common.utils.StatusDeserializer}), and is
+ * typically caused by malformed JSON data.
+ *
+ * @since 6.0.0
  */
-public class ResourceDiff extends JsonDiff
+public class ScimDeserializeException extends JacksonException
 {
-  @NotNull
-  private final ResourceTypeDefinition resourceTypeDefinition;
+  @Serial
+  private static final long serialVersionUID = -7335351834824793369L;
 
   /**
-   * Construct a ResourceDiff instance.
+   * Constructs a new exception indicating a failure to deserialize SCIM
+   * resource data.
    *
-   * @param resourceTypeDefinition the ResourceTypeDefinition of the
-   *                               resources to be compared.
+   * @param message   The error message for this deserialization failure.
    */
-  public ResourceDiff(
-      @NotNull final ResourceTypeDefinition resourceTypeDefinition)
+  public ScimDeserializeException(@NotNull final String message)
   {
-    super();
-    this.resourceTypeDefinition = resourceTypeDefinition;
+    super(message);
   }
 
   /**
-   * {@inheritDoc}
+   * Constructs a new exception indicating a failure to deserialize SCIM
+   * resource data.
+   *
+   * @param message The error message for this deserialization failure.
+   * @param cause   The exception that caused the failure.
    */
-  @Override
-  protected int compareTo(@NotNull final Path path,
-                          @NotNull final JsonNode sourceNode,
-                          @NotNull final JsonNode targetNode)
+  public ScimDeserializeException(@NotNull final String message,
+                                  @NotNull final Throwable cause)
   {
-    return JsonUtils.compareTo(sourceNode, targetNode,
-        resourceTypeDefinition.getAttributeDefinition(path));
+    super(message, cause);
   }
 }

@@ -32,8 +32,7 @@
 
 package com.unboundid.scim2.common;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
@@ -41,6 +40,7 @@ import com.unboundid.scim2.common.utils.StaticUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import tools.jackson.databind.cfg.DateTimeFeature;
 
 import java.time.ZoneOffset;
 import java.util.Calendar;
@@ -56,7 +56,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 public class DateTimeUtilsTest
 {
-  private static final TimeZone GMT = TimeZone.getTimeZone("GMT+00:00");
+  // In previous releases, this was "GMT+00:00". Now it represents UTC.
+  private static final TimeZone GMT = TimeZone.getTimeZone(ZoneOffset.UTC);
 
   /**
    * Reset the value of the system property.
@@ -67,7 +68,7 @@ public class DateTimeUtilsTest
     // The variable must be public and non-final so that it may be modified by
     // applications.
     DateTimeUtils.USE_GMT_CALENDARS = StaticUtils.getProperty(
-        "com.unboundid.scim2.common.utils.DateTimeUtils.useGMTCalendars", true);
+        "com.unboundid.scim2.common.utils.DateTimeUtils.useGMTCalendars", false);
   }
 
   /**
@@ -76,7 +77,7 @@ public class DateTimeUtilsTest
    */
   @SuppressWarnings("DataFlowIssue")
   @Test
-  public void testGMTProperty() throws Exception
+  public void testGMTProperty()
   {
     // A SCIM resource that has a timestamp in the default timezone.
     String userJSON = """
@@ -185,10 +186,9 @@ public class DateTimeUtilsTest
    * <br><br>
    *
    * A SCIM server/service application processes incoming requests. A separate
-   * Java client application sends a request to the service. However, the Java
-   * client uses an ObjectMapper with default settings, which includes using the
-   * {@link SerializationFeature#WRITE_DATES_AS_TIMESTAMPS} feature. Thus, the
-   * JSON sent by the client after serialization looks like:
+   * client application sends a request to the service. However, the client uses
+   * UNIX timestamps, which has been seen previously with applications that use
+   * settings like {@link DateTimeFeature#WRITE_DATES_AS_TIMESTAMPS}:
    * <pre>
    *   {
    *     "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
@@ -217,7 +217,6 @@ public class DateTimeUtilsTest
   public void testDeserialization(final String ignored,
                                   final Date dateObject,
                                   final TimeZone ignoredZone)
-      throws Exception
   {
     long timestamp = dateObject.getTime();
     String json = """
@@ -263,8 +262,8 @@ public class DateTimeUtilsTest
 
     var reader = JsonUtils.getObjectReader().forType(UserResource.class);
     assertThatThrownBy(() -> reader.readValue(json))
-        .isInstanceOf(InvalidFormatException.class)
-        .hasMessageStartingWith("SCIM SDK: unable to deserialize value");
+        .isInstanceOf(ScimDeserializeException.class)
+        .hasMessageStartingWith("SCIM SDK: unable to deserialize date value");
   }
 
   /**

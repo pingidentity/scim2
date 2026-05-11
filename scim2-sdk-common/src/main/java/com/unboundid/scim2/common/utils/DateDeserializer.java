@@ -31,40 +31,30 @@
  */
 package com.unboundid.scim2.common.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
+import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-import java.io.IOException;
 import java.util.Date;
 
 /**
  * Deserializes SCIM 2 DateTime values to {@link Date} objects.
  */
-public class DateDeserializer extends JsonDeserializer<Date>
+public class DateDeserializer extends ValueDeserializer<Date>
 {
   /**
    * {@inheritDoc}
+   *
+   * @throws ScimDeserializeException  If the value was not a timestamp.
    */
   @Override
   @NotNull
   public Date deserialize(@NotNull final JsonParser jp,
                           @Nullable final DeserializationContext ctxt)
-      throws IOException, JsonProcessingException
   {
-    String dateStr = jp.getText();
-    try
-    {
-      return DateTimeUtils.parse(dateStr).getTime();
-    }
-    catch (IllegalArgumentException e)
-    {
-      throw new InvalidFormatException(jp, "unable to deserialize value",
-          dateStr, Date.class);
-    }
+    return CalendarDeserializer.parseAsCalendar(jp).getTime();
   }
 }

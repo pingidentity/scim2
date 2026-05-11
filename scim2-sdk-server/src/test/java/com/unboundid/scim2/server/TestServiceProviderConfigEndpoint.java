@@ -33,7 +33,6 @@
 package com.unboundid.scim2.server;
 
 import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.AuthenticationScheme;
 import com.unboundid.scim2.common.types.BulkConfig;
 import com.unboundid.scim2.common.types.ChangePasswordConfig;
@@ -58,7 +57,6 @@ public class TestServiceProviderConfigEndpoint
   @Override
   @NotNull
   public ServiceProviderConfigResource getServiceProviderConfig()
-      throws ScimException
   {
     return create();
   }
