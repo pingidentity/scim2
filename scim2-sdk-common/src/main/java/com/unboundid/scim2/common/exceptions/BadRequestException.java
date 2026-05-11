@@ -58,9 +58,9 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *     "status": "400",
  *     "scimType": "mutability",
- *     "detail": "Read-only attributes cannot be modified."
+ *     "detail": "Read-only attributes cannot be modified.",
+ *     "status": "400"
  *   }
  * </pre>
  *

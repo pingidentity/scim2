@@ -50,8 +50,8 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *     "status": "403",
- *     "detail": "You do not have access to this resource."
+ *     "detail": "You do not have access to this resource.",
+ *     "status": "403"
  *   }
  * </pre>
  *

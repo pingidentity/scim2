@@ -51,8 +51,8 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *     "status": "501",
- *     "detail": "The requested endpoint is not supported."
+ *     "detail": "The requested endpoint is not supported.",
+ *     "status": "501"
  *   }
  * </pre>
  *

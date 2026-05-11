@@ -51,8 +51,8 @@ import com.unboundid.scim2.common.types.ETagConfig;
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *     "status": "412",
- *     "detail": "Failed to update. The resource changed on the server."
+ *     "detail": "Failed to update. The resource changed on the server.",
+ *     "status": "412"
  *   }
  * </pre>
  *

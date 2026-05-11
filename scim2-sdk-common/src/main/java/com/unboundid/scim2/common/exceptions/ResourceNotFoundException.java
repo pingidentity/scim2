@@ -49,8 +49,8 @@ import com.unboundid.scim2.common.messages.ErrorResponse;
  * <pre>
  *   {
  *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
- *     "status": "404",
- *     "detail": "The requested resource was not found."
+ *     "detail": "The requested resource was not found.",
+ *     "status": "404"
  *   }
  * </pre>
  *
