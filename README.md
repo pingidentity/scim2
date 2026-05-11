@@ -73,8 +73,7 @@ following components:
 More information on each section:
 * `scim2-sdk-common`: This package contains the core SCIM constructs and utility classes. This
   contains logic for SCIM filtering, performing updates/searches on JSON data, bulk request
-  processing, and more. It may be used standalone without the other components, and only requires
-  the Jackson library as a dependency.
+  processing, and more. It may be used standalone without the other components.
 * `scim2-sdk-client`: This component helps create SCIM 2 client applications using
   [JAX-RS](https://projects.eclipse.org/projects/ee4j.rest). For more information, see the
   [wiki](https://github.com/pingidentity/scim2/wiki/JAX-RS-Client-examples).

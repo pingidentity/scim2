@@ -562,12 +562,10 @@ public class ScimService implements ScimInterface
    * @param <T> The Java type of the resource.
    * @return The request builder that may be used to specify additional request
    * parameters and to invoke the request.
-   * @throws ScimException if an error occurs.
    */
   @NotNull
   public <T extends ScimResource> DeleteRequestBuilder deleteRequest(
       @NotNull final T resource)
-          throws ScimException
   {
     return deleteRequest(checkAndGetLocation(resource));
   }

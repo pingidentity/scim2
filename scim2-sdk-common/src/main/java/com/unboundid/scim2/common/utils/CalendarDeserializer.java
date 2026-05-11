@@ -48,6 +48,8 @@ public class CalendarDeserializer extends ValueDeserializer<Calendar>
 {
   /**
    * {@inheritDoc}
+   *
+   * @throws ScimDeserializeException  If the value was not a timestamp.
    */
   @Override
   @NotNull
@@ -82,9 +84,9 @@ public class CalendarDeserializer extends ValueDeserializer<Calendar>
       // The value was not a UNIX timestamp. Continue.
     }
 
-    String dateStr = jp.getString();
     try
     {
+      String dateStr = jp.getString();
       return DateTimeUtils.parse(dateStr);
     }
     catch (IllegalArgumentException e)
