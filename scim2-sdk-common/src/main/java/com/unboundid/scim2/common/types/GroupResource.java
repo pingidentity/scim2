@@ -93,7 +93,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
     name="Group", description = "Group")
 public class GroupResource extends BaseScimResource
 {
-  @NotNull
+  @Nullable
   @Attribute(description = "A human-readable name for the Group.",
       isRequired = true,
       isCaseExact = false,
@@ -115,7 +115,7 @@ public class GroupResource extends BaseScimResource
    *
    * @return The name of the Group, suitable for display to end-users.
    */
-  @NotNull
+  @Nullable
   public String getDisplayName()
   {
     return displayName;
@@ -129,7 +129,7 @@ public class GroupResource extends BaseScimResource
    * @return This object.
    */
   @NotNull
-  public GroupResource setDisplayName(@NotNull final String displayName)
+  public GroupResource setDisplayName(@Nullable final String displayName)
   {
     this.displayName = displayName;
     return this;

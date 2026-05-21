@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## 6.0.1 - TBD
+Fixed an issue with deserializing a GenericScimResource object when it was embedded within a list
+response.
 
 ## 6.0.0 - 2026-May-11
 The UnboundID SCIM SDK has been updated to use version 3 of the Jackson library (this release ships
