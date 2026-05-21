@@ -34,7 +34,6 @@ package com.unboundid.scim2.common.utils;
 
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
-import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonParser;
@@ -55,19 +54,18 @@ public class GenericScimObjectDeserializer
   @Override
   @NotNull
   public GenericScimResource deserialize(
-      @NotNull final JsonParser jp,
-      @Nullable final DeserializationContext ctxt)
+      @NotNull final JsonParser p,
+      @NotNull final DeserializationContext ctxt)
   {
     try
     {
-      ObjectNode node = JsonUtils.getObjectReader()
-          .forType(ObjectNode.class).readValue(jp);
+      ObjectNode node = ctxt.readValue(p, ObjectNode.class);
       return new GenericScimResource(node);
     }
     catch (JacksonException e)
     {
       throw new ScimDeserializeException(
-          "Cannot convert a non-object JSON to a GenericScimResource.", e);
+          "Failed to convert a JSON to an ObjectNode.", e);
     }
   }
 }

@@ -33,6 +33,9 @@
 package com.unboundid.scim2.common;
 
 import com.unboundid.scim2.common.exceptions.ScimException;
+import com.unboundid.scim2.common.exceptions.runtime.ScimDeserializeException;
+import com.unboundid.scim2.common.messages.ListResponse;
+import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
@@ -40,14 +43,12 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import tools.jackson.core.Base64Variants;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ObjectNode;
 import tools.jackson.databind.node.StringNode;
 
 import java.net.URI;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -65,26 +66,13 @@ import static org.testng.Assert.assertNotEquals;
  * Tests generic scim objects.
  */
 @Test
-public class GenericScimResourceObjectTest
+public class GenericScimResourceTest
 {
-  private final DateFormat dateFormat =
-      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-  /**
-   * Constructor.  Sets up the dateFormat.
-   */
-  public GenericScimResourceObjectTest()
-  {
-    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-  }
-
   /**
    * Tests parsing a json string into a GenericScimObject.
-   *
-   * @throws Exception in event of an error.
    */
   @Test
-  public void testBasicParsing() throws Exception
+  public void testBasicParsing()
   {
     ObjectNode node = (ObjectNode) JsonUtils.getObjectReader().
         readTree("""
@@ -130,13 +118,6 @@ public class GenericScimResourceObjectTest
     Meta meta = cso.getMeta();
     Assert.assertNotNull(meta);
 
-    Assert.assertEquals(
-        dateFormat.format(meta.getCreated().getTime()),
-        "2015-02-27T11:28:39.042Z");
-    Assert.assertEquals(
-        dateFormat.format(meta.getLastModified().getTime()),
-        "2015-02-27T11:29:39.042Z");
-
     ObjectNode metaNode = (ObjectNode) JsonUtils.getObjectReader().readTree(
         JsonUtils.getObjectWriter().writeValueAsString(gso.getMeta()));
     Assert.assertEquals(
@@ -158,7 +139,6 @@ public class GenericScimResourceObjectTest
 
   /**
    * Test string methods.
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testStringMethods() throws ScimException
@@ -241,8 +221,6 @@ public class GenericScimResourceObjectTest
 
   /**
    * Test boolean methods.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testBooleanMethods() throws ScimException
@@ -278,7 +256,6 @@ public class GenericScimResourceObjectTest
 
   /**
    * test double methods.
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testDoubleMethods() throws ScimException
@@ -319,7 +296,6 @@ public class GenericScimResourceObjectTest
 
   /**
    * test integer methods.
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testIntegerMethods() throws ScimException
@@ -364,7 +340,6 @@ public class GenericScimResourceObjectTest
 
   /**
    * test long methods.
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testLongMethods() throws ScimException
@@ -409,7 +384,6 @@ public class GenericScimResourceObjectTest
 
   /**
    * test date methods.
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testDateMethods() throws ScimException
@@ -464,7 +438,6 @@ public class GenericScimResourceObjectTest
 
   /**
    * test uri methods.
-   * @throws Exception if an error occurs.
    */
   @Test
   public void testURIMethods() throws Exception
@@ -514,7 +487,6 @@ public class GenericScimResourceObjectTest
 
   /**
    * test binary methods.
-   * @throws Exception if an error occurs.
    */
   @Test
   public void testBinaryMethods() throws Exception
@@ -551,9 +523,7 @@ public class GenericScimResourceObjectTest
     List<byte[]> list1 = gsr.addBinaryValues(path3,
         List.of(arrayValue1, arrayValue2)).
         getBinaryValueList(Path.fromString(path3));
-    Assert.assertEquals(list1.size(), 2);
-    assertByteArrayListContainsBytes(list1, arrayValue1);
-    assertByteArrayListContainsBytes(list1, arrayValue2);
+    assertThat(list1).containsExactly(arrayValue1, arrayValue2);
 
     // Set BinaryNode directly
     list1 = gsr.replaceValue(path3,
@@ -561,9 +531,7 @@ public class GenericScimResourceObjectTest
             add(JsonUtils.getJsonNodeFactory().binaryNode(arrayValue1)).
             add(JsonUtils.getJsonNodeFactory().binaryNode(arrayValue2))).
         getBinaryValueList(Path.fromString(path3));
-    Assert.assertEquals(list1.size(), 2);
-    assertByteArrayListContainsBytes(list1, arrayValue1);
-    assertByteArrayListContainsBytes(list1, arrayValue2);
+    assertThat(list1).containsExactly(arrayValue1, arrayValue2);
 
     // Set TextNode directly
     list1 = gsr.replaceValue(path3,
@@ -573,16 +541,12 @@ public class GenericScimResourceObjectTest
             add(JsonUtils.getJsonNodeFactory().stringNode(
                 Base64Variants.getDefaultVariant().encode(arrayValue2)))).
         getBinaryValueList(Path.fromString(path3));
-    Assert.assertEquals(list1.size(), 2);
-    assertByteArrayListContainsBytes(list1, arrayValue1);
-    assertByteArrayListContainsBytes(list1, arrayValue2);
+    assertThat(list1).containsExactly(arrayValue1, arrayValue2);
 
     List<byte[]> list2 = gsr.addBinaryValues(Path.fromString(path4),
         List.of(arrayValue3, arrayValue4)).
         getBinaryValueList(path4);
-    Assert.assertEquals(list2.size(), 2);
-    assertByteArrayListContainsBytes(list2, arrayValue3);
-    assertByteArrayListContainsBytes(list2, arrayValue4);
+    assertThat(list2).containsExactly(arrayValue3, arrayValue4);
 
     Assert.assertNull(gsr.getBinaryValue("bogusPath"));
     Assert.assertNull(gsr.getBinaryValue(Path.fromString("bogusPath")));
@@ -594,10 +558,8 @@ public class GenericScimResourceObjectTest
   /**
    * Performs basic equivalency checks to validate
    * {@link GenericScimResource#equals(Object)}.
-   *
-   * @throws Exception  If an unexpected error occurs.
    */
-  @SuppressWarnings("AssertBetweenInconvertibleTypes")
+  @SuppressWarnings("all")
   @Test
   public void testEquals() throws Exception
   {
@@ -616,9 +578,7 @@ public class GenericScimResourceObjectTest
     assertNotEquals(resource2, resource);
 
     // An object should always be equal to itself.
-    //noinspection EqualsWithItself
     assertEquals(resource, resource);
-    //noinspection EqualsWithItself
     assertEquals(resource2, resource2);
 
     // Other object types should never be equivalent.
@@ -633,8 +593,6 @@ public class GenericScimResourceObjectTest
    * {@link GenericScimResource#addStringValues(Path, String, String...)}.
    * Methods with varargs parameters should behave identically to their
    * counterparts that accept a List as an input parameter.
-   *
-   * @throws Exception  If an unexpected error occurs.
    */
   @Test
   public void testVarArgMethods() throws Exception
@@ -769,6 +727,108 @@ public class GenericScimResourceObjectTest
   }
 
   /**
+   * Ensure GenericScimResource objects are deserialized properly when they are
+   * embedded within a ListResponse.
+   */
+  @Test
+  public void testListResponse()
+  {
+    var reader = JsonUtils.getObjectReader()
+        .forType(new TypeReference<ListResponse<GenericScimResource>>(){});
+
+    // Start with a list response containing a single resource.
+    String json1 = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 1,
+          "Resources": [ {
+            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:Group" ],
+            "displayName": "Spire"
+          } ]
+        }""";
+
+    // Ensure the returned resource is parseable and in the correct form.
+    ListResponse<GenericScimResource> oneList = reader.readValue(json1);
+    assertThat(oneList.getResources()).containsExactly(
+        new GroupResource().setDisplayName("Spire").asGenericScimResource());
+
+    // Test a list response with multiple resources.
+    String json2 = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 2,
+          "Resources": [ {
+            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "userName": "Silent",
+            "profileUrl": "https://example.com/1.png",
+            "timezone": "America/Los_Angeles"
+          }, {
+            "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
+            "userName": "Regent",
+            "locale": "en-US",
+            "active": true,
+            "userType": "Contractor"
+          } ]
+        }""";
+
+    ListResponse<GenericScimResource> multipleList = reader.readValue(json2);
+    assertThat(multipleList.getResources()).containsExactly(
+        new UserResource()
+            .setUserName("Silent")
+            .setProfileUrl(URI.create("https://example.com/1.png"))
+            .setTimezone("America/Los_Angeles")
+            .asGenericScimResource(),
+        new UserResource()
+            .setUserName("Regent")
+            .setLocale("en-US")
+            .setActive(true)
+            .setUserType("Contractor")
+            .asGenericScimResource());
+
+    // A ListResponse with no resources should result in an empty list.
+    String json0 = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 0,
+          "Resources": []
+        }""";
+
+    ListResponse<GenericScimResource> zeroList = reader.readValue(json0);
+    assertThat(zeroList.getResources())
+        .isNotNull()
+        .isEmpty();
+
+    // A ListResponse with null resources should still result in an empty list.
+    String jsonNull = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:ListResponse" ],
+          "totalResults": 0
+        }""";
+
+    ListResponse<GenericScimResource> nullList = reader.readValue(jsonNull);
+    assertThat(nullList.getResources())
+        .isNotNull()
+        .isEmpty();
+  }
+
+  /**
+   * Test an invalid JSON being converted into a GenericScimResource.
+   */
+  @Test
+  public void testInvalidJson()
+  {
+    var reader = JsonUtils.getObjectReader().forType(GenericScimResource.class);
+    String json = """
+        [
+          "arrayObject", "improper", "notGenericScimResource"
+        ]""";
+
+    assertThatThrownBy(() -> reader.readValue(json))
+        .isInstanceOf(ScimDeserializeException.class)
+        .hasMessageContaining("Failed to convert a JSON to an ObjectNode.");
+  }
+
+  /**
    * Validate the addition of new multi-valued attributes that do not yet exist
    * on a resource.
    */
@@ -820,22 +880,6 @@ public class GenericScimResourceObjectTest
 
     // Compare the serialized forms.
     assertThat(gsr.getObjectNode().toString()).isEqualTo(expected.toString());
-  }
-
-  private void assertByteArrayListContainsBytes(
-      List<byte[]> byteArrayList, byte[] bytes)
-  {
-    boolean found = false;
-    for (byte[] bytesFromList : byteArrayList)
-    {
-      if (Arrays.equals(bytesFromList, bytes))
-      {
-        found = true;
-        break;
-      }
-    }
-
-    Assert.assertTrue(found);
   }
 
   /**
