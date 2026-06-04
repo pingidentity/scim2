@@ -548,8 +548,7 @@ public class FilterEvaluatorTestCase
     assertThat(Filter.ge("theOne", "kid"))
         .isNotEqualTo(Filter.ge("theOne", "mySon"));
 
-    // Filters should not be equivalent to other filters if the value is
-    // different.
+    // Filters should not be equivalent when the value is a different data type.
     assertThat(ne)
         .isNotEqualTo(Filter.ne("billie", 0.0f))
         .isNotEqualTo(Filter.ne("billie", 0.0d))
