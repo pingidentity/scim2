@@ -40,12 +40,13 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.Parser;
+import com.unboundid.scim2.common.utils.StaticUtils;
 import tools.jackson.databind.node.ValueNode;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents a SCIM 2 filter expression as defined by
@@ -1231,14 +1232,12 @@ public abstract class Filter
                            @NotNull final Filter filter2,
                            @Nullable final Filter... filters)
   {
-    ArrayList<Filter> components =
-        new ArrayList<>(filters != null ? 2 + filters.length : 2);
+    Objects.requireNonNull(filter1);
+    List<Filter> otherFilters = StaticUtils.toList(filter2, filters);
+
+    ArrayList<Filter> components = new ArrayList<>(otherFilters.size() + 1);
     components.add(filter1);
-    components.add(filter2);
-    if (filters != null)
-    {
-      Collections.addAll(components, filters);
-    }
+    components.addAll(otherFilters);
     return new AndFilter(components);
   }
 
@@ -1257,17 +1256,15 @@ public abstract class Filter
                            @Nullable final String... filters)
       throws BadRequestException
   {
-    ArrayList<Filter> components =
-        new ArrayList<>(filters != null ? 2 + filters.length : 2);
+    List<String> otherFilters = StaticUtils.toList(filter2, filters);
+    ArrayList<Filter> components = new ArrayList<>(otherFilters.size() + 1);
+
     components.add(fromString(filter1));
-    components.add(fromString(filter2));
-    if (filters != null)
+    for (final String filter : otherFilters)
     {
-      for (final String filter : filters)
-      {
-        components.add(fromString(filter));
-      }
+      components.add(fromString(filter));
     }
+
     return new AndFilter(components);
   }
 
@@ -1301,14 +1298,12 @@ public abstract class Filter
                           @NotNull final Filter filter2,
                           @Nullable final Filter... filters)
   {
-    ArrayList<Filter> components =
-        new ArrayList<>(filters != null ? 2 + filters.length : 2);
+    Objects.requireNonNull(filter1);
+    List<Filter> otherFilters = StaticUtils.toList(filter2, filters);
+
+    ArrayList<Filter> components = new ArrayList<>(otherFilters.size() + 1);
     components.add(filter1);
-    components.add(filter2);
-    if (filters != null)
-    {
-      Collections.addAll(components, filters);
-    }
+    components.addAll(otherFilters);
     return new OrFilter(components);
   }
 
@@ -1327,16 +1322,13 @@ public abstract class Filter
                           @Nullable final String... filters)
       throws BadRequestException
   {
-    ArrayList<Filter> components =
-        new ArrayList<>(filters != null ? 2 + filters.length : 2);
+    List<String> otherFilters = StaticUtils.toList(filter2, filters);
+    ArrayList<Filter> components = new ArrayList<>(otherFilters.size() + 1);
+
     components.add(fromString(filter1));
-    components.add(fromString(filter2));
-    if (filters != null)
+    for (final String filter : otherFilters)
     {
-      for (final String filter : filters)
-      {
-        components.add(fromString(filter));
-      }
+      components.add(fromString(filter));
     }
     return new OrFilter(components);
   }

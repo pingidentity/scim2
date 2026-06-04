@@ -145,13 +145,9 @@ public final class NotFilter extends Filter
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    NotFilter notFilter = (NotFilter) o;
-    return filterComponent.equals(notFilter.filterComponent);
+    return o instanceof NotFilter notFilter
+        && filterComponent.equals(notFilter.filterComponent);
   }
 
   /**

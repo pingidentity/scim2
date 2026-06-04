@@ -170,17 +170,10 @@ public final class ComplexValueFilter extends Filter
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    ComplexValueFilter that = (ComplexValueFilter) o;
-    if (!filterAttribute.equals(that.filterAttribute))
-    {
-      return false;
-    }
-    return valueFilter.equals(that.valueFilter);
+    return o instanceof ComplexValueFilter that
+        && filterAttribute.equals(that.filterAttribute)
+        && valueFilter.equals(that.valueFilter);
   }
 
   /**

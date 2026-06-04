@@ -121,17 +121,10 @@ public final class AndFilter extends CombiningFilter
     {
       return true;
     }
-    if (!(o instanceof AndFilter that))
-    {
-      return false;
-    }
 
-    if (getCombinedFilters().size() != that.getCombinedFilters().size())
-    {
-      return false;
-    }
-
-    return getCombinedFilters().containsAll(that.getCombinedFilters());
+    return o instanceof AndFilter that
+        && getCombinedFilters().size() == that.getCombinedFilters().size()
+        && getCombinedFilters().containsAll(that.getCombinedFilters());
   }
 
   /**

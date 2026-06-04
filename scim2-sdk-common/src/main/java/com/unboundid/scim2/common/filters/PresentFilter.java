@@ -143,13 +143,9 @@ public final class PresentFilter extends Filter
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    PresentFilter that = (PresentFilter) o;
-    return filterAttribute.equals(that.filterAttribute);
+    return o instanceof PresentFilter that
+        && filterAttribute.equals(that.filterAttribute);
   }
 
   /**

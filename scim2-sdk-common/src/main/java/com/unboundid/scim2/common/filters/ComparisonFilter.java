@@ -38,6 +38,9 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import tools.jackson.databind.node.ValueNode;
 
+import java.util.Objects;
+
+
 /**
  * This superclass represents filter types that are used to compare attribute
  * values of SCIM resources.
@@ -122,5 +125,37 @@ public abstract class ComparisonFilter extends Filter
     builder.append(getFilterType().getStringValue());
     builder.append(' ');
     builder.append(filterValue);
+  }
+
+  /**
+   * Indicates whether the provided object is equal to this comparison filter.
+   *
+   * @param o   The object to compare.
+   * @return    {@code true} if the provided object is equal to this filter, or
+   *            {@code false} if not.
+   */
+  @Override
+  public boolean equals(@Nullable final Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+
+    return o instanceof ComparisonFilter that
+        && this.getClass().equals(that.getClass())
+        && filterAttribute.equals(that.filterAttribute)
+        && filterValue.equals(that.filterValue);
+  }
+
+  /**
+   * Retrieves a hash code for this comparison filter.
+   *
+   * @return  A hash code for this comparison filter.
+   */
+  @Override
+  public int hashCode()
+  {
+    return Objects.hash(this.getClass(), filterAttribute, filterValue);
   }
 }

@@ -122,17 +122,10 @@ public final class OrFilter extends CombiningFilter
     {
       return true;
     }
-    if (!(o instanceof OrFilter that))
-    {
-      return false;
-    }
 
-    if (getCombinedFilters().size() != that.getCombinedFilters().size())
-    {
-      return false;
-    }
-
-    return getCombinedFilters().containsAll(that.getCombinedFilters());
+    return o instanceof OrFilter that
+        && getCombinedFilters().size() == that.getCombinedFilters().size()
+        && getCombinedFilters().containsAll(that.getCombinedFilters());
   }
 
   /**

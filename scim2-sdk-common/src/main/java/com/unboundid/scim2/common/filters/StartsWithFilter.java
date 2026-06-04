@@ -38,7 +38,6 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import tools.jackson.databind.node.ValueNode;
 
-import java.util.Objects;
 
 /**
  * This class represents a SCIM {@code sw} filter. "Starts With" filters are
@@ -95,44 +94,5 @@ public final class StartsWithFilter extends ComparisonFilter
   public FilterType getFilterType()
   {
     return FilterType.STARTS_WITH;
-  }
-
-  /**
-   * Indicates whether the provided object is equal to this "starts with"
-   * filter.
-   *
-   * @param o   The object to compare.
-   * @return    {@code true} if the provided object is equal to this filter, or
-   *            {@code false} if not.
-   */
-  @Override
-  public boolean equals(@Nullable final Object o)
-  {
-    if (this == o)
-    {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-
-    ComparisonFilter that = (ComparisonFilter) o;
-    if (!getAttributePath().equals(that.getAttributePath()))
-    {
-      return false;
-    }
-    return getComparisonValue().equals(that.getComparisonValue());
-  }
-
-  /**
-   * Retrieves a hash code for this "starts with" filter.
-   *
-   * @return  A hash code for this "starts with" filter.
-   */
-  @Override
-  public int hashCode()
-  {
-    return Objects.hash(getAttributePath(), getComparisonValue());
   }
 }
