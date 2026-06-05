@@ -39,17 +39,18 @@ import com.unboundid.scim2.common.filters.FilterType;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.JsonUtils;
+import org.assertj.core.api.ThrowableAssert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import tools.jackson.databind.JsonNode;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -64,11 +65,9 @@ public class FilterEvaluatorTestCase
 
   /**
    * Sets up the test by creating a new JsonNode.
-   *
-   * @throws IOException if an unexpected JSON parsing error occurs.
    */
   @BeforeClass
-  public void setup() throws IOException
+  public void setup()
   {
     date = new Date();
 
@@ -393,6 +392,7 @@ public class FilterEvaluatorTestCase
     );
     assertThat(andFilter.equals(andFilterSuperset)).isFalse();
     assertThat(andFilterSuperset.equals(andFilter)).isFalse();
+    assertThat(andFilter.hashCode()).isNotEqualTo(andFilterSuperset.hashCode());
 
     Filter orFilterSuperset = Filter.or(
         Filter.eq("userName", "Ganon"),
@@ -401,6 +401,7 @@ public class FilterEvaluatorTestCase
     );
     assertThat(orFilter.equals(orFilterSuperset)).isFalse();
     assertThat(orFilterSuperset.equals(orFilter)).isFalse();
+    assertThat(orFilter.hashCode()).isNotEqualTo(orFilterSuperset.hashCode());
 
     // The order of the subordinate filters should not affect equivalency.
     Filter andFilterDifferentOrder = Filter.and(
@@ -434,6 +435,129 @@ public class FilterEvaluatorTestCase
             + " or workAddress pr)");
     assertThat(filter3.equals(filter4)).isTrue();
     assertThat(filter4.equals(filter3)).isTrue();
+
+    // The list methods should enforce a minimum of two filters.
+    List<ThrowableAssert.ThrowingCallable> tooFewFilters = List.of(
+        () -> Filter.and(List.of()),
+        () -> Filter.and(List.of(Filter.pr("invalid"))),
+        () -> Filter.or(List.of()),
+        () -> Filter.or(List.of(Filter.pr("invalid")))
+    );
+    for (var filterCallable : tooFewFilters)
+    {
+      assertThatThrownBy(filterCallable)
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessageContaining("must combine at least 2 filters");
+    }
+
+    // Ensure parity between the varargs constructors.
+    assertThat(Filter.and(Filter.pr("ims"), Filter.eq("name", (byte[]) null)))
+        .isEqualTo(Filter.and("ims pr", "name eq null"));
+    assertThat(Filter.or(Filter.pr("ims"), Filter.eq("name", (byte[]) null)))
+        .isEqualTo(Filter.or("ims pr", "name eq null"));
+  }
+
+
+  /**
+   * Test the {@code equals()} method for comparison filter types.
+   */
+  @SuppressWarnings("all")
+  @Test
+  public void testComparisonEquals() throws Exception
+  {
+    final Date date = new Date(407448000000L);
+
+    Filter ne = Filter.ne("billie", 1.0f);
+    assertThat(ne).isEqualTo(ne);
+
+    // A comparison filter should not be equal to a different filter type.
+    assertThat(ne).isNotEqualTo(Filter.pr("billie"));
+
+    // A comparison filter and its hashcode should not equal another type.
+    Filter eq = Filter.eq("billie", 1.0f);
+    assertThat(eq).isNotEqualTo(ne);
+    assertThat(ne.hashCode()).isNotEqualTo(eq.hashCode());
+    assertThat(ne.toString()).isNotEqualTo(eq.toString());
+
+    // Test other comparison filter types.
+    assertThat(ne)
+        .isNotEqualTo(Filter.lt("billie", 1.0f))
+        .isNotEqualTo(Filter.le("billie", 1.0f))
+        .isNotEqualTo(Filter.gt("billie", 1.0f))
+        .isNotEqualTo(Filter.ge("billie", 1.0f))
+        .isNotEqualTo(Filter.co("billie", "jean"))
+        .isNotEqualTo(Filter.sw("billie", "jean"))
+        .isNotEqualTo(Filter.ew("billie", "jean"));
+
+    // Filters should not be equivalent if the paths are different.
+    assertThat(ne)
+        .isNotEqualTo(Filter.ne("jean", 1.0f));
+
+    assertThat(Filter.eq("billie", 1.0f))
+        .isNotEqualTo(Filter.eq("jean", 1.0f));
+    assertThat(Filter.eq("billie", 1.0d))
+        .isNotEqualTo(Filter.eq("jean", 1.0d));
+    assertThat(Filter.eq("billie", 40L))
+        .isNotEqualTo(Filter.eq("jean", 40L));
+    assertThat(Filter.eq("billie", date))
+        .isNotEqualTo(Filter.eq("jean", date));
+    assertThat(Filter.eq("theOne", "kid"))
+        .isNotEqualTo(Filter.eq("theOne", "mySon"));
+
+    assertThat(Filter.lt("billie", 1.0f))
+        .isNotEqualTo(Filter.lt("jean", 1.0f));
+    assertThat(Filter.lt("billie", 1.0d))
+        .isNotEqualTo(Filter.lt("jean", 1.0d));
+    assertThat(Filter.lt("billie", 40L))
+        .isNotEqualTo(Filter.lt("jean", 40L));
+    assertThat(Filter.lt("billie", date))
+        .isNotEqualTo(Filter.lt("jean", date));
+    assertThat(Filter.lt("theOne", "kid"))
+        .isNotEqualTo(Filter.lt("theOne", "mySon"));
+
+    assertThat(Filter.le("billie", 1.0f))
+        .isNotEqualTo(Filter.le("jean", 1.0f));
+    assertThat(Filter.le("billie", 1.0d))
+        .isNotEqualTo(Filter.le("jean", 1.0d));
+    assertThat(Filter.le("billie", 40L))
+        .isNotEqualTo(Filter.le("jean", 40L));
+    assertThat(Filter.le("billie", date))
+        .isNotEqualTo(Filter.le("jean", date));
+    assertThat(Filter.le("theOne", "kid"))
+        .isNotEqualTo(Filter.le("theOne", "mySon"));
+
+    assertThat(Filter.gt("billie", 1.0f))
+        .isNotEqualTo(Filter.gt("jean", 1.0f));
+    assertThat(Filter.gt("billie", 1.0d))
+        .isNotEqualTo(Filter.gt("jean", 1.0d));
+    assertThat(Filter.gt("billie", 40L))
+        .isNotEqualTo(Filter.gt("jean", 40L));
+    assertThat(Filter.gt("billie", date))
+        .isNotEqualTo(Filter.gt("jean", date));
+    assertThat(Filter.gt("theOne", "kid"))
+        .isNotEqualTo(Filter.gt("theOne", "mySon"));
+
+    assertThat(Filter.ge("billie", 1.0f))
+        .isNotEqualTo(Filter.ge("jean", 1.0f));
+    assertThat(Filter.ge("billie", 1.0d))
+        .isNotEqualTo(Filter.ge("jean", 1.0d));
+    assertThat(Filter.ge("billie", 40L))
+        .isNotEqualTo(Filter.ge("jean", 40L));
+    assertThat(Filter.ge("billie", date))
+        .isNotEqualTo(Filter.ge("jean", date));
+    assertThat(Filter.ge("theOne", "kid"))
+        .isNotEqualTo(Filter.ge("theOne", "mySon"));
+
+    // Filters should not be equivalent when the value is a different data type.
+    assertThat(ne)
+        .isNotEqualTo(Filter.ne("billie", 0.0f))
+        .isNotEqualTo(Filter.ne("billie", 0.0d))
+        .isNotEqualTo(Filter.ne("billie", 0))
+        .isNotEqualTo(Filter.ne("billie", 0L))
+        .isNotEqualTo(Filter.ne("billie", "0"))
+        .isNotEqualTo(Filter.ne("billie", false))
+        .isNotEqualTo(Filter.ne("billie", new byte[]{ 0x00 }))
+        .isNotEqualTo(Filter.ne("billie", new Date(0L)));
   }
 
 
@@ -455,7 +579,7 @@ public class FilterEvaluatorTestCase
 
   /**
    * Tests the helper methods defined on the base Filter class that determine
-   * the filter type (e.g., {@link Filter#isCombiningFilter()}.
+   * the filter type (e.g., {@link Filter#isCombiningFilter()}).
    */
   @Test
   public void testTypeMethods() throws Exception
@@ -516,10 +640,19 @@ public class FilterEvaluatorTestCase
     assertThat(presentResults)
         .hasSize(1)
         .containsOnly(Filter.pr("attr"));
+
+    // Evaluate some negative cases explicitly.
+    assertThat(Filter.eq("path", 1).getCombinedFilters()).isNull();
+    assertThat(Filter.eq("path", 1.0d).getInvertedFilter()).isNull();
+    assertThat(Filter.not("path pr").getAttributePath()).isNull();
+    assertThat(Filter.pr("path").getValueFilter()).isNull();
+
+    Filter f = Filter.eq("path", new byte[]{ 0x00 });
+    assertThat(Filter.not(f).getComparisonValue()).isNull();
   }
 
   /**
-   * Test the complex filter creation methods.
+   * Test {@link com.unboundid.scim2.common.filters.ComplexValueFilter} methods.
    */
   @Test
   public void testComplexFilters() throws Exception
@@ -560,6 +693,7 @@ public class FilterEvaluatorTestCase
     // The filters should be equivalent, and both should match only the
     // "matching" node.
     assertThat(complexFilter).isEqualTo(alternateFilter);
+    assertThat(complexFilter == alternateFilter).isFalse();
     assertThat(FilterEvaluator.evaluate(complexFilter, matching)).isTrue();
     assertThat(FilterEvaluator.evaluate(complexFilter, invalid)).isFalse();
     assertThat(FilterEvaluator.evaluate(alternateFilter, matching)).isTrue();
@@ -585,5 +719,18 @@ public class FilterEvaluatorTestCase
     assertThat(FilterEvaluator.evaluate(complexFilter, invalid)).isFalse();
     assertThat(FilterEvaluator.evaluate(alternateFilter, matching)).isTrue();
     assertThat(FilterEvaluator.evaluate(alternateFilter, invalid)).isFalse();
+
+    // Complex filters should not be equal if the path is different.
+    Filter otherPath = Filter.complex("otherAttr",
+        Filter.eq("postalCode", "12345"));
+    assertThat(complexFilter.equals(otherPath)).isFalse();
+    assertThat(otherPath.equals(complexFilter)).isFalse();
+    assertThat(otherPath.hashCode()).isNotEqualTo(complexFilter.hashCode());
+
+    // Complex filters should not be equal if the value filter is different.
+    Filter otherValue = Filter.complex("addresses", Filter.eq("type", "work"));
+    assertThat(complexFilter.equals(otherValue)).isFalse();
+    assertThat(otherValue.equals(complexFilter)).isFalse();
+    assertThat(otherValue.hashCode()).isNotEqualTo(complexFilter.hashCode());
   }
 }
