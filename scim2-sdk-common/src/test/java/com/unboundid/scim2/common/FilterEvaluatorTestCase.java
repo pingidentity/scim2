@@ -562,33 +562,6 @@ public class FilterEvaluatorTestCase
 
 
   /**
-   * Test the {@code equals()} method for complex filter types.
-   */
-  @Test
-  @SuppressWarnings("all")
-  public void testComplexFilterEquals() throws Exception
-  {
-    Filter orig = Filter.complex("emails", Filter.eq("type", "work"));
-    Filter alsoOrig = Filter.complex("emails", Filter.eq("type", "work"));
-    assertThat(orig == alsoOrig).isFalse();
-    assertThat(orig.equals(alsoOrig)).isTrue();
-    assertThat(orig.getFilterType()).isEqualTo(alsoOrig.getFilterType());
-
-    // Complex filters should not be equal if the path is different.
-    Filter otherPath = Filter.complex("addresses", Filter.eq("type", "work"));
-    assertThat(orig.equals(otherPath)).isFalse();
-    assertThat(otherPath.equals(orig)).isFalse();
-    assertThat(otherPath.hashCode()).isNotEqualTo(orig.hashCode());
-
-    // Complex filters should not be equal if the value filter is different.
-    Filter otherValue = Filter.complex("emails", Filter.ne("type", "work"));
-    assertThat(orig.equals(otherValue)).isFalse();
-    assertThat(otherValue.equals(orig)).isFalse();
-    assertThat(otherValue.hashCode()).isNotEqualTo(orig.hashCode());
-  }
-
-
-  /**
    * Test filter parsing.
    *
    * @param filter The filter string to evaluate.
@@ -679,7 +652,7 @@ public class FilterEvaluatorTestCase
   }
 
   /**
-   * Test the complex filter creation methods.
+   * Test {@link com.unboundid.scim2.common.filters.ComplexValueFilter} methods.
    */
   @Test
   public void testComplexFilters() throws Exception
@@ -720,6 +693,7 @@ public class FilterEvaluatorTestCase
     // The filters should be equivalent, and both should match only the
     // "matching" node.
     assertThat(complexFilter).isEqualTo(alternateFilter);
+    assertThat(complexFilter == alternateFilter).isFalse();
     assertThat(FilterEvaluator.evaluate(complexFilter, matching)).isTrue();
     assertThat(FilterEvaluator.evaluate(complexFilter, invalid)).isFalse();
     assertThat(FilterEvaluator.evaluate(alternateFilter, matching)).isTrue();
@@ -745,5 +719,18 @@ public class FilterEvaluatorTestCase
     assertThat(FilterEvaluator.evaluate(complexFilter, invalid)).isFalse();
     assertThat(FilterEvaluator.evaluate(alternateFilter, matching)).isTrue();
     assertThat(FilterEvaluator.evaluate(alternateFilter, invalid)).isFalse();
+
+    // Complex filters should not be equal if the path is different.
+    Filter otherPath = Filter.complex("otherAttr",
+        Filter.eq("postalCode", "12345"));
+    assertThat(complexFilter.equals(otherPath)).isFalse();
+    assertThat(otherPath.equals(complexFilter)).isFalse();
+    assertThat(otherPath.hashCode()).isNotEqualTo(complexFilter.hashCode());
+
+    // Complex filters should not be equal if the value filter is different.
+    Filter otherValue = Filter.complex("addresses", Filter.eq("type", "work"));
+    assertThat(complexFilter.equals(otherValue)).isFalse();
+    assertThat(otherValue.equals(complexFilter)).isFalse();
+    assertThat(otherValue.hashCode()).isNotEqualTo(complexFilter.hashCode());
   }
 }
