@@ -33,6 +33,7 @@
 package com.unboundid.scim2.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -44,6 +45,7 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.exceptions.ServerErrorException;
 import com.unboundid.scim2.common.types.Meta;
+import com.unboundid.scim2.common.utils.CaseIgnoreObjectNode;
 import com.unboundid.scim2.common.utils.GenericScimObjectDeserializer;
 import com.unboundid.scim2.common.utils.GenericScimObjectSerializer;
 import com.unboundid.scim2.common.utils.JsonUtils;
@@ -57,6 +59,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
@@ -142,7 +145,29 @@ public class GenericScimResource implements ScimResource
    */
   public GenericScimResource(@NotNull final ObjectNode objectNode)
   {
-    this.objectNode = objectNode;
+    Objects.requireNonNull(objectNode);
+
+    CaseIgnoreObjectNode newNode;
+    if (objectNode instanceof CaseIgnoreObjectNode node)
+    {
+      newNode = node;
+    }
+    else
+    {
+      try
+      {
+        Map<String, JsonNode> map = JsonUtils.getObjectReader()
+            .forType(new TypeReference<Map<String, JsonNode>>(){})
+            .readValue(objectNode);
+        newNode = new CaseIgnoreObjectNode(JsonUtils.getJsonNodeFactory(), map);
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+
+    this.objectNode = newNode;
   }
 
   /**

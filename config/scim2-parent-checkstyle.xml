@@ -238,6 +238,9 @@
 
     <!-- Ensure that all method/constructor/catch parameters are final. -->
     <module name="FinalParameters" />
+
+    <!-- Allow comment suppressions. -->
+    <module name="SuppressionCommentFilter"/>
   </module>
 
   <!-- Lines should be wrapped at 80 characters. Some extra room is allowed. -->

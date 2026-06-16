@@ -45,10 +45,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
-
 /**
- * An ObjectNode with case-insensitive field names.
+ * This class provides an ObjectNode implementation that treats field/property
+ * names as case-insensitive. This is aligned with the SCIM standard's treatment
+ * of attribute names.
  */
 public class CaseIgnoreObjectNode extends ObjectNode
 {
@@ -65,169 +65,98 @@ public class CaseIgnoreObjectNode extends ObjectNode
   /**
    * Create a new CaseIgnoreObjectNode.
    *
-   * @param nc   The JsonNodeFactory.
-   * @param kids The fields to put in this CaseIgnoreObjectNode.
+   * @param nc        The JsonNodeFactory.
+   * @param children  The fields to put in this CaseIgnoreObjectNode.
    */
   public CaseIgnoreObjectNode(@NotNull final JsonNodeFactory nc,
-                              @NotNull final Map<String, JsonNode> kids)
+                              @NotNull final Map<String, JsonNode> children)
   {
-    super(nc, new CaseIgnoreMap(kids));
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @NotNull
-  public ObjectNode deepCopy()
-  {
-    CaseIgnoreObjectNode ret = new CaseIgnoreObjectNode(_nodeFactory);
-
-    for (Map.Entry<String, JsonNode> entry : _children.entrySet())
-    {
-      ret._children.put(entry.getKey(), entry.getValue().deepCopy());
-    }
-
-    return ret;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @Nullable
-  public JsonNode findValue(@NotNull final String fieldName)
-  {
-    for (Map.Entry<String, JsonNode> entry : _children.entrySet())
-    {
-      if (fieldName.equals(entry.getKey()))
-      {
-        return entry.getValue();
-      }
-      JsonNode value = entry.getValue().findValue(fieldName);
-      if (value != null)
-      {
-        return value;
-      }
-    }
-    return null;
+    super(nc, new CaseIgnoreMap(children));
   }
 
   /**
    * Similar to {@link #findValue}, but returns multiple values.
+   * External callers should use {@link #findValues(String)}.
    *
-   * @param fieldName   The name of the JSON field/attribute.
-   * @param foundSoFar  An optional argument for recursive calls. External
-   *                    callers should set this value to {@code null}.
+   * @param propertyName  The name of the JSON field/attribute.
+   * @param foundSoFar    An optional argument for recursive calls by Jackson.
    *
    * @return  The list of values.
    */
   @Override
   @NotNull
-  public List<JsonNode> findValues(@NotNull final String fieldName,
+  public List<JsonNode> findValues(@NotNull final String propertyName,
                                    @Nullable final List<JsonNode> foundSoFar)
   {
-    List<JsonNode> localFoundSoFar = foundSoFar;
-    for (Map.Entry<String, JsonNode> entry : _children.entrySet())
-    {
-      if (toLowerCase(fieldName).equals(toLowerCase(entry.getKey())))
-      {
-        if (localFoundSoFar == null)
-        {
-          localFoundSoFar = new ArrayList<>();
-        }
-        localFoundSoFar.add(entry.getValue());
-      }
-      else
-      { // only add children if parent not added
-        localFoundSoFar = entry.getValue().findValues(fieldName, foundSoFar);
-      }
-    }
-    return localFoundSoFar;
+    List<JsonNode> parsed = findParents(propertyName, null)
+        .stream().map(node -> node.path(propertyName)).toList();
+    return mutableList(foundSoFar, parsed);
   }
 
   /**
-   * Similar to {@link #findValues}, but invokes {@link #asText()} on each
-   * element.
+   * Similar to {@link #findValues(String, List)}, but returns string values.
    *
-   * @param fieldName   The name of the JSON field/attribute.
-   * @param foundSoFar  An optional argument to specify known values. External
-   *                    calls generally should set this value to {@code null}.
+   * @param propertyName The name of the JSON field/attribute.
+   * @param initial      An optional argument for recursive calls by Jackson.
    *
    * @return  The list of values.
    */
   @Override
   @NotNull
-  public List<String> findValuesAsText(@NotNull final String fieldName,
-                                       @Nullable final List<String> foundSoFar)
+  public List<String> findValuesAsText(@NotNull final String propertyName,
+                                      @Nullable final List<String> initial)
   {
-    List<String> localFoundSoFar = foundSoFar;
-    for (Map.Entry<String, JsonNode> entry : _children.entrySet())
-    {
-      if (toLowerCase(fieldName).equals(toLowerCase(entry.getKey())))
-      {
-        if (localFoundSoFar == null)
-        {
-          localFoundSoFar = new ArrayList<>();
-        }
-        localFoundSoFar.add(entry.getValue().asText());
-      }
-      else
-      { // only add children if parent not added
-        localFoundSoFar = entry.getValue().findValuesAsText(fieldName,
-            foundSoFar);
-      }
-    }
-    return localFoundSoFar;
+    List<String> parsed = findParents(propertyName, null)
+        .stream().map(node -> node.path(propertyName).asText()).toList();
+    return mutableList(initial, parsed);
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  @Nullable
-  public ObjectNode findParent(@NotNull final String fieldName)
-  {
-    for (Map.Entry<String, JsonNode> entry : _children.entrySet())
-    {
-      if (toLowerCase(fieldName).equals(toLowerCase(entry.getKey())))
-      {
-        return this;
-      }
-      JsonNode value = entry.getValue().findParent(fieldName);
-      if (value != null)
-      {
-        return (ObjectNode) value;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * {@inheritDoc}
+   * Obtains a JSON object that contains a specified field, within this node or
+   * its descendants. External callers should use {@link #findParents(String)}.
+   *
+   * @param propertyName  The name of the JSON field/attribute.
+   * @param foundSoFar    An optional argument for recursive calls.
+   *
+   * @return  A list containing all matching nodes.
    */
   @Override
   @NotNull
-  public List<JsonNode> findParents(@NotNull final String fieldName,
-                                    @Nullable final List<JsonNode> foundSoFar)
+  // CHECKSTYLE:OFF
+  public List<JsonNode> findParents(@NotNull final String propertyName,
+                                    @Nullable List<JsonNode> foundSoFar)
+  // CHECKSTYLE:ON
   {
-    List<JsonNode> localFoundSoFar = foundSoFar;
+    foundSoFar = (foundSoFar == null) ? new ArrayList<>() : foundSoFar;
     for (Map.Entry<String, JsonNode> entry : _children.entrySet())
     {
-      if (toLowerCase(fieldName).equals(toLowerCase(entry.getKey())))
+      // Ensure case-insensitive comparison for CaseIgnoreObjectNode.
+      if (propertyName.equalsIgnoreCase(entry.getKey()))
       {
-        if (localFoundSoFar == null)
-        {
-          localFoundSoFar = new ArrayList<>();
-        }
-        localFoundSoFar.add(this);
+        foundSoFar.add(this);
       }
       else
-      { // only add children if parent not added
-        localFoundSoFar = entry.getValue()
-            .findParents(fieldName, foundSoFar);
+      {
+        foundSoFar = entry.getValue().findParents(propertyName, foundSoFar);
       }
     }
-    return localFoundSoFar;
+
+    return foundSoFar;
+  }
+
+  @SafeVarargs
+  @NotNull
+  private static <T> List<T> mutableList(@NotNull final List<T>... lists)
+  {
+    List<T> list = new ArrayList<>();
+    for (List<T> l : lists)
+    {
+      if (l != null)
+      {
+        list.addAll(l);
+      }
+    }
+
+    return list;
   }
 }

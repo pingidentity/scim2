@@ -301,7 +301,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    */
   public void putAll(@NotNull final Map<? extends String, ? extends JsonNode> m)
   {
-    for (Entry<? extends String, ? extends JsonNode> entry : m.entrySet())
+    for (var entry : m.entrySet())
     {
       attributes.put(new CaseIgnoreKey(entry.getKey()), entry.getValue());
     }
