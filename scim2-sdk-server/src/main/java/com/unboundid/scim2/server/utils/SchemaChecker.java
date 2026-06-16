@@ -201,6 +201,15 @@ public class SchemaChecker
      * that are not defined by the definition of the parent attribute.
      */
     ALLOW_UNDEFINED_SUB_ATTRIBUTES,
+
+    /**
+     * Relax SCIM 2 standard schema requirements by allowing STRING-typed
+     * sub-attributes to contain JSON object values.
+     * <p>
+     * Per RFC 7643, complex sub-attributes are not supported; this option
+     * relaxes that constraint for non-conformant resources.
+     */
+    ALLOW_OBJECT_VALUED_STRING_SUB_ATTRIBUTES
   }
 
   @NotNull
@@ -1040,6 +1049,19 @@ public class SchemaChecker
     switch (attribute.getType())
     {
       case STRING:
+        if (!node.isString())
+        {
+          if (enabledOptions.contains(
+              Option.ALLOW_OBJECT_VALUED_STRING_SUB_ATTRIBUTES)
+              && node.isObject() && path.size() > 1)
+          {
+            return;
+          }
+          results.syntaxIssues.add(prefix + "Value for attribute " + path +
+              " must be a JSON string");
+          return;
+        }
+        break;
       case DATETIME:
       case REFERENCE:
         if (!node.isString())

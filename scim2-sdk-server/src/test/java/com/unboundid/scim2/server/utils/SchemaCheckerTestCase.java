@@ -2268,6 +2268,133 @@ public class SchemaCheckerTestCase
     };
   }
 
+  /**
+   * Test case for the allow object valued string sub-attributes option.
+   *
+   * @throws Exception if an error occurs.
+   */
+  @Test
+  public void testAllowObjectValuedStringSubAttributesOption()
+      throws Exception
+  {
+    // Build a schema with a complex parent attribute whose sub-attribute is
+    // STRING-typed but stores a JSON object value.
+    AttributeDefinition.Builder builder = new AttributeDefinition.Builder();
+    builder.setName("iamSvcUsrData");
+    builder.setType(AttributeDefinition.Type.STRING);
+    builder.setMultiValued(true);
+    AttributeDefinition iamSvcUsrData = builder.build();
+
+    builder = new AttributeDefinition.Builder();
+    builder.setName("iamServiceUser");
+    builder.setType(AttributeDefinition.Type.COMPLEX);
+    builder.addSubAttributes(iamSvcUsrData);
+    AttributeDefinition iamServiceUser = builder.build();
+
+    builder = new AttributeDefinition.Builder();
+    builder.setName("iamAdminUser");
+    builder.setType(AttributeDefinition.Type.STRING);
+    AttributeDefinition iamAdminUser = builder.build();
+
+    SchemaResource testSchema = new SchemaResource("urn:id:test", "test", "",
+        List.of(iamServiceUser, iamAdminUser));
+
+    ResourceTypeDefinition testResourceTypeDefinition =
+        new ResourceTypeDefinition.Builder("test", "/test").
+            setCoreSchema(testSchema).build();
+
+    // Define two schema checkers, one with the option to allow object valued
+    // string sub-attributes.
+    SchemaChecker refuseObjValStrSubAttributesChecker =
+        new SchemaChecker(testResourceTypeDefinition);
+
+    SchemaChecker allowObjValStrSubAttributesChecker =
+        new SchemaChecker(testResourceTypeDefinition);
+    allowObjValStrSubAttributesChecker.enable(
+        SchemaChecker.Option.ALLOW_OBJECT_VALUED_STRING_SUB_ATTRIBUTES);
+
+    // Construct JSON object value for the sub-attribute.
+    ObjectNode iamSvcUsrDataJsonObjectValue = JsonUtils.getJsonNodeFactory().objectNode();
+    iamSvcUsrDataJsonObjectValue.put("key", "initialValue");
+    iamSvcUsrDataJsonObjectValue.put("active", "true");
+
+    ArrayNode iamSvcUsrDataArray = JsonUtils.getJsonNodeFactory().
+        arrayNode().add(iamSvcUsrDataJsonObjectValue);
+
+    ObjectNode iamServiceUserNode = JsonUtils.getJsonNodeFactory().objectNode();
+    iamServiceUserNode.set("iamSvcUsrData", iamSvcUsrDataArray);
+
+    // checkCreate: JSON object value for a STRING sub-attribute should produce
+    // a syntax error by default but be accepted when
+    // ALLOW_OBJECT_VALUED_STRING_SUB_ATTRIBUTES is enabled.
+    ObjectNode iamServiceUserJsonObjectNode = JsonUtils.getJsonNodeFactory().objectNode();
+    iamServiceUserJsonObjectNode.putArray("schemas").add("urn:id:test");
+    iamServiceUserJsonObjectNode.set("iamServiceUser", iamServiceUserNode);
+
+    SchemaChecker.Results results = refuseObjValStrSubAttributesChecker.checkCreate(
+            iamServiceUserJsonObjectNode);
+    assertEquals(results.getSyntaxIssues().size(), 1,
+        results.getSyntaxIssues().toString());
+    assertTrue(containsIssueWith(results.getSyntaxIssues(),
+        "must be a JSON string"));
+
+    results = allowObjValStrSubAttributesChecker.checkCreate(
+        iamServiceUserJsonObjectNode);
+    assertTrue(results.getSyntaxIssues().isEmpty(),
+        results.getSyntaxIssues().toString());
+
+    // checkModify (PATCH replace on iamServiceUser).
+    ObjectNode currentResource = JsonUtils.getJsonNodeFactory().objectNode();
+    currentResource.putArray("schemas").add("urn:id:test");
+    currentResource.set("iamServiceUser", iamServiceUserNode);
+
+    List<PatchOperation> patchOps = Collections.singletonList(
+        PatchOperation.replace(
+            Path.root().attribute("iamServiceUser"), iamServiceUserNode));
+
+    results = refuseObjValStrSubAttributesChecker.checkModify(
+        patchOps, currentResource);
+    assertTrue(containsIssueWith(results.getSyntaxIssues(),
+        "must be a JSON string"),
+        results.getSyntaxIssues().toString());
+
+    results = allowObjValStrSubAttributesChecker.checkModify(
+        patchOps, currentResource);
+    assertTrue(results.getSyntaxIssues().isEmpty(),
+        results.getSyntaxIssues().toString());
+
+    // checkReplace (PUT): same expectation as checkCreate.
+    results = refuseObjValStrSubAttributesChecker.checkReplace(
+        iamServiceUserJsonObjectNode, null);
+    assertEquals(results.getSyntaxIssues().size(), 1,
+        results.getSyntaxIssues().toString());
+    assertTrue(containsIssueWith(results.getSyntaxIssues(),
+        "must be a JSON string"));
+
+    results = allowObjValStrSubAttributesChecker.checkReplace(
+        iamServiceUserJsonObjectNode, null);
+    assertTrue(results.getSyntaxIssues().isEmpty(),
+        results.getSyntaxIssues().toString());
+
+    // A top-level STRING attribute with a JSON object value must still be
+    // rejected even when ALLOW_OBJECT_VALUED_STRING_SUB_ATTRIBUTES is enabled,
+    // since the option only applies to sub-attributes (path.size() > 1).
+    ObjectNode iamAdminUserJsonObjectValue =
+        JsonUtils.getJsonNodeFactory().objectNode();
+    iamAdminUserJsonObjectValue.put("key", "initialValue");
+    iamAdminUserJsonObjectValue.put("active", "true");
+
+    ObjectNode iamAdminUserNode = JsonUtils.getJsonNodeFactory().objectNode();
+    iamAdminUserNode.putArray("schemas").add("urn:id:test");
+    iamAdminUserNode.set("iamAdminUser", iamAdminUserJsonObjectValue);
+
+    results = allowObjValStrSubAttributesChecker.checkCreate(iamAdminUserNode);
+    assertEquals(results.getSyntaxIssues().size(), 1,
+        results.getSyntaxIssues().toString());
+    assertTrue(containsIssueWith(results.getSyntaxIssues(),
+        "must be a JSON string"));
+  }
+
   private SchemaChecker.Results getResults(List<String> syntaxIssues,
       List<String> mutabilityIssues, List<String> pathIssues) throws Exception
   {
