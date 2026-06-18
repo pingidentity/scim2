@@ -38,6 +38,7 @@ import com.unboundid.scim2.common.messages.ListResponse;
 import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.UserResource;
+import com.unboundid.scim2.common.utils.CaseIgnoreObjectNode;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.testng.Assert;
@@ -45,6 +46,7 @@ import org.testng.annotations.Test;
 import tools.jackson.core.Base64Variants;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
 import tools.jackson.databind.node.StringNode;
 
@@ -54,6 +56,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -63,11 +66,64 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 
 /**
- * Tests generic scim objects.
+ * Tests for {@link GenericScimResource}.
  */
 @Test
 public class GenericScimResourceTest
 {
+  /**
+   * Validate case-insensitive paths for generic SCIM resources.
+   */
+  @Test
+  public void testCasing() throws Exception
+  {
+    // Initialize a generic SCIM resource. The underlying object node should
+    // treat path arguments in a case-insensitive manner.
+    final GenericScimResource bone = new GenericScimResource()
+        .replaceValue("Bone-dry", "Bitter");
+    assertThat(bone.getObjectNode()).isInstanceOf(CaseIgnoreObjectNode.class);
+    assertThat(bone.getStringValue("bone-dry")).isEqualTo("Bitter");
+    assertThat(bone.getStringValue("BONE-DRY")).isEqualTo("Bitter");
+
+    // Test the constructor that accepts an object node directly. The underlying
+    // object node on the SCIM resource should always use case-insensitive keys
+    // even if the source object node does not.
+    ObjectNode node = new JsonMapper().createObjectNode()
+        .put("And", "Hollow");
+    assertThat(node).isNotInstanceOf(CaseIgnoreObjectNode.class);
+    final GenericScimResource hollow = new GenericScimResource(node);
+    assertThat(hollow.getObjectNode())
+        .isInstanceOf(CaseIgnoreObjectNode.class);
+    assertThat(hollow.getStringValue("and")).isEqualTo("Hollow");
+    assertThat(hollow.getStringValue("AND")).isEqualTo("Hollow");
+
+    // Test the same behavior with a dedicated CaseIgnoreObjectNode.
+    var ciNode = new CaseIgnoreObjectNode(JsonUtils.getJsonNodeFactory(),
+        Map.of("And", StringNode.valueOf("Hollow")));
+    assertThat(new GenericScimResource(ciNode).getStringValue("and"))
+        .isEqualTo("Hollow");
+
+    // Deserialized resources should also use case-insensitive paths. Validate a
+    // standard JSON mapper without SCIM SDK configuration.
+    String json = """
+        {
+          "Be": {
+            "Miles": {
+              "Away": "Tomorrow"
+            }
+          }
+        }""";
+    final GenericScimResource nested = new JsonMapper().reader()
+        .forType(GenericScimResource.class).readValue(json);
+    assertThat(nested.getStringValue("be.miles.away"))
+        .isEqualTo("Tomorrow");
+    assertThat(nested.getStringValue("BE.MILES.AWAY"))
+        .isEqualTo("Tomorrow");
+    assertThat(nested.getObjectNode().path("be").path("miles"))
+        .isInstanceOf(CaseIgnoreObjectNode.class);
+  }
+
+
   /**
    * Tests parsing a json string into a GenericScimObject.
    */
