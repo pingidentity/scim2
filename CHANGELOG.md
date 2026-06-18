@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 Fixed an issue with deserializing a GenericScimResource object when it was embedded within a list
 response.
 
+Update Jackson from 3.13.0 to 3.20.0 and jackson-annotations to from 2.21 to 2.22.
+
 ## 6.0.0 - 2026-May-11
 The UnboundID SCIM SDK has been updated to use version 3 of the Jackson library (this release ships
 with v3.1.3). This change aligns the SCIM SDK with HTTP libraries such as Spring Framework 7/Spring
