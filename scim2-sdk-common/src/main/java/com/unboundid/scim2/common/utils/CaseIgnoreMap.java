@@ -55,16 +55,8 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    * A wrapper around the standard String but compares and hashes them
    * in lower-case.
    */
-  private static class CaseIgnoreKey
+  private record CaseIgnoreKey(@NotNull String key)
   {
-    @NotNull
-    private final String key;
-
-    CaseIgnoreKey(@NotNull final String key)
-    {
-      this.key = key;
-    }
-
     @NotNull
     public String getKey()
     {
@@ -78,15 +70,8 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
       {
         return true;
       }
-      if (o == null || getClass() != o.getClass())
-      {
-        return false;
-      }
 
-      CaseIgnoreKey that = (CaseIgnoreKey) o;
-
-      return toLowerCase(key).equals(toLowerCase(that.key));
-
+      return o instanceof CaseIgnoreKey that && key.equalsIgnoreCase(that.key);
     }
 
     @Override
@@ -126,16 +111,9 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * Iterator for the keys.
    */
-  private static class KeyIterator implements Iterator<String>
+  private record KeyIterator(@NotNull Iterator<CaseIgnoreKey> iterator)
+      implements Iterator<String>
   {
-    @NotNull
-    private final Iterator<CaseIgnoreKey> iterator;
-
-    KeyIterator(@NotNull final Iterator<CaseIgnoreKey> iterator)
-    {
-      this.iterator = iterator;
-    }
-
     public boolean hasNext()
     {
       return iterator.hasNext();
@@ -183,18 +161,10 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
   /**
    * Iterator for map entries.
    */
-  private static class EntryIterator
-      implements Iterator<Entry<String, JsonNode>>
+  private record EntryIterator(
+      @NotNull Iterator<Entry<CaseIgnoreKey, JsonNode>> iterator)
+          implements Iterator<Entry<String, JsonNode>>
   {
-    @NotNull
-    private final Iterator<Entry<CaseIgnoreKey, JsonNode>> iterator;
-
-    EntryIterator(
-        @NotNull final Iterator<Entry<CaseIgnoreKey, JsonNode>> iterator)
-    {
-      this.iterator = iterator;
-    }
-
     public boolean hasNext()
     {
       return iterator.hasNext();
@@ -301,7 +271,7 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
    */
   public void putAll(@NotNull final Map<? extends String, ? extends JsonNode> m)
   {
-    for (Entry<? extends String, ? extends JsonNode> entry : m.entrySet())
+    for (var entry : m.entrySet())
     {
       attributes.put(new CaseIgnoreKey(entry.getKey()), entry.getValue());
     }

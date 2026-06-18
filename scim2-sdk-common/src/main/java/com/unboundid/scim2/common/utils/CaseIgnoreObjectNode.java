@@ -45,10 +45,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
-
 /**
- * An ObjectNode with case-insensitive field names.
+ * This class provides an ObjectNode implementation that treats property names
+ * as case-insensitive. Although the {@code ACCEPT_CASE_INSENSITIVE_PROPERTIES}
+ * property is enabled by the SCIM SDK, this is only used for deserialization,
+ * so it does not apply to the Jackson tree model once objects are instantiated.
+ * Thus, this class aligns with the SCIM standard's handling of attribute names.
+ * <br><br>
+ *
+ * To create an instance, use the {@link JsonUtils} class or a saved JsonMapper:
+ * <pre><code>
+ *   ObjectNode caseIgnoreNode = JsonUtils.getJsonNodeFactory().objectNode();
+ *
+ *   final JsonMapper mapper = JsonUtils.createJsonMapper();
+ *   ObjectNode otherCaseIgnoreNode = mapper.createObjectNode();
+ * </code></pre>
  */
 public class CaseIgnoreObjectNode extends ObjectNode
 {
@@ -65,170 +76,100 @@ public class CaseIgnoreObjectNode extends ObjectNode
   /**
    * Create a new CaseIgnoreObjectNode.
    *
-   * @param nc   The JsonNodeFactory.
-   * @param kids The fields to put in this CaseIgnoreObjectNode.
+   * @param nc        The JsonNodeFactory.
+   * @param children  The fields to put in this CaseIgnoreObjectNode.
    */
   public CaseIgnoreObjectNode(@NotNull final JsonNodeFactory nc,
-                              @NotNull final Map<String, JsonNode> kids)
+                              @NotNull final Map<String, JsonNode> children)
   {
-    super(nc, new CaseIgnoreMap(kids));
+    super(nc, new CaseIgnoreMap(children));
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  @NotNull
-  public ObjectNode deepCopy()
-  {
-    CaseIgnoreObjectNode ret = new CaseIgnoreObjectNode(_nodeFactory);
-
-    for (Map.Entry<String, JsonNode> entry : _children.entrySet())
-    {
-      ret._children.put(entry.getKey(), entry.getValue().deepCopy());
-    }
-
-    return ret;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @Nullable
-  public JsonNode findValue(@NotNull final String fieldName)
-  {
-    for (Map.Entry<String, JsonNode> entry : _children.entrySet())
-    {
-      if (fieldName.equals(entry.getKey()))
-      {
-        return entry.getValue();
-      }
-      JsonNode value = entry.getValue().findValue(fieldName);
-      if (value != null)
-      {
-        return value;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Similar to {@link #findValue}, but returns multiple values.
+   * Obtains values of a named JSON property within a nested ObjectNode.
+   * External callers should use {@link #findValues(String)}.
    *
-   * @param fieldName   The name of the JSON field/attribute.
-   * @param foundSoFar  An optional argument for recursive calls. External
-   *                    callers should set this value to {@code null}.
+   * @param propertyName  The name of the JSON field/attribute.
+   * @param foundSoFar    An optional argument for recursive calls by Jackson.
    *
    * @return  The list of values.
    */
   @Override
   @NotNull
-  public List<JsonNode> findValues(@NotNull final String fieldName,
+  public List<JsonNode> findValues(@NotNull final String propertyName,
                                    @Nullable final List<JsonNode> foundSoFar)
   {
-    List<JsonNode> localFoundSoFar = foundSoFar;
-    for (Map.Entry<String, JsonNode> entry : _children.entrySet())
-    {
-      if (toLowerCase(fieldName).equals(toLowerCase(entry.getKey())))
-      {
-        if (localFoundSoFar == null)
-        {
-          localFoundSoFar = new ArrayList<>();
-        }
-        localFoundSoFar.add(entry.getValue());
-      }
-      else
-      { // only add children if parent not added
-        localFoundSoFar = entry.getValue().findValues(fieldName, foundSoFar);
-      }
-    }
-    return localFoundSoFar;
+    List<JsonNode> parsed = findParents(propertyName, null)
+        .stream().map(node -> node.path(propertyName)).toList();
+    return mutableList(foundSoFar, parsed);
   }
 
   /**
-   * Similar to {@link #findValues}, but invokes {@link #asString()} on each
-   * element.
+   * Obtains string values of a named JSON property within a nested ObjectNode.
+   * External callers should use {@link #findValuesAsString(String)}.
    *
-   * @param fieldName   The name of the JSON field/attribute.
-   * @param foundSoFar  An optional argument to specify known values. External
-   *                    calls generally should set this value to {@code null}.
+   * @param propertyName The name of the JSON field/attribute.
+   * @param foundSoFar   An optional argument for recursive calls by Jackson.
    *
    * @return  The list of values.
    */
   @Override
   @NotNull
   public List<String> findValuesAsString(
-      @NotNull final String fieldName,
+      @NotNull final String propertyName,
       @Nullable final List<String> foundSoFar)
   {
-    List<String> localFoundSoFar = foundSoFar;
-    for (Map.Entry<String, JsonNode> entry : _children.entrySet())
-    {
-      if (toLowerCase(fieldName).equals(toLowerCase(entry.getKey())))
-      {
-        if (localFoundSoFar == null)
-        {
-          localFoundSoFar = new ArrayList<>();
-        }
-        localFoundSoFar.add(entry.getValue().asString());
-      }
-      else
-      { // only add children if parent not added
-        localFoundSoFar = entry.getValue().findValuesAsString(fieldName,
-            foundSoFar);
-      }
-    }
-    return localFoundSoFar;
+    List<String> parsed = findParents(propertyName, null)
+        .stream().map(node -> node.path(propertyName).asString()).toList();
+    return mutableList(foundSoFar, parsed);
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  @Nullable
-  public ObjectNode findParent(@NotNull final String fieldName)
-  {
-    for (Map.Entry<String, JsonNode> entry : _children.entrySet())
-    {
-      if (toLowerCase(fieldName).equals(toLowerCase(entry.getKey())))
-      {
-        return this;
-      }
-      JsonNode value = entry.getValue().findParent(fieldName);
-      if (value != null)
-      {
-        return (ObjectNode) value;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * {@inheritDoc}
+   * Obtains JSON objects within this node that match the specified field.
+   * External callers should use {@link #findParents(String)}.
+   *
+   * @param propertyName  The name of the JSON field/attribute.
+   * @param _found        An optional argument for recursive calls.
+   *
+   * @return  A list containing all matching nodes.
    */
   @Override
   @NotNull
-  public List<JsonNode> findParents(@NotNull final String fieldName,
-                                    @Nullable final List<JsonNode> foundSoFar)
+  public List<JsonNode> findParents(@NotNull final String propertyName,
+                                    @Nullable final List<JsonNode> _found)
   {
-    List<JsonNode> localFoundSoFar = foundSoFar;
+    // Use a ternary operator to avoid creating a list on every recursive call.
+    List<JsonNode> foundSoFar = (_found == null) ? new ArrayList<>() : _found;
+
     for (Map.Entry<String, JsonNode> entry : _children.entrySet())
     {
-      if (toLowerCase(fieldName).equals(toLowerCase(entry.getKey())))
+      // Ensure case-insensitive comparison for CaseIgnoreObjectNode.
+      if (propertyName.equalsIgnoreCase(entry.getKey()))
       {
-        if (localFoundSoFar == null)
-        {
-          localFoundSoFar = new ArrayList<>();
-        }
-        localFoundSoFar.add(this);
+        foundSoFar.add(this);
       }
       else
-      { // only add children if parent not added
-        localFoundSoFar = entry.getValue()
-            .findParents(fieldName, foundSoFar);
+      {
+        foundSoFar = entry.getValue().findParents(propertyName, foundSoFar);
       }
     }
-    return localFoundSoFar;
+
+    return foundSoFar;
+  }
+
+  @SafeVarargs
+  @NotNull
+  private static <T> List<T> mutableList(@NotNull final List<T>... lists)
+  {
+    List<T> returnList = new ArrayList<>();
+    for (List<T> list : lists)
+    {
+      if (list != null)
+      {
+        returnList.addAll(list);
+      }
+    }
+
+    return returnList;
   }
 }

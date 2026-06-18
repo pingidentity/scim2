@@ -37,10 +37,12 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.exceptions.ServerErrorException;
 import com.unboundid.scim2.common.types.Meta;
+import com.unboundid.scim2.common.utils.CaseIgnoreObjectNode;
 import com.unboundid.scim2.common.utils.GenericScimObjectDeserializer;
 import com.unboundid.scim2.common.utils.GenericScimObjectSerializer;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonSerialize;
@@ -56,6 +58,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.unboundid.scim2.common.utils.StaticUtils.toList;
@@ -141,7 +144,20 @@ public class GenericScimResource implements ScimResource
    */
   public GenericScimResource(@NotNull final ObjectNode objectNode)
   {
-    this.objectNode = objectNode;
+    CaseIgnoreObjectNode node;
+    if (objectNode instanceof CaseIgnoreObjectNode c)
+    {
+      node = c;
+    }
+    else
+    {
+      Map<String, JsonNode> map = JsonUtils.getObjectReader()
+          .forType(new TypeReference<Map<String, JsonNode>>(){})
+          .readValue(objectNode);
+      node = new CaseIgnoreObjectNode(JsonUtils.getJsonNodeFactory(), map);
+    }
+
+    this.objectNode = node;
   }
 
   /**
