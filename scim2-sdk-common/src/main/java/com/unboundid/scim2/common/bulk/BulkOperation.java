@@ -32,6 +32,7 @@
 
 package com.unboundid.scim2.common.bulk;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -77,8 +78,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *   <li> {@code path}: The HTTP endpoint that the request should target.
  *   <li> {@code bulkId}: An optional field that allows other operations within
  *        the bulk request to reference this operation. This field may only be
- *        set on POST requests, but other operations types may reference a POST
- *        operation with a bulk ID.
+ *        set on POST requests.
  *   <li> {@code version}: The ETag version of the resource. For more
  *        information, see {@link ETagConfig}.
  *   <li> {@code data}: The JSON body/payload of the SCIM request. For example,
@@ -86,20 +86,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * </ul>
  * <br><br>
  *
- * To construct a bulk operation, use one of the static methods defined on this
- * class. Some examples include:
- * <ul>
- *   <li> {@link #post(String, ScimResource)}
- *   <li> {@link #put(String, ScimResource)}
- *   <li> {@link #patch(String, PatchOperation, PatchOperation...)}
- *   <li> {@link #delete(String)}
- * </ul>
- *
- * Note that the {@code bulkId} and {@code version} fields may be set with the
- * {@link #setBulkId} and {@link #setVersion} methods.
- * <br><br>
- *
- * The following JSON is an example bulk operation that updates an existing user
+ * The following JSON is an example bulk operation that creates a new user
  * resource. It may be included in a request to a SCIM service, alongside other
  * bulk operations.
  * <pre>
@@ -115,34 +102,30 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *   }
  * </pre>
  *
- * The example JSON above can be created with the following Java code:
+ * This bulk operation can be created with the following Java code. These
+ * objects are constructed with static methods such as {@link #delete(String)}.
  * <pre><code>
  *   UserResource user = new UserResource().setUserName("Eggs").setActive(true);
  *   BulkOperation op = BulkOperation.post("/Users", user).setBulkId("qwerty");
  * </code></pre>
- * <br><br>
  *
- * Because bulk operations can contain data of many forms, this class contains
- * the {@link #getDataAsScimResource()} helper method to help easily extract the
- * {@code data} field into a useful forms.
+ * Note that the {@code bulkId} and {@code version} fields may be set with the
+ * {@link #setBulkId} and {@link #setVersion} methods. This class also contains
+ * the {@link #getDataAsScimResource()} method to easily fetch the {@code data}
+ * field as a Java object.
+ * <br><br>
  *
  * <h2>Bulk Patch Operations</h2>
- * A bulk operation with a "patch" method is called a bulk patch operation. This
- * is different from a standard patch operation, represented by the
- * {@link PatchOperation} class (which is a subfield of a {@link PatchRequest}).
- * <br><br>
- *
- * It is important to note that RFC 7644 indicates that the {@code data} field
- * for bulk patch operations are a list of operation objects. However, the
- * example usages in the spec are not valid JSON because they do not form
- * key-value pairs. For this reason, many SCIM implementations, including the
- * UnboundID SCIM SDK, include an {@code "Operations"} identifier within bulk
- * patch requests, similar to a {@link PatchRequest}. For example:
+ * A bulk operation with a "PATCH" method is called a bulk patch operation. This
+ * is different from a standard SCIM {@link PatchOperation}, which is a subfield
+ * of a {@link PatchRequest}. The UnboundID SCIM SDK always prints bulk patch
+ * operations in the form of:
  * <pre>
  * {
  *   "method": "PATCH",
  *   "path": "/Users/5d8d29d3-342c-4b5f-8683-a3cb6763ffcc",
  *   "data": {
+ *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
  *     "Operations": [ {
  *       "op": "remove",
  *       "path": "nickName"
@@ -155,12 +138,20 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * }
  * </pre>
  *
- * Some services also include the {@code schemas} field of a patch request to
- * fully match that data model. When fetching the {@code data} of a bulk patch
- * operation with {@link #getDataAsScimResource()}, a {@link PatchRequest}
- * object is always returned for simplicity. When bulk patch operations are
- * serialized, they are always printed in the form shown above, without a
- * {@code schemas} field.
+ * Some SCIM services may display the {@code data} of bulk patch operations
+ * differently due to an error in the initial publication of RFC 7644, where the
+ * field only contained a list of patch operations and was not valid JSON. The
+ * <a href="https://errata.rfc-editor.org/eid5050/">errata</a> of RFC 7644 fixes
+ * this however, and states that the {@code data} JSON should represent a
+ * {@link PatchRequest} similar to a request to {@code PATCH /Users/{userID}}.
+ * <br><br>
+ *
+ * To ensure broad compatibility with JSON that may be formatted differently,
+ * the SCIM SDK is tolerant when converting JSON into a BulkOperation, as long
+ * as an {@code Operations} field is present and contains patch operations. The
+ * JSON will then be re-encoded to represent a full PatchRequest. Thus, when
+ * {@link #getDataAsScimResource()} is called on any {@link BulkOperation} with
+ * a method of {@code PATCH}, a {@link PatchRequest} will always be returned.
  *
  * @see BulkRequest
  * @since 5.1.0
@@ -362,16 +353,6 @@ public abstract class BulkOperation
    * {@link GenericScimResource} instance will be returned.
    * <br><br>
    *
-   * Note that patch operations are a special case due to their unique
-   * structure. The {@code data} for a patch operation is a list of
-   * {@link PatchOperation} objects, which is not a ScimResource. However, this
-   * is very close to a {@link PatchRequest}, which is likely a desirable form
-   * for SCIM server implementations. Thus, to simplify handling of the data for
-   * bulk patch operations, this method will return a {@link PatchRequest}
-   * instance for bulk patch operations. The list of patch operations may be
-   * obtained with {@link PatchRequest#getOperations()}.
-   * <br><br>
-   *
    * If you have custom classes that should be used, they may be registered with
    * the {@link BulkResourceMapper}. However, any JSON object may be manually
    * converted to a Java object with {@link JsonUtils#nodeToValue}:
@@ -397,11 +378,6 @@ public abstract class BulkOperation
   public ScimResource getDataAsScimResource()
     throws BulkRequestException
   {
-    if (this instanceof BulkPatchOperation)
-    {
-      return new PatchRequest(getPatchOperationList());
-    }
-
     try
     {
       return BulkResourceMapper.asScimResource(data);
@@ -411,29 +387,6 @@ public abstract class BulkOperation
       throw new BulkRequestException(
           "Failed to convert a malformed JSON into a SCIM resource.", e);
     }
-  }
-
-  /**
-   * Fetches the {@code data} field of the bulk operation as a list of patch
-   * operations. This method may only be used for bulk PATCH operations.
-   *
-   * @return  The list of patch operations in the bulk operation.
-   * @throws IllegalStateException  If this bulk operation is not a bulk PATCH.
-   */
-  @NotNull
-  @JsonIgnore
-  protected List<PatchOperation> getPatchOperationList()
-      throws IllegalStateException
-  {
-    if (this instanceof BulkPatchOperation bulkPatchOp)
-    {
-      return bulkPatchOp.patchOperationList;
-    }
-
-    // This is not a BulkRequestException since it cannot occur during
-    // deserialization.
-    throw new IllegalStateException(
-        "Cannot fetch patch data for a '" + method + "' bulk operation.");
   }
 
   /**
@@ -542,9 +495,13 @@ public abstract class BulkOperation
    */
   protected static final class BulkPatchOperation extends BulkOperation
   {
+    // Represents the 'schemas' array value for a PatchRequest resource.
     @NotNull
-    private final List<PatchOperation> patchOperationList;
+    private static final ArrayNode PATCH_REQUEST_SCHEMAS =
+        JsonUtils.getJsonNodeFactory().arrayNode()
+            .add("urn:ietf:params:scim:api:messages:2.0:PatchOp");
 
+    @JsonCreator
     private BulkPatchOperation(
         @NotNull @JsonProperty(value = "path", required = true)
         final String path,
@@ -552,20 +509,36 @@ public abstract class BulkOperation
         final ObjectNode data)
             throws BulkRequestException
     {
-      super(BulkOpType.PATCH, path, data);
-      patchOperationList = parseOperations(data);
+      // Use an object to eliminate potential variance from source JSON data.
+      this(path, asPatchRequest(data));
+    }
+
+    private BulkPatchOperation(@NotNull final String path,
+                               @NotNull final PatchRequest pr)
+    {
+      // The patch request is not cached since it may contain bulkID references.
+      super(BulkOpType.PATCH, path, pr.asGenericScimResource().getObjectNode());
     }
 
     /**
-     * Converts a bulk patch operation's {@code data} field into a usable list
-     * of PatchOperations.
+     * This method deserializes data into a PatchRequest with extra flexibility.
+     * Due to an erroneous patch request model in the first publication of RFC
+     * 7644, there is variance on how this JSON data is displayed by some SCIM
+     * services. This method is called from the constructor to guarantee that
+     * all bulk patch operations have a usable PatchRequest model at runtime.
      */
-    private List<PatchOperation> parseOperations(@NotNull final ObjectNode data)
+    private static PatchRequest asPatchRequest(@NotNull final ObjectNode data)
         throws BulkRequestException
     {
       JsonNode operationsNode = data.get("Operations");
       if (operationsNode == null)
       {
+        // Check for an Operations list that could have been empty.
+        if (data.isEmpty() || PATCH_REQUEST_SCHEMAS.equals(data.get("schemas")))
+        {
+          return new PatchRequest(List.of());
+        }
+
         // This most likely indicates that the JSON is not a bulk operation, and
         // instead represents some other data type.
         throw new BulkRequestException(
@@ -581,15 +554,15 @@ public abstract class BulkOperation
 
       try
       {
-        // Convert the ArrayNode to a list of patch operations.
-        return JsonUtils.getObjectReader().forType(PATCH_REF)
-            .readValue(arrayNode);
+        List<PatchOperation> patchOperations = JsonUtils.getObjectReader()
+            .forType(PATCH_REF).readValue(arrayNode);
+        return new PatchRequest(patchOperations);
       }
       catch (JacksonException e)
       {
         Debug.debugException(e);
         throw new BulkRequestException(
-            "Failed to convert an array to a patch operation list.", e);
+            "Failed to convert a malformed patch operation list.", e);
       }
     }
   }
@@ -720,6 +693,7 @@ public abstract class BulkOperation
    *   "method": "PATCH",
    *   "path": "/Users/5d8d29d3-342c-4b5f-8683-a3cb6763ffcc",
    *   "data": {
+   *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
    *     "Operations": [ {
    *       "op": "remove",
    *       "path": "nickName"
@@ -774,25 +748,15 @@ public abstract class BulkOperation
   {
     List<PatchOperation> operationList = (ops == null) ? List.of() : ops;
     operationList = operationList.stream().filter(Objects::nonNull).toList();
-
-    // Convert the list to an ArrayNode by iteration, since valueToNode() can
-    // miss fields if the entire list is passed in.
-    ArrayNode array = JsonUtils.getJsonNodeFactory().arrayNode();
-    for (PatchOperation operation : operationList)
-    {
-      array.add(JsonUtils.valueToNode(operation));
-    }
-
-    ObjectNode node = JsonUtils.getJsonNodeFactory().objectNode();
-    return patch(endpoint, node.set("Operations", array));
+    return new BulkPatchOperation(endpoint, new PatchRequest(operationList));
   }
 
   /**
    * Creates a bulk patch operation. The provided ObjectNode should be
-   * structured similarly to a {@link PatchRequest} JSON. An example is shown
-   * below:
+   * structured as a {@link PatchRequest}:
    * <pre>
    *   {
+   *     "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
    *     "Operations": [
    *       {
    *         (patch operation 1),
@@ -809,14 +773,14 @@ public abstract class BulkOperation
    *                  {@link PatchOperation} objects.
    *
    * @return  The new bulk operation.
-   * @throws BulkRequestException  If the ObjectNode improperly formatted.
+   * @throws BulkRequestException  If the ObjectNode is improperly formatted.
    */
   @NotNull
   public static BulkOperation patch(@NotNull final String endpoint,
                                     @NotNull final ObjectNode data)
       throws BulkRequestException
   {
-    return new BulkPatchOperation(endpoint, data.deepCopy());
+    return new BulkPatchOperation(endpoint, Objects.requireNonNull(data));
   }
 
   /**

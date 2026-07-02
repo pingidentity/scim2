@@ -38,18 +38,15 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.messages.ErrorResponse;
+import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.GroupResource;
-import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.types.UserResource;
-import com.unboundid.scim2.common.utils.Debug;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import com.unboundid.scim2.common.utils.SchemaUtils;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
-import java.beans.IntrospectionException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
@@ -142,26 +139,15 @@ public class BulkResourceMapper
       @NotNull final Class<T> clazz)
           throws IllegalArgumentException
   {
-    SchemaResource schema;
-
-    try
-    {
-      schema = SchemaUtils.getSchema(clazz);
-    }
-    catch (IntrospectionException e)
-    {
-      Debug.debugException(e);
-      throw new RuntimeException(e);
-    }
-
-    if (schema == null || schema.getId() == null)
+    Schema schema = clazz.getAnnotation(Schema.class);
+    if (schema == null)
     {
       throw new IllegalArgumentException("Requested schema for the "
           + clazz.getName()
           + " class, which does not have a valid @Schema annotation.");
     }
 
-    SCHEMAS_MAP.put(Set.of(schema.getId()), clazz);
+    SCHEMAS_MAP.put(Set.of(schema.id()), clazz);
   }
 
   /**
@@ -286,5 +272,6 @@ public class BulkResourceMapper
     add(UserResource.class);
     add(GroupResource.class);
     add(ErrorResponse.class);
+    add(PatchRequest.class);
   }
 }
