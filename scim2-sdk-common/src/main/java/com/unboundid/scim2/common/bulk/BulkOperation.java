@@ -509,7 +509,7 @@ public abstract class BulkOperation
         final ObjectNode data)
             throws BulkRequestException
     {
-      // Use an object to eliminate potential variance from source JSON data.
+      // Re-encode the source JSON into an object to reformat the input.
       this(path, asPatchRequest(data));
     }
 
@@ -729,7 +729,7 @@ public abstract class BulkOperation
                                     @NotNull final PatchOperation op1,
                                     @Nullable final PatchOperation... ops)
   {
-    return patch(endpoint, toList(op1, ops));
+    return new BulkPatchOperation(endpoint, new PatchRequest(toList(op1, ops)));
   }
 
   /**
