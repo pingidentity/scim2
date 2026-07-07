@@ -145,7 +145,6 @@ public class BulkOperationTest
         .hasMessageContaining("of a bulk POST operation");
   }
 
-
   /**
    * Tests the behavior of bulk PUT operations.
    */
@@ -204,38 +203,168 @@ public class BulkOperationTest
   {
     // Instantiate a bulk patch operation.
     var patchOp = PatchOperation.replace("displayName", "New Value");
-    BulkOperation operation = BulkOperation.patch("/Groups/resource", patchOp)
+    var bulkOperation = BulkOperation.patch("/Groups/resource", patchOp)
         .setVersion("newVersion");
 
-    assertThat(operation.getMethod()).isEqualTo(BulkOpType.PATCH);
-    assertThat(operation.getPath()).isEqualTo("/Groups/resource");
-    assertThat(operation.getBulkId()).isNull();
-    assertThat(operation.getVersion()).isEqualTo("newVersion");
-    assertThat(operation.getData()).isNotNull();
+    assertThat(bulkOperation.getMethod()).isEqualTo(BulkOpType.PATCH);
+    assertThat(bulkOperation.getPath()).isEqualTo("/Groups/resource");
+    assertThat(bulkOperation.getBulkId()).isNull();
+    assertThat(bulkOperation.getVersion()).isEqualTo("newVersion");
+    assertThat(bulkOperation.getData()).isNotNull();
 
-    // Validate serialization of the bulk operation.
+    // Validate serialization of a standard bulk patch operation as defined in
+    // the errata of RFC 7644. This states that the 'data' field should be the
+    // same JSON that represents a PatchRequest.
     String expectedString = """
         {
           "method": "PATCH",
           "path": "/Groups/resource",
           "version": "newVersion",
           "data": {
-            "Operations": [
-              {
-                "op": "replace",
-                "path": "displayName",
-                "value": "New Value"
-              }
-            ]
+            "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+            "Operations": [ {
+              "op": "replace",
+              "path": "displayName",
+              "value": "New Value"
+            } ]
           }
         }""";
     String normalizedJSON = reader.readTree(expectedString).toPrettyString();
-    assertThat(operation.toString()).isEqualTo(normalizedJSON);
+    assertThat(bulkOperation.toString()).isEqualTo(normalizedJSON);
 
-    // Validate deserialization of the JSON.
+    // Test deserializing the bulk operation directly. This should be equivalent
+    // to the constructed 'bulkOperation' object.
     BulkOperation deserialized = reader.forType(BulkOperation.class)
         .readValue(expectedString);
-    assertThat(operation).isEqualTo(deserialized);
+    assertThat(bulkOperation).isEqualTo(deserialized);
+
+    // Validate the contents of the patch operation list.
+    assertThat(deserialized.getDataAsScimResource())
+        .isInstanceOfSatisfying(PatchRequest.class, patchRequest ->
+            assertThat(patchRequest.getOperations()).containsExactly(patchOp));
+
+    // Validate the previous JSON, this time with no 'schemas' attribute. The
+    // SCIM SDK should still accept this for broad compatibility.
+    String noSchemasJson = """
+        {
+          "method": "PATCH",
+          "path": "/Groups/resource",
+          "version": "newVersion",
+          "data": {
+            "Operations": [ {
+              "op": "replace",
+              "path": "displayName",
+              "value": "New Value"
+            } ]
+          }
+        }""";
+    BulkOperation noSchemas = reader.forType(BulkOperation.class)
+        .readValue(noSchemasJson);
+    assertThat(noSchemas).isEqualTo(bulkOperation);
+
+    // Ensure case-insensitive subfields. Use a lowercase 'o' for Operations.
+    String differentCasingJson = """
+        {
+          "method": "PATCH",
+          "path": "/Groups/resource",
+          "version": "newVersion",
+          "data": {
+            "oPeRaTiOnS": [ {
+              "Op": "replace",
+              "Path": "displayName",
+              "Value": "New Value"
+            } ]
+          }
+        }""";
+    BulkOperation differentCasing = reader.forType(BulkOperation.class)
+        .readValue(differentCasingJson);
+    assertThat(differentCasing).isEqualTo(bulkOperation);
+
+    // Serialize the new object. The casing should be normalized.
+    assertThat(differentCasing.toString()).isEqualTo(bulkOperation.toString());
+
+    // Validate a list with multiple elements.
+    String multipleOpsJson = """
+        {
+          "method": "PATCH",
+          "path": "/Users/resource",
+          "data": {
+            "Operations": [ {
+              "op": "add",
+              "path": "emails[type eq \\"work\\"].value",
+              "value": "name@example.com"
+            }, {
+              "op": "remove",
+              "path": "locale"
+            }, {
+              "op": "replace",
+              "path": "active",
+              "value": true
+            } ]
+          }
+        }""";
+    BulkOperation multipleOps = reader.forType(BulkOperation.class)
+        .readValue(multipleOpsJson);
+    String addPath = "emails[type eq \"work\"].value";
+    assertThat(multipleOps.getDataAsScimResource())
+        .isInstanceOf(PatchRequest.class)
+        .isEqualTo(new PatchRequest(
+            PatchOperation.add(addPath, StringNode.valueOf("name@example.com")),
+            PatchOperation.remove("locale"),
+            PatchOperation.replace("active", true)
+        ));
+
+    // When 'multipleOps' is serialized again, it should print the 'schemas'
+    // field even though it was not originally present in the source JSON.
+    assertThat(multipleOps.toString())
+        .contains("schemas")
+        .contains("urn:ietf:params:scim:api:messages:2.0:PatchOp");
+    assertThat(multipleOps.getData()).isInstanceOfSatisfying(ObjectNode.class,
+        o -> assertThat(o.get("schemas")).containsExactly(StringNode.valueOf(
+            "urn:ietf:params:scim:api:messages:2.0:PatchOp")));
+
+    // Validate a list with no elements.
+    String emptyJson = """
+        {
+          "method": "PATCH",
+          "path": "/Users/resource",
+          "data": {
+            "Operations": []
+          }
+        }""";
+    BulkOperation empty = reader.forType(BulkOperation.class)
+        .readValue(emptyJson);
+    assertThat(empty.getDataAsScimResource())
+        .isInstanceOfSatisfying(PatchRequest.class,
+            patchRequest -> assertThat(patchRequest.getOperations()).isEmpty());
+
+    // Validate an empty data value.
+    String emptyDataJson = """
+        {
+          "method": "PATCH",
+          "path": "/Users/resource",
+          "data": { }
+        }""";
+    BulkOperation emptyData = reader.forType(BulkOperation.class)
+        .readValue(emptyDataJson);
+    assertThat(emptyData.getDataAsScimResource())
+        .isInstanceOfSatisfying(PatchRequest.class,
+            patchRequest -> assertThat(patchRequest.getOperations()).isEmpty());
+
+    // Validate a bulk operation with a null operations field.
+    String nullOperationsJson = """
+        {
+          "method": "PATCH",
+          "path": "/Users/resource",
+          "data": {
+            "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ]
+          }
+        }""";
+    BulkOperation nullOperations = reader.forType(BulkOperation.class)
+        .readValue(nullOperationsJson);
+    assertThat(nullOperations.getDataAsScimResource())
+        .isInstanceOfSatisfying(PatchRequest.class,
+            patchRequest -> assertThat(patchRequest.getOperations()).isEmpty());
   }
 
   /**
@@ -244,15 +373,33 @@ public class BulkOperationTest
   @Test
   public void testImproperlyFormattedPatch()
   {
-    String patchWithNoOperations = """
+    // Ensure that other resource types are not silently accepted.
+    String wrongType = """
         {
           "method": "PATCH",
           "path": "/Groups/resource",
           "data": {
+            "otherResourceType": true
           }
         }""";
     assertThatThrownBy(() ->
-        reader.forType(BulkOperation.class).readValue(patchWithNoOperations))
+        reader.forType(BulkOperation.class).readValue(wrongType))
+        .isInstanceOf(JacksonException.class)
+        .hasMessageContaining("Could not parse the patch operation list")
+        .hasMessageContaining("because the value of 'Operations' is absent");
+
+    // Ensure that other resource types with a schema are not silently accepted.
+    String wrongSchema = """
+        {
+          "method": "PATCH",
+          "path": "/Groups/resource",
+          "data": {
+            "schemas": [ "urn:ietf:params:scim:api:messages:2.0:Error" ],
+            "detail": "message"
+          }
+        }""";
+    assertThatThrownBy(() ->
+        reader.forType(BulkOperation.class).readValue(wrongSchema))
         .isInstanceOf(JacksonException.class)
         .hasMessageContaining("Could not parse the patch operation list")
         .hasMessageContaining("because the value of 'Operations' is absent");
@@ -292,19 +439,20 @@ public class BulkOperationTest
     assertThatThrownBy(() ->
         reader.forType(BulkOperation.class).readValue(badOperationFormat))
         .isInstanceOf(JacksonException.class)
-        .hasMessageContaining("Failed to convert an array to a patch")
-        .hasMessageContaining("operation list");
+        .hasMessageContaining("Failed to convert a malformed patch operation");
   }
 
   /**
-   * Validate {@link BulkOperation#getPatchOperationList()}.
+   * Validate fetching PatchRequest objects from bulk operations.
    */
   @Test
   public void testPatchOpList() throws Exception
   {
     BulkOperation emptyBulkPatch =
         BulkOperation.patch("/Users/userID", (List<PatchOperation>) null);
-    assertThat(emptyBulkPatch.getPatchOperationList()).isEmpty();
+    assertThat(emptyBulkPatch.getDataAsScimResource())
+        .isInstanceOfSatisfying(PatchRequest.class,
+            patchRequest -> assertThat(patchRequest.getOperations()).isEmpty());
 
     List<PatchOperation> patchList = List.of(
         PatchOperation.addStringValues("customPhoneNumbers", "512-111-1111"),
@@ -312,20 +460,32 @@ public class BulkOperationTest
         PatchOperation.replace("userName", "myUserName")
     );
     BulkOperation bulkPatch = BulkOperation.patch("/Users/userID", patchList);
-    assertThat(bulkPatch.getPatchOperationList()).isEqualTo(patchList);
-    assertThat(bulkPatch.getPatchOperationList() != patchList).isTrue();
+    assertThat(bulkPatch.getDataAsScimResource())
+        .isInstanceOfSatisfying(PatchRequest.class, patchRequest ->
+          assertThat(patchRequest.getOperations())
+              .isEqualTo(patchList).isNotSameAs(patchList)
+        );
 
-    // The method should only be allowed for PATCH operations.
+    // Repeat the previous test case with the source data as an ObjectNode.
+    ObjectNode patchNode = new PatchRequest(patchList)
+        .asGenericScimResource().getObjectNode();
+    BulkOperation bulkPatch2 = BulkOperation.patch("/Users/userID", patchNode);
+    assertThat(bulkPatch2.getDataAsScimResource())
+        .isInstanceOfSatisfying(PatchRequest.class, patchRequest2 ->
+          assertThat(patchRequest2.getOperations())
+              .isEqualTo(patchList).isNotSameAs(patchList)
+        );
+
+    // Only patch operation types should return a PatchRequest.
     ObjectNode node = JsonUtils.getJsonNodeFactory().objectNode();
-    assertThatThrownBy(() -> {
-      BulkOperation.post("/Users", node).getPatchOperationList();
-    }).isInstanceOf(IllegalStateException.class);
-    assertThatThrownBy(() -> {
-      BulkOperation.put("/Users/userID", node).getPatchOperationList();
-    }).isInstanceOf(IllegalStateException.class);
-    assertThatThrownBy(() -> {
-      BulkOperation.delete("/Users/userID").getPatchOperationList();
-    }).isInstanceOf(IllegalStateException.class);
+    assertThat(BulkOperation.patch("/Users", node).getDataAsScimResource())
+        .isInstanceOf(PatchRequest.class);
+    assertThat(BulkOperation.post("/Users", node).getDataAsScimResource())
+        .isNotInstanceOf(PatchRequest.class);
+    assertThat(BulkOperation.put("/Users/userID", node).getDataAsScimResource())
+        .isNotInstanceOf(PatchRequest.class);
+    assertThat(BulkOperation.delete("/Users/userID").getDataAsScimResource())
+        .satisfies(d -> assertThat(d instanceof PatchRequest).isFalse());
   }
 
   /**

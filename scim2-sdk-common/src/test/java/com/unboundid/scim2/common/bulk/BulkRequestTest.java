@@ -155,8 +155,7 @@ public class BulkRequestTest
     final var reader = JsonUtils.getObjectReader().forType(BulkRequest.class);
 
     // Example JSON bulk request from RFC 7644. This was slightly revised to
-    // include the "Operations" attribute within the bulk patch request (the
-    // third bulk operation) so that it's a valid JSON with key-value pairs.
+    // use the updated bulk patch model as described by the errata.
     String json = """
         {
           "schemas": [ "urn:ietf:params:scim:api:messages:2.0:BulkRequest" ],
@@ -186,6 +185,7 @@ public class BulkRequestTest
               "path": "/Users/5d8d29d3-342c-4b5f-8683-a3cb6763ffcc",
               "version": "W/\\"edac3253e2c0ef2\\"",
               "data": {
+                "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
                 "Operations": [
                   {
                     "op": "remove",

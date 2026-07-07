@@ -547,8 +547,7 @@ public class BulkOperationResult
   /**
    * Fetches the response of this BulkOperationResult as a {@link ScimResource}
    * based POJO. See {@link BulkOperation#getDataAsScimResource()} for more
-   * information. Note that this method will never return a
-   * {@code PatchRequest}, unlike the variant in {@code BulkOperation}.
+   * information.
    *
    * @return  The bulk operation result response, or {@code null} if there was
    *          no response.
