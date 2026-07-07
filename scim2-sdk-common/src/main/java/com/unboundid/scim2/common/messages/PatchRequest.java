@@ -111,7 +111,8 @@ public class PatchRequest
     implements Iterable<PatchOperation>
 {
   @NotNull
-  @Attribute(description = "Patch Operations")
+  @Attribute(description = "Patch Operations",
+             multiValueClass = PatchOperation.class)
   @JsonProperty(value = "Operations", required = true)
   private final List<PatchOperation> operations;
 

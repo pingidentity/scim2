@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## v5.1.1 - TBD
 Update Jackson to 2.21.7.
 
+Updated the handling of bulk patch operations to reflect the information shown in RFC 7644's
+[errata](https://errata.rfc-editor.org/eid5050/). Now, `BulkOperation` objects with a "PATCH" method
+will always contain the `data.schemas` subfield, reflecting that the `data` is a `PatchRequest`.
+Previously, this subfield was not printed. When a bulk patch JSON is converted to an object, the
+`schemas` subfield is not required to be present in the source JSON. However, it will be added if it
+was missing, ensuring that a `PatchRequest` is always available at runtime when `getData()` and
+`getDataAsScimResource()` are called. See the `BulkOperation.java` Javadoc for more information.
+
+Corrected an annotation in `PatchRequest` which did not mark `Operations` with a multiValueClass.
+
 ## v5.1.0 - 2026-May-11
 Added support for bulk operations, requests, and responses as defined by the SCIM standard. To get
 started with implementing bulk request support for client or server applications, see the
