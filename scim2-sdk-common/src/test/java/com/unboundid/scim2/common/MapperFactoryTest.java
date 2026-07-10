@@ -33,16 +33,20 @@
 package com.unboundid.scim2.common;
 
 import com.unboundid.scim2.common.annotations.NotNull;
+import com.unboundid.scim2.common.exceptions.BadRequestException;
+import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.types.Email;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.MapperFactory;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import tools.jackson.core.json.JsonReadFeature;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static tools.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY;
 
 
@@ -66,7 +70,7 @@ public class MapperFactoryTest
    * the builder provided in {@link MapperFactory#createBuilder()}.
    */
   @Test
-  public void testCustomJsonMapperBuilder()
+  public void testCustomJsonMapperBuilder() throws Exception
   {
     // A SCIM resource with the attributes (except 'schema') sorted
     // alphabetically.
@@ -102,6 +106,21 @@ public class MapperFactoryTest
     // sort the fields alphabetically.
     userJSON = JsonUtils.getObjectWriter().writeValueAsString(user);
     assertThat(userJSON).isEqualTo(expectedJSON);
+
+    // Test the use of single quotes in filters, which should not be permitted
+    // by default.
+    assertThatThrownBy(() -> Filter.fromString("userName eq 'drank'"))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("Unexpected character");
+
+    JsonMapper.Builder quoteCfg = JsonUtils.getInitialMapperConfig()
+        .enable(JsonReadFeature.ALLOW_SINGLE_QUOTES);
+    JsonUtils.setCustomMapperFactory(new MapperFactory().setConfig(quoteCfg));
+
+    // This time, the filter should be permitted.
+    Filter f = Filter.fromString("userName eq 'drank'");
+    assertThat(f.getComparisonValue()).isNotNull();
+    assertThat(f.getComparisonValue().asString()).isEqualTo("drank");
   }
 
   /**

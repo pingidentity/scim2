@@ -37,7 +37,6 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import tools.jackson.core.ObjectReadContext;
 import tools.jackson.core.io.IOContext;
 import tools.jackson.core.json.JsonReadContext;
-import tools.jackson.core.json.JsonReadFeature;
 import tools.jackson.core.json.ReaderBasedJsonParser;
 import tools.jackson.core.sym.CharsToNameCanonicalizer;
 
@@ -52,41 +51,27 @@ public class ScimFilterJsonParser extends ReaderBasedJsonParser
   /**
    * Creates a Jackson-based object for parsing SCIM filters.
    *
+   * @param readContext    The object read context.
    * @param ctxt           The I/O context to use.
+   * @param streamFeatures The standard stream read features.
+   * @param formatFeatures The format stream read features.
    * @param r              Reader used for reading actual content.
    * @param st             The name canonicalizer to use.
    */
   public ScimFilterJsonParser(
+      @NotNull final ObjectReadContext readContext,
       @NotNull final IOContext ctxt,
+      final int streamFeatures,
+      final int formatFeatures,
       @NotNull final Reader r,
       @NotNull final CharsToNameCanonicalizer st)
   {
-    super(getReadContext(r), ctxt, JsonReadFeature.collectDefaults(), 0, r, st);
+    super(readContext, ctxt, streamFeatures, formatFeatures, r, st);
 
     // By default, the JSON read context is set to StreamContext.TYPE_ROOT,
     // which will require whitespace after any unquoted token (e.g., a number).
     // We don't want this restriction when parsing a SCIM filter, so set the
     // context type to -1, which is effectively "none".
     this._streamReadContext = new JsonReadContext(null, 0, null, -1, 1, 0);
-  }
-
-  /**
-   * Provides a Jackson reader context based on the settings established in the
-   * SCIM SDK's JsonMapper.
-   */
-  @NotNull
-  private static ObjectReadContext getReadContext(@NotNull final Reader r)
-  {
-    // Create a parser to obtain access to an ObjectReadContext, then close the
-    // parser to avoid leaking an object on every invocation. When Jackson
-    // closes a parser, the underlying Reader, r, is not closed when the caller
-    // owns the resource, so this is safe. An alternative to this approach is to
-    // use SDK_OBJECT_MAPPER._deserializationContext() as the ObjectReadContext.
-    // However, this method is labelled for unit test usage only, so it is not
-    // guaranteed to be a stable API in future versions of Jackson.
-    var parser = JsonUtils.getObjectReader().createParser(r);
-    ObjectReadContext context = parser.objectReadContext();
-    parser.close();
-    return context;
   }
 }
