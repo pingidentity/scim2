@@ -21,6 +21,9 @@ was missing, ensuring that a `PatchRequest` is always available at runtime when 
 
 Corrected an annotation in `PatchRequest` which did not mark `Operations` with a multiValueClass.
 
+Fixed an issue where Jackson `JsonReadFeature` properties were not used despite the property being
+set on the MapperFactory.
+
 ## 6.0.0 - 2026-May-11
 The UnboundID SCIM SDK has been updated to use version 3 of the Jackson library (this release ships
 with v3.1.3). This change aligns the SCIM SDK with HTTP libraries such as Spring Framework 7/Spring

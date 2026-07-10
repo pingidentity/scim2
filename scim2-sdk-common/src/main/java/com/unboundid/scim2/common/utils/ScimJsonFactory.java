@@ -36,6 +36,7 @@ package com.unboundid.scim2.common.utils;
 import com.unboundid.scim2.common.annotations.NotNull;
 import tools.jackson.core.ErrorReportConfiguration;
 import tools.jackson.core.JsonParser;
+import tools.jackson.core.ObjectReadContext;
 import tools.jackson.core.io.ContentReference;
 import tools.jackson.core.io.IOContext;
 import tools.jackson.core.json.JsonFactory;
@@ -80,7 +81,14 @@ public class ScimJsonFactory extends JsonFactory
     ContentReference reference = ContentReference.construct(true, r, config);
     IOContext ctxt = _createContext(reference, false);
 
-    return new ScimFilterJsonParser(ctxt, r, _rootCharSymbols.makeChild());
+    final ObjectReadContext readCtxt = getReadContext(r);
+    return new ScimFilterJsonParser(readCtxt,
+        ctxt,
+        readCtxt.getStreamReadFeatures(0),
+        readCtxt.getFormatReadFeatures(0),
+        r,
+        _rootCharSymbols.makeChild()
+    );
   }
 
   /**
@@ -93,5 +101,25 @@ public class ScimJsonFactory extends JsonFactory
   public ScimJsonFactory copy()
   {
     return new ScimJsonFactory(this);
+  }
+
+  /**
+   * Provides a Jackson reader context based on the settings established in the
+   * SCIM SDK's JsonMapper.
+   */
+  @NotNull
+  private static ObjectReadContext getReadContext(@NotNull final Reader r)
+  {
+    // Create a parser to obtain access to an ObjectReadContext, then close the
+    // parser to avoid leaking an object on every invocation. When Jackson
+    // closes a parser, the underlying Reader, r, is not closed when the caller
+    // owns the resource, so this is safe. An alternative to this approach is to
+    // use SDK_OBJECT_MAPPER._deserializationContext() as the ObjectReadContext.
+    // However, that method is labelled for unit test usage only, so it is not
+    // guaranteed to be a stable API in future versions of Jackson.
+    var parser = JsonUtils.getObjectReader().createParser(r);
+    ObjectReadContext context = parser.objectReadContext();
+    parser.close();
+    return context;
   }
 }
