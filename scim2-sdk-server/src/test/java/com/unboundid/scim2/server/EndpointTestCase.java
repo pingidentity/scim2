@@ -80,10 +80,8 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTestNg;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.node.StringNode;
 import tools.jackson.jakarta.rs.cfg.JakartaRSFeature;
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
@@ -102,20 +100,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 
 /**
  * Test for the various endpoints included in the server module.
  */
+@SuppressWarnings("DataFlowIssue")
 public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 {
   private SchemaResource userSchema;
@@ -206,16 +201,13 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
   /**
    * Test the service provider config can be retrieved.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testGetServiceProviderConfig() throws ScimException
   {
     final ServiceProviderConfigResource returnedServiceProviderConfig =
         new ScimService(target()).getServiceProviderConfig();
-
-    assertEquals(returnedServiceProviderConfig, serviceProviderConfig);
+    assertThat(returnedServiceProviderConfig).isEqualTo(serviceProviderConfig);
   }
 
   /**
@@ -227,9 +219,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     ScimService service = new ScimService(target());
     assertThatThrownBy(() ->
         service.modifyRequest(service.getServiceProviderConfig()).invoke())
-        .isInstanceOf(MethodNotAllowedException.class)
-        .satisfies(e -> {
-          ErrorResponse r = ((MethodNotAllowedException) e).getScimError();
+        .isInstanceOfSatisfying(MethodNotAllowedException.class, e -> {
+          ErrorResponse r = e.getScimError();
           assertThat(r.getStatus()).isEqualTo(405);
           assertThat(r.getDetail()).contains("Method Not Allowed");
         });
@@ -241,15 +232,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   @Test
   public void testInvalidEndpoint()
   {
-    try
-    {
-      new ScimService(target()).retrieve("badPath", "id", UserResource.class);
-      fail();
-    }
-    catch (ScimException e)
-    {
-      assertTrue(e instanceof ResourceNotFoundException);
-    }
+    ScimService s = new ScimService(target());
+    assertThatThrownBy(() -> s.retrieve("badPath", "id", UserResource.class))
+        .isInstanceOf(ResourceNotFoundException.class);
 
     // Now with application/json
     WebTarget target = target().register(
@@ -258,14 +243,13 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     Response response = target.path("badPath").path("id").request().accept(
         MediaType.APPLICATION_JSON_TYPE,
         ServerUtils.MEDIA_TYPE_SCIM_TYPE).get();
-    assertEquals(response.getStatus(), 404);
-    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    assertThat(response.getStatus()).isEqualTo(404);
+    assertThat(response.getMediaType())
+        .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
    * Test all schemas can be retrieved.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testGetSchemas() throws ScimException
@@ -285,27 +269,24 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     Response response = target.path(ApiConstants.SCHEMAS_ENDPOINT).request().
         accept(MediaType.APPLICATION_JSON_TYPE,
             ServerUtils.MEDIA_TYPE_SCIM_TYPE).get();
-    assertEquals(response.getStatus(), 200);
-    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(response.getMediaType())
+        .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
    * Test an individual schema can be retrieved.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testGetSchema() throws ScimException
   {
     SchemaResource returnedSchema =
         new ScimService(target()).getSchema(userSchema.getId());
-
-    assertEquals(returnedSchema, userSchema);
+    assertThat(returnedSchema).isEqualTo(userSchema);
 
     returnedSchema = new ScimService(target()).getSchema(
         enterpriseSchema.getId());
-
-    assertEquals(returnedSchema, enterpriseSchema);
+    assertThat(returnedSchema).isEqualTo(enterpriseSchema);
 
     // Now with application/json
     WebTarget target = target().register(
@@ -315,14 +296,13 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         path(userSchema.getId()).request().
         accept(MediaType.APPLICATION_JSON_TYPE,
             ServerUtils.MEDIA_TYPE_SCIM_TYPE).get();
-    assertEquals(response.getStatus(), 200);
-    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(response.getMediaType())
+        .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
    * Test all resource types can be retrieved.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testGetResourceTypes() throws ScimException
@@ -342,34 +322,30 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     Response response = target.path(ApiConstants.RESOURCE_TYPES_ENDPOINT).
         request().accept(MediaType.APPLICATION_JSON_TYPE,
         ServerUtils.MEDIA_TYPE_SCIM_TYPE).get();
-    assertEquals(response.getStatus(), 200);
-    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(response.getMediaType())
+        .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
    * Test an individual resource type can be retrieved.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testGetResourceType() throws ScimException
   {
     final ResourceTypeResource returnedResourceTypeById =
         new ScimService(target()).getResourceType(resourceType.getId());
-
-    assertEquals(returnedResourceTypeById, resourceType);
+    assertThat(returnedResourceTypeById).isEqualTo(resourceType);
 
     final ResourceTypeResource returnedResourceTypeByName =
         new ScimService(target()).getResourceType(
             singletonResourceType.getId());
-
-    assertEquals(returnedResourceTypeByName, singletonResourceType);
+    assertThat(returnedResourceTypeByName).isEqualTo(singletonResourceType);
 
     final SchemaResource returnedSchema =
         new ScimService(target()).getSchema(
             returnedResourceTypeById.getSchema().toString());
-
-    assertEquals(returnedSchema, userSchema);
+    assertThat(returnedSchema).isEqualTo(userSchema);
 
     // Now with application/json
     WebTarget target = target().register(
@@ -379,15 +355,14 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         path(resourceType.getId()).request().accept(
         MediaType.APPLICATION_JSON_TYPE,
         ServerUtils.MEDIA_TYPE_SCIM_TYPE).get();
-    assertEquals(response.getStatus(), 200);
-    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(response.getMediaType())
+        .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
   }
 
   /**
    * Test a call to a {@code /Users} endpoint with query parameters. The
    * response is defined in {@link TestResourceEndpoint#searchFourResults}.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testGetUsers() throws ScimException
@@ -487,8 +462,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   /**
    * Test a resource endpoint implementation registered as a class. The response
    * is defined in {@link TestResourceEndpoint#searchOneResult}.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testGetUsersUsingPost() throws ScimException
@@ -501,9 +474,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
             excludedAttributes("addresses", "phoneNumbers").
             invokePost(UserResource.class);
 
-    assertEquals(returnedUsers.getTotalResults(), 1);
-    assertEquals(returnedUsers.getStartIndex(), Integer.valueOf(1));
-    assertEquals(returnedUsers.getItemsPerPage(), Integer.valueOf(1));
+    assertThat(returnedUsers.getTotalResults()).isEqualTo(1);
+    assertThat(returnedUsers.getStartIndex()).isEqualTo(1);
+    assertThat(returnedUsers.getItemsPerPage()).isEqualTo(1);
 
     // Now with application/json
     WebTarget target = target().register(
@@ -522,8 +495,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         request().accept(
         MediaType.APPLICATION_JSON_TYPE,
         ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(Entity.json(searchRequest));
-    assertEquals(response.getStatus(), 200);
-    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(response.getMediaType())
+        .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
     response.close();
 
     // Now with application/json; charset=UTF-8
@@ -532,8 +506,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         MediaType.APPLICATION_JSON_TYPE,
         ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(
         Entity.entity(searchRequest, "application/json; charset=UTF-8"));
-    assertEquals(response.getStatus(), 200);
-    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(response.getMediaType())
+        .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
     response.close();
 
     // Now with invalid MIME type
@@ -542,8 +517,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         MediaType.APPLICATION_JSON_TYPE,
         ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(
         Entity.text("bad"));
-    assertEquals(response.getStatus(), 415);
-    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    assertThat(response.getStatus()).isEqualTo(415);
+    assertThat(response.getMediaType())
+        .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
     response.close();
 
     // Now with invalid empty body
@@ -552,15 +528,14 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         MediaType.APPLICATION_JSON_TYPE,
         ServerUtils.MEDIA_TYPE_SCIM_TYPE).post(
         Entity.json(null));
-    assertEquals(response.getStatus(), 400);
-    assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+    assertThat(response.getStatus()).isEqualTo(400);
+    assertThat(response.getMediaType())
+        .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
     response.close();
   }
 
   /**
    * Test the authentication subject alias filter.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testGetMe() throws ScimException
@@ -568,8 +543,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     ScimService scimService = new ScimService(target());
     UserResource user =
         scimService.retrieve(ScimService.ME_URI, UserResource.class);
-    assertEquals(user.getId(), "123");
-    assertEquals(user.getMeta().getResourceType(), "User");
+    assertThat(user.getId()).isEqualTo("123");
+    assertThat(user.getMeta().getResourceType()).isEqualTo("User");
 
     UriBuilder subResourceUri =
         UriBuilder.fromUri(ScimService.ME_URI).path("something");
@@ -583,8 +558,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
    * Tests the authentication subject alias filter with included and excluded
    * attributes.  These take the form of query parameters and were being
    * dropped.  This test will ensure that the query parameters remain intact.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testGetMe_includedAndExcludedAttributes() throws ScimException
@@ -592,30 +565,28 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     ScimService scimService = new ScimService(target());
     UserResource user =
         scimService.retrieve(ScimService.ME_URI, UserResource.class);
-    assertEquals(user.getId(), "123");
-    assertEquals(user.getMeta().getResourceType(), "User");
-    assertEquals(user.getDisplayName(), "UserDisplayName");
-    assertEquals(user.getNickName(), "UserNickName");
+    assertThat(user.getId()).isEqualTo("123");
+    assertThat(user.getMeta().getResourceType()).isEqualTo("User");
+    assertThat(user.getDisplayName()).isEqualTo("UserDisplayName");
+    assertThat(user.getNickName()).isEqualTo("UserNickName");
 
     user = scimService.retrieveRequest(ScimService.ME_URI).
         excludedAttributes("nickName").invoke(UserResource.class);
-    assertEquals(user.getId(), "123");
-    assertEquals(user.getMeta().getResourceType(), "User");
-    assertEquals(user.getDisplayName(), "UserDisplayName");
-    assertNull(user.getNickName());
+    assertThat(user.getId()).isEqualTo("123");
+    assertThat(user.getMeta().getResourceType()).isEqualTo("User");
+    assertThat(user.getDisplayName()).isEqualTo("UserDisplayName");
+    assertThat(user.getNickName()).isNull();
 
     user = scimService.retrieveRequest(ScimService.ME_URI).
         attributes("nickName", "Meta").invoke(UserResource.class);
-    assertEquals(user.getId(), "123");
-    assertEquals(user.getMeta().getResourceType(), "User");
-    assertNull(user.getDisplayName());
-    assertEquals(user.getNickName(), "UserNickName");
+    assertThat(user.getId()).isEqualTo("123");
+    assertThat(user.getMeta().getResourceType()).isEqualTo("User");
+    assertThat(user.getDisplayName()).isNull();
+    assertThat(user.getNickName()).isEqualTo("UserNickName");
   }
 
   /**
    * Test create operation.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testCreate() throws ScimException
@@ -630,34 +601,26 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         Path.root(EnterpriseUserExtension.class),
         JsonUtils.valueToNode(extension));
 
-    UserResource createdUser =
-        scimService.create("SingletonUsers", newUser);
-    assertNotNull(createdUser.getId());
-    assertEquals(createdUser.getUserName(), newUser.getUserName());
-    try
-    {
-      assertEquals(JsonUtils.nodeToValue(createdUser.getExtensionValues(
-          Path.root(EnterpriseUserExtension.class)).get(0),
-          EnterpriseUserExtension.class), extension);
+    UserResource createdUser = scimService.create("SingletonUsers", newUser);
+    assertThat(createdUser.getId()).isNotNull();
+    assertThat(createdUser.getUserName()).isEqualTo(newUser.getUserName());
 
-      assertEquals(createdUser.getExtensionValues(
-          Path.root(EnterpriseUserExtension.class).attribute("employeeNumber"))
-          .get(0).asString(), "1234");
-    }
-    catch (JacksonException e)
-    {
-      throw new RuntimeException(e);
-    }
+    Path p = Path.root(EnterpriseUserExtension.class);
+    var empNumberNode = createdUser.getExtensionValues(p).get(0);
+    EnterpriseUserExtension fetchedExtension =
+        JsonUtils.nodeToValue(empNumberNode, EnterpriseUserExtension.class);
+    assertThat(fetchedExtension).isEqualTo(extension);
+
+    p = Path.root(EnterpriseUserExtension.class).attribute("employeeNumber");
+    String attributeValue = createdUser.getExtensionValues(p).get(0).asString();
+    assertThat(attributeValue).isEqualTo("1234");
 
     UserResource retrievedUser = scimService.retrieve(createdUser);
-
-    assertEquals(createdUser, retrievedUser);
+    assertThat(createdUser).isEqualTo(retrievedUser);
   }
 
   /**
    * Test delete operation.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testDelete() throws ScimException
@@ -666,10 +629,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // Create a new user.
     UserResource newUser = new UserResource().setUserName("deleteUser");
-    UserResource createdUser =
-        scimService.create("SingletonUsers", newUser);
-    assertNotNull(createdUser.getId());
-    assertEquals(createdUser.getUserName(), newUser.getUserName());
+    UserResource createdUser = scimService.create("SingletonUsers", newUser);
+    assertThat(createdUser.getId()).isNotNull();
+    assertThat(createdUser.getUserName()).isEqualTo(newUser.getUserName());
 
     scimService.delete(createdUser);
 
@@ -682,8 +644,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     try (Response response = target.path("SingletonUsers").path("deleteUser")
         .request().delete())
     {
-      assertEquals(response.getStatus(), 404);
-      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      assertThat(response.getStatus()).isEqualTo(404);
+      assertThat(response.getMediaType())
+          .isEqualTo(ServerUtils.MEDIA_TYPE_SCIM_TYPE);
     }
 
     // With invalid accept type (DS-14520)
@@ -692,15 +655,14 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     try (Response response = target.path("SingletonUsers").path("deleteUser").
         request().accept(MediaType.APPLICATION_ATOM_XML_TYPE).delete())
     {
-      assertEquals(response.getStatus(), 404);
-      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      assertThat(response.getStatus()).isEqualTo(404);
+      assertThat(response.getMediaType())
+          .isEqualTo(ServerUtils.MEDIA_TYPE_SCIM_TYPE);
     }
   }
 
   /**
    * Test put operation.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testPut() throws ScimException
@@ -709,21 +671,16 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     // Create a new user.
     UserResource newUser = new UserResource().setUserName("putUser");
-    UserResource createdUser =
-        scimService.create("SingletonUsers", newUser);
-
-    assertNull(createdUser.getDisplayName());
+    UserResource createdUser = scimService.create("SingletonUsers", newUser);
+    assertThat(createdUser.getDisplayName()).isNull();
 
     createdUser.setDisplayName("Bob");
-
     UserResource updatedUser = scimService.replace(createdUser);
-    assertEquals(updatedUser.getDisplayName(), "Bob");
+    assertThat(updatedUser.getDisplayName()).isEqualTo("Bob");
   }
 
   /**
    * Test patch operation.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testPatch() throws ScimException
@@ -736,8 +693,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     newUser.setName(new Name().setGivenName("Bob").setFamilyName("Tester"));
     newUser.setEmails(Collections.singletonList(
         new Email().setValue("bob@tester.com").setType("work")));
-    UserResource createdUser =
-        scimService.create("SingletonUsers", newUser);
+    UserResource createdUser = scimService.create("SingletonUsers", newUser);
 
     PhoneNumber phone1 = new PhoneNumber().
         setValue("1234567890").setType("home");
@@ -750,19 +706,15 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         replaceValue("emails[type eq \"work\"].value", "bobNew@tester.com").
         addValues("phoneNumbers", phone1, phone2).invoke();
 
-    assertNull(updatedUser.getDisplayName());
-    assertEquals(updatedUser.getName().getMiddleName(), "the");
-    assertEquals(updatedUser.getEmails().get(0).getValue(),
-        "bobNew@tester.com");
-    assertEquals(updatedUser.getPhoneNumbers().size(), 2);
-    assertTrue(contains(updatedUser.getPhoneNumbers(), phone1));
-    assertTrue(contains(updatedUser.getPhoneNumbers(), phone2));
+    assertThat(updatedUser.getDisplayName()).isNull();
+    assertThat(updatedUser.getName().getMiddleName()).isEqualTo("the");
+    assertThat(updatedUser.getEmails().get(0).getValue())
+        .isEqualTo("bobNew@tester.com");
+    assertThat(updatedUser.getPhoneNumbers()).containsExactly(phone1, phone2);
   }
 
   /**
    * Test patch operation.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testPatchThroughScimInterface_resource() throws ScimException
@@ -794,19 +746,15 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     UserResource updatedUser = scimInterface.modify(
         createdUser, new PatchRequest(patchOperations));
 
-    assertNull(updatedUser.getDisplayName());
-    assertEquals(updatedUser.getName().getMiddleName(), "the");
-    assertEquals(updatedUser.getEmails().get(0).getValue(),
-        "bobNew@tester.com");
-    assertEquals(updatedUser.getPhoneNumbers().size(), 2);
-    assertTrue(contains(updatedUser.getPhoneNumbers(), phone1));
-    assertTrue(contains(updatedUser.getPhoneNumbers(), phone2));
+    assertThat(updatedUser.getDisplayName()).isNull();
+    assertThat(updatedUser.getName().getMiddleName()).isEqualTo("the");
+    assertThat(updatedUser.getEmails().get(0).getValue())
+        .isEqualTo("bobNew@tester.com");
+    assertThat(updatedUser.getPhoneNumbers()).containsExactly(phone1, phone2);
   }
 
   /**
    * Test patch operation.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testPatchThroughScimInterface_typeId() throws ScimException
@@ -839,13 +787,11 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         "SingletonUsers", createdUser.getId(),
         new PatchRequest(patchOperations), UserResource.class);
 
-    assertNull(updatedUser.getDisplayName());
-    assertEquals(updatedUser.getName().getMiddleName(), "the");
-    assertEquals(updatedUser.getEmails().get(0).getValue(),
-        "bobNew@tester.com");
-    assertEquals(updatedUser.getPhoneNumbers().size(), 2);
-    assertTrue(contains(updatedUser.getPhoneNumbers(), phone1));
-    assertTrue(contains(updatedUser.getPhoneNumbers(), phone2));
+    assertThat(updatedUser.getDisplayName()).isNull();
+    assertThat(updatedUser.getName().getMiddleName()).isEqualTo("the");
+    assertThat(updatedUser.getEmails().get(0).getValue())
+        .isEqualTo("bobNew@tester.com");
+    assertThat(updatedUser.getPhoneNumbers()).containsExactly(phone1, phone2);
   }
 
   /**
@@ -863,12 +809,13 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     try (Response response = request.post(
         Entity.entity("{badJson}", MEDIA_TYPE_SCIM)))
     {
-      assertEquals(response.getStatus(), 400);
-      assertEquals(response.getMediaType(), MediaType.valueOf(MEDIA_TYPE_SCIM));
+      assertThat(response.getStatus()).isEqualTo(400);
+      assertThat(response.getMediaType())
+          .isEqualTo(MediaType.valueOf(MEDIA_TYPE_SCIM));
       ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
-      assertEquals(errorResponse.getStatus(), Integer.valueOf(400));
-      assertEquals(errorResponse.getScimType(), "invalidSyntax");
-      assertNotNull(errorResponse.getDetail());
+      assertThat(errorResponse.getStatus()).isEqualTo(400);
+      assertThat(errorResponse.getScimType()).isEqualTo("invalidSyntax");
+      assertThat(errorResponse.getDetail()).isNotNull();
     }
 
     // Now with application/json
@@ -879,8 +826,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     try (Response response = request.post(
         Entity.entity("{badJson}", MediaType.APPLICATION_JSON_TYPE)))
     {
-      assertEquals(response.getStatus(), 400);
-      assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
+      assertThat(response.getStatus()).isEqualTo(400);
+      assertThat(response.getMediaType())
+          .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
     }
   }
 
@@ -923,11 +871,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   /**
    * Test that empty entity in POST, PUT, and PATCH requests are handled
    * correctly.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
-  public void testEmptyEntity() throws ScimException
+  public void testEmptyEntity()
   {
     Client client = client();
     // Allow null request entities
@@ -942,27 +888,29 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       Invocation.Builder b = target.path("SingletonUsers").
           request("application/scim+json");
       Response response = b.build("POST").invoke();
-      assertEquals(response.getStatus(), 400);
+      assertThat(response.getStatus()).isEqualTo(400);
       ErrorResponse error = response.readEntity(ErrorResponse.class);
-      assertTrue(error.getDetail().contains("No content provided"));
+      assertThat(error.getDetail()).contains("No content provided");
       response.close();
 
       b = target.path("SingletonUsers").path("123").
           request("application/scim+json");
       response = b.build("PUT").invoke();
-      assertEquals(response.getStatus(), 400);
-      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      assertThat(response.getStatus()).isEqualTo(400);
+      assertThat(response.getMediaType())
+          .isEqualTo(ServerUtils.MEDIA_TYPE_SCIM_TYPE);
       error = response.readEntity(ErrorResponse.class);
-      assertTrue(error.getDetail().contains("No content provided"));
+      assertThat(error.getDetail()).contains("No content provided");
       response.close();
 
       b = target.path("SingletonUsers").path("123").
           request("application/scim+json");
       response = b.build("PATCH").invoke();
-      assertEquals(response.getStatus(), 400);
-      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      assertThat(response.getStatus()).isEqualTo(400);
+      assertThat(response.getMediaType())
+          .isEqualTo(ServerUtils.MEDIA_TYPE_SCIM_TYPE);
       error = response.readEntity(ErrorResponse.class);
-      assertTrue(error.getDetail().contains("No content provided"));
+      assertThat(error.getDetail()).contains("No content provided");
       response.close();
 
       // Content-type header set but no entity
@@ -970,30 +918,33 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
           request("application/scim+json").
           header(HttpHeaders.CONTENT_TYPE, "application/scim+json");
       response = b.build("POST").invoke();
-      assertEquals(response.getStatus(), 400);
-      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      assertThat(response.getStatus()).isEqualTo(400);
+      assertThat(response.getMediaType())
+          .isEqualTo(ServerUtils.MEDIA_TYPE_SCIM_TYPE);
       error = response.readEntity(ErrorResponse.class);
-      assertTrue(error.getDetail().contains("No content provided"));
+      assertThat(error.getDetail()).contains("No content provided");
       response.close();
 
       b = target.path("SingletonUsers").path("123").
           request("application/scim+json").
                     header(HttpHeaders.CONTENT_TYPE, "application/scim+json");
       response = b.build("PUT").invoke();
-      assertEquals(response.getStatus(), 400);
-      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      assertThat(response.getStatus()).isEqualTo(400);
+      assertThat(response.getMediaType())
+          .isEqualTo(ServerUtils.MEDIA_TYPE_SCIM_TYPE);
       error = response.readEntity(ErrorResponse.class);
-      assertTrue(error.getDetail().contains("No content provided"));
+      assertThat(error.getDetail()).contains("No content provided");
       response.close();
 
       b = target.path("SingletonUsers").path("123").
           request("application/scim+json").
           header(HttpHeaders.CONTENT_TYPE, "application/scim+json");
       response = b.build("PATCH").invoke();
-      assertEquals(response.getStatus(), 400);
-      assertEquals(response.getMediaType(), ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+      assertThat(response.getStatus()).isEqualTo(400);
+      assertThat(response.getMediaType())
+          .isEqualTo(ServerUtils.MEDIA_TYPE_SCIM_TYPE);
       error = response.readEntity(ErrorResponse.class);
-      assertTrue(error.getDetail().contains("No content provided"));
+      assertThat(error.getDetail()).contains("No content provided");
       response.close();
     }
     finally
@@ -1004,8 +955,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
   /**
    * Test ability of client to submit requests with arbitrary query parameters.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testQueryParams() throws ScimException
@@ -1079,8 +1028,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
   /**
    * Test ability of client to submit requests with arbitrary headers.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testHeaders() throws ScimException
@@ -1165,7 +1112,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
    * to DS-15034.  If we are not careful about the order of populating location
    * and resource type with respect to trimming the results, we can end up
    * returning unwanted (or incorrect) information.
-   * @throws Exception indicates a test failure.
    */
   @Test
   public void testMetaIsReturnedByDefaultOnly() throws Exception
@@ -1173,17 +1119,17 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     ScimService scimService = new ScimService(target());
     UserResource user = scimService.retrieveRequest(ScimService.ME_URI).
         attributes("nickName").invoke(UserResource.class);
-    assertNull(user.getMeta());
+    assertThat(user.getMeta()).isNull();
 
     user = scimService.retrieveRequest(ScimService.ME_URI).
         excludedAttributes("meta").invoke(UserResource.class);
-    assertNull(user.getMeta());
+    assertThat(user.getMeta()).isNull();
 
     user = scimService.retrieveRequest(ScimService.ME_URI).
         invoke(UserResource.class);
-    assertNotNull(user.getMeta());
-    assertNotNull(user.getMeta().getLocation());
-    assertNotNull(user.getMeta().getResourceType());
+    assertThat(user.getMeta()).isNotNull();
+    assertThat(user.getMeta().getLocation()).isNotNull();
+    assertThat(user.getMeta().getResourceType()).isNotNull();
   }
 
   /**
@@ -1193,47 +1139,35 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
    * {@code ErrorResponse} describing the request failure. The detail message
    * in the {@code ErrorResponse} should correspond to the actual SCIM issue,
    * NOT the deserialization failure within the provider - see DS-44767.
-   *
-   * @throws Exception in case of error.
    */
   @Test
-  public void testBadErrorResult() throws Exception
+  public void testBadErrorResult()
   {
     final ScimService service = new ScimService(target());
 
-    try
-    {
-      service.create("Users/badException",
-          new GenericScimResource());
-      Assert.fail("Expecting a ScimServiceException");
-    }
-    catch (ScimServiceException ex)
-    {
-      ErrorResponse response = ex.getScimError();
-      Assert.assertNotNull(response);
-      Assert.assertEquals(response.getStatus(), Integer.valueOf(409));
-      Assert.assertNotNull(ex.getCause());
-      Assert.assertEquals(ex.getMessage(), response.getDetail());
-      Assert.assertEquals(response.getDetail(), "Conflict");
-    }
+    String endpoint = "Users/badException";
+    assertThatThrownBy(() -> service.create(endpoint, new UserResource()))
+        .isInstanceOfSatisfying(ScimServiceException.class, ex -> {
+          ErrorResponse response = ex.getScimError();
+          assertThat(response).isNotNull();
+          assertThat(response.getStatus()).isEqualTo(409);
+          assertThat(ex.getCause()).isNotNull();
+          assertThat(ex.getMessage()).isEqualTo(response.getDetail());
+          assertThat(response.getDetail()).isEqualTo("Conflict");
+        });
 
-    try
-    {
-      service.searchRequest(
-          "Users/responseWithStatusUnauthorizedAndTypeOctetStreamAndBadEntity")
-          .accept(MediaType.APPLICATION_OCTET_STREAM)
-          .invoke(GenericScimResource.class);
-      Assert.fail("Expecting a ScimServiceException");
-    }
-    catch (ScimServiceException ex)
-    {
-      ErrorResponse response = ex.getScimError();
-      Assert.assertNotNull(response);
-      Assert.assertEquals(response.getStatus(), Integer.valueOf(401));
-      Assert.assertNotNull(ex.getCause());
-      Assert.assertEquals(ex.getMessage(), response.getDetail());
-      Assert.assertEquals(response.getDetail(), "Unauthorized");
-    }
+    var e = "Users/responseWithStatusUnauthorizedAndTypeOctetStreamAndBadEntity";
+    assertThatThrownBy(() -> service.searchRequest(e)
+            .accept(MediaType.APPLICATION_OCTET_STREAM)
+            .invoke(GenericScimResource.class))
+        .isInstanceOfSatisfying(ScimServiceException.class, ex -> {
+          ErrorResponse response = ex.getScimError();
+          assertThat(response).isNotNull();
+          assertThat(response.getStatus()).isEqualTo(401);
+          assertThat(ex.getCause()).isNotNull();
+          assertThat(ex.getMessage()).isEqualTo(response.getDetail());
+          assertThat(response.getDetail()).isEqualTo("Unauthorized");
+        });
   }
 
 
@@ -1252,12 +1186,10 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     // Even though the attribute casing is varied, all named fields should
     // have been successfully parsed.
     assertThat(response.getSchemaUrns())
-        .hasSize(1)
         .containsOnly("urn:ietf:params:scim:api:messages:2.0:ListResponse");
     assertThat(response.getTotalResults()).isEqualTo(2);
     assertThat(response.getItemsPerPage()).isEqualTo(1);
     assertThat(response.getResources())
-        .hasSize(1)
         .containsOnly(new UserResource().setUserName("k.dot"));
 
     // startIndex was not included, so it should not have a value.
@@ -1280,12 +1212,10 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
             .invoke(UserResource.class);
 
     assertThat(response.getSchemaUrns())
-        .hasSize(1)
         .containsOnly("urn:ietf:params:scim:api:messages:2.0:ListResponse");
     assertThat(response.getTotalResults()).isEqualTo(1);
     assertThat(response.getItemsPerPage()).isEqualTo(1);
     assertThat(response.getResources())
-        .hasSize(1)
         .containsOnly(new UserResource().setUserName("GNX"));
     assertThat(response.toString())
         .doesNotContain("unknownAttribute")
@@ -1307,7 +1237,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
             .invoke(UserResource.class);
 
     assertThat(response.getSchemaUrns())
-        .hasSize(1)
         .containsOnly("urn:ietf:params:scim:api:messages:2.0:ListResponse");
     assertThat(response.getTotalResults()).isEqualTo(20);
     assertThat(response.getItemsPerPage()).isEqualTo(1);
@@ -1315,15 +1244,12 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertThat(response.getPreviousCursor()).isEqualTo("ze7L30kMiiLX6x");
     assertThat(response.getNextCursor()).isEqualTo("YkU3OF86Pz0rGv");
     assertThat(response.getResources())
-        .hasSize(1)
         .containsOnly(new UserResource().setUserName("reincarnated"));
   }
 
 
   /**
    * Test custom content-type.
-   *
-   * @throws ScimException if an error occurs.
    */
   @Test
   public void testCustomContentType() throws ScimException
@@ -1335,11 +1261,11 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     newUser.setDisplayName("removeMe");
     UserResource createdUser = scimService.createRequest("CustomContent", newUser).
         contentType(MediaType.APPLICATION_JSON).invoke();
-    Assert.assertNotNull(createdUser);
+    assertThat(createdUser).isNotNull();
 
     UserResource replacedUser = scimService.replaceRequest(createdUser).
         contentType(MediaType.APPLICATION_JSON).invoke();
-    Assert.assertNotNull(replacedUser);
+    assertThat(replacedUser).isNotNull();
 
     scimService.modifyRequest(replacedUser).removeValues("displayName").
         contentType(MediaType.APPLICATION_JSON).invoke();
@@ -1347,7 +1273,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     String returnString = new String(scimService.retrieveRequest(
         "CustomContent", "123").accept(MediaType.APPLICATION_OCTET_STREAM).
         invoke(byte[].class));
-    Assert.assertNotNull(returnString);
+    assertThat(returnString).isNotNull();
   }
 
 
@@ -1359,7 +1285,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
   {
     ScimService scimService = new ScimService(target());
 
-    // Create a new user.
     assertThatThrownBy(() ->
         new String(scimService.retrieveRequest("CustomContent", "123")
             .accept((String[]) null)
@@ -1506,7 +1431,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     BulkResponse response =
         service.bulkRequest("/Bulk/testBulkRequest").invoke();
     assertThat(response.getSchemaUrns())
-        .hasSize(1)
         .containsOnly("urn:ietf:params:scim:api:messages:2.0:BulkResponse");
     final List<BulkOperationResult> resultList = response.getOperations();
     assertThat(resultList).hasSize(4);
@@ -1560,36 +1484,19 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
   private void setMeta(Class<?> resourceClass, ScimResource scimResource)
   {
-    ResourceTypeResource resourceType =
-        ResourceTypeDefinition.fromJaxRsResource(
-            resourceClass).toScimResource();
-    UriBuilder locationBuilder =
-        UriBuilder.fromUri(getBaseUri()).path(
-            resourceType.getEndpoint().getPath());
+    var definition = ResourceTypeDefinition.fromJaxRsResource(resourceClass);
+    final ResourceTypeResource resourceType = definition.toScimResource();
+
+    String p = resourceType.getEndpoint().getPath();
+    final UriBuilder locationBuilder = UriBuilder.fromUri(getBaseUri()).path(p);
     if (scimResource.getId() != null)
     {
       locationBuilder.path(scimResource.getId());
     }
 
-    Meta meta = scimResource.getMeta();
-    if (meta == null)
-    {
-      meta = new Meta();
-      scimResource.setMeta(meta);
-    }
-    meta.setLocation(locationBuilder.build());
-    meta.setResourceType(resourceType.getName());
-  }
-
-  private <T> boolean contains(Iterable<T> list, T resource)
-  {
-    for (T r : list)
-    {
-      if (r.equals(resource))
-      {
-        return true;
-      }
-    }
-    return false;
+    Meta meta = Objects.requireNonNullElse(scimResource.getMeta(), new Meta());
+    meta.setLocation(locationBuilder.build())
+        .setResourceType(resourceType.getName());
+    scimResource.setMeta(meta);
   }
 }

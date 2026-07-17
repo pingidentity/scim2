@@ -60,8 +60,8 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.RequestEntityProcessing;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTestNg;
-import org.testng.Assert;
 import org.testng.annotations.Test;
+import tools.jackson.databind.node.MissingNode;
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import jakarta.ws.rs.core.Application;
@@ -70,6 +70,8 @@ import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
 {
@@ -109,7 +111,6 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
       @Override
       @NotNull
       public ServiceProviderConfigResource getServiceProviderConfig()
-          throws ScimException
       {
         return new ServiceProviderConfigResource("https://doc",
             new PatchConfig(true),
@@ -138,7 +139,6 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
 
   /**
    * Tests that etags work properly for retrievals.
-   * @throws ScimException in case of error.
    */
   @Test
   public void testIfNoneMatch_retrieve() throws ScimException
@@ -191,7 +191,6 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
   /**
    * Tests that etags work properly for retrievals when a not modified
    * exception is thrown.
-   * @throws ScimException in case of error.
    */
   @Test(expectedExceptions = NotModifiedException.class)
   public void testIfNoneMatch_retrieveException() throws ScimException
@@ -211,7 +210,6 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
 
   /**
    * Tests that etags work properly for modify.
-   * @throws ScimException in case of error.
    */
   @Test
   public void testIfMatch_modify() throws ScimException
@@ -258,7 +256,6 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
 
   /**
    * Tests that etags work properly for replace.
-   * @throws ScimException in case of error.
    */
   @Test
   public void testIfMatch_replace() throws ScimException
@@ -294,7 +291,6 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
 
   /**
    * Tests that etags work properly for delete.
-   * @throws ScimException in case of error.
    */
   @Test
   public void testIfMatch_delete() throws ScimException
@@ -346,26 +342,24 @@ public class ETagTestCase extends JerseyTestNg.ContainerPerClassTest
     {
       List<String> ifMatchValues =
           resource.getStringValueList(HttpHeaders.IF_MATCH);
-      Assert.assertNotNull(ifMatchValues);
-      Assert.assertFalse(ifMatchValues.isEmpty());
+      assertThat(ifMatchValues).isNotNull().isNotEmpty();
     }
     else
     {
-      Assert.assertTrue(resource.getObjectNode().
-          path(HttpHeaders.IF_MATCH).isMissingNode());
+      assertThat(resource.getObjectNode().path(HttpHeaders.IF_MATCH))
+          .isInstanceOf(MissingNode.class);
     }
 
     if (shouldContainIfNoneMatch)
     {
       List<String> ifNoneMatchValues =
           resource.getStringValueList(HttpHeaders.IF_NONE_MATCH);
-      Assert.assertNotNull(ifNoneMatchValues);
-      Assert.assertFalse(ifNoneMatchValues.isEmpty());
+      assertThat(ifNoneMatchValues).isNotNull().isNotEmpty();
     }
     else
     {
-      Assert.assertTrue(resource.getObjectNode().
-          path(HttpHeaders.IF_NONE_MATCH).isMissingNode());
+      assertThat(resource.getObjectNode().path(HttpHeaders.IF_NONE_MATCH))
+          .isInstanceOf(MissingNode.class);
     }
   }
 
