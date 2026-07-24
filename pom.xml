@@ -84,7 +84,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compileSource>17</compileSource>
     <main.basedir>${project.basedir}</main.basedir>
-    <jackson.version>3.2.0</jackson.version>
+    <jackson.version>3.2.1</jackson.version>
     <jackson-annotations.version>2.22</jackson-annotations.version>
     <jakarta-rs.version>4.0.0</jakarta-rs.version>
     <jersey.version>4.0.2</jersey.version>
