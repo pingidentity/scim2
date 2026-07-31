@@ -207,12 +207,9 @@ public class BulkResponse extends BaseScimResource
     {
       return true;
     }
-    if (!(o instanceof BulkResponse that))
-    {
-      return false;
-    }
 
-    return operations.equals(that.operations);
+    return o instanceof BulkResponse that
+        && operations.equals(that.operations);
   }
 
   /**

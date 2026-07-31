@@ -234,17 +234,10 @@ public class PatchRequest
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    PatchRequest that = (PatchRequest) o;
-    return operations.equals(that.operations);
+    return o instanceof PatchRequest that
+        && super.equals(o)
+        && operations.equals(that.operations);
   }
 
   /**

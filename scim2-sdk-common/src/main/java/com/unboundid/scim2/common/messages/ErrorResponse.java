@@ -185,25 +185,12 @@ public class ErrorResponse extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    ErrorResponse that = (ErrorResponse) o;
-    if (status != that.status)
-    {
-      return false;
-    }
-    if (!Objects.equals(detail, that.detail))
-    {
-      return false;
-    }
-    return Objects.equals(scimType, that.scimType);
+    return o instanceof ErrorResponse that
+        && super.equals(o)
+        && status == that.status
+        && Objects.equals(detail, that.detail)
+        && Objects.equals(scimType, that.scimType);
   }
 
   /**

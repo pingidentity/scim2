@@ -111,17 +111,10 @@ public class FilterConfig
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    FilterConfig that = (FilterConfig) o;
-    if (maxResults != that.maxResults)
-    {
-      return false;
-    }
-    return supported == that.supported;
+    return o instanceof FilterConfig that
+        && maxResults == that.maxResults
+        && supported == that.supported;
   }
 
   /**

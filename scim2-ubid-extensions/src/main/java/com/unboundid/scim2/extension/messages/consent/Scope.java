@@ -234,21 +234,10 @@ public final class Scope
       return true;
     }
 
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-
-    Scope scope = (Scope) o;
-    if (!Objects.equals(name, scope.name))
-    {
-      return false;
-    }
-    if (!Objects.equals(description, scope.description))
-    {
-      return false;
-    }
-    return Objects.equals(consent, scope.consent);
+    return o instanceof Scope scope
+        && Objects.equals(name, scope.name)
+        && Objects.equals(description, scope.description)
+        && Objects.equals(consent, scope.consent);
   }
 
   /**

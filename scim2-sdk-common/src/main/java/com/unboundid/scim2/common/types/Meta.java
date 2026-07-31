@@ -315,29 +315,13 @@ public class Meta
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    Meta meta = (Meta) o;
-    if (!Objects.equals(created, meta.created))
-    {
-      return false;
-    }
-    if (!Objects.equals(lastModified, meta.lastModified))
-    {
-      return false;
-    }
-    if (!Objects.equals(location, meta.location))
-    {
-      return false;
-    }
-    if (!Objects.equals(resourceType, meta.resourceType))
-    {
-      return false;
-    }
-    return Objects.equals(version, meta.version);
+    return o instanceof Meta meta
+        && Objects.equals(created, meta.created)
+        && Objects.equals(lastModified, meta.lastModified)
+        && Objects.equals(location, meta.location)
+        && Objects.equals(resourceType, meta.resourceType)
+        && Objects.equals(version, meta.version);
   }
 
   /**

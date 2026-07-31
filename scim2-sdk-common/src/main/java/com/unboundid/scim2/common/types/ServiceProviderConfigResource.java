@@ -433,49 +433,18 @@ public class ServiceProviderConfigResource extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    ServiceProviderConfigResource that = (ServiceProviderConfigResource) o;
-    if (!Objects.equals(authenticationSchemes, that.authenticationSchemes))
-    {
-      return false;
-    }
-    if (!Objects.equals(bulk, that.bulk))
-    {
-      return false;
-    }
-    if (!Objects.equals(changePassword, that.changePassword))
-    {
-      return false;
-    }
-    if (!Objects.equals(documentationUri, that.documentationUri))
-    {
-      return false;
-    }
-    if (!Objects.equals(etag, that.etag))
-    {
-      return false;
-    }
-    if (!Objects.equals(filter, that.filter))
-    {
-      return false;
-    }
-    if (!Objects.equals(patch, that.patch))
-    {
-      return false;
-    }
-    if (!Objects.equals(pagination, that.pagination))
-    {
-      return false;
-    }
-    return Objects.equals(sort, that.sort);
+    return o instanceof ServiceProviderConfigResource that
+        && super.equals(o)
+        && Objects.equals(authenticationSchemes, that.authenticationSchemes)
+        && Objects.equals(bulk, that.bulk)
+        && Objects.equals(changePassword, that.changePassword)
+        && Objects.equals(documentationUri, that.documentationUri)
+        && Objects.equals(etag, that.etag)
+        && Objects.equals(filter, that.filter)
+        && Objects.equals(patch, that.patch)
+        && Objects.equals(pagination, that.pagination)
+        && Objects.equals(sort, that.sort);
   }
 
   /**

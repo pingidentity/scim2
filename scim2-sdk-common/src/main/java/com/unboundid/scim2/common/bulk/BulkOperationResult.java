@@ -651,12 +651,9 @@ public class BulkOperationResult
     {
       return true;
     }
-    if (!(o instanceof BulkOperationResult that))
-    {
-      return false;
-    }
 
-    return Objects.equals(location, that.location)
+    return o instanceof BulkOperationResult that
+        && Objects.equals(location, that.location)
         && method.equals(that.method)
         && Objects.equals(bulkId, that.bulkId)
         && Objects.equals(version, that.version)

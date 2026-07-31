@@ -195,25 +195,12 @@ public class Role
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    Role role = (Role) o;
-    if (!Objects.equals(value, role.value))
-    {
-      return false;
-    }
-    if (!Objects.equals(display, role.display))
-    {
-      return false;
-    }
-    if (!Objects.equals(type, role.type))
-    {
-      return false;
-    }
-    return Objects.equals(primary, role.primary);
+    return o instanceof Role role
+        && Objects.equals(value, role.value)
+        && Objects.equals(display, role.display)
+        && Objects.equals(type, role.type)
+        && Objects.equals(primary, role.primary);
   }
 
   /**

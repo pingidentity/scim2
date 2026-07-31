@@ -468,37 +468,15 @@ public class ListResponse<T> extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    ListResponse<?> that = (ListResponse<?>) o;
-    if (totalResults != that.totalResults)
-    {
-      return false;
-    }
-    if (!Objects.equals(itemsPerPage, that.itemsPerPage))
-    {
-      return false;
-    }
-    if (!Objects.equals(startIndex, that.startIndex))
-    {
-      return false;
-    }
-    if (!Objects.equals(previousCursor, that.previousCursor))
-    {
-      return false;
-    }
-    if (!Objects.equals(nextCursor, that.nextCursor))
-    {
-      return false;
-    }
-    return resources.equals(that.resources);
+    return o instanceof ListResponse<?> that
+        && super.equals(o)
+        && totalResults == that.totalResults
+        && Objects.equals(itemsPerPage, that.itemsPerPage)
+        && Objects.equals(startIndex, that.startIndex)
+        && Objects.equals(previousCursor, that.previousCursor)
+        && Objects.equals(nextCursor, that.nextCursor)
+        && resources.equals(that.resources);
   }
 
   /**

@@ -795,130 +795,46 @@ public class AccountState extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    AccountState that = (AccountState) o;
-    if (!Objects.equals(accountDisabled, that.accountDisabled))
-    {
-      return false;
-    }
-    if (!Objects.equals(accountExpirationTime, that.accountExpirationTime))
-    {
-      return false;
-    }
-    if (!Objects.equals(secondsUntilAccountExpiration,
-        that.secondsUntilAccountExpiration))
-    {
-      return false;
-    }
-    if (!Objects.equals(passwordChangedTime, that.passwordChangedTime))
-    {
-      return false;
-    }
-    if (!Objects.equals(passwordExpirationWarnedTime,
-        that.passwordExpirationWarnedTime))
-    {
-      return false;
-    }
-    if (!Objects.equals(secondsUntilPasswordExpiration,
-        that.secondsUntilPasswordExpiration))
-    {
-      return false;
-    }
-    if (!Objects.equals(secondsUntilPasswordExpirationWarning,
-        that.secondsUntilPasswordExpirationWarning))
-    {
-      return false;
-    }
-    if (!Objects.equals(authenticationFailureTimes,
-        that.authenticationFailureTimes))
-    {
-      return false;
-    }
-    if (!Objects.equals(secondsUntilAuthenticationFailureUnlock,
-        that.secondsUntilAuthenticationFailureUnlock))
-    {
-      return false;
-    }
-    if (!Objects.equals(remainingAuthenticationFailureCount,
-        that.remainingAuthenticationFailureCount))
-    {
-      return false;
-    }
-    if (!Objects.equals(lastLoginTime, that.lastLoginTime))
-    {
-      return false;
-    }
-    if (!Objects.equals(secondsUntilIdleLockout, that.secondsUntilIdleLockout))
-    {
-      return false;
-    }
-    if (!Objects.equals(mustChangePassword, that.mustChangePassword))
-    {
-      return false;
-    }
-    if (!Objects.equals(secondsUntilPasswordResetLockout,
-        that.secondsUntilPasswordResetLockout))
-    {
-      return false;
-    }
-    if (!Objects.equals(graceLoginTimes, that.graceLoginTimes))
-    {
-      return false;
-    }
-    if (!Objects.equals(remainingGraceLoginCount,
-        that.remainingGraceLoginCount))
-    {
-      return false;
-    }
-    if (!Objects.equals(passwordChangedByRequiredTime,
-        that.passwordChangedByRequiredTime))
-    {
-      return false;
-    }
-    if (!Objects.equals(secondsUntilRequiredChangeTime,
-        that.secondsUntilRequiredChangeTime))
-    {
-      return false;
-    }
-    if (!Objects.equals(passwordHistory, that.passwordHistory))
-    {
-      return false;
-    }
-    if (!Objects.equals(retiredPassword, that.retiredPassword))
-    {
-      return false;
-    }
-    if (!Objects.equals(accountActivationTime, that.accountActivationTime))
-    {
-      return false;
-    }
-    if (!Objects.equals(secondsUntilAccountActivation,
-        that.secondsUntilAccountActivation))
-    {
-      return false;
-    }
-    if (!Objects.equals(lastLoginIpAddress, that.lastLoginIpAddress))
-    {
-      return false;
-    }
-    if (!Objects.equals(accountUsabilityNotices, that.accountUsabilityNotices))
-    {
-      return false;
-    }
-    if (!Objects.equals(accountUsabilityWarnings,
-        that.accountUsabilityWarnings))
-    {
-      return false;
-    }
-    return Objects.equals(accountUsabilityErrors, that.accountUsabilityErrors);
+    return o instanceof AccountState a
+        && super.equals(o)
+        && Objects.equals(accountDisabled, a.accountDisabled)
+        && Objects.equals(accountExpirationTime, a.accountExpirationTime)
+        && Objects.equals(secondsUntilAccountExpiration,
+            a.secondsUntilAccountExpiration)
+        && Objects.equals(passwordChangedTime, a.passwordChangedTime)
+        && Objects.equals(passwordExpirationWarnedTime,
+            a.passwordExpirationWarnedTime)
+        && Objects.equals(secondsUntilPasswordExpiration,
+            a.secondsUntilPasswordExpiration)
+        && Objects.equals(secondsUntilPasswordExpirationWarning,
+            a.secondsUntilPasswordExpirationWarning)
+        && Objects.equals(authenticationFailureTimes,
+            a.authenticationFailureTimes)
+        && Objects.equals(secondsUntilAuthenticationFailureUnlock,
+            a.secondsUntilAuthenticationFailureUnlock)
+        && Objects.equals(remainingAuthenticationFailureCount,
+            a.remainingAuthenticationFailureCount)
+        && Objects.equals(lastLoginTime, a.lastLoginTime)
+        && Objects.equals(secondsUntilIdleLockout, a.secondsUntilIdleLockout)
+        && Objects.equals(mustChangePassword, a.mustChangePassword)
+        && Objects.equals(secondsUntilPasswordResetLockout,
+            a.secondsUntilPasswordResetLockout)
+        && Objects.equals(graceLoginTimes, a.graceLoginTimes)
+        && Objects.equals(remainingGraceLoginCount, a.remainingGraceLoginCount)
+        && Objects.equals(passwordChangedByRequiredTime,
+            a.passwordChangedByRequiredTime)
+        && Objects.equals(secondsUntilRequiredChangeTime,
+            a.secondsUntilRequiredChangeTime)
+        && Objects.equals(passwordHistory, a.passwordHistory)
+        && Objects.equals(retiredPassword, a.retiredPassword)
+        && Objects.equals(accountActivationTime, a.accountActivationTime)
+        && Objects.equals(secondsUntilAccountActivation,
+            a.secondsUntilAccountActivation)
+        && Objects.equals(lastLoginIpAddress, a.lastLoginIpAddress)
+        && Objects.equals(accountUsabilityNotices, a.accountUsabilityNotices)
+        && Objects.equals(accountUsabilityWarnings, a.accountUsabilityWarnings)
+        && Objects.equals(accountUsabilityErrors, a.accountUsabilityErrors);
   }
 
   /**

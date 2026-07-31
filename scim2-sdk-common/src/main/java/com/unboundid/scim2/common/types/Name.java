@@ -298,33 +298,14 @@ public class Name
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    Name name = (Name) o;
-    if (!Objects.equals(formatted, name.formatted))
-    {
-      return false;
-    }
-    if (!Objects.equals(familyName, name.familyName))
-    {
-      return false;
-    }
-    if (!Objects.equals(givenName, name.givenName))
-    {
-      return false;
-    }
-    if (!Objects.equals(middleName, name.middleName))
-    {
-      return false;
-    }
-    if (!Objects.equals(honorificPrefix, name.honorificPrefix))
-    {
-      return false;
-    }
-    return Objects.equals(honorificSuffix, name.honorificSuffix);
+    return o instanceof Name name
+        && Objects.equals(formatted, name.formatted)
+        && Objects.equals(familyName, name.familyName)
+        && Objects.equals(givenName, name.givenName)
+        && Objects.equals(middleName, name.middleName)
+        && Objects.equals(honorificPrefix, name.honorificPrefix)
+        && Objects.equals(honorificSuffix, name.honorificSuffix);
   }
 
   /**

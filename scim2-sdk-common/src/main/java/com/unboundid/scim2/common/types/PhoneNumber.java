@@ -197,25 +197,12 @@ public class PhoneNumber
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    PhoneNumber that = (PhoneNumber) o;
-    if (!Objects.equals(value, that.value))
-    {
-      return false;
-    }
-    if (!Objects.equals(display, that.display))
-    {
-      return false;
-    }
-    if (!Objects.equals(type, that.type))
-    {
-      return false;
-    }
-    return Objects.equals(primary, that.primary);
+    return o instanceof PhoneNumber that
+        && Objects.equals(value, that.value)
+        && Objects.equals(display, that.display)
+        && Objects.equals(type, that.type)
+        && Objects.equals(primary, that.primary);
   }
 
   /**

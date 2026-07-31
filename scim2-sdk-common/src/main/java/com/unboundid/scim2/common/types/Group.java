@@ -226,25 +226,12 @@ public class Group
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    Group group = (Group) o;
-    if (!Objects.equals(value, group.value))
-    {
-      return false;
-    }
-    if (!Objects.equals(ref, group.ref))
-    {
-      return false;
-    }
-    if (!Objects.equals(display, group.display))
-    {
-      return false;
-    }
-    return Objects.equals(type, group.type);
+    return o instanceof Group group
+        && Objects.equals(value, group.value)
+        && Objects.equals(ref, group.ref)
+        && Objects.equals(display, group.display)
+        && Objects.equals(type, group.type);
   }
 
   /**

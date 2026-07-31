@@ -1083,57 +1083,20 @@ public class AttributeDefinition
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    AttributeDefinition that = (AttributeDefinition) o;
-    if (caseExact != that.caseExact)
-    {
-      return false;
-    }
-    if (multiValued != that.multiValued)
-    {
-      return false;
-    }
-    if (required != that.required)
-    {
-      return false;
-    }
-    if (!Objects.equals(canonicalValues, that.canonicalValues))
-    {
-      return false;
-    }
-    if (!Objects.equals(description, that.description))
-    {
-      return false;
-    }
-    if (!Objects.equals(mutability, that.mutability))
-    {
-      return false;
-    }
-    if (!Objects.equals(name, that.name))
-    {
-      return false;
-    }
-    if (!Objects.equals(referenceTypes, that.referenceTypes))
-    {
-      return false;
-    }
-    if (!Objects.equals(returned, that.returned))
-    {
-      return false;
-    }
-    if (!Objects.equals(subAttributes, that.subAttributes))
-    {
-      return false;
-    }
-    if (!Objects.equals(type, that.type))
-    {
-      return false;
-    }
-    return Objects.equals(uniqueness, that.uniqueness);
+    return o instanceof AttributeDefinition that
+        && caseExact == that.caseExact
+        && multiValued == that.multiValued
+        && required == that.required
+        && Objects.equals(canonicalValues, that.canonicalValues)
+        && Objects.equals(description, that.description)
+        && Objects.equals(mutability, that.mutability)
+        && Objects.equals(name, that.name)
+        && Objects.equals(referenceTypes, that.referenceTypes)
+        && Objects.equals(returned, that.returned)
+        && Objects.equals(subAttributes, that.subAttributes)
+        && Objects.equals(type, that.type)
+        && Objects.equals(uniqueness, that.uniqueness);
   }
 
   /**

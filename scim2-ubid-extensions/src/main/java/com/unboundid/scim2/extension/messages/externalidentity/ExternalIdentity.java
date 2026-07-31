@@ -280,41 +280,16 @@ public final class ExternalIdentity extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    ExternalIdentity that = (ExternalIdentity) o;
-    if (!Objects.equals(provider, that.provider))
-    {
-      return false;
-    }
-    if (!Objects.equals(providerUserId, that.providerUserId))
-    {
-      return false;
-    }
-    if (!Objects.equals(accessToken, that.accessToken))
-    {
-      return false;
-    }
-    if (!Objects.equals(refreshToken, that.refreshToken))
-    {
-      return false;
-    }
-    if (!Objects.equals(providerRedirectUrl, that.providerRedirectUrl))
-    {
-      return false;
-    }
-    if (!Objects.equals(callbackUrl, that.callbackUrl))
-    {
-      return false;
-    }
-    return Objects.equals(callbackParameters, that.callbackParameters);
+    return o instanceof ExternalIdentity that
+        && super.equals(o)
+        && Objects.equals(provider, that.provider)
+        && Objects.equals(providerUserId, that.providerUserId)
+        && Objects.equals(accessToken, that.accessToken)
+        && Objects.equals(refreshToken, that.refreshToken)
+        && Objects.equals(providerRedirectUrl, that.providerRedirectUrl)
+        && Objects.equals(callbackUrl, that.callbackUrl)
+        && Objects.equals(callbackParameters, that.callbackParameters);
   }
 
   /**
@@ -325,7 +300,7 @@ public final class ExternalIdentity extends BaseScimResource
   @Override
   public int hashCode()
   {
-    return Objects.hash(provider, providerUserId, accessToken, refreshToken,
-        providerRedirectUrl, callbackUrl, callbackParameters);
+    return Objects.hash(super.hashCode(), provider, providerUserId, accessToken,
+        refreshToken, providerRedirectUrl, callbackUrl, callbackParameters);
   }
 }

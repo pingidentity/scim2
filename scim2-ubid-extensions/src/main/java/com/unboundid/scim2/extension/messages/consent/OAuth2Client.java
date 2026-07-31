@@ -278,33 +278,14 @@ public final class OAuth2Client
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    OAuth2Client that = (OAuth2Client) o;
-    if (!Objects.equals(name, that.name))
-    {
-      return false;
-    }
-    if (!Objects.equals(description, that.description))
-    {
-      return false;
-    }
-    if (!Objects.equals(url, that.url))
-    {
-      return false;
-    }
-    if (!Objects.equals(iconUrl, that.iconUrl))
-    {
-      return false;
-    }
-    if (!Objects.equals(emailAddress, that.emailAddress))
-    {
-      return false;
-    }
-    return Objects.equals(lastAuthorization, that.lastAuthorization);
+    return o instanceof OAuth2Client that
+        && Objects.equals(name, that.name)
+        && Objects.equals(description, that.description)
+        && Objects.equals(url, that.url)
+        && Objects.equals(iconUrl, that.iconUrl)
+        && Objects.equals(emailAddress, that.emailAddress)
+        && Objects.equals(lastAuthorization, that.lastAuthorization);
   }
 
   /**

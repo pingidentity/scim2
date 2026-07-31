@@ -201,25 +201,12 @@ public class Email
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    Email email = (Email) o;
-    if (!Objects.equals(value, email.value))
-    {
-      return false;
-    }
-    if (!Objects.equals(display, email.display))
-    {
-      return false;
-    }
-    if (!Objects.equals(type, email.type))
-    {
-      return false;
-    }
-    return Objects.equals(primary, email.primary);
+    return o instanceof Email email
+        && Objects.equals(value, email.value)
+        && Objects.equals(display, email.display)
+        && Objects.equals(type, email.type)
+        && Objects.equals(primary, email.primary);
   }
 
   /**

@@ -1031,97 +1031,30 @@ public class UserResource extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    UserResource that = (UserResource) o;
-    if (!Objects.equals(userName, that.userName))
-    {
-      return false;
-    }
-    if (!Objects.equals(name, that.name))
-    {
-      return false;
-    }
-    if (!Objects.equals(displayName, that.displayName))
-    {
-      return false;
-    }
-    if (!Objects.equals(nickName, that.nickName))
-    {
-      return false;
-    }
-    if (!Objects.equals(profileUrl, that.profileUrl))
-    {
-      return false;
-    }
-    if (!Objects.equals(title, that.title))
-    {
-      return false;
-    }
-    if (!Objects.equals(userType, that.userType))
-    {
-      return false;
-    }
-    if (!Objects.equals(preferredLanguage, that.preferredLanguage))
-    {
-      return false;
-    }
-    if (!Objects.equals(locale, that.locale))
-    {
-      return false;
-    }
-    if (!Objects.equals(timezone, that.timezone))
-    {
-      return false;
-    }
-    if (!Objects.equals(active, that.active))
-    {
-      return false;
-    }
-    if (!Objects.equals(password, that.password))
-    {
-      return false;
-    }
-    if (!Objects.equals(emails, that.emails))
-    {
-      return false;
-    }
-    if (!Objects.equals(phoneNumbers, that.phoneNumbers))
-    {
-      return false;
-    }
-    if (!Objects.equals(ims, that.ims))
-    {
-      return false;
-    }
-    if (!Objects.equals(photos, that.photos))
-    {
-      return false;
-    }
-    if (!Objects.equals(addresses, that.addresses))
-    {
-      return false;
-    }
-    if (!Objects.equals(groups, that.groups))
-    {
-      return false;
-    }
-    if (!Objects.equals(entitlements, that.entitlements))
-    {
-      return false;
-    }
-    if (!Objects.equals(roles, that.roles))
-    {
-      return false;
-    }
-    return Objects.equals(x509Certificates, that.x509Certificates);
+    return o instanceof UserResource that
+        && super.equals(o)
+        && Objects.equals(userName, that.userName)
+        && Objects.equals(name, that.name)
+        && Objects.equals(displayName, that.displayName)
+        && Objects.equals(nickName, that.nickName)
+        && Objects.equals(profileUrl, that.profileUrl)
+        && Objects.equals(title, that.title)
+        && Objects.equals(userType, that.userType)
+        && Objects.equals(preferredLanguage, that.preferredLanguage)
+        && Objects.equals(locale, that.locale)
+        && Objects.equals(timezone, that.timezone)
+        && Objects.equals(active, that.active)
+        && Objects.equals(password, that.password)
+        && Objects.equals(emails, that.emails)
+        && Objects.equals(phoneNumbers, that.phoneNumbers)
+        && Objects.equals(ims, that.ims)
+        && Objects.equals(photos, that.photos)
+        && Objects.equals(addresses, that.addresses)
+        && Objects.equals(groups, that.groups)
+        && Objects.equals(entitlements, that.entitlements)
+        && Objects.equals(roles, that.roles)
+        && Objects.equals(x509Certificates, that.x509Certificates);
   }
 
   /**

@@ -195,25 +195,12 @@ public class Entitlement
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    Entitlement that = (Entitlement) o;
-    if (!Objects.equals(value, that.value))
-    {
-      return false;
-    }
-    if (!Objects.equals(display, that.display))
-    {
-      return false;
-    }
-    if (!Objects.equals(type, that.type))
-    {
-      return false;
-    }
-    return Objects.equals(primary, that.primary);
+    return o instanceof Entitlement that
+        && Objects.equals(value, that.value)
+        && Objects.equals(display, that.display)
+        && Objects.equals(type, that.type)
+        && Objects.equals(primary, that.primary);
   }
 
   /**

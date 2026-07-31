@@ -262,29 +262,13 @@ public final class Provider
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    final Provider provider = (Provider) o;
-    if (!Objects.equals(name, provider.name))
-    {
-      return false;
-    }
-    if (!Objects.equals(description, provider.description))
-    {
-      return false;
-    }
-    if (!Objects.equals(iconUrl, provider.iconUrl))
-    {
-      return false;
-    }
-    if (!Objects.equals(type, provider.type))
-    {
-      return false;
-    }
-    return Objects.equals(samlResponseBinding, provider.samlResponseBinding);
+    return o instanceof Provider provider
+        && Objects.equals(name, provider.name)
+        && Objects.equals(description, provider.description)
+        && Objects.equals(iconUrl, provider.iconUrl)
+        && Objects.equals(type, provider.type)
+        && Objects.equals(samlResponseBinding, provider.samlResponseBinding);
   }
 
 

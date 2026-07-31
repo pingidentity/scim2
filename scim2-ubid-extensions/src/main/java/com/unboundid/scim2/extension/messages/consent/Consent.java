@@ -121,22 +121,10 @@ public final class Consent extends BaseScimResource
       return true;
     }
 
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-
-    if (!super.equals(o))
-    {
-      return false;
-    }
-
-    Consent consent = (Consent) o;
-    if (!Objects.equals(client, consent.client))
-    {
-      return false;
-    }
-    return Objects.equals(scopes, consent.scopes);
+    return o instanceof Consent consent
+        && super.equals(o)
+        && Objects.equals(client, consent.client)
+        && Objects.equals(scopes, consent.scopes);
   }
 
   /**
@@ -150,4 +138,3 @@ public final class Consent extends BaseScimResource
     return Objects.hash(super.hashCode(), client, scopes);
   }
 }
-

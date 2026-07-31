@@ -105,17 +105,10 @@ public class AccountUsabilityIssue
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    AccountUsabilityIssue that = (AccountUsabilityIssue) o;
-    if (!Objects.equals(name, that.name))
-    {
-      return false;
-    }
-    return Objects.equals(message, that.message);
+    return o instanceof AccountUsabilityIssue that
+        && Objects.equals(name, that.name)
+        && Objects.equals(message, that.message);
   }
 
   /**

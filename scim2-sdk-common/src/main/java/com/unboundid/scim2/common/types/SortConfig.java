@@ -87,13 +87,9 @@ public class SortConfig
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    SortConfig that = (SortConfig) o;
-    return supported == that.supported;
+    return o instanceof SortConfig that
+        && supported == that.supported;
   }
 
   /**

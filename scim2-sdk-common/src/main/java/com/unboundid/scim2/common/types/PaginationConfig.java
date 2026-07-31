@@ -276,32 +276,14 @@ public class PaginationConfig
     {
       return true;
     }
-    if (!(o instanceof PaginationConfig that))
-    {
-      return false;
-    }
 
-    if (cursor != that.cursor)
-    {
-      return false;
-    }
-    if (index != that.index)
-    {
-      return false;
-    }
-    if (!Objects.equals(defaultPaginationMethod, that.defaultPaginationMethod))
-    {
-      return false;
-    }
-    if (!Objects.equals(defaultPageSize, that.defaultPageSize))
-    {
-      return false;
-    }
-    if (!Objects.equals(maxPageSize, that.maxPageSize))
-    {
-      return false;
-    }
-    return Objects.equals(cursorTimeout, that.cursorTimeout);
+    return o instanceof PaginationConfig that
+        && cursor == that.cursor
+        && index == that.index
+        && Objects.equals(defaultPaginationMethod, that.defaultPaginationMethod)
+        && Objects.equals(defaultPageSize, that.defaultPageSize)
+        && Objects.equals(maxPageSize, that.maxPageSize)
+        && Objects.equals(cursorTimeout, that.cursorTimeout);
   }
 
   /**

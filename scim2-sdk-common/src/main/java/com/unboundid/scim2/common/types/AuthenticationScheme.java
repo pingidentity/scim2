@@ -208,33 +208,14 @@ public class AuthenticationScheme
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    AuthenticationScheme that = (AuthenticationScheme) o;
-    if (primary != that.primary)
-    {
-      return false;
-    }
-    if (!Objects.equals(name, that.name))
-    {
-      return false;
-    }
-    if (!Objects.equals(description, that.description))
-    {
-      return false;
-    }
-    if (!Objects.equals(specUri, that.specUri))
-    {
-      return false;
-    }
-    if (!Objects.equals(documentationUri, that.documentationUri))
-    {
-      return false;
-    }
-    return Objects.equals(type, that.type);
+    return o instanceof AuthenticationScheme that
+        && primary == that.primary
+        && Objects.equals(name, that.name)
+        && Objects.equals(description, that.description)
+        && Objects.equals(specUri, that.specUri)
+        && Objects.equals(documentationUri, that.documentationUri)
+        && Objects.equals(type, that.type);
   }
 
   /**

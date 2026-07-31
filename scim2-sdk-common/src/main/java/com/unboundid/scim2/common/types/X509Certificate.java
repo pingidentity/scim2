@@ -198,25 +198,12 @@ public class X509Certificate
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    X509Certificate that = (X509Certificate) o;
-    if (!Objects.equals(display, that.display))
-    {
-      return false;
-    }
-    if (!Objects.equals(type, that.type))
-    {
-      return false;
-    }
-    if (!Objects.equals(primary, that.primary))
-    {
-      return false;
-    }
-    return Arrays.equals(value, that.value);
+    return o instanceof X509Certificate that
+        && Objects.equals(display, that.display)
+        && Objects.equals(type, that.type)
+        && Objects.equals(primary, that.primary)
+        && Arrays.equals(value, that.value);
   }
 
   /**

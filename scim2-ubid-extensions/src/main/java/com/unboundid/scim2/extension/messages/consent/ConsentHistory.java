@@ -121,21 +121,11 @@ public final class ConsentHistory extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    ConsentHistory that = (ConsentHistory) o;
-    if (!Objects.equals(client, that.client))
-    {
-      return false;
-    }
-    return Objects.equals(scopes, that.scopes);
+    return o instanceof ConsentHistory that
+        && super.equals(o)
+        && Objects.equals(client, that.client)
+        && Objects.equals(scopes, that.scopes);
   }
 
   /**

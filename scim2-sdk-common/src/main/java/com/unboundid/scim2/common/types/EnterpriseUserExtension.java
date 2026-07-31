@@ -268,33 +268,14 @@ public class EnterpriseUserExtension
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    EnterpriseUserExtension that = (EnterpriseUserExtension) o;
-    if (!Objects.equals(employeeNumber, that.employeeNumber))
-    {
-      return false;
-    }
-    if (!Objects.equals(costCenter, that.costCenter))
-    {
-      return false;
-    }
-    if (!Objects.equals(organization, that.organization))
-    {
-      return false;
-    }
-    if (!Objects.equals(division, that.division))
-    {
-      return false;
-    }
-    if (!Objects.equals(department, that.department))
-    {
-      return false;
-    }
-    return Objects.equals(manager, that.manager);
+    return o instanceof EnterpriseUserExtension that
+        && Objects.equals(employeeNumber, that.employeeNumber)
+        && Objects.equals(costCenter, that.costCenter)
+        && Objects.equals(organization, that.organization)
+        && Objects.equals(division, that.division)
+        && Objects.equals(department, that.department)
+        && Objects.equals(manager, that.manager);
   }
 
   /**
