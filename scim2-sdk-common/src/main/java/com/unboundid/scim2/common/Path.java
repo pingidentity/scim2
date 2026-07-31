@@ -254,18 +254,9 @@ public final class Path implements Iterable<Path.Element>
       {
         return true;
       }
-      if (o == null || getClass() != o.getClass())
-      {
-        return false;
-      }
-
-      Element element = (Element) o;
-
-      if (!toLowerCase(attribute).equals(toLowerCase(element.attribute)))
-      {
-        return false;
-      }
-      return Objects.equals(valueFilter, element.valueFilter);
+      return o instanceof Element element
+          && Objects.equals(valueFilter, element.valueFilter)
+          && attribute.equalsIgnoreCase(element.attribute);
     }
 
     /**
@@ -669,18 +660,11 @@ public final class Path implements Iterable<Path.Element>
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    Path path = (Path) o;
-    if (schemaUrn != null ? !schemaUrn.equalsIgnoreCase(path.schemaUrn) :
-        path.schemaUrn != null)
-    {
-      return false;
-    }
-    return elements.equals(path.elements);
+    return o instanceof Path path
+        && (schemaUrn == null ? path.schemaUrn == null :
+            schemaUrn.equalsIgnoreCase(path.schemaUrn))
+        && elements.equals(path.elements);
   }
 
   /**

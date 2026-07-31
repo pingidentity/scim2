@@ -118,13 +118,9 @@ public class ETagConfig
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    ETagConfig that = (ETagConfig) o;
-    return supported == that.supported;
+    return o instanceof ETagConfig that
+        && supported == that.supported;
   }
 
   /**

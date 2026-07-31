@@ -199,25 +199,12 @@ public class InstantMessagingAddress
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    InstantMessagingAddress im = (InstantMessagingAddress) o;
-    if (!Objects.equals(value, im.value))
-    {
-      return false;
-    }
-    if (!Objects.equals(display, im.display))
-    {
-      return false;
-    }
-    if (!Objects.equals(type, im.type))
-    {
-      return false;
-    }
-    return Objects.equals(primary, im.primary);
+    return o instanceof InstantMessagingAddress ims
+        && Objects.equals(value, ims.value)
+        && Objects.equals(display, ims.display)
+        && Objects.equals(type, ims.type)
+        && Objects.equals(primary, ims.primary);
   }
 
   /**

@@ -192,17 +192,11 @@ public class GroupResource extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
-    final GroupResource that = (GroupResource) o;
-    return Objects.equals(displayName, that.displayName) &&
-        Objects.equals(members, that.members);
+
+    return o instanceof GroupResource that
+        && super.equals(o)
+        && Objects.equals(displayName, that.displayName)
+        && Objects.equals(members, that.members);
   }
 
   /**

@@ -663,12 +663,9 @@ public class BulkRequest extends BaseScimResource
     {
       return true;
     }
-    if (!(o instanceof BulkRequest that))
-    {
-      return false;
-    }
 
-    return Objects.equals(failOnErrors, that.failOnErrors)
+    return o instanceof BulkRequest that
+        && Objects.equals(failOnErrors, that.failOnErrors)
         && operations.equals(that.getOperations());
   }
 

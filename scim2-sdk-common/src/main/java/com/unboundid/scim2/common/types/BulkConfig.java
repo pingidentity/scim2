@@ -131,21 +131,11 @@ public class BulkConfig
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    BulkConfig that = (BulkConfig) o;
-    if (maxOperations != that.maxOperations)
-    {
-      return false;
-    }
-    if (maxPayloadSize != that.maxPayloadSize)
-    {
-      return false;
-    }
-    return supported == that.supported;
+    return o instanceof BulkConfig that
+        && maxOperations == that.maxOperations
+        && maxPayloadSize == that.maxPayloadSize
+        && supported == that.supported;
   }
 
   /**

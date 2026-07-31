@@ -112,17 +112,9 @@ public class RetiredPassword
       return true;
     }
 
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-
-    RetiredPassword that = (RetiredPassword) o;
-    if (!Objects.equals(passwordRetiredTime, that.passwordRetiredTime))
-    {
-      return false;
-    }
-    return Objects.equals(passwordExpirationTime, that.passwordExpirationTime);
+    return o instanceof RetiredPassword that
+        && Objects.equals(passwordRetiredTime, that.passwordRetiredTime)
+        && Objects.equals(passwordExpirationTime, that.passwordExpirationTime);
   }
 
   /**

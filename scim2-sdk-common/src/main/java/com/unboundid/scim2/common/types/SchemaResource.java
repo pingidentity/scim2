@@ -141,25 +141,12 @@ public class SchemaResource extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    SchemaResource that = (SchemaResource) o;
-    if (!Objects.equals(name, that.name))
-    {
-      return false;
-    }
-    if (!Objects.equals(description, that.description))
-    {
-      return false;
-    }
-    return Objects.equals(attributes, that.attributes);
+    return o instanceof SchemaResource that
+        && super.equals(o)
+        && Objects.equals(name, that.name)
+        && Objects.equals(description, that.description)
+        && Objects.equals(attributes, that.attributes);
   }
 
   /**

@@ -561,17 +561,9 @@ public abstract class PatchOperation
       {
         return true;
       }
-      if (o == null || getClass() != o.getClass())
-      {
-        return false;
-      }
-
-      AddOperation that = (AddOperation) o;
-      if (!Objects.equals(getPath(), that.getPath()))
-      {
-        return false;
-      }
-      return value.equals(that.value);
+      return o instanceof AddOperation that
+          && Objects.equals(getPath(), that.getPath())
+          && value.equals(that.value);
     }
 
     /**
@@ -766,18 +758,9 @@ public abstract class PatchOperation
       {
         return true;
       }
-      if (o == null || getClass() != o.getClass())
-      {
-        return false;
-      }
-
-      RemoveOperation that = (RemoveOperation) o;
-      if (!Objects.equals(value, that.value))
-      {
-        return false;
-      }
-
-      return Objects.equals(getPath(), that.getPath());
+      return o instanceof RemoveOperation that
+          && Objects.equals(value, that.value)
+          && Objects.equals(getPath(), that.getPath());
     }
 
     /**
@@ -884,17 +867,9 @@ public abstract class PatchOperation
       {
         return true;
       }
-      if (o == null || getClass() != o.getClass())
-      {
-        return false;
-      }
-
-      ReplaceOperation that = (ReplaceOperation) o;
-      if (!Objects.equals(getPath(), that.getPath()))
-      {
-        return false;
-      }
-      return value.equals(that.value);
+      return o instanceof ReplaceOperation that
+          && Objects.equals(getPath(), that.getPath())
+          && value.equals(that.value);
     }
 
     /**

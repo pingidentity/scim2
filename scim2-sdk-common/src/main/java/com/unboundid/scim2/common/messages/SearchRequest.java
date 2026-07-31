@@ -356,45 +356,17 @@ public class SearchRequest extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    SearchRequest that = (SearchRequest) o;
-    if (!Objects.equals(attributes, that.attributes))
-    {
-      return false;
-    }
-    if (!Objects.equals(excludedAttributes, that.excludedAttributes))
-    {
-      return false;
-    }
-    if (!Objects.equals(filter, that.filter))
-    {
-      return false;
-    }
-    if (!Objects.equals(sortBy, that.sortBy))
-    {
-      return false;
-    }
-    if (sortOrder != that.sortOrder)
-    {
-      return false;
-    }
-    if (!Objects.equals(startIndex, that.startIndex))
-    {
-      return false;
-    }
-    if (!Objects.equals(cursor, that.cursor))
-    {
-      return false;
-    }
-    return Objects.equals(count, that.count);
+    return o instanceof SearchRequest that
+        && super.equals(o)
+        && Objects.equals(filter, that.filter)
+        && Objects.equals(sortBy, that.sortBy)
+        && sortOrder == that.sortOrder
+        && Objects.equals(startIndex, that.startIndex)
+        && Objects.equals(cursor, that.cursor)
+        && Objects.equals(count, that.count)
+        && Objects.equals(attributes, that.attributes)
+        && Objects.equals(excludedAttributes, that.excludedAttributes);
   }
 
   /**

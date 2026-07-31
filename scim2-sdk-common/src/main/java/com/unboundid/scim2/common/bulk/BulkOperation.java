@@ -832,12 +832,9 @@ public abstract class BulkOperation
     {
       return true;
     }
-    if (!(o instanceof BulkOperation that))
-    {
-      return false;
-    }
 
-    return Objects.equals(method, that.method)
+    return o instanceof BulkOperation that
+        && Objects.equals(method, that.method)
         && Objects.equals(path, that.path)
         && Objects.equals(bulkId, that.bulkId)
         && Objects.equals(version, that.version)

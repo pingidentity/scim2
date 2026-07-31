@@ -194,15 +194,12 @@ public class Member
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    final Member member = (Member) o;
-    return value.equals(member.value) &&
-        Objects.equals(ref, member.ref) &&
-        Objects.equals(type, member.type) &&
-        Objects.equals(display, member.display);
+
+    return o instanceof Member member
+        && value.equals(member.value)
+        && Objects.equals(ref, member.ref)
+        && Objects.equals(type, member.type)
+        && Objects.equals(display, member.display);
   }
 
   /**

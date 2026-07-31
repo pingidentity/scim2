@@ -90,13 +90,9 @@ public class ChangePasswordConfig
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    ChangePasswordConfig that = (ChangePasswordConfig) o;
-    return supported == that.supported;
+    return o instanceof ChangePasswordConfig that
+        && supported == that.supported;
   }
 
   /**

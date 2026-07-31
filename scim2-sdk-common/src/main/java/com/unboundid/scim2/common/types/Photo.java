@@ -198,25 +198,12 @@ public class Photo
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    Photo photo = (Photo) o;
-    if (!Objects.equals(value, photo.value))
-    {
-      return false;
-    }
-    if (!Objects.equals(display, photo.display))
-    {
-      return false;
-    }
-    if (!Objects.equals(type, photo.type))
-    {
-      return false;
-    }
-    return Objects.equals(primary, photo.primary);
+    return o instanceof Photo photo
+        && Objects.equals(value, photo.value)
+        && Objects.equals(display, photo.display)
+        && Objects.equals(type, photo.type)
+        && Objects.equals(primary, photo.primary);
   }
 
   /**

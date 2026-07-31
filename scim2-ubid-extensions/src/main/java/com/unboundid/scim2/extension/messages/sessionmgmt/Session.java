@@ -254,42 +254,16 @@ public class Session extends BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-    if (!super.equals(o))
-    {
-      return false;
-    }
 
-    Session session = (Session) o;
-    if (!Objects.equals(lastLoginMethods, session.lastLoginMethods))
-    {
-      return false;
-    }
-    if (!Objects.equals(lastSecondFactorMethods,
-        session.lastSecondFactorMethods))
-    {
-      return false;
-    }
-    if (!Objects.equals(lastLogin, session.lastLogin))
-    {
-      return false;
-    }
-    if (!Objects.equals(lastSecondFactor, session.lastSecondFactor))
-    {
-      return false;
-    }
-    if (!Objects.equals(ipAddress, session.ipAddress))
-    {
-      return false;
-    }
-    if (!Objects.equals(userAgentString, session.userAgentString))
-    {
-      return false;
-    }
-    return Objects.equals(clients, session.clients);
+    return o instanceof Session session
+        && super.equals(o)
+        && Objects.equals(lastLoginMethods, session.lastLoginMethods)
+        && Objects.equals(lastSecondFactorMethods, session.lastSecondFactorMethods)
+        && Objects.equals(lastLogin, session.lastLogin)
+        && Objects.equals(lastSecondFactor, session.lastSecondFactor)
+        && Objects.equals(ipAddress, session.ipAddress)
+        && Objects.equals(userAgentString, session.userAgentString)
+        && Objects.equals(clients, session.clients);
   }
 
   /**
@@ -300,8 +274,8 @@ public class Session extends BaseScimResource
   @Override
   public int hashCode()
   {
-    return Objects.hash(lastLoginMethods, lastSecondFactorMethods, lastLogin,
-        lastSecondFactor, ipAddress, userAgentString, clients);
+    return Objects.hash(super.hashCode(), lastLoginMethods,
+        lastSecondFactorMethods, lastLogin, lastSecondFactor, ipAddress,
+        userAgentString, clients);
   }
 }
-

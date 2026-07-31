@@ -553,14 +553,13 @@ public class GenericScimResource implements ScimResource
   @Override
   public boolean equals(@Nullable final Object o)
   {
-    if (!(o instanceof GenericScimResource resource))
+    if (this == o)
     {
-      return false;
+      return true;
     }
 
-    // Null nodes should not occur, but we should be defensive about this
-    // possibility.
-    return Objects.equals(objectNode, resource.getObjectNode());
+    return o instanceof GenericScimResource resource
+        && Objects.equals(objectNode, resource.getObjectNode());
   }
 
   /**

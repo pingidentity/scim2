@@ -496,29 +496,13 @@ public abstract class BaseScimResource
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    BaseScimResource that = (BaseScimResource) o;
-    if (!schemaUrns.equals(that.schemaUrns))
-    {
-      return false;
-    }
-    if (!Objects.equals(id, that.id))
-    {
-      return false;
-    }
-    if (!Objects.equals(externalId, that.externalId))
-    {
-      return false;
-    }
-    if (!Objects.equals(meta, that.meta))
-    {
-      return false;
-    }
-    return Objects.equals(extensionObjectNode, that.extensionObjectNode);
+    return o instanceof BaseScimResource that
+        && schemaUrns.equals(that.schemaUrns)
+        && Objects.equals(id, that.id)
+        && Objects.equals(externalId, that.externalId)
+        && Objects.equals(meta, that.meta)
+        && Objects.equals(extensionObjectNode, that.extensionObjectNode);
   }
 
   /**

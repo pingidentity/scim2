@@ -326,13 +326,9 @@ public class CaseIgnoreMap implements Map<String, JsonNode>
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    CaseIgnoreMap that = (CaseIgnoreMap) o;
-    return attributes.equals(that.attributes);
+    return o instanceof CaseIgnoreMap that
+        && attributes.equals(that.attributes);
   }
 
   /**

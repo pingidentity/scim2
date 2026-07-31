@@ -87,13 +87,8 @@ public class PatchConfig
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    PatchConfig that = (PatchConfig) o;
-    return supported == that.supported;
+    return o instanceof PatchConfig that && supported == that.supported;
   }
 
   /**

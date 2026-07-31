@@ -344,41 +344,16 @@ public class Address
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    Address address = (Address) o;
-    if (!Objects.equals(formatted, address.formatted))
-    {
-      return false;
-    }
-    if (!Objects.equals(streetAddress, address.streetAddress))
-    {
-      return false;
-    }
-    if (!Objects.equals(locality, address.locality))
-    {
-      return false;
-    }
-    if (!Objects.equals(region, address.region))
-    {
-      return false;
-    }
-    if (!Objects.equals(postalCode, address.postalCode))
-    {
-      return false;
-    }
-    if (!Objects.equals(country, address.country))
-    {
-      return false;
-    }
-    if (!Objects.equals(type, address.type))
-    {
-      return false;
-    }
-    return Objects.equals(primary, address.primary);
+    return o instanceof Address address
+        && Objects.equals(formatted, address.formatted)
+        && Objects.equals(streetAddress, address.streetAddress)
+        && Objects.equals(locality, address.locality)
+        && Objects.equals(region, address.region)
+        && Objects.equals(postalCode, address.postalCode)
+        && Objects.equals(country, address.country)
+        && Objects.equals(type, address.type)
+        && Objects.equals(primary, address.primary);
   }
 
   /**

@@ -151,17 +151,9 @@ public class JsonReference<T>
       return true;
     }
 
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
-
-    JsonReference<?> that = (JsonReference<?>) o;
-    if (set != that.set)
-    {
-      return false;
-    }
-    return Objects.equals(obj, that.obj);
+    return o instanceof JsonReference<?> that
+        && set == that.set
+        && Objects.equals(obj, that.obj);
   }
 
   /**

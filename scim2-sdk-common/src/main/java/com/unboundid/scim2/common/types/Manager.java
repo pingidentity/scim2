@@ -164,21 +164,11 @@ public class Manager
     {
       return true;
     }
-    if (o == null || getClass() != o.getClass())
-    {
-      return false;
-    }
 
-    Manager manager = (Manager) o;
-    if (!Objects.equals(value, manager.value))
-    {
-      return false;
-    }
-    if (!Objects.equals(ref, manager.ref))
-    {
-      return false;
-    }
-    return Objects.equals(displayName, manager.displayName);
+    return o instanceof Manager manager
+        && Objects.equals(value, manager.value)
+        && Objects.equals(ref, manager.ref)
+        && Objects.equals(displayName, manager.displayName);
   }
 
   /**
