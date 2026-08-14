@@ -135,7 +135,7 @@ public abstract class BaseScimResource
    * Constructs a new BaseScimResource object, and sets the urn if
    * the class extending this one is annotated.
    *
-   * @param id The ID fo the object.
+   * @param id The ID of the object.
    */
   public BaseScimResource(@Nullable final String id)
   {
