@@ -89,7 +89,7 @@ import java.util.Objects;
  * </ul>
  * <br><br>
  *
- * The following JSON represents a schema element with a single attribute
+ * The following JSON object represents a schema element with a single attribute
  * definition for {@code userName}, as described by RFC 7643:
  * <pre>
  * {

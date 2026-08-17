@@ -28,7 +28,7 @@ Fixed `hashCode()` implementations in `Session.java` and `ExternalIdentity.java`
 did not include the values of `id` and `meta`.
 
 Updated `AttributeDefinition.java` to use default values for missing definitions as dictated by
-RFC 7643 Section 2.2. For example, if `uniqueness` is missing from a JSON, the AttributeDefinition
+RFC 7643. For example, if `uniqueness` is missing from a JSON object, the AttributeDefinition
 will use `Uniqueness.NONE`. This class's documentation was also updated to provide better details.
 
 Updated `AttributeDefinition.toString()` to print a JSON model of the object to be consistent with
