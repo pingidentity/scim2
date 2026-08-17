@@ -27,6 +27,13 @@ set on the MapperFactory.
 Fixed `hashCode()` implementations in `Session.java` and `ExternalIdentity.java` which previously
 did not include the values of `id` and `meta`.
 
+Updated `AttributeDefinition.java` to use default values for missing definitions as dictated by
+RFC 7643. For example, if `uniqueness` is missing from a JSON object, the AttributeDefinition
+will use `Uniqueness.NONE`. This class's documentation was also updated to provide better details.
+
+Updated `AttributeDefinition.toString()` to print a JSON model of the object to be consistent with
+all other SCIM objects in the library.
+
 ## 6.0.0 - 2026-May-11
 The UnboundID SCIM SDK has been updated to use version 3 of the Jackson library (this release ships
 with v3.1.3). This change aligns the SCIM SDK with HTTP libraries such as Spring Framework 7/Spring
