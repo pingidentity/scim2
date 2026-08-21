@@ -32,14 +32,18 @@
 package com.unboundid.scim2.common.utils;
 
 import com.unboundid.scim2.common.annotations.NotNull;
-import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalQueries;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.TimeZone;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 /**
@@ -47,6 +51,16 @@ import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
  * type is defined as a valid {@code xsd:dateTime} in
  * <a href="https://datatracker.ietf.org/doc/html/rfc7643#section-2.3.5">
  * RFC 7643, section 2.3.5</a>.
+ * <br><br>
+ *
+ * This class is primarily used during JSON deserialization of date-time values
+ * within this SDK. However, it may be used as a general utility class to
+ * perform conversions between date-time strings (e.g., "1970-01-01T00:00:00Z")
+ * and Java objects. The primary entry points to this class are:
+ * <ul>
+ *   <li> {@link #parse(String)}: Converts a timestamp string to a Java object.
+ *   <li> {@link #format(Calendar) format()}: Converts an object to a string.
+ * </ul>
  */
 public final class DateTimeUtils
 {
@@ -135,23 +149,13 @@ public final class DateTimeUtils
    * @param dateStr A SCIM 2 DateTime string.
    * @return The DateTime string as a Calendar value.
    * @throws IllegalArgumentException if the string cannot be parsed as an
-   * xsd:dateTime value.
+   *                                  {@code xsd:dateTime} value.
    */
   @NotNull
   public static Calendar parse(@NotNull final String dateStr)
       throws IllegalArgumentException
   {
-    OffsetDateTime parsedTime;
-    try
-    {
-      parsedTime = OffsetDateTime.parse(dateStr);
-    }
-    catch (DateTimeException e)
-    {
-      // Re-throw as an IllegalArgumentException for backward compatibility with
-      // previous releases of the SCIM SDK.
-      throw new IllegalArgumentException(e);
-    }
+    OffsetDateTime parsedTime = asOffsetDateTime(dateStr);
 
     // In previous releases, the default region was "GMT+00:00".
     ZoneOffset offset = parsedTime.getOffset();
@@ -159,7 +163,7 @@ public final class DateTimeUtils
         ? GMT : TimeZone.getTimeZone(offset);
 
     Calendar calendar = Calendar.getInstance(zone);
-    calendar.setTime(Date.from(parsedTime.toInstant()));
+    calendar.setTimeInMillis(parsedTime.toInstant().toEpochMilli());
     return calendar;
   }
 
@@ -179,5 +183,39 @@ public final class DateTimeUtils
     Calendar c = Calendar.getInstance(DEFAULT_TIME_ZONE);
     c.setTimeInMillis(timestampMillis);
     return c;
+  }
+
+  /**
+   * Converts the provided string timestamp into a Java object.
+   */
+  @NotNull
+  private static OffsetDateTime asOffsetDateTime(@NotNull final String dateStr)
+      throws IllegalArgumentException
+  {
+    Exception original;
+    try
+    {
+      // Parse timestamps of the form: 1970-01-01T00:00:00Z
+      return OffsetDateTime.parse(dateStr);
+    }
+    catch (Exception e)
+    {
+      original = e;
+    }
+
+    try
+    {
+      // Fall back to a date parser without a time: 1970-01-01
+      TemporalAccessor parsedDate = ISO_DATE.parse(dateStr);
+      ZoneOffset offset = Objects.requireNonNullElse(
+          parsedDate.query(TemporalQueries.offset()), ZoneOffset.UTC);
+
+      return LocalDate.from(parsedDate).atStartOfDay().atOffset(offset);
+    }
+    catch (Exception e)
+    {
+      // Use the original exception, as it is more likely to have relevant info.
+      throw new IllegalArgumentException(original);
+    }
   }
 }
