@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 Fixed an issue with deserializing a GenericScimResource object when it was embedded within a list
 response.
 
-Update Jackson from 3.13.0 to 3.20.0 and jackson-annotations to from 2.21 to 2.22.
+Updated Jackson from 3.1.3 to 3.2.2 and jackson-annotations to from 2.21 to 2.22.
 
 Fixed an issue where GenericScimResource would use case-sensitive property names if the resource was
 initialized with an ObjectNode that was not a SCIM SDK `CaseIgnoreObjectNode`.
