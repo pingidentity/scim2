@@ -2,7 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## 6.0.1 - TBD
+## 6.1.0 - TBD
+Added support for [RFC 9944](https://datatracker.ietf.org/doc/html/rfc9944), an update to the SCIM
+standard describing device management with SCIM. For an overview on leveraging device management
+with the SCIM SDK, see the `DeviceResource` class-level Javadoc. This update includes:
+* A new `com.unboundid.scim2.common.types.devices` package that contains model classes for resources
+  such as `EndpointAppResource`, as well as extension objects such as `BleDeviceExtension`.
+* Updated `AttributeDefinition` with new fields such as `pattern`, as well as the addition of
+  `MANUFACTURER` and `ENTERPRISE` uniqueness constants.
+
 Fixed an issue with deserializing a GenericScimResource object when it was embedded within a list
 response.
 
@@ -598,4 +606,3 @@ Make sure the Response is always closed after a SCIM operation.
 
 ## v1.2.9 - 2016-07-08
 Initial Public Release
-
