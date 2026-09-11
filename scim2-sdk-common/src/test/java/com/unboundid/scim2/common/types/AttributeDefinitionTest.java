@@ -116,7 +116,8 @@ public class AttributeDefinitionTest
     String minimalJson = """
         {
           "name": "attrName",
-          "multiValued": false
+          "multiValued": false,
+          "pattern": "[a-z]+"
         }""";
 
     AttributeDefinition deserializedMinimal = reader.readValue(minimalJson);
@@ -128,6 +129,7 @@ public class AttributeDefinitionTest
         .setReturned(AttributeDefinition.Returned.DEFAULT)
         .setUniqueness(AttributeDefinition.Uniqueness.NONE)
         .setCaseExact(false)
+        .setPattern("[a-z]+")
         .build();
 
     assertThat(deserializedMinimal).isEqualTo(expectedMinimal);
@@ -145,6 +147,20 @@ public class AttributeDefinitionTest
         }""";
     assertThatThrownBy(() -> reader.readValue(noMultiValued))
         .isInstanceOf(JacksonException.class);
+
+    // Attributes cannot use patterns on non-string types.
+    String invalidPattern = """
+        {
+          "name": "attrName",
+          "type": "boolean",
+          "multiValued": false,
+          "pattern": "*"
+        }""";
+    assertThatThrownBy(() -> reader.readValue(invalidPattern))
+        .isInstanceOf(JacksonException.class)
+        .hasMessageContaining("Cannot set the 'pattern' of an attribute for")
+        .hasMessageContaining("non-string types");
+
   }
 
   /**

@@ -63,6 +63,8 @@ import com.unboundid.scim2.common.types.ResourceTypeResource;
 import com.unboundid.scim2.common.types.SchemaResource;
 import com.unboundid.scim2.common.types.ServiceProviderConfigResource;
 import com.unboundid.scim2.common.types.UserResource;
+import com.unboundid.scim2.common.types.devices.DeviceResource;
+import com.unboundid.scim2.common.types.devices.EndpointAppResource;
 import com.unboundid.scim2.common.utils.ApiConstants;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
@@ -152,6 +154,10 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
 
     config.register(TestResourceEndpoint.class);
     config.register(new TestSingletonResourceEndpoint());
+
+    // RFC 9944 endpoints.
+    config.register(DeviceResourceEndpoint.class);
+    config.register(EndpointAppResourceEndpoint.class);
 
     return config;
   }
@@ -257,7 +263,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     final ListResponse<SchemaResource> returnedSchemas =
         new ScimService(target()).getSchemas();
 
-    assertThat(returnedSchemas.getTotalResults()).isEqualTo(3);
+    // In addition to the User and Bulk schemas, other resource types such as
+    // devices contribute their core schemas and their optional extensions.
+    assertThat(returnedSchemas.getTotalResults()).isEqualTo(11);
     assertThat(returnedSchemas)
         .contains(userSchema)
         .contains(enterpriseSchema);
@@ -310,7 +318,8 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     final ListResponse<ResourceTypeResource> returnedResourceTypes =
         new ScimService(target()).getResourceTypes();
 
-    assertThat(returnedResourceTypes.getTotalResults()).isEqualTo(4);
+    // This value should be updated when a new JAX-RS resource type is added.
+    assertThat(returnedResourceTypes.getTotalResults()).isEqualTo(6);
     assertThat(returnedResourceTypes)
         .contains(resourceType)
         .contains(singletonResourceType);
@@ -1298,7 +1307,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
         .isInstanceOf(IllegalArgumentException.class);
   }
 
-
   /**
    * This test performs basic validation for bulk requests and responses in a
    * Jakarta-RS environment. Handling for these {@code /Bulk} calls come from
@@ -1479,6 +1487,98 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       assertThat(g).isInstanceOfSatisfying(GenericScimResource.class,
           gsr -> assertThat(gsr.getExternalId()).isEqualTo("tarmac"));
     });
+  }
+
+
+  /**
+   * This test performs basic validation of the client request path for the
+   * RFC 9944 {@code /Devices} endpoint. The response is defined in
+   * {@link DeviceResourceEndpoint#search}.
+   */
+  @Test
+  public void testGetDevices() throws ScimException
+  {
+    final ScimService scimService = new ScimService(target());
+
+    final ListResponse<DeviceResource> devices =
+        scimService.searchRequest("/Devices").invoke(DeviceResource.class);
+
+    assertThat(devices.getTotalResults()).isEqualTo(1);
+    assertThat(devices.getResources()).hasSize(1);
+
+    final DeviceResource device = devices.getResources().get(0);
+    assertThat(device.getId()).isEqualTo("dev-1");
+    assertThat(device.getActive()).isTrue();
+    assertThat(device.getDisplayName()).isEqualTo("Test Device");
+
+    // The endpoint does not populate the mudUrl or groups attributes.
+    assertThat(device.getMudUrl()).isNull();
+    assertThat(device.getGroups()).isEmpty();
+
+    // The metadata should have been updated by the ResourcePreparer.
+    assertThat(device.getMeta()).isNotNull();
+    assertThat(device.getMeta().getResourceType()).isEqualTo("Device");
+    assertThat(device.getMeta().getLocation()).isEqualTo(
+        UriBuilder.fromUri(getBaseUri()).path("Devices").path("dev-1")
+            .build());
+
+    // The Device resource type should also be discoverable via /ResourceTypes,
+    // and should declare its RFC 9944 Sec. 7 optional schema extensions.
+    final ResourceTypeResource deviceResourceType =
+        scimService.getResourceType("Device");
+    assertThat(deviceResourceType.getSchema()).hasToString(
+        "urn:ietf:params:scim:schemas:core:2.0:Device");
+    assertThat(deviceResourceType.getSchemaExtensions())
+        .extracting(ext -> ext.getSchema().toString())
+        .containsExactlyInAnyOrder(
+            "urn:ietf:params:scim:schemas:extension:ble:2.0:Device",
+            "urn:ietf:params:scim:schemas:extension:dpp:2.0:Device",
+            "urn:ietf:params:scim:schemas:extension:endpointAppsExt:2.0:Device",
+            "urn:ietf:params:scim:schemas:extension:ethernet-mab:2.0:Device",
+            "urn:ietf:params:scim:schemas:extension:fido-device-onboard:2.0:Device",
+            "urn:ietf:params:scim:schemas:extension:zigbee:2.0:Device");
+    assertThat(deviceResourceType.getSchemaExtensions())
+        .allMatch(ext -> !ext.isRequired());
+  }
+
+  /**
+   * This test performs basic validation of the client request path for
+   * {@code /EndpointApps}. The response is defined in
+   * {@link EndpointAppResourceEndpoint#search}.
+   */
+  @Test
+  public void testGetEndpointApps() throws ScimException
+  {
+    final ScimService scimService = new ScimService(target());
+
+    final ListResponse<EndpointAppResource> apps =
+        scimService.searchRequest("/EndpointApps")
+            .invoke(EndpointAppResource.class);
+
+    assertThat(apps.getTotalResults()).isEqualTo(1);
+    assertThat(apps.getResources()).hasSize(1);
+
+    final EndpointAppResource app = apps.getResources().get(0);
+    assertThat(app.getId()).isEqualTo("app-1");
+    assertThat(app.getApplicationType()).isEqualTo("deviceControl");
+    assertThat(app.getApplicationName()).isEqualTo("Test App");
+    assertThat(app.getClientToken()).isNull();
+    assertThat(app.getCertificateInfo()).isNull();
+    assertThat(app.hasEmptyCertificateInfo()).isTrue();
+    assertThat(app.getGroups()).isEmpty();
+
+    assertThat(app.getMeta()).isNotNull();
+    assertThat(app.getMeta().getResourceType()).isEqualTo("EndpointApp");
+    assertThat(app.getMeta().getLocation())
+        .isEqualTo(UriBuilder.fromUri(getBaseUri()).path("EndpointApps")
+            .path("app-1").build());
+
+    // The resource type should also be discoverable via /ResourceTypes.
+    final ResourceTypeResource endpointAppResourceType =
+        scimService.getResourceType("EndpointApp");
+    assertThat(endpointAppResourceType.getSchema()).hasToString(
+        "urn:ietf:params:scim:schemas:core:2.0:EndpointApp");
+    assertThat(endpointAppResourceType.getSchemaExtensions()).isNull();
   }
 
 

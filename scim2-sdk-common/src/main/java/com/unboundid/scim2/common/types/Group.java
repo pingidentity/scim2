@@ -36,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
+import com.unboundid.scim2.common.utils.JsonUtils;
 
 import java.net.URI;
 import java.util.Objects;
@@ -126,7 +127,7 @@ public class Group
    * Specifies the identifier of the User's group.
    *
    * @param value The identifier of the User's group.
-   * @return This object.
+   * @return This group membership identifier.
    */
   @NotNull
   public Group setValue(@Nullable final String value)
@@ -152,15 +153,30 @@ public class Group
    * Specifies the URI of the corresponding Group resource to which the user
    * belongs.
    *
-   * @param ref The URI of the corresponding Group resource to which the user
-   * belongs.
-   * @return This object.
+   * @param ref The URI of the {@link GroupResource} being referenced.
+   * @return This group membership identifier.
    */
   @NotNull
   public Group setRef(@Nullable final URI ref)
   {
     this.ref = ref;
     return this;
+  }
+
+  /**
+   * Alternate version of {@link #setRef(URI)} that accepts a string.
+   *
+   * @param ref The URI of the {@link GroupResource} being referenced.
+   * @return This group membership identifier.
+   * @throws IllegalArgumentException  If the value was not a valid URI.
+   *
+   * @since 6.1.0
+   */
+  @NotNull
+  public Group setRef(@Nullable final String ref)
+      throws IllegalArgumentException
+  {
+    return setRef((ref == null) ? null : URI.create(ref));
   }
 
   /**
@@ -178,7 +194,7 @@ public class Group
    * Specifies the display name, primarily used for display purposes.
    *
    * @param display The display name.
-   * @return This object.
+   * @return This group membership identifier.
    */
   @NotNull
   public Group setDisplay(@Nullable final String display)
@@ -202,7 +218,7 @@ public class Group
    * Specifies the label indicating the attribute's function.
    *
    * @param type The label indicating the attribute's function.
-   * @return This object.
+   * @return This group membership identifier.
    */
   @NotNull
   public Group setType(@Nullable final String type)
@@ -243,5 +259,18 @@ public class Group
   public int hashCode()
   {
     return Objects.hash(value, ref, display, type);
+  }
+
+  /**
+   * Retrieves a string representation of this group membership identifier.
+   *
+   * @return  A string representation of this group membership identifier.
+   */
+  @Override
+  @NotNull
+  public String toString()
+  {
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 }

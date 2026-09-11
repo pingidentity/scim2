@@ -57,7 +57,6 @@ import java.util.Set;
  */
 public final class ResourceTypeDefinition
 {
-
   @Nullable
   private final String id;
 

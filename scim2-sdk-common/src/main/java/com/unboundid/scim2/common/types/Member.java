@@ -56,7 +56,7 @@ public class Member
   @Nullable
   @Attribute(description = "A label indicating the type of resource, e.g.,"
           + " 'User' or 'Group'",
-      canonicalValues = { "User", "Group" },
+      canonicalValues = { "User", "Group", "Device", "EndpointApp" },
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.IMMUTABLE,
       returned = AttributeDefinition.Returned.DEFAULT,
@@ -67,7 +67,7 @@ public class Member
   @Nullable
   @Attribute(description = "The URI of the member resource.",
       isRequired = false,
-      referenceTypes = { "User", "Group" },
+      referenceTypes = { "User", "Group", "Device", "EndpointApp" },
       mutability = AttributeDefinition.Mutability.IMMUTABLE,
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE)

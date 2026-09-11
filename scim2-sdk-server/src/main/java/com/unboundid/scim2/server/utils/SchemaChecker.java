@@ -48,6 +48,7 @@ import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
 import com.unboundid.scim2.common.utils.StaticUtils;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 import tools.jackson.databind.node.StringNode;
 
@@ -710,7 +711,7 @@ public class SchemaChecker
     // Iterate through the schemas
     JsonNode schemas = objectNode.get(
         SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION.getName());
-    if (schemas != null && schemas.isArray())
+    if (schemas instanceof ArrayNode)
     {
       boolean coreFound = false;
       for (JsonNode schema : schemas)
@@ -769,7 +770,7 @@ public class SchemaChecker
 
         checkObjectNode(prefix, Path.root(schema.asString()),
             extensionDefinition.getKey().getAttributes(),
-            (ObjectNode) extensionNode, results, currentObjectNode,
+            extensionNode.asObject(), results, currentObjectNode,
                         isReplace, false, isReplace);
       }
 
@@ -787,15 +788,8 @@ public class SchemaChecker
       {
         if (schemaExtension.getValue())
         {
-          boolean found = false;
-          for (JsonNode schema : schemas)
-          {
-            if (schema.asString().equals(schemaExtension.getKey().getId()))
-            {
-              found = true;
-              break;
-            }
-          }
+          boolean found = schemas.valueStream().anyMatch(
+              s -> s.asString().equals(schemaExtension.getKey().getId()));
           if (!found)
           {
             results.syntaxIssues.add(prefix + "Value for attribute schemas " +
@@ -1039,52 +1033,53 @@ public class SchemaChecker
     // Check the node type.
     switch (attribute.getType())
     {
-      case STRING:
-      case DATETIME:
-      case REFERENCE:
+      case STRING, DATETIME, REFERENCE ->
+      {
         if (!node.isString())
         {
           results.syntaxIssues.add(prefix + "Value for attribute " + path +
               " must be a JSON string");
           return;
         }
-        break;
-      case BOOLEAN:
+      }
+      case BOOLEAN ->
+      {
         if (!node.isBoolean())
         {
           results.syntaxIssues.add(prefix + "Value for attribute " + path +
               " must be a JSON boolean");
           return;
         }
-        break;
-      case DECIMAL:
-      case INTEGER:
+      }
+      case DECIMAL, INTEGER ->
+      {
         if (!node.isNumber())
         {
           results.syntaxIssues.add(prefix + "Value for attribute " + path +
               " must be a JSON number");
           return;
         }
-        break;
-      case COMPLEX:
+      }
+      case COMPLEX ->
+      {
         if (!node.isObject())
         {
           results.syntaxIssues.add(prefix + "Value for attribute " + path +
               " must be a JSON object");
           return;
         }
-        break;
-      case BINARY:
+      }
+      case BINARY ->
+      {
         if (!node.isString() && !node.isBinary())
         {
           results.syntaxIssues.add(prefix + "Value for attribute " + path +
               " must be a JSON string");
           return;
         }
-        break;
-      default:
-        throw new RuntimeException(
-            "Unexpected attribute type " + attribute.getType());
+      }
+      default -> throw new RuntimeException(
+          "Unexpected attribute type " + attribute.getType());
     }
 
     // If the node type checks out, check the actual value.
@@ -1143,46 +1138,37 @@ public class SchemaChecker
         break;
       case STRING:
         // Check for canonical values
+        String value = node.asString();
         if (attribute.getCanonicalValues() != null)
         {
-          boolean found = false;
-          for (String canonicalValue : attribute.getCanonicalValues())
+          boolean caseExact = attribute.isCaseExact();
+          if (attribute.getCanonicalValues().stream().noneMatch(
+              v -> caseExact ? v.equals(value) : v.equalsIgnoreCase(value)))
           {
-            if (attribute.isCaseExact() ?
-                canonicalValue.equals(node.asString()) :
-                StaticUtils.toLowerCase(canonicalValue).equals(
-                    StaticUtils.toLowerCase(node.asString())))
-            {
-              found = true;
-              break;
-            }
-          }
-          if (!found)
-          {
-            results.syntaxIssues.add(prefix + "Value " + node.asString() +
+            results.syntaxIssues.add(prefix + "Value " + value +
                 " is not valid for attribute " + path + " because it " +
                 "is not one of the canonical types: " +
-                StaticUtils.collectionToString(
-                    attribute.getCanonicalValues(), ", "));
+                String.join(", ", attribute.getCanonicalValues()));
           }
+        }
+
+        // Evaluate the regex pattern constraint, if it exists.
+        String pattern = attribute.getPattern();
+        if (pattern != null && !value.matches(pattern))
+        {
+          results.syntaxIssues.add(prefix + "Value " + value +
+              " is not valid for attribute " + path +
+              " because it does not match the required pattern: " + pattern);
         }
     }
 
     // Special checking of the schemas attribute to ensure that
     // no undefined schemas are listed.
-    if (attribute.equals(SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION) &&
-        path.size() == 1)
+    AttributeDefinition schemas = SchemaUtils.SCHEMAS_ATTRIBUTE_DEFINITION;
+    if (path.size() == 1 && attribute.equals(schemas))
     {
-      boolean found = false;
-      for (SchemaResource schemaExtension :
-          resourceType.getSchemaExtensions().keySet())
-      {
-        if (node.asString().equals(schemaExtension.getId()))
-        {
-          found = true;
-          break;
-        }
-      }
+      boolean found = resourceType.getSchemaExtensions().keySet().stream()
+          .anyMatch(ext -> node.asString().equals(ext.getId()));
       if (!found)
       {
         found = node.asString().equals(resourceType.getCoreSchema().getId());
@@ -1255,7 +1241,16 @@ public class SchemaChecker
     for (i = objectNode.properties().iterator(); i.hasNext();)
     {
       String undefinedAttribute = i.next().getKey();
-      if (parentPath.size() == 0)
+
+      if ("Device".equalsIgnoreCase(resourceType.getName())
+          && SchemaUtils.isUrn(undefinedAttribute))
+      {
+        // Devices can have nested schema URN values, which should not count as
+        // an undefined attribute.
+        Debug.debug(Level.FINE, DebugType.OTHER,
+            "Skipping schema URN: " + undefinedAttribute);
+      }
+      else if (parentPath.size() == 0)
       {
         if (!enabledOptions.contains(Option.ALLOW_UNDEFINED_ATTRIBUTES))
         {

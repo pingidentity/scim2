@@ -1690,6 +1690,11 @@ public class SchemaCheckerTestCase
             "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager.undefined eq \"value\""));
     assertEquals(results.getFilterIssues().size(), 0,
         results.getFilterIssues().toString());
+
+    undefinedAttributesChecker
+        .disable(SchemaChecker.Option.ALLOW_UNDEFINED_ATTRIBUTES);
+    undefinedSubAttributesChecker
+        .disable(SchemaChecker.Option.ALLOW_UNDEFINED_SUB_ATTRIBUTES);
   }
 
   /**

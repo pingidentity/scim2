@@ -36,6 +36,7 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.types.devices.DeviceResource;
 
 import java.util.List;
 import java.util.Objects;
@@ -48,8 +49,8 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * RFC 7643 section 4.2</a>. A group resource, or "group", is a collection of
  * other resources, which helps organize user accounts. Groups often contain
  * {@link UserResource} objects, but can contain other resource types, including
- * other group resources. Groups contained within other groups are referred to
- * as "nested" groups.
+ * {@link DeviceResource} or even other group resources. Groups contained within
+ * other groups are referred to as "nested" groups.
  * <br><br>
  *
  * Groups help enable role-based access control, such as allowing a group of
@@ -76,7 +77,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *     "displayName": "Example Group With One Member",
  *     "members": [{
  *       "value": "cab1e",
- *       "type": "DIRECT"
+ *       "type": "User"
  *     }]
  *   }
  * </pre>
@@ -85,7 +86,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * <pre><code>
  *   GroupResource group = new GroupResource()
  *       .setDisplayName("Example Group With One Member")
- *       .setMembers(new Member().setValue("cab1e").setType("DIRECT"));
+ *       .setMembers(new Member().setValue("cab1e").setType("User"));
  *   group.setId("8e4d749e-6dde-420a-8d71-00faf8d57510");
  * </code></pre>
  */

@@ -59,7 +59,7 @@ public class Manager
   @Nullable
   @Attribute(description = "The URI of the SCIM resource representing " +
       "the User's manager.",
-      isRequired = true,
+      isRequired = false,
       isCaseExact = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT,

@@ -254,6 +254,7 @@ public class SchemaUtils
       addMutability(attributeBuilder, schemaProperty);
       addMultiValued(attributeBuilder, propertyDescriptor, schemaProperty);
       addCanonicalValues(attributeBuilder, schemaProperty);
+      addPattern(attributeBuilder, schemaProperty);
 
       Class<?> propertyCls = propertyDescriptor.getPropertyType();
 
@@ -292,10 +293,8 @@ public class SchemaUtils
    * @param propertyDescriptor property descriptor for the field to build
    *                           the attribute for.
    * @param jsonProperty the Jackson JsonProperty annotation for the field.
-   * @return this.
    */
-  @NotNull
-  private static AttributeDefinition.Builder addName(
+  private static void addName(
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @NotNull final PropertyDescriptor propertyDescriptor,
       @Nullable final JsonProperty jsonProperty)
@@ -309,8 +308,6 @@ public class SchemaUtils
     {
       attributeBuilder.setName(propertyDescriptor.getName());
     }
-
-    return attributeBuilder;
   }
 
   /**
@@ -322,10 +319,8 @@ public class SchemaUtils
    *                           the attribute for.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
-   * @return this.
    */
-  @NotNull
-  private static AttributeDefinition.Builder addMultiValued(
+  private static void addMultiValued(
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @NotNull final PropertyDescriptor propertyDescriptor,
       @NotNull final Attribute schemaProperty)
@@ -354,8 +349,6 @@ public class SchemaUtils
     }
 
     attributeBuilder.setMultiValued(multiValued);
-
-    return attributeBuilder;
   }
 
   /**
@@ -365,10 +358,8 @@ public class SchemaUtils
    * @param attributeBuilder builder for a scim attribute.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
-   * @return this.
    */
-  @NotNull
-  private static AttributeDefinition.Builder addDescription(
+  private static void addDescription(
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
@@ -376,8 +367,6 @@ public class SchemaUtils
     {
       attributeBuilder.setDescription(schemaProperty.description());
     }
-
-    return attributeBuilder;
   }
 
   /**
@@ -387,10 +376,8 @@ public class SchemaUtils
    * @param attributeBuilder builder for a scim attribute.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
-   * @return this.
    */
-  @NotNull
-  private static AttributeDefinition.Builder addCaseExact(
+  private static void addCaseExact(
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
@@ -398,8 +385,6 @@ public class SchemaUtils
     {
       attributeBuilder.setCaseExact(schemaProperty.isCaseExact());
     }
-
-    return attributeBuilder;
   }
 
   /**
@@ -409,10 +394,8 @@ public class SchemaUtils
    * @param attributeBuilder builder for a scim attribute.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
-   * @return this.
    */
-  @NotNull
-  private static AttributeDefinition.Builder addRequired(
+  private static void addRequired(
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
@@ -420,8 +403,6 @@ public class SchemaUtils
     {
       attributeBuilder.setRequired(schemaProperty.isRequired());
     }
-
-    return attributeBuilder;
   }
 
   /**
@@ -431,10 +412,8 @@ public class SchemaUtils
    * @param attributeBuilder builder for a scim attribute.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
-   * @return this.
    */
-  @NotNull
-  private static AttributeDefinition.Builder addCanonicalValues(
+  private static void addCanonicalValues(
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
@@ -442,8 +421,6 @@ public class SchemaUtils
     {
       attributeBuilder.addCanonicalValues(schemaProperty.canonicalValues());
     }
-
-    return attributeBuilder;
   }
 
   /**
@@ -453,10 +430,8 @@ public class SchemaUtils
    * @param attributeBuilder builder for a scim attribute.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
-   * @return this.
    */
-  @NotNull
-  private static AttributeDefinition.Builder addReturned(
+  private static void addReturned(
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
@@ -464,8 +439,6 @@ public class SchemaUtils
     {
       attributeBuilder.setReturned(schemaProperty.returned());
     }
-
-    return attributeBuilder;
   }
 
   /**
@@ -475,10 +448,8 @@ public class SchemaUtils
    * @param attributeBuilder builder for a scim attribute.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
-   * @return this.
    */
-  @NotNull
-  private static AttributeDefinition.Builder addUniqueness(
+  private static void addUniqueness(
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
@@ -486,8 +457,6 @@ public class SchemaUtils
     {
       attributeBuilder.setUniqueness(schemaProperty.uniqueness());
     }
-
-    return attributeBuilder;
   }
 
   /**
@@ -497,10 +466,8 @@ public class SchemaUtils
    * @param attributeBuilder builder for a scim attribute.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
-   * @return this.
    */
-  @NotNull
-  private static AttributeDefinition.Builder addReferenceTypes(
+  private static void addReferenceTypes(
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
@@ -508,8 +475,24 @@ public class SchemaUtils
     {
       attributeBuilder.addReferenceTypes(schemaProperty.referenceTypes());
     }
+  }
 
-    return attributeBuilder;
+  /**
+   * This method will find the regular expression constraint for the attribute,
+   * and add it to the builder if the annotation specifies a non-empty pattern.
+   *
+   * @param attributeBuilder builder for a scim attribute.
+   * @param schemaProperty the schema property annotation for the field
+   *                       to build an attribute for.
+   */
+  private static void addPattern(
+      @NotNull final AttributeDefinition.Builder attributeBuilder,
+      @Nullable final Attribute schemaProperty)
+  {
+    if (schemaProperty != null && !schemaProperty.pattern().isEmpty())
+    {
+      attributeBuilder.setPattern(schemaProperty.pattern());
+    }
   }
 
   /**
@@ -520,10 +503,8 @@ public class SchemaUtils
    * @param attributeBuilder builder for a scim attribute.
    * @param schemaProperty the schema property annotation for the field
    *                       to build an attribute for.
-   * @return this.
    */
-  @NotNull
-  private static AttributeDefinition.Builder addMutability(
+  private static void addMutability(
       @NotNull final AttributeDefinition.Builder attributeBuilder,
       @Nullable final Attribute schemaProperty)
   {
@@ -535,8 +516,6 @@ public class SchemaUtils
     {
       attributeBuilder.setMutability(AttributeDefinition.Mutability.READ_WRITE);
     }
-
-    return attributeBuilder;
   }
 
   /**
@@ -551,8 +530,8 @@ public class SchemaUtils
   private static AttributeDefinition.Type getAttributeType(
       @NotNull final Class<?> cls)
   {
-    if ((cls == Integer.class) ||
-        (cls == int.class))
+    if (cls == Integer.class || cls == int.class
+        || cls == Long.class || cls == long.class)
     {
       return AttributeDefinition.Type.INTEGER;
     }
@@ -737,7 +716,7 @@ public class SchemaUtils
     // The 'schemaId' is the URN. Make sure it begins with the "urn:" prefix.
     // The 'name' field is a human-friendly name for the object.
     String schemaId =
-        SchemaUtils.getSchemaIdFromAnnotation(cls);
+          SchemaUtils.getSchemaIdFromAnnotation(cls);
 
     if ((schemaId == null) || (schemaId.isEmpty()))
     {

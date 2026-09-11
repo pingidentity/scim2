@@ -297,15 +297,6 @@ public class GenericScimResource implements ScimResource
   /**
    * {@inheritDoc}
    */
-  public void setSchemaUrns(@NotNull final String schemaUrn,
-                            @Nullable final String... schemaUrns)
-  {
-    setSchemaUrns(toList(schemaUrn, schemaUrns));
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   @Override
   @Nullable
   public String getExternalId()
