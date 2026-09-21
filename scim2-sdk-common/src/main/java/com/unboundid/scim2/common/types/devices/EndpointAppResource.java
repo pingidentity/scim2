@@ -95,9 +95,8 @@ import java.util.Objects;
  *   EndpointAppResource app = new EndpointAppResource()
  *       .setApplicationType("deviceControl")
  *       .setApplicationName("Device Control App 1")
- *       .setCertificateInfo(new CertificateInfo()
- *           .setRootCA("d2hhdHNVcA==")
- *           .setSubjectName("CN=EX1,O=Example,C=US"));
+ *       .setCertificateInfo(new CertificateInfo("CN=EX1,O=Example,C=US")
+ *           .setRootCA("d2hhdHNVcA=="));
  *   app.setId("e9e30dba");
  *   app.setMeta(new Meta()
  *       .setResourceType("EndpointApp")
@@ -302,19 +301,6 @@ public class EndpointAppResource extends BaseScimResource
                                        @Nullable final Group... groups)
   {
     return setGroups(StaticUtils.toList(group, groups));
-  }
-
-  /**
-   * Verifies whether the {@code certificateInfo} field is {@code null} or
-   * contains no data. This can be used by SCIM applications to check if a
-   * certificateInfo has fields that should be validated.
-   *
-   * @return  {@code true} if the certificateInfo is {@code null} or empty.
-   */
-  public boolean hasEmptyCertificateInfo()
-  {
-    return certificateInfo == null || (certificateInfo.getRootCA() == null
-        && certificateInfo.getSubjectName() == null);
   }
 
   /**

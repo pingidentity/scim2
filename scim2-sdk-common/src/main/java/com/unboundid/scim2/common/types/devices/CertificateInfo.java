@@ -32,6 +32,8 @@
 
 package com.unboundid.scim2.common.types.devices;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -52,14 +54,13 @@ import java.util.Objects;
  *                             trust anchor). This will be base64-encoded.
  *   <li> {@code subjectName}: This string represents either the subjectName or
  *                             the subjectAlternateName of the certificate.
+ *                             This field is required.
  * </ul>
  *
  * For example JSON structure and Java code, see {@link EndpointAppResource}.
  * <br><br>
  *
- * The fields on {@code CertificateInfo} are optional, and the SCIM SDK stores
- * these string values without attempting to validate their format. As stated
- * above, {@code rootCA} will be a {@link java.util.Base64} value. For
+ * As stated above, {@code rootCA} will be a {@link java.util.Base64} value. For
  * {@code subjectName}, if the field represents a subjectAlternateName, it will
  * be a DNS name such as {@code www.example.com}. Otherwise, it will represent a
  * DN (distinguished name) such as {@code CN=EX1,O=Example,C=US}.
@@ -77,6 +78,7 @@ import java.util.Objects;
  *        as OAuth 2, MUST be pre-arranged.
  * </ul>
  */
+@JsonPropertyOrder({"rootCA", "subjectName"})
 public class CertificateInfo
 {
   @Nullable
@@ -84,11 +86,24 @@ public class CertificateInfo
       isRequired = false)
   private String rootCA;
 
-  @Nullable
+  @NotNull
   @Attribute(description =
       "The subject name for the endpoint application certificate.",
-      isRequired = false)
-  private String subjectName;
+      isRequired = true)
+  @JsonProperty
+  private final String subjectName;
+
+  /**
+   * Creates a new CertificateInfo.
+   *
+   * @param subjectName   The Distinguished Name or DNS name.
+   */
+  public CertificateInfo(
+      @NotNull @JsonProperty(value = "subjectName", required = true)
+      final String subjectName)
+  {
+    this.subjectName = Objects.requireNonNull(subjectName);
+  }
 
   /**
    * Retrieves the root certificate authority for the endpoint application.
@@ -119,23 +134,10 @@ public class CertificateInfo
    *
    * @return The subject name.
    */
-  @Nullable
+  @NotNull
   public String getSubjectName()
   {
     return subjectName;
-  }
-
-  /**
-   * Specifies the subject name for the endpoint application certificate.
-   *
-   * @param subjectName The subject name.
-   * @return This CertificateInfo.
-   */
-  @NotNull
-  public CertificateInfo setSubjectName(@Nullable final String subjectName)
-  {
-    this.subjectName = subjectName;
-    return this;
   }
 
   /**

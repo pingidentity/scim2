@@ -126,16 +126,15 @@ public class DevicesTest
           "applicationType": "deviceControl",
           "applicationName": "Device Control App 1",
           "certificateInfo": {
-            "rootCA": "MIIBIjAN...",
+            "rootCA": "SGV5U3RvcERlY29kaW5nTWU=",
             "subjectName": "www.example.com"
           }
         }""";
     String expectedJson = JsonUtils.getObjectReader().readTree(json)
         .toPrettyString();
 
-    CertificateInfo cert = new CertificateInfo()
-        .setRootCA("MIIBIjAN...")
-        .setSubjectName("www.example.com");
+    CertificateInfo cert = new CertificateInfo("www.example.com")
+        .setRootCA("SGV5U3RvcERlY29kaW5nTWU=");
 
     EndpointAppResource app = new EndpointAppResource()
         .setApplicationType("deviceControl")
@@ -147,7 +146,6 @@ public class DevicesTest
     assertThat(app.getApplicationType()).isEqualTo("deviceControl");
     assertThat(app.getApplicationName()).isEqualTo("Device Control App 1");
     assertThat(app.getCertificateInfo()).isEqualTo(cert);
-    assertThat(app.hasEmptyCertificateInfo()).isFalse();
     assertThat(app.toString()).isEqualTo(expectedJson);
 
     String serialized = JsonUtils.getObjectWriter().writeValueAsString(app);
@@ -172,12 +170,6 @@ public class DevicesTest
         .forType(EndpointAppResource.class).readValue(richSerialized);
     assertThat(rich).isEqualTo(richDeserialized);
 
-    // Validate utility methods.
-    EndpointAppResource emptyApp = new EndpointAppResource();
-    assertThat(emptyApp.hasEmptyCertificateInfo()).isTrue();
-    emptyApp = emptyApp.setCertificateInfo(new CertificateInfo());
-    assertThat(emptyApp.hasEmptyCertificateInfo()).isTrue();
-
     // Ensure max length restrictions on client tokens.
     assertThatThrownBy(() -> new EndpointAppResource()
         .setClientToken("a".repeat(501)))
@@ -199,9 +191,8 @@ public class DevicesTest
     String expectedJson = JsonUtils.getObjectReader().readTree(json)
         .toPrettyString();
 
-    CertificateInfo cert = new CertificateInfo()
-        .setRootCA("SGV5U3RvcERlY29kaW5nTWU=")
-        .setSubjectName("CN=EX1, O=Example, C=US");
+    CertificateInfo cert = new CertificateInfo("CN=EX1, O=Example, C=US")
+        .setRootCA("SGV5U3RvcERlY29kaW5nTWU=");
 
     assertThat(cert.getRootCA()).isEqualTo("SGV5U3RvcERlY29kaW5nTWU=");
     assertThat(cert.getSubjectName()).isEqualTo("CN=EX1, O=Example, C=US");
@@ -420,16 +411,16 @@ public class DevicesTest
   {
     String json = """
         {
-          "key": "TheKeyvalueRetrievedFromOOB",
+          "key": "retrievedKey",
           "randomNumber": 987654
         }""";
     String expectedJson = JsonUtils.getObjectReader().readTree(json)
         .toPrettyString();
 
     BlePairingOutOfBand figure6 = new BlePairingOutOfBand(
-        "TheKeyvalueRetrievedFromOOB", 987654);
+        "retrievedKey", 987654);
 
-    assertThat(figure6.getKey()).isEqualTo("TheKeyvalueRetrievedFromOOB");
+    assertThat(figure6.getKey()).isEqualTo("retrievedKey");
     assertThat(figure6.getRandomNumber()).isEqualTo(987654);
     assertThat(figure6.toString()).isEqualTo(expectedJson);
 
@@ -439,7 +430,7 @@ public class DevicesTest
     assertThat(figure6).isEqualTo(deserialized);
 
     BlePairingOutOfBand withConfirmation = new BlePairingOutOfBand(
-        "TheKeyvalueRetrievedFromOOB", 987654)
+        "retrievedKey", 987654)
         .setConfirmationNumber(111222);
 
     assertThat(withConfirmation.getConfirmationNumber()).isEqualTo(111222);
@@ -846,8 +837,8 @@ public class DevicesTest
     // Setting only irk is accepted.
     BleDeviceExtension onlyIrk =
         new BleDeviceExtension("2C:54:91:88:C9:E2", "5.4")
-            .setIrk("secretirk");
-    assertThat(onlyIrk.getIrk()).isEqualTo("secretirk");
+            .setIrk("secretIRK");
+    assertThat(onlyIrk.getIrk()).isEqualTo("secretIRK");
 
     // Setting only separateBroadcastAddress is accepted.
     BleDeviceExtension onlySba =
@@ -860,14 +851,14 @@ public class DevicesTest
     assertThatThrownBy(() ->
         new BleDeviceExtension("2C:54:91:88:C9:E2", "5.4")
             .setSeparateBroadcastAddress("AA:BB:88:77:22:11")
-            .setIrk("secretirk"))
+            .setIrk("secretIRK"))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("fields cannot both be set");
 
     // Setting separateBroadcastAddress when irk is already set must throw.
     assertThatThrownBy(() ->
         new BleDeviceExtension("2C:54:91:88:C9:E2", "5.4")
-            .setIrk("secretirk")
+            .setIrk("secretIRK")
             .setSeparateBroadcastAddress("AA:BB:88:77:22:11"))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("fields cannot both be set");
@@ -883,7 +874,7 @@ public class DevicesTest
     List<Object> instances = List.of(
         new DeviceResource(),
         new EndpointAppResource(),
-        new CertificateInfo(),
+        new CertificateInfo("OU=People , DC=Example, DC=Com"),
         new BleDeviceExtension("2C:54:91:88:C9:E2", "5.4"),
         new BlePairingJustWorks(),
         new BlePairingNull(),

@@ -1564,7 +1564,6 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
     assertThat(app.getApplicationName()).isEqualTo("Test App");
     assertThat(app.getClientToken()).isNull();
     assertThat(app.getCertificateInfo()).isNull();
-    assertThat(app.hasEmptyCertificateInfo()).isTrue();
     assertThat(app.getGroups()).isEmpty();
 
     assertThat(app.getMeta()).isNotNull();
