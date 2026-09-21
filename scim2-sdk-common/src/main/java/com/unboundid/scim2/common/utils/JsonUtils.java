@@ -1111,7 +1111,7 @@ public class JsonUtils
    * {@code long} values in ObjectNodes, generally within an extension schema.
    * During deserialization, integer-like values are only stored as a long if
    * the value requires more than 32 bits. This can cause problems when another
-   * object is instantiated in code with a long, and the objects are compared
+   * object is instantiated in code using a long, and the objects are compared
    * with {@code equals()}. Since the 64-bit data type is different from the
    * 32-bit one, this will always return false even if the actual numbers
    * represented are identical.
@@ -1131,8 +1131,8 @@ public class JsonUtils
   }
 
   /**
-   * Serializes an object to a pretty-printed JSON string, overriding values
-   * of top-level field names that match the provided list.
+   * Prints an object as a pretty-printed JSON string, overriding values
+   * of top-level string fields that match the provided list.
    *
    * @param resource        The resource to serialize.
    * @param redactedFields  The names of the fields to redact.

@@ -38,7 +38,6 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
-import com.unboundid.scim2.common.types.AttributeDefinition;
 import com.unboundid.scim2.common.utils.StaticUtils;
 
 import java.util.List;
@@ -88,8 +87,8 @@ import java.util.Objects;
  * This JSON value can be created with the following Java code:
  * <pre><code>
  *   // Create the device extension.
- *   ZigbeeDeviceExtension zigbee = new ZigbeeDeviceExtension(
- *       "50:32:5F:FF:FE:E7:67:28", "3.0");
+ *   ZigbeeDeviceExtension zigbee =
+ *       new ZigbeeDeviceExtension("50:32:5F:FF:FE:E7:67:28", "3.0");
  *
  *   // Create the device.
  *   DeviceResource device = new DeviceResource()
@@ -120,8 +119,6 @@ public class ZigbeeDeviceExtension extends DeviceExtension
   @Attribute(description = "The Zigbee versions supported by this device.",
       isRequired = true,
       isCaseExact = false,
-      mutability = AttributeDefinition.Mutability.READ_WRITE,
-      returned = AttributeDefinition.Returned.DEFAULT,
       multiValueClass = String.class)
   private final List<String> versionSupport;
 
@@ -130,9 +127,6 @@ public class ZigbeeDeviceExtension extends DeviceExtension
       + " Must match the pattern: " + EUI64_PATTERN,
       isRequired = true,
       isCaseExact = false,
-      mutability = AttributeDefinition.Mutability.READ_WRITE,
-      returned = AttributeDefinition.Returned.DEFAULT,
-      uniqueness = AttributeDefinition.Uniqueness.NONE,
       pattern = EUI64_PATTERN)
   private final String deviceEui64Address;
 

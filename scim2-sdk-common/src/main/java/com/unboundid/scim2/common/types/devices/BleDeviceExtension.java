@@ -36,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -114,11 +115,10 @@ import java.util.TreeSet;
  * This device can be created with the following Java code:
  * <pre><code>
  *   // Create the device extension.
- *   BleDeviceExtension ble =
- *       new BleDeviceExtension("2C:54:91:88:C9:E2", "5.4")
- *           .setIsRandom(false)
- *           .setMobility(true)
- *           .setPairingExtension(new BlePairingPassKey(123456));
+ *   BleDeviceExtension ble = new BleDeviceExtension("2C:54:91:88:C9:E2", "5.4")
+ *       .setIsRandom(false)
+ *       .setMobility(true)
+ *       .setPairingExtension(new BlePairingPassKey(123456));
  *
  *   // Create the device.
  *   DeviceResource device = new DeviceResource()
@@ -151,6 +151,7 @@ import java.util.TreeSet;
 @Schema(id = "urn:ietf:params:scim:schemas:extension:ble:2.0:Device",
     name = "BLE Extension",
     description = "BLE extension for a Device resource")
+@JsonPropertyOrder({"versionSupport", "deviceMacAddress"})
 public class BleDeviceExtension extends DeviceExtension
 {
   @NotNull
@@ -211,18 +212,18 @@ public class BleDeviceExtension extends DeviceExtension
   /**
    * Creates a new Bluetooth Low Energy device extension.
    *
-   * @param versionSupport    The BLE versions supported by this device.
-   * @param deviceMacAddress  The device's MAC address.
+   * @param deviceMacAddress The device's MAC address.
+   * @param versionSupport   The BLE versions supported by this device.
    */
   @JsonCreator
   public BleDeviceExtension(
-      @NotNull @JsonProperty(value = "versionSupport", required = true)
-      final List<String> versionSupport,
       @NotNull @JsonProperty(value = "deviceMacAddress", required = true)
-      final String deviceMacAddress)
+      final String deviceMacAddress,
+      @NotNull @JsonProperty(value = "versionSupport", required = true)
+      final List<String> versionSupport)
   {
-    this.versionSupport = List.copyOf(Objects.requireNonNull(versionSupport));
     this.deviceMacAddress = Objects.requireNonNull(deviceMacAddress);
+    this.versionSupport = List.copyOf(versionSupport);
   }
 
   /**
@@ -236,7 +237,7 @@ public class BleDeviceExtension extends DeviceExtension
                             @NotNull final String versionSupport,
                             @Nullable final String... versions)
   {
-    this(StaticUtils.toList(versionSupport, versions), deviceMacAddress);
+    this(deviceMacAddress, StaticUtils.toList(versionSupport, versions));
   }
 
   /**
@@ -294,7 +295,7 @@ public class BleDeviceExtension extends DeviceExtension
   @NotNull
   public BleDeviceExtension setSeparateBroadcastAddress(
       @Nullable final List<String> separateBroadcastAddress)
-      throws IllegalStateException
+          throws IllegalStateException
   {
     validate(this.irk, separateBroadcastAddress);
     this.separateBroadcastAddress = (separateBroadcastAddress == null)
@@ -399,7 +400,7 @@ public class BleDeviceExtension extends DeviceExtension
    * <br><br>
    *
    * In general, methods like {@link #setPairingExtension(BlePairingMethod)}
-   * should be used instead, which will automatically set the appropriate
+   * should be used instead, as this will automatically set the appropriate
    * fields.
    *
    * @param pairingMethods  The list of pairing methods.
@@ -414,13 +415,12 @@ public class BleDeviceExtension extends DeviceExtension
    * Sets a BLE pairing method extension on this device extension, and adds
    * its schema URN to the {@code pairingMethods} field.
    *
-   * @param <T>           The data type of the pairing method extension.
    * @param pairingMethod The pairing method extension to set.
    * @return This Bluetooth Low Energy extension.
    */
   @NotNull
-  public <T extends BlePairingMethod> BleDeviceExtension setPairingExtension(
-      @NotNull final T pairingMethod)
+  public BleDeviceExtension setPairingExtension(
+      @NotNull final BlePairingMethod pairingMethod)
   {
     setExtension(pairingMethod);
 
@@ -435,7 +435,10 @@ public class BleDeviceExtension extends DeviceExtension
 
   /**
    * Removes a BLE pairing method extension from this device extension, and
-   * removes its schema URN from the {@code pairingMethods} field.
+   * removes its schema URN from the {@code pairingMethods} field. For example:
+   * <pre><code>
+   *   bleObject.removePairingExtension(BlePairingPassKey.class);
+   * </code></pre>
    *
    * @param <T>          The data type of the pairing method extension.
    * @param pairingClass The class of the pairing method extension to remove.

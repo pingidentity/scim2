@@ -36,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -60,6 +61,14 @@ public abstract class DeviceExtension extends BaseScimResource
    */
   protected DeviceExtension()
   {
-    setSchemaUrns(List.of());
+    super.setSchemaUrns(List.of());
+  }
+
+  @Override
+  public void setSchemaUrns(@NotNull final Collection<String> schemaUrns)
+      throws UnsupportedOperationException
+  {
+    throw new UnsupportedOperationException(
+        "Cannot set the 'schemas' value of a device extension.");
   }
 }

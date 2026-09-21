@@ -32,12 +32,8 @@
 
 package com.unboundid.scim2.common.types.devices;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
-
-import java.util.Collection;
-import java.util.List;
+import com.unboundid.scim2.common.utils.JsonUtils;
 
 
 /**
@@ -49,22 +45,13 @@ import java.util.List;
  *
  * For more background on devices, see the {@link DeviceResource} class.
  */
-@JsonIgnoreProperties("schemas")
-public abstract class BlePairingMethod extends BaseScimResource
+public abstract class BlePairingMethod
 {
-  /**
-   * Create a new Bluetooth Low-Energy Pairing Method.
-   */
-  protected BlePairingMethod()
-  {
-    super.setSchemaUrns(List.of());
-  }
-
   @Override
-  public void setSchemaUrns(@NotNull final Collection<String> schemaUrns)
-      throws UnsupportedOperationException
+  @NotNull
+  public String toString()
   {
-    throw new UnsupportedOperationException(
-        "Cannot set the 'schemas' value of a BLE Pairing Method.");
+    return JsonUtils.getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(this);
   }
 }

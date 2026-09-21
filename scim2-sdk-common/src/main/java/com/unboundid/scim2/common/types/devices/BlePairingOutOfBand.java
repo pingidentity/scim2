@@ -65,16 +65,15 @@ import java.util.Objects;
  * appear inside a {@link BleDeviceExtension}:
  * <pre>
  *   "urn:ietf:params:scim:schemas:extension:pairingOOB:2.0:Device": {
- *     "key": "TheKeyValueRetrievedFromOOB",
+ *     "key": "retrievedKey",
  *     "randomNumber": 238796813516896
  *   }
  * </pre>
  *
  * This value can be set on a device extension with the following Java code:
  * <pre><code>
- *   bleDeviceExtension.setPairingExtension(new BlePairingOutOfBand()
- *       .setKey("TheKeyValueRetrievedFromOOB")
- *       .setRandomNumber(238796813516896L));
+ *   bleDeviceExtension.setPairingExtension(
+ *       new BlePairingOutOfBand("retrievedKey", 238796813516896L));
  * </code></pre>
  */
 @Schema(id = "urn:ietf:params:scim:schemas:extension:pairingOOB:2.0:Device",
@@ -92,6 +91,7 @@ public class BlePairingOutOfBand extends BlePairingMethod
   @NotNull
   @Attribute(description = "The random number used in OOB pairing.",
       isRequired = true)
+  @JsonProperty("randomNumber")
   private final NumericNode randomNumber;
 
   @Nullable
@@ -150,18 +150,6 @@ public class BlePairingOutOfBand extends BlePairingMethod
   public long getRandomNumber()
   {
     return randomNumber.longValue();
-  }
-
-  /**
-   * Fetches the random number as a JsonNode for Jackson processing.
-   *
-   * @return The random number.
-   */
-  @NotNull
-  @JsonProperty("randomNumber")
-  protected NumericNode getRandomNumberNode()
-  {
-    return randomNumber;
   }
 
   /**

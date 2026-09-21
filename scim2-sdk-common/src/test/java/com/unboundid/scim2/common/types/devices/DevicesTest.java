@@ -41,6 +41,7 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -340,6 +341,13 @@ public class DevicesTest
     assertThat(ble)
         .isNotEqualTo(deserialized.getExtension(BleDeviceExtension.class));
 
+    // Try the same call again. This tests removal of a pairing method object
+    // that is not present on a BLE extension. This should be a no-op.
+    var list = List.copyOf(ble.getPairingMethodExtensions());
+    ble.removePairingExtension(BlePairingOutOfBand.class);
+    assertThat(ble.getPairingMethodExtensions()).isEqualTo(list);
+    assertThat(ble.getPairingMethods()).hasSameSizeAs(list);
+
     // Test manually setting the pairing methods.
     ble.setPairingMethods(List.of("urn:customValue"));
     assertThat(ble.getPairingMethods()).containsOnly("urn:customValue");
@@ -382,10 +390,6 @@ public class DevicesTest
     BlePairingJustWorks deserialized = JsonUtils.getObjectReader()
         .forType(BlePairingJustWorks.class).readValue(json);
     assertThat(deserialized).isEqualTo(new BlePairingJustWorks());
-
-    // Setting schema URNs should fail for any BLE pairing method.
-    assertThatThrownBy(() -> deserialized.setSchemaUrns(List.of()))
-        .isInstanceOf(UnsupportedOperationException.class);
   }
 
   /**
@@ -703,6 +707,33 @@ public class DevicesTest
   }
 
   /**
+   * Ensure that device extensions are explicitly forbidden from having a value
+   * for {@code schemas}.
+   */
+  @Test
+  public void testNoSchemasForDeviceExtensions()
+  {
+    EthernetMabDeviceExtension mab = new EthernetMabDeviceExtension("address");
+    assertThatThrownBy(() -> mab.setSchemaUrns("urn:invalidUrn"))
+        .isInstanceOf(UnsupportedOperationException.class)
+        .hasMessage("Cannot set the 'schemas' value of a device extension.");
+
+    // Any 'schemas' JSON value should be dropped, as it is invalid.
+    String wifiJson = """
+        {
+          "schemas": [ "urn:this:should:be:unused" ],
+          "dppVersion": 3,
+          "bootstrappingMethod": [ "QR" ],
+          "bootstrapKey": "secretKey",
+          "deviceMacAddress": "00:11:22:33:44:55"
+        }""";
+
+    DppDeviceExtension wifiExtension = JsonUtils.getObjectReader()
+        .forType(DppDeviceExtension.class).readValue(wifiJson);
+    assertThat(wifiExtension.getSchemaUrns()).isEmpty();
+  }
+
+  /**
    * Tests for {@link EndpointAppReference}.
    */
   @Test
@@ -769,7 +800,7 @@ public class DevicesTest
         .toPrettyString();
 
     EndpointAppReference app1 = new EndpointAppReference()
-        .setValue("e9e30dba-f08f-4109-8486-d5c6a3316212")
+        .setValue(UUID.fromString("e9e30dba-f08f-4109-8486-d5c6a3316212"))
         .setRef("https://example.com/v2/EndpointApps/"
                 + "e9e30dba-f08f-4109-8486-d5c6a3316212");
     EndpointAppReference app2 = new EndpointAppReference()

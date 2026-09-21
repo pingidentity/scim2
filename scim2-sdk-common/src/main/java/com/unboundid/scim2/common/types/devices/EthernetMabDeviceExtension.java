@@ -38,7 +38,6 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
-import com.unboundid.scim2.common.types.AttributeDefinition;
 
 import java.util.Objects;
 
@@ -101,9 +100,6 @@ public class EthernetMabDeviceExtension extends DeviceExtension
   @Attribute(description = "The Ethernet MAC address of this device.",
       isRequired = true,
       isCaseExact = false,
-      mutability = AttributeDefinition.Mutability.READ_WRITE,
-      returned = AttributeDefinition.Returned.DEFAULT,
-      uniqueness = AttributeDefinition.Uniqueness.NONE,
       pattern = MAC_PATTERN)
   private final String deviceMacAddress;
 

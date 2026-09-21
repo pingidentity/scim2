@@ -34,5 +34,7 @@
  * This package contains resource and extension model classes for RFC 9944,
  * which defines device resource types. For more information, see
  * {@link com.unboundid.scim2.common.types.devices.DeviceResource}.
+ *
+ * @since 6.1.0
  */
 package com.unboundid.scim2.common.types.devices;

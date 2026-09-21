@@ -45,6 +45,9 @@ all other SCIM objects in the library.
 Updated `DateTimeUtils.parse()` to support date strings without timestamps (e.g., "1970-01-01").
 The time values will always be set to the start of the day.
 
+Updated the `@Attribute` annotation of all `$ref` fields to label them as not required for
+consistency across groups, devices, and other model classes.
+
 ## 6.0.0 - 2026-May-11
 The UnboundID SCIM SDK has been updated to use version 3 of the Jackson library (this release ships
 with v3.1.3). This change aligns the SCIM SDK with HTTP libraries such as Spring Framework 7/Spring

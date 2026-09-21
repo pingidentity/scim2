@@ -28,7 +28,7 @@ The UnboundID SCIM 2 SDK provides many strong benefits for applications that nee
 with SCIM 2.0 clients or servers:
 
 * Full support for the SCIM 2.0 protocol as defined by the latest specification. This includes
-  support for PATCH operations, filter processing, bulk operations, and cursor-based pagination.
+  support for bulk operations, cursor-based pagination (RFC 9865), and device management (RFC 9944).
 * A simple and intuitive Jackson-based API that facilitates SCIM workflows, minimizing the amount
   of code you need to write for tasks such as performing CRUD operations on resources.
 * `@NotNull` and `@Nullable` annotations are documented for all library input parameters, member

@@ -716,7 +716,7 @@ public class SchemaUtils
     // The 'schemaId' is the URN. Make sure it begins with the "urn:" prefix.
     // The 'name' field is a human-friendly name for the object.
     String schemaId =
-          SchemaUtils.getSchemaIdFromAnnotation(cls);
+        SchemaUtils.getSchemaIdFromAnnotation(cls);
 
     if ((schemaId == null) || (schemaId.isEmpty()))
     {
