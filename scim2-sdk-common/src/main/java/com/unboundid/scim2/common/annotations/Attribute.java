@@ -124,4 +124,12 @@ public @interface Attribute
    * @return For a multi-valued attribute, the type of the child object.
    */
   @NotNull Class<?> multiValueClass() default NullType.class;
+
+  /**
+   * An optional regular expression that string-typed values must match.
+   *
+   * @return The regular expression, or an empty string for no constraint.
+   * @since 6.1.0
+   */
+  @NotNull String pattern() default "";
 }

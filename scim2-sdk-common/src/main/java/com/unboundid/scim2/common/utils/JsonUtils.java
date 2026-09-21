@@ -33,6 +33,7 @@
 package com.unboundid.scim2.common.utils;
 
 import com.unboundid.scim2.common.Path;
+import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
@@ -46,8 +47,11 @@ import tools.jackson.databind.ObjectReader;
 import tools.jackson.databind.ObjectWriter;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.IntNode;
 import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.LongNode;
 import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.NumericNode;
 import tools.jackson.databind.node.ObjectNode;
 import tools.jackson.databind.node.StringNode;
 import tools.jackson.databind.type.CollectionType;
@@ -1097,6 +1101,59 @@ public class JsonUtils
         }
       }
     }
+  }
+
+  /**
+   * Converts a primitive value to a numeric JsonNode.
+   * <br><br>
+   *
+   * This method is needed for consistent behavior for Java classes that store
+   * {@code long} values in ObjectNodes, generally within an extension schema.
+   * During deserialization, integer-like values are only stored as a long if
+   * the value requires more than 32 bits. This can cause problems when another
+   * object is instantiated in code using a long, and the objects are compared
+   * with {@code equals()}. Since the 64-bit data type is different from the
+   * 32-bit one, this will always return false even if the actual numbers
+   * represented are identical.
+   * <br><br>
+   *
+   * To avoid these problems, this utility method mimics this behavior, and
+   * returns long values as a 32-bit numeric node unless 64 bits are necessary.
+   *
+   * @param value  The number to convert to a numeric node.
+   * @return  The numeric node.
+   */
+  @NotNull
+  public static NumericNode asNumericNode(final long value)
+  {
+    return (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE)
+        ? LongNode.valueOf(value) : IntNode.valueOf((int) value);
+  }
+
+  /**
+   * Prints an object as a pretty-printed JSON string, overriding values
+   * of top-level string fields that match the provided list.
+   *
+   * @param resource        The resource to serialize.
+   * @param redactedFields  The names of the fields to redact.
+   *
+   * @return A pretty-printed JSON string with the specified fields redacted.
+   */
+  @NotNull
+  public static String toRedactedString(@NotNull final ScimResource resource,
+                                        @NotNull final String... redactedFields)
+  {
+    ObjectNode node = valueToNode(resource);
+    for (String field : redactedFields)
+    {
+      if (node.has(field))
+      {
+        node.put(field, "--REDACTED--");
+      }
+    }
+
+    return getObjectWriter().withDefaultPrettyPrinter()
+        .writeValueAsString(node);
   }
 
   /**

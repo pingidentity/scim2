@@ -49,6 +49,7 @@ import com.unboundid.scim2.common.utils.StaticUtils;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ObjectNode;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -56,8 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
-import static com.unboundid.scim2.common.utils.StaticUtils.toList;
 
 /**
  * <p>The base SCIM object.  This object contains all of the
@@ -224,15 +223,6 @@ public abstract class BaseScimResource
   }
 
   /**
-   * {@inheritDoc}
-   */
-  public void setSchemaUrns(@NotNull final String schemaUrn,
-                            @Nullable final String... schemaUrns)
-  {
-    setSchemaUrns(toList(schemaUrn, schemaUrns));
-  }
-
-  /**
    * This method is used by Jackson when deserializing JSON data into a Java
    * object. This will be called for schema extensions and any unknown fields
    * that are not defined in the Java class.
@@ -386,6 +376,34 @@ public abstract class BaseScimResource
   {
     JsonNode ext = extensionObjectNode.get(getSchemaUrnOrThrowException(clazz));
     return (ext == null) ? null : JsonUtils.nodeToValue(ext, clazz);
+  }
+
+  /**
+   * This utility method extracts the requested classes from the extension
+   * object node, and returns each existing reference as a POJO.
+   *
+   * @param <T>       The data type of the elements in the return list.
+   * @param clazzList The list of classes to try obtaining from the ObjectNode.
+   *                  All classes should have the {@link Schema} annotation.
+   *
+   * @return The requested list of Java objects stored on the extension node.
+   */
+  @NotNull
+  protected <T> List<T> getClassesFromExtension(
+      @NotNull final List<Class<? extends T>> clazzList)
+  {
+    List<T> extensions = new ArrayList<>();
+    for (var clazz : clazzList)
+    {
+      // Calling get() on the extension object node is a map lookup.
+      T extension = getExtension(clazz);
+      if (extension != null)
+      {
+        extensions.add(extension);
+      }
+    }
+
+    return extensions;
   }
 
   /**

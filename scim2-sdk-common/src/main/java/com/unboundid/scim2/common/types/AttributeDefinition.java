@@ -40,6 +40,8 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.BadRequestException;
 import com.unboundid.scim2.common.messages.SearchRequest;
+import com.unboundid.scim2.common.types.devices.DeviceResource;
+import com.unboundid.scim2.common.types.devices.EndpointAppDeviceExtension;
 import com.unboundid.scim2.common.utils.JsonUtils;
 
 import java.util.Arrays;
@@ -161,7 +163,7 @@ public class AttributeDefinition
     DECIMAL("decimal"),
 
     /**
-     * Integer datatype.
+     * A numeric integer value. This can be more than 32 bits.
      */
     INTEGER("integer"),
 
@@ -432,7 +434,31 @@ public class AttributeDefinition
     /**
      * Indicates that this attribute's value must be globally unique.
      */
-    GLOBAL("global");
+    GLOBAL("global"),
+
+    /**
+     * Indicates that this attribute's value is enforced as unique by a device
+     * manufacturer. This is used in the context of a {@link DeviceResource}.
+     *
+     * @since 6.1.0
+     */
+    MANUFACTURER("manufacturer"),
+
+    /**
+     * Indicates that this attribute's value is enforced as unique by a separate
+     * system. This is generally an identity gateway or provisioning service
+     * that is linked to a SCIM service. For example, an identity platform may
+     * wish to manage their users in a SCIM cloud service, but store passwords
+     * and other sensitive data in separate on-premise infrastructure. This
+     * data's uniqueness can be managed outside the SCIM service.
+     * <br><br>
+     *
+     * This value is generally used with an {@link EndpointAppDeviceExtension}.
+     *
+     * @since 6.1.0
+     */
+    ENTERPRISE("enterprise"),
+    ;
 
     @NotNull
     private final String name;
@@ -501,6 +527,22 @@ public class AttributeDefinition
       returned = AttributeDefinition.Returned.DEFAULT,
       uniqueness = AttributeDefinition.Uniqueness.NONE)
   private final Type type;
+
+  /**
+   * An optional regular expression that all values of this attribute must
+   * match. This is only used for string-typed attributes. For example, for an
+   * expression of {@code ^[1-9]}, the value of the string attribute must begin
+   * with a digit 1 through 9.
+   */
+  @Nullable
+  @Attribute(description =
+      "An optional regex that describes the form of the attribute value.",
+      isRequired = false,
+      isCaseExact = true,
+      mutability = AttributeDefinition.Mutability.READ_ONLY,
+      returned = AttributeDefinition.Returned.DEFAULT,
+      uniqueness = AttributeDefinition.Uniqueness.NONE)
+  private final String pattern;
 
   @Nullable
   @Attribute(description = "When an attribute is of type \"complex\", " +
@@ -685,6 +727,12 @@ public class AttributeDefinition
      */
     @Nullable
     private Collection<String> referenceTypes;
+
+    /**
+     * An optional regular expression constraint for string-typed attributes.
+     */
+    @Nullable
+    private String pattern;
 
     /**
      * Create a new builder.
@@ -880,6 +928,21 @@ public class AttributeDefinition
     }
 
     /**
+     * Sets the regular expression constraint for string-typed attributes.
+     *
+     * @param pattern The regular expression, or {@code null} for no constraint.
+     * @return This builder instance.
+     *
+     * @since 6.1.0
+     */
+    @NotNull
+    public Builder setPattern(@Nullable final String pattern)
+    {
+      this.pattern = (pattern == null || pattern.isEmpty()) ? null : pattern;
+      return this;
+    }
+
+    /**
      * Clears all values in this builder back to the default.
      *
      * @return This builder instance.
@@ -900,6 +963,7 @@ public class AttributeDefinition
       description = null;
       canonicalValues = null;
       referenceTypes = null;
+      this.pattern = null;
 
       return this;
     }
@@ -924,7 +988,8 @@ public class AttributeDefinition
           mutability,
           returned,
           uniqueness,
-          referenceTypes);
+          referenceTypes,
+          pattern);
     }
   }
 
@@ -947,6 +1012,7 @@ public class AttributeDefinition
    * @param uniqueness  This field represents the uniqueness constraints of this
    *                    attribute. {@link Uniqueness#NONE} is the default value.
    * @param refTypes    The reference type of this attribute.
+   * @param pattern     An optional regex pattern that string values must match.
    */
   @JsonCreator
   AttributeDefinition(
@@ -973,8 +1039,23 @@ public class AttributeDefinition
       @Nullable @JsonProperty(value = "uniqueness")
       final Uniqueness uniqueness,
       @Nullable @JsonProperty(value = "referenceTypes")
-      final Collection<String> refTypes)
+      final Collection<String> refTypes,
+      @Nullable @JsonProperty(value = "pattern")
+      final String pattern)
   {
+    // Default values as described by RFC 7643 Section 2.2.
+    this.type = type == null ? Type.STRING : type;
+    this.mutability = mutability == null ? Mutability.READ_WRITE : mutability;
+    this.returned = returned == null ? Returned.DEFAULT : returned;
+    this.uniqueness = uniqueness == null ? Uniqueness.NONE : uniqueness;
+
+    if (pattern != null && this.type != Type.STRING)
+    {
+      throw new IllegalStateException(
+          "Cannot set the 'pattern' of an attribute for non-string types.");
+    }
+    this.pattern = pattern;
+
     this.name = name;
     this.subAttributes = subAttrs == null ? null : List.copyOf(subAttrs);
     this.multiValued = multiValued;
@@ -983,12 +1064,6 @@ public class AttributeDefinition
     this.canonicalValues = canonicals == null ? null : List.copyOf(canonicals);
     this.caseExact = caseExact;
     this.referenceTypes = refTypes == null ? null : List.copyOf(refTypes);
-
-    // Default values as described by RFC 7643 Section 2.2.
-    this.type = type == null ? Type.STRING : type;
-    this.mutability = mutability == null ? Mutability.READ_WRITE : mutability;
-    this.returned = returned == null ? Returned.DEFAULT : returned;
-    this.uniqueness = uniqueness == null ? Uniqueness.NONE : uniqueness;
   }
 
   /**
@@ -1137,6 +1212,18 @@ public class AttributeDefinition
   }
 
   /**
+   * Fetches the regular expression constraint for this attribute. If defined,
+   * string-typed values must match this pattern.
+   *
+   * @return The regular expression, or {@code null} if no constraint is set.
+   */
+  @Nullable
+  public String getPattern()
+  {
+    return pattern;
+  }
+
+  /**
    * Retrieves a string representation of this attribute definition.
    *
    * @return A string representation of this attribute definition.
@@ -1177,7 +1264,8 @@ public class AttributeDefinition
         && Objects.equals(returned, that.returned)
         && Objects.equals(subAttributes, that.subAttributes)
         && Objects.equals(type, that.type)
-        && Objects.equals(uniqueness, that.uniqueness);
+        && Objects.equals(uniqueness, that.uniqueness)
+        && Objects.equals(pattern, that.pattern);
   }
 
   /**
@@ -1190,6 +1278,6 @@ public class AttributeDefinition
   {
     return Objects.hash(caseExact, multiValued, required, canonicalValues,
         description, mutability, name, referenceTypes, returned, subAttributes,
-        type, uniqueness);
+        type, uniqueness, pattern);
   }
 }

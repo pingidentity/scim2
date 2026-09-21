@@ -35,6 +35,7 @@ package com.unboundid.scim2.common;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.types.Meta;
+import com.unboundid.scim2.common.utils.StaticUtils;
 
 import java.util.Collection;
 
@@ -140,7 +141,11 @@ public interface ScimResource
    * @param schemaUrns An optional parameter for additional schema URNs. Any
    *                   {@code null} values will be ignored.
    */
-  void setSchemaUrns(@NotNull String schemaUrn, @Nullable String... schemaUrns);
+  default void setSchemaUrns(@NotNull String schemaUrn,
+                             @Nullable String... schemaUrns)
+  {
+    setSchemaUrns(StaticUtils.toList(schemaUrn, schemaUrns));
+  }
 
   /**
    * Returns the GenericScimResource representation of this ScimResource. If
