@@ -32,103 +32,29 @@
 
 package com.unboundid.scim2.common.bulk;
 
-import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.ScimResourceMapper;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
-import com.unboundid.scim2.common.annotations.Schema;
-import com.unboundid.scim2.common.messages.ErrorResponse;
-import com.unboundid.scim2.common.messages.PatchRequest;
-import com.unboundid.scim2.common.types.GroupResource;
-import com.unboundid.scim2.common.types.UserResource;
-import com.unboundid.scim2.common.utils.JsonUtils;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 
 /**
- * This class is used to simplify the process of obtaining Java objects from
- * bulk requests and responses.
- * <br><br>
+ * This class was the first implementation of {@link ScimResourceMapper}. It was
+ * renamed from "BulkResourceMapper" to "ScimResourceMapper" so that the mapper
+ * is more general-purpose. This allows using the mapper for similar JSON
+ * conversion tasks that are unrelated bulk processing.
  *
- * When dealing with bulk requests or responses, there is often embedded JSON
- * data corresponding to a SCIM resource. For example, the value of the
- * {@code response} field below represents a user that was just created:
- * <pre>
- *  {
- *    "location": "/Users/fa1afe1",
- *    "method": "POST",
- *    "status": "200",
- *    "response": {
- *      "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:User" ],
- *      "id": "fa1afe1",
- *      "userName": "Polaroid"
- *    }
- *  }
- * </pre>
- * <br><br>
- *
- * When it comes to handling and interpreting this data, it can be tedious to
- * obtain the resource and convert it from JSON to a usable POJO. The JSON data
- * may correspond to:
- * <ul>
- *   <li> A {@link UserResource}, representing a user.
- *   <li> A {@link GroupResource}, representing a group entity.
- *   <li> A {@link ErrorResponse}, representing an error that occurred.
- *   <li> Any other custom resource type defined by a SCIM service provider.
- * </ul>
- * <br><br>
- *
- * The definition of any SCIM resource type is available in the {@code schemas}
- * attribute. However, fetching this data and conditionally converting it into
- * different objects (with {@link JsonUtils#nodeToValue}) is extra work that the
- * SCIM SDK aims to simplify.
- * <br><br>
- *
- * To solve this problem, this BulkResourceMapper class defines associations
- * between schemas (represented as sets) and a Java type. For example, any JSON
- * with a schemas value of {@code urn:ietf:params:scim:schemas:core:2.0:User}
- * is interpreted as a {@link UserResource}. If you have custom resource types
- * that need to be supported by the SCIM SDK's bulk processing, then add it with
- * one of the following methods.
- * <ul>
- *   <li> {@link #add(Class)}: If the class uses the {@link Schema} annotation.
- *   <li> {@link #put put()}: To define a direct relationship for any class.
- * </ul>
- * <br><br>
- *
- * Note that any custom class must implement the {@link ScimResource} interface
- * in order to be compatible with the methods above. Furthermore, modifying the
- * BulkResourceMapper with the above methods must only be done at application
- * startup.
+ * @deprecated Use the ScimResourceMapper class instead, which contains all the
+ *             same methods as this class.
  */
+@Deprecated(since = "6.1.0")
 public class BulkResourceMapper
 {
   /**
-   * The map that stores schema-to-class associations for this mapper class.
-   */
-  // This does not need to be a concurrent map since it should only be
-  // configured/modified at application startup.
-  @NotNull
-  static final HashMap<Set<String>, Class<?>> SCHEMAS_MAP = new HashMap<>();
-
-  static
-  {
-    initialize();
-  }
-
-  /**
-   * Updates the BulkResourceMapper with a new class. The provided class must
-   * include the {@link Schema} annotation. To add a different
-   * ScimResource-based class that does not use the annotation, use the
-   * {@link #put put()} method instead.
+   * Wrapper for {@link ScimResourceMapper}.
    *
    * @param clazz  The class to register.
    * @param <T>    The Java type, which must implement ScimResource.
@@ -139,21 +65,11 @@ public class BulkResourceMapper
       @NotNull final Class<T> clazz)
           throws IllegalArgumentException
   {
-    Schema schema = clazz.getAnnotation(Schema.class);
-    if (schema == null)
-    {
-      throw new IllegalArgumentException("Requested schema for the "
-          + clazz.getName()
-          + " class, which does not have a valid @Schema annotation.");
-    }
-
-    SCHEMAS_MAP.put(Set.of(schema.id()), clazz);
+    ScimResourceMapper.add(clazz);
   }
 
   /**
-   * Updates the BulkResourceMapper with a new class. This is an alternative to
-   * the {@link #add(Class)} method that supports usage of Java classes that
-   * do not or cannot use the {@code @Schema} annotation.
+   * Wrapper for {@link ScimResourceMapper}.
    *
    * @param schemas  The schemas associated with the resource type.
    * @param clazz    The class type that is associated with the resource type.
@@ -163,27 +79,19 @@ public class BulkResourceMapper
       @NotNull final Set<String> schemas,
       @NotNull final Class<T> clazz)
   {
-    Objects.requireNonNull(schemas);
-    SCHEMAS_MAP.put(schemas, clazz);
+    ScimResourceMapper.put(schemas, clazz);
   }
 
   /**
-   * Clears all registered relationships between schemas and class types.
-   * <br><br>
-   *
-   * This should generally not be called unless it is absolutely necessary to
-   * overwrite data in the map.
+   * Wrapper for {@link ScimResourceMapper}.
    */
   public static void clear()
   {
-    SCHEMAS_MAP.clear();
+    ScimResourceMapper.clear();
   }
 
   /**
-   * This utility method is the primary entrypoint to this class, and is
-   * responsible for converting JSON data into a ScimResource POJO. The subclass
-   * of ScimResource must be defined in the map contained within this class, or
-   * a {@link GenericScimResource} will be returned instead.
+   * Wrapper for {@link ScimResourceMapper}.
    *
    * @param json  The JSON to convert.
    * @return      A {@link ScimResource} subclass, or {@code null} if the JSON
@@ -195,83 +103,6 @@ public class BulkResourceMapper
   public static ScimResource asScimResource(@Nullable final ObjectNode json)
       throws IllegalArgumentException
   {
-    if (json == null)
-    {
-      return null;
-    }
-
-    // Attempt fetching the class using data from the "schemas" array. If there
-    // is not a mapping, a GenericScimResource will be used.
-    Class<ScimResource> clazz = BulkResourceMapper.get(json.get("schemas"));
-
-    try
-    {
-      return JsonUtils.nodeToValue(json, clazz);
-    }
-    catch (JacksonException e)
-    {
-      throw new IllegalArgumentException(
-          "Failed to convert bulk data into a " + clazz.getName(), e);
-    }
-  }
-
-  /**
-   * Fetches the class associated with the provided schema(s). If the schemas
-   * are not registered, a {@link GenericScimResource} is returned.
-   *
-   * @param s    The {@code schemas} value of a SCIM resource.
-   * @param <T>  The returned Java type.
-   *
-   * @return  The class type that is associated with the schemas, or a
-   *          {@link GenericScimResource} if one is not defined.
-   */
-  @NotNull
-  @SuppressWarnings("unchecked")
-  static <T extends ScimResource> Class<T> get(@NotNull final Set<String> s)
-  {
-    return (Class<T>) SCHEMAS_MAP.getOrDefault(s, GenericScimResource.class);
-  }
-
-  /**
-   * Fetches the class associated with the provided schema set. This is an
-   * alternative to {@link #get(Set)} which accepts a JsonNode.
-   *
-   * @param node    The JsonNode representing the value of the {@code schemas}
-   *                field on a SCIM resource.
-   * @param <T>     The returned Java type.
-   *
-   * @return  The class type that is associated with the schemas, or a
-   *          {@link GenericScimResource} if one is not defined.
-   */
-  @NotNull
-  @SuppressWarnings("unchecked")
-  static <T extends ScimResource> Class<T> get(@Nullable final JsonNode node)
-  {
-    if (!(node instanceof ArrayNode arrayNode))
-    {
-      // 'schemas' should always be an array as defined by the SCIM standard.
-      return (Class<T>) GenericScimResource.class;
-    }
-
-    Set<String> schemaSet = new HashSet<>();
-    for (var value : arrayNode)
-    {
-      schemaSet.add(value.asString());
-    }
-
-    return get(schemaSet);
-  }
-
-  /**
-   * Initializes this class by registering basic resource types that are
-   * generally applicable to SCIM clients.
-   */
-  static void initialize()
-  {
-    clear();
-    add(UserResource.class);
-    add(GroupResource.class);
-    add(ErrorResponse.class);
-    add(PatchRequest.class);
+    return ScimResourceMapper.asScimResource(json);
   }
 }

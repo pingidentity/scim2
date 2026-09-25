@@ -38,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.ScimResourceMapper;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
@@ -561,7 +562,7 @@ public class BulkOperationResult
   {
     try
     {
-      return BulkResourceMapper.asScimResource(response);
+      return ScimResourceMapper.asScimResource(response);
     }
     catch (IllegalArgumentException e)
     {

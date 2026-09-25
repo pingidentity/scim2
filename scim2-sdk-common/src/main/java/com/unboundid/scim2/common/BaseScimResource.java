@@ -95,12 +95,20 @@ public abstract class BaseScimResource
    * ignored by default. For alignment with Jackson, this property is set to
    * {@code true} (as of version 6.0.0) so that unknown fields in the JSON
    * representation of a BaseScimResource are also ignored (if they are not a
-   * schema extension). It is strongly encouraged to avoid changing this
-   * setting, as updates to the SCIM standard can cause new fields to be added
-   * (e.g., RFC 9865 added fields like {@code nextCursor} to ListResponse).
+   * schema extension).
    *
    * @since 4.0.0
+   * @deprecated  The SCIM standard has been updated after the publication of
+   *              RFC 7644, adding new fields to existing JSON models. Thus, an
+   *              unknown JSON field (e.g., {@code nextCursor}) could be a new,
+   *              legitimate SCIM value that is not supported by the application
+   *              yet, so this case should never result in an error. Further,
+   *              adding new fields is not considered a breaking change by HTTP
+   *              convention. To encourage better forward-compatibility, callers
+   *              who have set this property to {@code false} should avoid being
+   *              strict on unknown properties/fields.
    */
+  @Deprecated(since = "6.1.0")
   public static boolean IGNORE_UNKNOWN_FIELDS = StaticUtils.getProperty(
       "com.unboundid.scim2.common.BaseScimResource.ignoreUnknownFields", true);
 
