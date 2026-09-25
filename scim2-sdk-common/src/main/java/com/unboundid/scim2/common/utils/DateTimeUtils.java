@@ -82,7 +82,11 @@ public final class DateTimeUtils
    * As of the 6.0.0 release, UTC is the default timezone used.
    *
    * @since 5.1.0
+   * @deprecated  UTC is a time standard that provides a better foundation for
+   *              timekeeping than GMT. If necessary, Calendar objects can be
+   *              set to "GMT+00:00" manually with {@link Calendar#setTimeZone}.
    */
+  @Deprecated(since = "6.1.0")
   public static boolean USE_GMT_CALENDARS = StaticUtils.getProperty(
       "com.unboundid.scim2.common.utils.DateTimeUtils.useGMTCalendars", false);
 
