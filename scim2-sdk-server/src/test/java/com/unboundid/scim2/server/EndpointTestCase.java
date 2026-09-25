@@ -1424,7 +1424,7 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
    * Test the behavior of a bulk response processed by the SCIM SDK into an
    * object. In particular, objects within the bulk response should be
    * deserialized properly if they are registered with the
-   * {@link com.unboundid.scim2.common.bulk.BulkResourceMapper}.
+   * {@link com.unboundid.scim2.common.ScimResourceMapper}.
    * <br><br>
    *
    * The JSON responses obtained by this test are defined in

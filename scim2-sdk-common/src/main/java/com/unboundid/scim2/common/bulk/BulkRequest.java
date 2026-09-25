@@ -37,6 +37,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unboundid.scim2.common.BaseScimResource;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.ScimResourceMapper;
 import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
@@ -315,7 +316,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  *   }
  * </code></pre>
  *
- * The {@link BulkResourceMapper} is responsible for managing the conversions to
+ * The {@link ScimResourceMapper} is responsible for managing the conversions to
  * {@link ScimResource} objects. See the mapper and
  * {@link BulkOperation#getDataAsScimResource()} for more details.
  * <br><br>
