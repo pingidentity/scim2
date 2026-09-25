@@ -30,11 +30,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.common.bulk;
+package com.unboundid.scim2.common;
 
-import com.unboundid.scim2.common.BaseScimResource;
-import com.unboundid.scim2.common.GenericScimResource;
-import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.Schema;
 import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.UserResource;
@@ -46,16 +43,16 @@ import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Set;
 
-import static com.unboundid.scim2.common.bulk.BulkResourceMapper.SCHEMAS_MAP;
+import static com.unboundid.scim2.common.ScimResourceMapper.SCHEMAS_MAP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 /**
- * Unit tests for the {@link BulkResourceMapper} class. This functionality is
+ * Unit tests for the {@link ScimResourceMapper} class. This functionality is
  * also exercised in {@code EndpointTestCase#testBulkRequestJsonProcessing}.
  */
-public class BulkResourceMapperTest
+public class ScimResourceMapperTest
 {
   /**
    * Reset the bulk resource mapper to its default settings.
@@ -63,7 +60,7 @@ public class BulkResourceMapperTest
   @AfterMethod
   public void tearDown()
   {
-    BulkResourceMapper.initialize();
+    ScimResourceMapper.initialize();
   }
 
   /**
@@ -73,28 +70,28 @@ public class BulkResourceMapperTest
   public void testBasic()
   {
     // Clear the map to start.
-    BulkResourceMapper.clear();
+    ScimResourceMapper.clear();
 
     // Call the add() method and ensure it is registered appropriately for a
     // class defined with the @Schema annotation.
-    BulkResourceMapper.add(ClassWithAnnotation.class);
+    ScimResourceMapper.add(ClassWithAnnotation.class);
     assertThat(SCHEMAS_MAP).hasSize(1);
 
     // Now that the value is present in the map, querying the map for a schema
     // list of "urn:pingidentity:example" should return the correct class.
     Class<ScimResource> clazz =
-        BulkResourceMapper.get(Set.of("urn:pingidentity:example"));
+        ScimResourceMapper.get(Set.of("urn:pingidentity:example"));
     assertThat(clazz).isEqualTo(ClassWithAnnotation.class);
 
     // Query again with a JSON node.
     var arrayNode = JsonUtils.getJsonNodeFactory().arrayNode()
         .add("urn:pingidentity:example");
-    clazz = BulkResourceMapper.get(arrayNode);
+    clazz = ScimResourceMapper.get(arrayNode);
     assertThat(clazz).isEqualTo(ClassWithAnnotation.class);
 
     // A class that is not annotated with @Schema is not compatible with add()
     // since there is no information to fetch.
-    assertThatThrownBy(() -> BulkResourceMapper.add(NoAnnotation.class))
+    assertThatThrownBy(() -> ScimResourceMapper.add(NoAnnotation.class))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Requested schema for the")
         .hasMessageContaining("NoAnnotation class, which does not have a valid")
@@ -102,32 +99,32 @@ public class BulkResourceMapperTest
 
     // It should be possible to register the un-annotated class with the put()
     // method.
-    BulkResourceMapper.clear();
-    BulkResourceMapper.put(Set.of("urn:pingidentity:put"), NoAnnotation.class);
+    ScimResourceMapper.clear();
+    ScimResourceMapper.put(Set.of("urn:pingidentity:put"), NoAnnotation.class);
     assertThat(SCHEMAS_MAP).hasSize(1);
 
     arrayNode.removeAll();
     arrayNode.add("urn:pingidentity:put");
-    Class<ScimResource> clazzNoAnnotation = BulkResourceMapper.get(arrayNode);
+    Class<ScimResource> clazzNoAnnotation = ScimResourceMapper.get(arrayNode);
     assertThat(clazzNoAnnotation).isEqualTo(NoAnnotation.class);
 
     // Trying to fetch an unregistered or invalid JsonNode should just return
     // the default GenericScimResource value.
     arrayNode.removeAll();
     arrayNode.add("urn:notFound");
-    assertThat(BulkResourceMapper.get(arrayNode))
+    assertThat(ScimResourceMapper.get(arrayNode))
         .isEqualTo(GenericScimResource.class);
-    assertThat(BulkResourceMapper.get(NullNode.getInstance()))
+    assertThat(ScimResourceMapper.get(NullNode.getInstance()))
         .isEqualTo(GenericScimResource.class);
   }
 
   /**
    * Ensures the mapper returns expected objects when a JsonNode is provided to
-   * the {@link BulkResourceMapper#asScimResource} method. This is the primary
-   * way to interface with the BulkResourceMapper.
+   * the {@link ScimResourceMapper#asScimResource} method. This is the primary
+   * way to interface with the ScimResourceMapper.
    */
   @Test
-  public void testJsonNodeConversion() throws Exception
+  public void testJsonNodeConversion()
   {
     final var reader = JsonUtils.getObjectReader().forType(ObjectNode.class);
 
@@ -138,7 +135,7 @@ public class BulkResourceMapperTest
           "userName": "simpleUser"
         }""";
     ObjectNode userNode = reader.readValue(userJson);
-    ScimResource resource = BulkResourceMapper.asScimResource(userNode);
+    ScimResource resource = ScimResourceMapper.asScimResource(userNode);
     assertThat(resource).isInstanceOfSatisfying(UserResource.class,
         user -> assertThat(user.getUserName()).isEqualTo("simpleUser"));
 
@@ -149,7 +146,7 @@ public class BulkResourceMapperTest
           "displayName": "simpleGroup"
         }""";
     ObjectNode groupNode = reader.readValue(groupJson);
-    ScimResource groupResource = BulkResourceMapper.asScimResource(groupNode);
+    ScimResource groupResource = ScimResourceMapper.asScimResource(groupNode);
     assertThat(groupResource).isInstanceOfSatisfying(GroupResource.class,
         group -> assertThat(group.getDisplayName()).isEqualTo("simpleGroup"));
 
@@ -162,14 +159,14 @@ public class BulkResourceMapperTest
           ],
           "userName": "customName"
         }""";
-    var gen = BulkResourceMapper.asScimResource(reader.readValue(customJson));
+    var gen = ScimResourceMapper.asScimResource(reader.readValue(customJson));
     assertThat(gen).isInstanceOfSatisfying(GenericScimResource.class, gsr -> {
       assertThat(gsr.getObjectNode().get("userName").asString())
           .isEqualTo("customName");
     });
 
     // Register the custom class that was just attempted.
-    BulkResourceMapper.put(
+    ScimResourceMapper.put(
         Set.of("urn:ietf:params:scim:schemas:core:2.0:User",
             "urn:example:customExtension"),
         UserSubClass.class
@@ -177,7 +174,7 @@ public class BulkResourceMapperTest
 
     // Attempt reading the value again.
     ObjectNode customUser = reader.readValue(customJson);
-    ScimResource customResource = BulkResourceMapper.asScimResource(customUser);
+    ScimResource customResource = ScimResourceMapper.asScimResource(customUser);
     assertThat(customResource).isInstanceOfSatisfying(UserSubClass.class,
         user -> assertThat(user.getUserName()).isEqualTo("customName"));
     assertThat(resource).isNotInstanceOf(GenericScimResource.class);
@@ -193,7 +190,7 @@ public class BulkResourceMapperTest
           "userName": "customName"
         }""";
     ObjectNode outOfOrderUser = reader.readValue(outOfOrderJson);
-    var outOfOrderResource = BulkResourceMapper.asScimResource(outOfOrderUser);
+    var outOfOrderResource = ScimResourceMapper.asScimResource(outOfOrderUser);
     assertThat(outOfOrderResource).isInstanceOfSatisfying(UserSubClass.class,
         user -> assertThat(user.getUserName()).isEqualTo("customName"));
     assertThat(outOfOrderResource).isEqualTo(customResource);

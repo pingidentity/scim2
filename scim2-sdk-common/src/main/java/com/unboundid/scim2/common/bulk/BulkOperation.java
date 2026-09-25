@@ -41,6 +41,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.Path;
 import com.unboundid.scim2.common.ScimResource;
+import com.unboundid.scim2.common.ScimResourceMapper;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.runtime.BulkRequestException;
@@ -354,7 +355,7 @@ public abstract class BulkOperation
    * <br><br>
    *
    * If you have custom classes that should be used, they may be registered with
-   * the {@link BulkResourceMapper}. However, any JSON object may be manually
+   * the {@link ScimResourceMapper}. However, any JSON object may be manually
    * converted to a Java object with {@link JsonUtils#nodeToValue}:
    * <pre><code>
    *   ObjectNode data = bulkOperation.getData();
@@ -380,7 +381,7 @@ public abstract class BulkOperation
   {
     try
     {
-      return BulkResourceMapper.asScimResource(data);
+      return ScimResourceMapper.asScimResource(data);
     }
     catch (IllegalArgumentException e)
     {

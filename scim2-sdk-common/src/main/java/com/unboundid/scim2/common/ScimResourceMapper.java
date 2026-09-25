@@ -30,10 +30,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  */
 
-package com.unboundid.scim2.common.bulk;
+package com.unboundid.scim2.common;
 
-import com.unboundid.scim2.common.GenericScimResource;
-import com.unboundid.scim2.common.ScimResource;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
@@ -54,12 +52,11 @@ import java.util.Set;
 
 
 /**
- * This class is used to simplify the process of obtaining Java objects from
- * bulk requests and responses.
+ * This class is used to simplify the process of obtaining SCIM resources that
+ * are nested within a JSON payload.
  * <br><br>
  *
- * When dealing with bulk requests or responses, there is often embedded JSON
- * data corresponding to a SCIM resource. For example, the value of the
+ * An example of this structure is in bulk responses, where the value of the
  * {@code response} field below represents a user that was just created:
  * <pre>
  *  {
@@ -76,8 +73,8 @@ import java.util.Set;
  * <br><br>
  *
  * When it comes to handling and interpreting this data, it can be tedious to
- * obtain the resource and convert it from JSON to a usable POJO. The JSON data
- * may correspond to:
+ * obtain the resource and convert it from JSON to a usable POJO. This is
+ * because the data in the {@code response} field may correspond to:
  * <ul>
  *   <li> A {@link UserResource}, representing a user.
  *   <li> A {@link GroupResource}, representing a group entity.
@@ -92,11 +89,11 @@ import java.util.Set;
  * SCIM SDK aims to simplify.
  * <br><br>
  *
- * To solve this problem, this BulkResourceMapper class defines associations
+ * To solve this problem, this ScimResourceMapper class defines associations
  * between schemas (represented as sets) and a Java type. For example, any JSON
  * with a schemas value of {@code urn:ietf:params:scim:schemas:core:2.0:User}
  * is interpreted as a {@link UserResource}. If you have custom resource types
- * that need to be supported by the SCIM SDK's bulk processing, then add it with
+ * that need to be supported by the SCIM SDK's processing, then add it with
  * one of the following methods.
  * <ul>
  *   <li> {@link #add(Class)}: If the class uses the {@link Schema} annotation.
@@ -104,12 +101,12 @@ import java.util.Set;
  * </ul>
  * <br><br>
  *
- * Note that any custom class must implement the {@link ScimResource} interface
- * in order to be compatible with the methods above. Furthermore, modifying the
- * BulkResourceMapper with the above methods must only be done at application
- * startup.
+ * Note that any custom class must descend from {@link BaseScimResource} or
+ * {@link GenericScimResource} in order to be compatible with the methods above.
+ * Furthermore, modifying the ScimResourceMapper with the above methods must
+ * only be done at application startup.
  */
-public class BulkResourceMapper
+public class ScimResourceMapper
 {
   /**
    * The map that stores schema-to-class associations for this mapper class.
@@ -125,7 +122,7 @@ public class BulkResourceMapper
   }
 
   /**
-   * Updates the BulkResourceMapper with a new class. The provided class must
+   * Updates the ScimResourceMapper with a new class. The provided class must
    * include the {@link Schema} annotation. To add a different
    * ScimResource-based class that does not use the annotation, use the
    * {@link #put put()} method instead.
@@ -151,7 +148,7 @@ public class BulkResourceMapper
   }
 
   /**
-   * Updates the BulkResourceMapper with a new class. This is an alternative to
+   * Updates the ScimResourceMapper with a new class. This is an alternative to
    * the {@link #add(Class)} method that supports usage of Java classes that
    * do not or cannot use the {@code @Schema} annotation.
    *
@@ -202,7 +199,7 @@ public class BulkResourceMapper
 
     // Attempt fetching the class using data from the "schemas" array. If there
     // is not a mapping, a GenericScimResource will be used.
-    Class<ScimResource> clazz = BulkResourceMapper.get(json.get("schemas"));
+    Class<ScimResource> clazz = ScimResourceMapper.get(json.get("schemas"));
 
     try
     {
@@ -211,7 +208,7 @@ public class BulkResourceMapper
     catch (JacksonException e)
     {
       throw new IllegalArgumentException(
-          "Failed to convert bulk data into a " + clazz.getName(), e);
+          "Failed to convert SCIM data into a " + clazz.getName(), e);
     }
   }
 
