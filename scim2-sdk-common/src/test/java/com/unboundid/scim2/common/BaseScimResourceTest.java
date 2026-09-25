@@ -62,6 +62,7 @@ public class BaseScimResourceTest
   /**
    * Resets the customizable property toggled by this test class.
    */
+  @SuppressWarnings("deprecation")
   @AfterMethod
   public void resetProperty()
   {
@@ -174,6 +175,7 @@ public class BaseScimResourceTest
    *
    * @throws Exception  If an unexpected error occurs.
    */
+  @SuppressWarnings("deprecation")
   @Test
   public void testSerializingUnknownProperty() throws Exception
   {

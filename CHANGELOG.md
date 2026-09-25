@@ -48,6 +48,27 @@ The time values will always be set to the start of the day.
 Updated the `@Attribute` annotation of all `$ref` fields to label them as not required for
 consistency across groups, devices, and other model classes.
 
+Deprecated the following parameters. They will be removed in a future release. If you do not modify
+these, there is no change to make.
+* `BulkResourceMapper.java`: Renamed to `ScimResourceMapper.java` for use in non-bulk workflows.
+
+* `BaseScimResource.IGNORE_UNKNOWN_FIELDS`: This system property modifies behavior when a JSON
+  string is transformed into a Java object. If the JSON value contains extra fields that cannot
+  be stored on the object, then an exception will be thrown unless this property is `true` (the
+  current default as of 6.0.0). However, as we've stated elsewhere, adding fields to an API response
+  is not considered a breaking change by convention. The SCIM standard has done this several times
+  recently, such as adding `nextCursor` to a `ListResponse` in RFC 9944. In other words, a client
+  written with an old release of the SCIM SDK could have problems parsing valid SCIM responses from
+  the future if this property is `false`. To avoid brittle behavior, it is imperative that unknown
+  JSON fields are always ignored. Thus, this property will be removed for better interoperability.
+
+* `DateTimeUtils.USE_GMT_CALENDARS`: DateTimeUtils initially used JAX-B for date-time processing,
+  mostly for Java 7 support. JAX-B's Calendar objects always used a "GMT+00:00" timezone by default,
+  but Calendar objects in Java are much more likely to use UTC instead. Furthermore, UTC was
+  designed for date-time synchronization, so it is a better timezone to use for the default region.
+  JAX-B was removed in 5.0.0, but GMT support was kept with a system property for legacy uses. For
+  consistency, we intend to remove this property, as UTC has been in use by default since 6.0.0.
+
 ## 6.0.0 - 2026-May-11
 The UnboundID SCIM SDK has been updated to use version 3 of the Jackson library (this release ships
 with v3.1.3). This change aligns the SCIM SDK with HTTP libraries such as Spring Framework 7/Spring

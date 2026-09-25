@@ -61,6 +61,7 @@ public class DateTimeUtilsTest
   /**
    * Reset the value of the system property.
    */
+  @SuppressWarnings("deprecation")
   @AfterMethod
   public void tearDown()
   {
@@ -74,7 +75,7 @@ public class DateTimeUtilsTest
    * Validate updates to the {@link DateTimeUtils#USE_GMT_CALENDARS} system
    * property.
    */
-  @SuppressWarnings("DataFlowIssue")
+  @SuppressWarnings({"DataFlowIssue", "deprecation"})
   @Test
   public void testGMTProperty()
   {
