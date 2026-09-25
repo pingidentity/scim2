@@ -2,6 +2,25 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## Stub - TBD
+Added support for patch operations that a) do not contain a `path`, and b) also include nested paths
+within its `value`. For example:
+```json
+{
+  "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+  "Operations": [ {
+    "op": "add",
+    "value": {
+      "name.givenName": "Garry"
+    }
+  } ]
+}
+```
+
+Added a maximum array size threshold for the target of a patch operation. Now, PATCH updates that
+would result in 50,000 or more elements within an array will throw a `BadRequestException`. This
+value is controlled by the `com.unboundid.scim2.common.utils.JsonUtils.maxPatchArraySize` property.
+
 ## v5.1.0 - 2026-May-11
 Added support for bulk operations, requests, and responses as defined by the SCIM standard. To get
 started with implementing bulk request support for client or server applications, see the
