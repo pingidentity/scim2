@@ -54,7 +54,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.fail;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -322,24 +321,7 @@ public class DiffTestCase
     // matter.
     JsonNode sourcePhotos = source.remove("photos");
     JsonNode targetPhotos = target.remove("photos");
-    assertEquals(sourcePhotos.size(), targetPhotos.size());
-    for (JsonNode sourceValue : sourcePhotos)
-    {
-      boolean found = false;
-      for (JsonNode targetValue : targetPhotos)
-      {
-        if (sourceValue.equals(targetValue))
-        {
-          found = true;
-          break;
-        }
-      }
-      if (!found)
-      {
-        fail("Source photo value " + sourceValue +
-            " not in target photo array " + targetPhotos);
-      }
-    }
+    assertThat(sourcePhotos).containsExactlyElementsOf(targetPhotos);
     assertThat(source).isEqualTo(target);
   }
 

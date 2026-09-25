@@ -323,4 +323,37 @@ public final class StaticUtils
 
     return defaultValue;
   }
+
+
+  /**
+   * Obtains the value of the provided JVM system property name as an integer.
+   * If the system property is not defined or cannot be obtained (e.g., due to
+   * security manager protections), the default value will be used. Unlike
+   * {@link Integer#getInteger(String)}, this will ignore security exceptions.
+   *
+   * @param name          The name of the system property.
+   * @param defaultValue  The value that should be used if the property is not
+   *                      defined or cannot be fetched.
+   *
+   * @return  The property value as a integer if the system property exists and
+   *          is obtainable.
+   * @throws IllegalArgumentException  If the property has an invalid value.
+   */
+  public static int getIntProperty(@NotNull final String name,
+                                   final int defaultValue)
+      throws IllegalArgumentException
+  {
+    String property;
+    try
+    {
+      property = System.getProperty(name);
+    }
+    catch (Throwable t)
+    {
+      Debug.debugException(t);
+      property = null;
+    }
+
+    return (property == null) ? defaultValue : Integer.parseInt(property);
+  }
 }
