@@ -73,6 +73,17 @@ public class JsonUtils
   private static ObjectMapper SDK_OBJECT_MAPPER = createObjectMapper();
 
   /**
+   * This property defines the maximum array size that is permitted on a SCIM
+   * resource when processing a PATCH request. In addition to connection
+   * timeouts, this avoids excessive time computing uniqueness when adding new
+   * fields to an array stored on a SCIM resource.
+   *
+   * @since 6.1.0
+   */
+  private static final int MAX_PATCH_ARRAY_SIZE = StaticUtils.getIntProperty(
+      "com.unboundid.scim2.common.utils.JsonUtils.maxPatchArraySize", 25_000);
+
+  /**
    * This represents the base class for handling SCIM JSON data. Subclasses
    * of this abstract class support actions such as filtering and updating
    * provided JSON data.
@@ -408,10 +419,10 @@ public class JsonUtils
       // If we have pruned all remaining values on the field, then we should
       // completely delete the attribute. For example, if a resource only has a
       // single email that is deleted, the 'emails' field in the JsonNode should
-      // explicitly be set to null.
+      // explicitly be removed.
       if (array.isEmpty())
       {
-        updateNode(parent, field, NullNode.getInstance());
+        parent.remove(field);
       }
 
       return nodeUpdated;
@@ -424,10 +435,14 @@ public class JsonUtils
      * @param parent The container node.
      * @param key The key of the field to update.
      * @param value The update value.
+     *
+     * @throws ScimException  If an error occurred when processing the update,
+     *                        such as an invalid field name being used.
      */
     protected void updateNode(@NotNull final ObjectNode parent,
                               @Nullable final String key,
                               @Nullable final JsonNode value)
+      throws ScimException
     {
       // RFC 7643 section 2.5 states:
       // "Unassigned attributes, the null value, or empty array (in the case of
@@ -448,54 +463,104 @@ public class JsonUtils
 
       // When key is null, the node to update is the parent itself.
       JsonNode node = key == null ? parent : parent.path(key);
-      if (node instanceof ObjectNode targetObject)
+      if (node instanceof ObjectNode targetObject
+          && value instanceof ObjectNode valueObject)
       {
-        if (value instanceof ObjectNode valueObject)
+        // Go through the fields of both objects and merge them.
+        for (Map.Entry<String, JsonNode> field : valueObject.properties())
         {
-          // Go through the fields of both objects and merge them.
-          for (Map.Entry<String, JsonNode> field : valueObject.properties())
-          {
-            updateNode(targetObject, field.getKey(), field.getValue());
-          }
-        }
-        else
-        {
-          // Replace the field.
-          parent.set(key, value);
+          updateWithNesting(targetObject, field.getKey(), field.getValue());
         }
       }
-      else if (node instanceof ArrayNode targetArray)
+      else if (appendValues && node instanceof ArrayNode targetArray
+          && value instanceof ArrayNode valueArray)
       {
-        if (appendValues && value instanceof ArrayNode valueArray)
+        // Merge the two arrays without a set to avoid GC. Defend against too
+        // many uniqueness evaluations, even if the valueArray has duplicates.
+        validatePatchArraySize(targetArray, valueArray);
+        for (JsonNode valueNode : valueArray)
         {
-          // Append the new values to the existing ones.
-          for (JsonNode valueNode : valueArray)
+          if (targetArray.valueStream().noneMatch(valueNode::equals))
           {
-            boolean valueFound = false;
-            for (JsonNode targetNode : targetArray)
-            {
-              if (valueNode.equals(targetNode))
-              {
-                valueFound = true;
-                break;
-              }
-            }
-            if (!valueFound)
-            {
-              targetArray.add(valueNode);
-            }
+            targetArray.add(valueNode);
           }
-        }
-        else
-        {
-          // Replace the field.
-          parent.set(key, value);
         }
       }
       else
       {
-        // Replace the field.
+        // For all other scenarios, replace the field directly.
+        validatePatchArraySize(value);
         parent.set(key, value);
+      }
+    }
+
+    /**
+     * Updates the target object with the provided field and value. In addition
+     * to the standard case where the {@code field} is a simple attribute path
+     * (e.g., {@code userName}), this method handles the case in which the field
+     * represents a nested path (e.g., {@code name.familyName}).
+     *
+     * @param targetObject  The JsonNode that should be updated.
+     * @param field         The field name, which represents the attribute path.
+     * @param value         The value that should be assigned to the field.
+     *
+     * @throws ScimException  If an error occurred when processing the update.
+     */
+    private void updateWithNesting(@NotNull final ObjectNode targetObject,
+                                   @NotNull final String field,
+                                   @NotNull final JsonNode value)
+        throws ScimException
+    {
+      Path path = Path.fromString(field);
+      PatchOperation.validateOperationPath(path);
+
+      // Do not attempt to support filters when path data comes from 'value'.
+      if (path.stream().anyMatch(e -> e.getValueFilter() != null))
+      {
+        throw BadRequestException.invalidValue(
+            "Paths declared in the 'value' field cannot have filters.");
+      }
+
+      if (path.size() <= 1)
+      {
+        // Handle the update normally.
+        updateNode(targetObject, field, value);
+        return;
+      }
+
+      // Create the parent node if it does not exist (e.g., the patch operation
+      // targets a completely empty resource).
+      String parentAttr = path.getElement(0).getAttribute();
+      if (targetObject.path(parentAttr).isMissingNode())
+      {
+        targetObject.set(parentAttr, getJsonNodeFactory().objectNode());
+      }
+
+      // Fetch the parent node (e.g., the "name" from a "name.familyName" path).
+      JsonNode parentNode = targetObject.path(parentAttr);
+      if (!(parentNode instanceof ObjectNode parent))
+      {
+        throw BadRequestException.invalidValue(
+            "The '" + field + "' path led to a nested non-object node.");
+      }
+
+      updateNode(parent, path.getLastElement().getAttribute(), value);
+    }
+
+    private void validatePatchArraySize(@NotNull final JsonNode... nodes)
+        throws ScimException
+    {
+      int arraySize = 0;
+      for (JsonNode node : nodes)
+      {
+        arraySize += (node.isArray()) ? node.size() : 0;
+      }
+
+      if (arraySize > MAX_PATCH_ARRAY_SIZE)
+      {
+        throw BadRequestException.invalidValue(
+            "The update would have exceeded the max array size: "
+                + MAX_PATCH_ARRAY_SIZE);
       }
     }
   }

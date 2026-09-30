@@ -162,6 +162,9 @@ public abstract class PatchOperation
   @Nullable
   private final Path path;
 
+  @NotNull
+  private static final Path VALUE = Path.of("value");
+
 
   /**
    * This class represents a SCIM 2 {@code add} patch operation as defined by
@@ -910,7 +913,6 @@ public abstract class PatchOperation
   }
 
 
-
   /**
    * Create a new patch operation.
    *
@@ -919,29 +921,7 @@ public abstract class PatchOperation
    */
   PatchOperation(@Nullable final Path path) throws ScimException
   {
-    if (path != null)
-    {
-      if (path.size() > 2)
-      {
-        throw BadRequestException.invalidPath(
-            "Path cannot target sub-attributes more than one level deep");
-      }
-
-      if (path.size() == 2)
-      {
-        Filter valueFilter = path.getElement(1).getValueFilter();
-        // Allow use of the special case "value" path to reference the value
-        // itself. Any other value filter is for a sub-attribute, which is not
-        // permitted.
-        if (valueFilter != null &&
-            !valueFilter.getAttributePath().getElement(0)
-                .getAttribute().equals("value"))
-        {
-          throw BadRequestException.invalidPath(
-              "Path cannot include a value filter on sub-attributes");
-        }
-      }
-    }
+    validateOperationPath(path);
     this.path = path;
   }
 
@@ -2428,6 +2408,36 @@ public abstract class PatchOperation
       case REPLACE -> replace(path, value);
       case REMOVE -> remove(path);
     };
+  }
+
+
+  /**
+   * Validates an attribute path that targets a piece of JSON data.
+   *
+   * @param path            The provided path.
+   * @throws ScimException  If the path is invalid.
+   */
+  public static void validateOperationPath(@Nullable final Path path)
+      throws ScimException
+  {
+    if (path == null || path.size() <= 1)
+    {
+      return;
+    }
+    if (path.size() > 2)
+    {
+      throw BadRequestException.invalidPath(
+          "Path cannot target sub-attributes more than one level deep");
+    }
+
+    // Allow the "value" path to reference the value itself. Any other filter
+    // targets a sub-attribute. See FilterEvaluator#getCandidateNodes.
+    Filter valueFilter = path.getElement(1).getValueFilter();
+    if (valueFilter != null && !VALUE.equals(valueFilter.getAttributePath()))
+    {
+      throw BadRequestException.invalidPath(
+          "Path cannot include a value filter on sub-attributes");
+    }
   }
 
 
