@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## v5.1.1 - TBD
+Update Jackson to 2.21.7.
+
 ## v5.1.0 - 2026-May-11
 Added support for bulk operations, requests, and responses as defined by the SCIM standard. To get
 started with implementing bulk request support for client or server applications, see the
