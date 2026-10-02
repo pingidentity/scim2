@@ -85,7 +85,7 @@ SCIM provisioning engines. For example:
 ```
 
 Added a maximum array size threshold for the target of a patch operation. Now, PATCH updates that
-would result in over 20,000 elements within an array will throw a `BadRequestException`. This
+would result in over 25,000 elements within an array will throw a `BadRequestException`. This
 value is controlled by the `com.unboundid.scim2.common.utils.JsonUtils.maxPatchArraySize` property.
 
 Added a `Path.stream()` method to allow access to elements of a path with the Java Stream API.

@@ -83,7 +83,7 @@ public class JsonUtils
    * @since 6.1.0
    */
   public static int MAX_PATCH_ARRAY_SIZE = StaticUtils.getIntProperty(
-      "com.unboundid.scim2.common.utils.JsonUtils.maxPatchArraySize", 20_000);
+      "com.unboundid.scim2.common.utils.JsonUtils.maxPatchArraySize", 25_000);
 
   /**
    * This represents the base class for handling SCIM JSON data. Subclasses
