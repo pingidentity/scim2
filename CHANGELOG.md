@@ -69,6 +69,27 @@ these, there is no change to make.
   JAX-B was removed in 5.0.0, but GMT support was kept with a system property for legacy uses. For
   consistency, we intend to remove this property, as UTC has been in use by default since 6.0.0.
 
+Added support for applying patch operations that a) do not contain a `path`, and b) also include
+nested paths within its `value`. These are not defined by the standard, but are still used by some
+SCIM provisioning engines. For example:
+```json
+{
+  "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+  "Operations": [ {
+    "op": "add",
+    "value": {
+      "name.givenName": "Melody"
+    }
+  } ]
+}
+```
+
+Added a maximum array size threshold for the target of a patch operation. Now, PATCH updates that
+would result in over 20,000 elements within an array will throw a `BadRequestException`. This
+value is controlled by the `com.unboundid.scim2.common.utils.JsonUtils.maxPatchArraySize` property.
+
+Added a `Path.stream()` method to allow access to elements of a path with the Java Stream API.
+
 ## 6.0.0 - 2026-May-11
 The UnboundID SCIM SDK has been updated to use version 3 of the Jackson library (this release ships
 with v3.1.3). This change aligns the SCIM SDK with HTTP libraries such as Spring Framework 7/Spring

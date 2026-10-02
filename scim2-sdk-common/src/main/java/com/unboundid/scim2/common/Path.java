@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
 
@@ -112,9 +113,9 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
  *   <li> {@code name.givenName}: Targets the "givenName" sub-attribute that is
  *        nested beneath the complex "name" attribute. This is a path with two
  *        elements and no filter values.
- *   <li> {@code urn:ietf:ext:example:2.0:User.manager.name}: Targets the "name"
+ *   <li> {@code urn:ietf:ext:example:2.0:User:manager.name}: Targets the "name"
  *        sub-attribute stored within the schema extension. Note that schema
- *        extensions are not accounted for path sizes, so this is a path with
+ *        extensions are considered part of the "root", so this is a path with
  *        two elements ({@code manager} and {@code name}).
  * </ul>
  * <br><br>
@@ -179,7 +180,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toLowerCase;
  *   <li> {@link #getElement(int)}: Fetches a specific element within the path.
  *   <li> {@link #getLastElement()}: Fetches the last element within the path.
  *   <li> {@link #replace}: Updates a specific element within the path.
- *   <li> {@link #subPath}: Removes elements at and after the provided index.
+ *   <li> {@link #subPath}: Extracts elements up to the provided index.
  *   <li> {@link #withoutFilters()}: Returns the path with all filters removed.
  * </ul>
  */
@@ -445,6 +446,19 @@ public final class Path implements Iterable<Path.Element>
   public Iterator<Element> iterator()
   {
     return elements.iterator();
+  }
+
+  /**
+   * Returns a stream of all elements within this path reference. Note that
+   * this does not contain the root node.
+   *
+   * @return  A stream containing all elements within this path.
+   * @since 6.1.0
+   */
+  @NotNull
+  public Stream<Element> stream()
+  {
+    return elements.stream();
   }
 
   /**
