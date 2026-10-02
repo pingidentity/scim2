@@ -59,6 +59,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.unboundid.scim2.common.exceptions.BadRequestException.INVALID_PATH;
+import static com.unboundid.scim2.common.utils.JsonUtils.MAX_PATCH_ARRAY_SIZE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -782,6 +783,7 @@ public class PatchOpTestCase
     PatchOperation.create(PatchOpType.REPLACE, "myArray", EMPTY_ARRAY);
   }
 
+
   /**
    * This test validates the behavior of patch operations when the value is an
    * empty array. When a patch operations sets the {@code value} field to an
@@ -990,6 +992,7 @@ public class PatchOpTestCase
     assertEquals(operation, operation2);
   }
 
+
   /**
    * Tests for {@link PatchOperation#applyToResource} and
    * {@link PatchRequest#applyToResource}.
@@ -1065,5 +1068,257 @@ public class PatchOpTestCase
     assertThat(unchangedAgain)
         .isEqualTo(complexUser)
         .isEqualTo(unchangedAgain2);
+  }
+
+
+  /**
+   * Tests the behavior of patch operations that satisfy two pieces of criteria:
+   * operations that do not contain a path, and also includes nested paths
+   * within its {@code value} such as {@code name.familyName}.
+   */
+  @Test
+  public void testNestedFieldNoPath() throws Exception
+  {
+    // This test creates many patch requests with complex JSON values. From a
+    // test readability perspective, it is better to create these with strings.
+    var patchReader = JsonUtils.getObjectReader().forType(PatchRequest.class);
+
+    PatchRequest basicCase = patchReader.readValue("""
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "add",
+            "value": {
+              "userName": "smile",
+              "name.familyName": "Memory",
+              "name.givenName": "Favorite"
+            }
+          } ]
+        }""");
+
+    // Verify the patch request result with the object node to be certain that
+    // the values are nested.
+    var gsr = basicCase.applyToResource(new GenericScimResource());
+    assertThat(gsr.getObjectNode().path("name").path("givenName").asString())
+        .isEqualTo("Favorite");
+    assertThat(gsr.getObjectNode().path("name").path("familyName").asString())
+        .isEqualTo("Memory");
+    assertThat(gsr.getStringValue("userName")).isEqualTo("smile");
+
+    // Apply the same patch request against a UserResource object.
+    UserResource updatedUser = basicCase.applyToResource(new UserResource());
+    assertThat(updatedUser.getUserName()).isEqualTo("smile");
+    assertThat(updatedUser.getName())
+        .isEqualTo(new Name().setGivenName("Favorite").setFamilyName("Memory"));
+
+    // Attempt the same patch request against a user with some pre-filled data.
+    UserResource existingUser = new UserResource()
+        .setName(new Name().setFamilyName("Melody"));
+    UserResource existingUpdated = basicCase.applyToResource(existingUser);
+    assertThat(existingUpdated.getUserName()).isEqualTo("smile");
+    assertThat(existingUpdated.getName())
+        .isEqualTo(new Name().setGivenName("Favorite").setFamilyName("Memory"));
+
+    // Create a patch request with multiple fields of nesting. Constructing this
+    // instance is permitted, but applying it is not.
+    PatchRequest tooDeep = patchReader.readValue("""
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "replace",
+            "value": {
+              "one.two.three.four": "turn"
+            }
+          } ]
+        }""");
+
+    // Apply the update to an empty resource.
+    assertThatThrownBy(() -> tooDeep.applyToResource(new GenericScimResource()))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("Path cannot target sub-attributes more than")
+        .hasMessageContaining("one level deep");
+
+    // Test the case where the patch request is applied on an invalid resource.
+    PatchRequest nested = patchReader.readValue("""
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "replace",
+            "value": {
+              "both.know": "this"
+            }
+          } ]
+        }""");
+    String resourceJson = """
+        {
+          "both": [ "This field should be an object." ]
+        }""";
+    GenericScimResource invalidResource = JsonUtils.getObjectReader()
+        .forType(GenericScimResource.class).readValue(resourceJson);
+    assertThatThrownBy(() -> nested.applyToResource(invalidResource))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessage("The 'both.know' path led to a nested non-object node.");
+
+    // Using a filter for a path within 'value' should not be permitted.
+    PatchRequest filteredPath = patchReader.readValue("""
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "add",
+            "value": {
+              "on[type eq \\"show\\"].for": "you"
+            }
+          } ]
+        }""");
+    assertThatThrownBy(() -> filteredPath.applyToResource(new UserResource()))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessage("Paths declared in the 'value' field cannot have filters.");
+
+    // A filter should also not be allowed for the second element in a path.
+    PatchRequest filteredPath2 = patchReader.readValue("""
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "replace",
+            "value": {
+              "it.goes[value eq \\"hundred\\"]": "four"
+            }
+          } ]
+        }""");
+    assertThatThrownBy(() -> filteredPath2.applyToResource(new UserResource()))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessage("Paths declared in the 'value' field cannot have filters.");
+
+    // Ensure the previous case is still supported properly on an explicit path.
+    PatchRequest nestedRequest = patchReader.readValue("""
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "path": "it.goes[value eq \\"hundred\\"]",
+            "op": "replace",
+            "value": "four"
+          } ]
+        }""");
+    String nestedResourceJson = """
+        {
+          "it": {
+            "goes": [ "one", "two", "three", "hundred" ]
+          }
+        }""";
+    GenericScimResource nestedResource = JsonUtils.getObjectReader()
+        .forType(GenericScimResource.class).readValue(nestedResourceJson);
+    nestedResource = nestedRequest.applyToResource(nestedResource);
+    assertThat(nestedResource.getStringValueList("it.goes"))
+        .contains("four")
+        .doesNotContain("hundred");
+
+    // Ensure an extension object is still processed normally.
+    PatchRequest qualifiedPath = patchReader.readValue("""
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "add",
+            "value": {
+              "urn:ietf:watch:all": {
+                "extObject": "face"
+              }
+            }
+          } ]
+        }""");
+    UserResource expectedUser = JsonUtils.getObjectReader()
+        .forType(UserResource.class).readValue("""
+            {
+              "schemas": [
+                  "urn:ietf:params:scim:schemas:core:2.0:User",
+                  "urn:ietf:watch:all"
+              ],
+              "urn:ietf:watch:all": {
+                "extObject": "face"
+              }
+            }""");
+    assertThat(qualifiedPath.applyToResource(new UserResource()))
+        .isEqualTo(expectedUser);
+
+    // Ensure that a replace operation with a 'null' value properly deletes the
+    // parent node if all subordinate fields were removed.
+    UserResource existing = new UserResource()
+        .setName(new Name().setGivenName("Melody"));
+    PatchRequest replaceNull = patchReader.readValue("""
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "replace",
+            "value": {
+              "name.givenName": null
+            }
+          } ]
+        }""");
+    assertThat(replaceNull.applyToResource(existing))
+        .isEqualTo(new UserResource());
+  }
+
+
+  /**
+   * Tests that adding an excessive number of elements to an array is not
+   * permitted past a defined threshold.
+   */
+  @Test
+  public void testAppendLargeArray() throws Exception
+  {
+    final int limit = MAX_PATCH_ARRAY_SIZE;
+
+    // Initialize a resource with an existing array almost at max capacity.
+    String resourceJson = """
+     {
+       "arrayField": []
+     }""";
+    GenericScimResource resource = JsonUtils.getObjectReader()
+        .forType(GenericScimResource.class).readValue(resourceJson);
+    var node = JsonUtils.getJsonNodeFactory().arrayNode();
+    for (int i = 0; i < limit - 1; i++)
+    {
+      node.add("newValue");
+    }
+    resource.replaceValue("arrayField", node);
+    assertThat(resource.getValue("arrayField")).hasSize(limit - 1);
+
+    // Apply a patch request that adds one field. This should be permitted.
+    String json = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [ {
+            "op": "add",
+            "value": {
+              "arrayField": [ "lastValue" ]
+            }
+          } ]
+        }""";
+    PatchRequest request = JsonUtils.getObjectReader()
+        .forType(PatchRequest.class).readValue(json);
+    request.apply(resource);
+    assertThat(resource.getValue("arrayField")).hasSize(limit);
+
+    // Attempt to exceed the threshold by re-attempting the request. This should
+    // throw an exception even for a value that is already on the resource.
+    assertThatThrownBy(() -> request.apply(resource))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("update would have exceeded the max array size");
+
+    // Attempt to exceed the threshold again by using a patch operation that has
+    // an explicit path value.
+    var opWithPath = PatchOperation.addStringValues("arrayField", "exceeds");
+    assertThatThrownBy(() -> opWithPath.applyToResource(resource))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("update would have exceeded the max array size");
+
+    // Replace operations should still apply here for consistency across all
+    // PATCH operations. If a replace operation were always permitted, then any
+    // subsequent ADD operation to the array would be rejected.
+    node.add("anotherString1").add("anotherString2");
+    assertThat(node).hasSizeGreaterThan(limit);
+    PatchOperation replace = PatchOperation.replace("arrayField", node);
+    assertThatThrownBy(() -> replace.applyToResource(new GenericScimResource()))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("update would have exceeded the max array size");
   }
 }
