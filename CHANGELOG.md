@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## v5.1.1 - TBD
 Update Jackson to 2.21.7.
 
+Added support for applying patch operations that a) do not contain a `path`, and b) also include
+nested paths within its `value`. These are not defined by the standard, but are still used by some
+SCIM provisioning engines. For example:
+```json
+{
+  "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+  "Operations": [ {
+    "op": "add",
+    "value": {
+      "name.givenName": "Melody"
+    }
+  } ]
+}
+```
+
+Added a maximum array size threshold for the target of a patch operation. Now, PATCH updates that
+would result in over 20,000 elements within an array will throw a `BadRequestException`. This
+value is controlled by the `com.unboundid.scim2.common.utils.JsonUtils.maxPatchArraySize` property.
+
 Updated the handling of bulk patch operations to reflect the information shown in RFC 7644's
 [errata](https://errata.rfc-editor.org/eid5050/). Now, `BulkOperation` objects with a "PATCH" method
 will always contain the `data.schemas` subfield, reflecting that the `data` is a `PatchRequest`.
