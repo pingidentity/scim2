@@ -14,7 +14,7 @@ with the SCIM SDK, see the `DeviceResource` class-level Javadoc. This update inc
 Fixed an issue with deserializing a GenericScimResource object when it was embedded within a list
 response.
 
-Updated Jackson from 3.1.3 to 3.2.2 and jackson-annotations to from 2.21 to 2.22.
+Updated Jackson from 3.1.3 to 3.2.3 and jackson-annotations from 2.21 to 2.22.
 
 Fixed an issue where GenericScimResource would use case-sensitive property names if the resource was
 initialized with an ObjectNode that was not a SCIM SDK `CaseIgnoreObjectNode`.
