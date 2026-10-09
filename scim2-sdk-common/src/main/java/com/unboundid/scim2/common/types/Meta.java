@@ -217,6 +217,7 @@ public class Meta
    * Alternative to {@link #getLocation()} which returns a string.
    *
    * @return The location URI of the SCIM object.
+   * @since 5.1.0
    */
   @Nullable
   @JsonIgnore
@@ -245,6 +246,7 @@ public class Meta
    * @return  This {@code Meta} object.
    *
    * @throws IllegalArgumentException  If the string was not a valid URI.
+   * @since 5.1.0
    */
   @NotNull
   public Meta setLocationString(@Nullable final String location)

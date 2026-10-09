@@ -82,7 +82,7 @@ import static tools.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPE
  * <pre><code>
  *   public class CustomMapperFactory extends MapperFactory
  *   {
- *     &#064;Override
+ *     &#64;Override
  *     public ObjectMapper createObjectMapper()
  *     {
  *       // Fetch the initial builder from the superclass, then add your

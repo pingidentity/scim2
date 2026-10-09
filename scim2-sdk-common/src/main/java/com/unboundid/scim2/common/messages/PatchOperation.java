@@ -1065,6 +1065,7 @@ public abstract class PatchOperation
    *
    * @throws ScimException  If the update resulted in a malformed resource,
    *                        e.g., a boolean value for a timestamp attribute.
+   * @since 5.1.0
    */
   @NotNull
   public <T extends ScimResource> T applyToResource(@NotNull final T resource)

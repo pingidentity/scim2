@@ -98,7 +98,7 @@ import static com.unboundid.scim2.common.utils.StaticUtils.toList;
  * <pre><code>
  *   public class CustomUser extends UserResource
  *   {
- *     &#064;Override
+ *     &#64;Override
  *     public UserResource setEmails(List&lt;Email&gt; emails)
  *     {
  *       if (emails != null &amp;&amp; emails.size() > 1)

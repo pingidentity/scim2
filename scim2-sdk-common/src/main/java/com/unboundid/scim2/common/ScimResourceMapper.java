@@ -78,7 +78,7 @@ import java.util.Set;
  * <ul>
  *   <li> A {@link UserResource}, representing a user.
  *   <li> A {@link GroupResource}, representing a group entity.
- *   <li> A {@link ErrorResponse}, representing an error that occurred.
+ *   <li> An {@link ErrorResponse}, representing an error that occurred.
  *   <li> Any other custom resource type defined by a SCIM service provider.
  * </ul>
  * <br><br>

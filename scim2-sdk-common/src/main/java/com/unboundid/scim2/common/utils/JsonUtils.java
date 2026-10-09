@@ -1180,7 +1180,7 @@ public class JsonUtils
    *
    * This method is needed for consistent behavior for Java classes that store
    * {@code long} values in ObjectNodes, generally within an extension schema.
-   * During deserialization, integer-like values are only stored as a long if
+   * When Jackson deserializes integer-like values, a long is only used if
    * the value requires more than 32 bits. This can cause problems when another
    * object is instantiated in code using a long, and the objects are compared
    * with {@code equals()}. Since the 64-bit data type is different from the
