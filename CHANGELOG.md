@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## v5.1.1 - TBD
+## v5.1.1 - 2026-Oct-15
 Update Jackson to 2.21.7.
 
 Added support for applying patch operations that a) do not contain a `path`, and b) also include
