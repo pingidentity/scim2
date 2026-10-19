@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 6.1.1 - TBD
+
 ## 6.1.0 - 2026-Oct-15
 Added support for [RFC 9944](https://datatracker.ietf.org/doc/html/rfc9944), an update to the SCIM
 standard describing device management with SCIM. For an overview on leveraging device management
