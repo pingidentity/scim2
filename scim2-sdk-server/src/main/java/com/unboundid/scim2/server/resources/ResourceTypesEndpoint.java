@@ -181,7 +181,7 @@ public class ResourceTypesEndpoint
       }
     }
 
-    for (Object resourceInstance : application.getSingletons())
+    for (Object resourceInstance : getSingletons(application))
     {
       ResourceTypeDefinition resourceTypeDefinition =
           ResourceTypeDefinition.fromJaxRsResource(resourceInstance.getClass());
@@ -193,5 +193,22 @@ public class ResourceTypesEndpoint
     }
 
     return resourceTypes;
+  }
+
+  /**
+   * Retrieves resources that are explicitly registered with an application via
+   * {@code org.glassfish.jersey.server.ResourceConfig#register(Class)}.
+   *
+   * @param application  The JAX-RS application.
+   * @return  The set of "root resources".
+   */
+  @NotNull
+  @SuppressWarnings("deprecation")
+  static Set<Object> getSingletons(@NotNull final Application application)
+  {
+    // This method is deprecated since JAX-RS encourages "automatic discovery"
+    // of resources via getClasses(). However, a project using the SCIM SDK may
+    // have explicitly defined some resources, so we should evaluate those.
+    return application.getSingletons();
   }
 }

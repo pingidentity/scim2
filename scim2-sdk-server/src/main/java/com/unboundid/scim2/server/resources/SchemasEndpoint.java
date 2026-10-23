@@ -62,6 +62,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.unboundid.scim2.common.utils.ApiConstants.*;
+import static com.unboundid.scim2.server.resources.ResourceTypesEndpoint.getSingletons;
 
 /**
  * An abstract JAX-RS resource class for servicing the Schemas
@@ -80,7 +81,7 @@ public class SchemasEndpoint
       ResourceTypeDefinition.fromJaxRsResource(
           SchemasEndpoint.class);
 
-  @Nullable
+  @NotNull
   @Context
   private Application application;
 
@@ -182,7 +183,7 @@ public class SchemasEndpoint
         schemas.addAll(resourceTypeDefinition.getSchemaExtensions().keySet());
       }
     }
-    for (Object resourceInstance : application.getSingletons())
+    for (Object resourceInstance : getSingletons(application))
     {
       ResourceTypeDefinition resourceTypeDefinition =
           ResourceTypeDefinition.fromJaxRsResource(resourceInstance.getClass());
