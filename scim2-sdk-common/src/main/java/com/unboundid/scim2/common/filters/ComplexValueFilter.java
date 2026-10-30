@@ -37,6 +37,7 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -92,8 +93,18 @@ public final class ComplexValueFilter extends Filter
   /**
    * {@inheritDoc}
    */
+  protected void appendLeafNodes(@NotNull final List<Filter> filters,
+                                 final int depth)
+  {
+    checkDepth(depth);
+    valueFilter.appendLeafNodes(filters, depth + 1);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  @Nullable
+  @NotNull
   public Path getAttributePath()
   {
     return filterAttribute;

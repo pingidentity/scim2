@@ -149,20 +149,33 @@ import java.util.Objects;
  * <li> {@link PresentFilter} (pr): {@link #isPresentFilter()}
  * </ul>
  *
- * For example:
+ * Alternatively, the {@code instanceof} keyword may be used. For example:
  * <pre><code>
  *   Filter clientFilter = getClientFilter();
  *   if (clientFilter.isCombiningFilter())
  *   {
  *     // Logic that is specific to AND/OR filter types.
  *   }
+ *   else if (clientFilter instanceof NotEqualFilter ne)
+ *   {
+ *     return ne.getComparisonValue().asString();
+ *   }
  * </code></pre>
+ * <br><br>
  *
+ * For any logic that requires traversing a filter tree, consider using
+ * {@link #getLeafComponents()}, which collapses nested filters into a new list.
  * For more information on a particular filter type, see its class-level Javadoc
  * (e.g., {@link EqualFilter}).
  */
 public abstract class Filter
 {
+  /**
+   * Indicates the maximum number of permitted nested layers in a filter.
+   */
+  // If this value is changed, then update the Javadoc for getLeafComponents().
+  private static final int MAX_NESTING_DEPTH = 1_000;
+
   /**
    * Retrieve the filter type.
    *
@@ -193,6 +206,85 @@ public abstract class Filter
    *                filter is to be appended.
    */
   public abstract void toString(@NotNull final StringBuilder builder);
+
+  /**
+   * Recursively traverses through a filter and returns all subordinate filters
+   * contained within this object.
+   * <br><br>
+   *
+   * When a filter uses multiple layers of nesting, it can become difficult to
+   * evaluate properties such as the total number of subordinate filters. In
+   * these cases, the filter is often referred to as a "filter tree", e.g.:
+   * <pre>
+   *   id eq "pick" and (displayName ew "pocket" or members[value eq "face"])
+   * </pre>
+   *
+   * This filter is an {@link AndFilter}, but it also contains an OR filter that
+   * contains a complex filter. This method will return the following "leaf
+   * nodes" of the filter tree in a flat list:
+   * <ul>
+   *   <li> {@code id eq "pick"}
+   *   <li> {@code displayName ew "pocket"}
+   *   <li> {@code value eq "face"}
+   * </ul>
+   * <br><br>
+   *
+   * Notably, this does not include {@code members} from the complex filter, as
+   * that is not a filter component. This method may be used for basic analysis
+   * of a filter tree without requiring manual tree traversal:
+   * <pre><code>
+   *   List&lt;Filter&gt; components = filter.getLeafComponents();
+   *   if (components.size() > PREDEFINED_LIMIT)
+   *   {
+   *     // If a client request has an expensive filter, consider rate limiting
+   *     // or rejecting the request.
+   *     activateRateLimiter();
+   *   }
+   *   else if (components.stream().anyMatch(f -> !(f instanceof EqualFilter)))
+   *   {
+   *     throw new RuntimeException("Example analysis that only allows 'eq'.");
+   *   }
+   * </code></pre>
+   *
+   * If this method is used on a simple filter type that has no nesting, such
+   * as {@link EqualFilter}, then the return value will be a single-element list
+   * containing itself.
+   *
+   * @return  A list of the components that comprise this filter.
+   * @throws IllegalStateException  If the filter was nested more than 1000
+   *                                layers deep.
+   * @since 6.1.1
+   */
+  @NotNull
+  public List<Filter> getLeafComponents() throws IllegalStateException
+  {
+    List<Filter> list = new ArrayList<>();
+    appendLeafNodes(list, 1);
+    return list;
+  }
+
+  /**
+   * Adds the components of this filter instance to the input list.
+   *
+   * @param filters A mutable list that will collect all leaf nodes.
+   * @param depth   The current recursive depth.
+   */
+  protected abstract void appendLeafNodes(@NotNull final List<Filter> filters,
+                                          final int depth);
+
+  /**
+   * Evaluates whether the provided filter is too deeply nested.
+   *
+   * @param depth The filter depth.
+   */
+  protected void checkDepth(final int depth)
+  {
+    if (depth > MAX_NESTING_DEPTH)
+    {
+      throw new IllegalStateException(
+          "Attempted to handle a SCIM filter that was too deeply nested.");
+    }
+  }
 
   /**
    * Whether this filter instance is a {@link CombiningFilter}.

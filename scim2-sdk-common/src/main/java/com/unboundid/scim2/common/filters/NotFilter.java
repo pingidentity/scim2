@@ -36,20 +36,22 @@ import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 
+import java.util.List;
+
 /**
  * This class represents a SCIM {@code not} filter. NOT filters check that a
  * provided SCIM filter does not match a SCIM resource. In other words, it
  * inverts a SCIM filter. For instance, consider the following filter:
  * <pre>
- *   not (type eq "Rabbit")
+ *   not (type co "rabbit")
  * </pre>
  *
  * A SCIM resource will match this filter if the resource does not have a
- * {@code type} attribute with a value of {@code "Rabbit"}. This example filter
+ * {@code type} with a value containing {@code "rabbit"}. This example filter
  * can be represented with the following Java code:
  * <pre><code>
  *   Filter notFilter = Filter.not(
- *           Filter.eq("type", "Rabbit")
+ *       Filter.co("type", "rabbit")
  *   );
  * </code></pre>
  *
@@ -79,6 +81,16 @@ public final class NotFilter extends Filter
   /**
    * {@inheritDoc}
    */
+  protected void appendLeafNodes(@NotNull final List<Filter> filters,
+                                 final int depth)
+  {
+    checkDepth(depth);
+    filterComponent.appendLeafNodes(filters, depth + 1);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isNotFilter()
   {
@@ -89,7 +101,7 @@ public final class NotFilter extends Filter
    * {@inheritDoc}
    */
   @Override
-  @Nullable
+  @NotNull
   public Filter getInvertedFilter()
   {
     return filterComponent;

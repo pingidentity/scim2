@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## 6.1.1 - TBD
+Added a new `Filter.getLeafComponents()` method to simplify filter analysis when dealing with
+complicated filter trees. This method returns all subordinate filters in a flat list so that callers
+can avoid cases that would require manual filter tree traversal. The filter may not have more than
+1000 layers of nesting.
+
+Corrected some filter subclass nullability annotations to allow for null-free analysis such as
+`filter instanceof NotFilter notFilter && notFilter.getInvertedFilter().equals(...)`. These were
+permissible before, but should no longer indicate nullability warnings.
 
 ## 6.1.0 - 2026-Oct-15
 Added support for [RFC 9944](https://datatracker.ietf.org/doc/html/rfc9944), an update to the SCIM

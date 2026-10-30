@@ -72,6 +72,19 @@ public abstract class CombiningFilter extends Filter
   /**
    * {@inheritDoc}
    */
+  protected void appendLeafNodes(@NotNull final List<Filter> filters,
+                                 final int depth)
+  {
+    checkDepth(depth);
+    for (Filter subordinateFilter : filterComponents)
+    {
+      subordinateFilter.appendLeafNodes(filters, depth + 1);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isCombiningFilter()
   {

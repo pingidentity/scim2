@@ -38,6 +38,7 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import tools.jackson.databind.node.ValueNode;
 
+import java.util.List;
 import java.util.Objects;
 
 
@@ -86,6 +87,15 @@ public abstract class ComparisonFilter extends Filter
   /**
    * {@inheritDoc}
    */
+  protected void appendLeafNodes(@NotNull final List<Filter> filters,
+                                 final int depth)
+  {
+    filters.add(this);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   @Nullable
   public Path getAttributePath()
@@ -97,7 +107,7 @@ public abstract class ComparisonFilter extends Filter
    * {@inheritDoc}
    */
   @Override
-  @Nullable
+  @NotNull
   public ValueNode getComparisonValue()
   {
     return filterValue;
