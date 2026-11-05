@@ -149,17 +149,24 @@ import java.util.Objects;
  * <li> {@link PresentFilter} (pr): {@link #isPresentFilter()}
  * </ul>
  *
- * For example:
+ * Alternatively, the {@code instanceof} keyword may be used. For example:
  * <pre><code>
  *   Filter clientFilter = getClientFilter();
  *   if (clientFilter.isCombiningFilter())
  *   {
  *     // Logic that is specific to AND/OR filter types.
  *   }
+ *   else if (clientFilter instanceof NotEqualFilter ne)
+ *   {
+ *     return ne.getComparisonValue().asString();
+ *   }
  * </code></pre>
+ * <br><br>
  *
- * For more information on a particular filter type, see its class-level Javadoc
- * (e.g., {@link EqualFilter}).
+ * For basic logic that requires traversing a filter tree for preliminary
+ * analysis, consider using {@link #getLeafComponents()}, which collapses nested
+ * filters into a new list. For more information on a particular filter type,
+ * see its class-level Javadoc (e.g., {@link EqualFilter}).
  */
 public abstract class Filter
 {
@@ -193,6 +200,88 @@ public abstract class Filter
    *                filter is to be appended.
    */
   public abstract void toString(@NotNull final StringBuilder builder);
+
+  /**
+   * Recursively traverses through a filter and returns all subordinate leaf
+   * filters contained within this object.
+   * <br><br>
+   *
+   * When a filter uses multiple layers of nesting, it can become difficult to
+   * evaluate properties such as the total number of subordinate filters. In
+   * these cases, the filter is often referred to as a "filter tree", e.g.:
+   * <pre>
+   *   id eq "pick" and (displayName ew "pocket" or members[value eq "face"])
+   * </pre>
+   *
+   * This filter is an {@link AndFilter}, but it also contains an OR filter that
+   * contains a complex filter. When this method is invoked, it will return the
+   * following "leaf nodes" of the filter tree in a flat list:
+   * <ul>
+   *   <li> {@code id eq "pick"}
+   *   <li> {@code displayName ew "pocket"}
+   *   <li> {@code value eq "face"}
+   * </ul>
+   * <br><br>
+   *
+   * Notably, this does not include {@code members} from the complex filter, as
+   * that is not a filter component. This method may be used for basic analysis
+   * of a filter tree without requiring manual tree traversal:
+   * <pre><code>
+   *   try
+   *   {
+   *     List&lt;Filter&gt; components = filter.getLeafComponents();
+   *     if (components.stream().anyMatch(f -> !(f instanceof EqualFilter)))
+   *     {
+   *       throw new BadRequestException("Example that only allows 'eq'.");
+   *     }
+   *   }
+   *   catch (IllegalStateException e)
+   *   {
+   *     throw BadRequestException.invalidFilter("The filter was too nested.");
+   *   }
+   * </code></pre>
+   * <br><br>
+   *
+   * If this method is used on a simple filter type that has no nesting, such
+   * as {@link EqualFilter}, then the return value will be a single-element list
+   * containing itself.
+   *
+   * @return  A list of the components that comprise this filter.
+   * @throws IllegalStateException  If the filter was nested more deeply than
+   *                                {@link #MAX_TRAVERSAL_DEPTH}.
+   * @since 6.1.1
+   */
+  @NotNull
+  public List<Filter> getLeafComponents() throws IllegalStateException
+  {
+    List<Filter> list = new ArrayList<>();
+    appendLeafNodes(list, 1);
+    return list;
+  }
+
+  /**
+   * Adds the components of this filter instance to the input list.
+   *
+   * @param filters A mutable list that will collect all leaf nodes.
+   * @param depth   The current recursive depth.
+   */
+  protected abstract void appendLeafNodes(@NotNull final List<Filter> filters,
+                                          final int depth);
+
+  /**
+   * Evaluates whether the provided filter is too deeply nested.
+   *
+   * @param depth The filter depth.
+   */
+  protected void checkDepth(final int depth)
+  {
+    if (depth > MAX_TRAVERSAL_DEPTH)
+    {
+      throw new IllegalStateException(
+          "Attempted to handle a SCIM filter that exceeded the max depth: "
+              + MAX_TRAVERSAL_DEPTH);
+    }
+  }
 
   /**
    * Whether this filter instance is a {@link CombiningFilter}.
@@ -1515,4 +1604,13 @@ public abstract class Filter
   {
     return Parser.parseFilter(filterString);
   }
+
+  /**
+   * This property indicates the maximum number of permitted nested layers in a
+   * filter during certain traversal tasks.
+   *
+   * @since 6.1.1
+   */
+  public static int MAX_TRAVERSAL_DEPTH = StaticUtils.getIntProperty(
+      "com.unboundid.scim2.common.filters.Filter.MAX_TRAVERSAL_DEPTH", 1_000);
 }
