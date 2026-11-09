@@ -55,7 +55,7 @@ import java.util.List;
  * This filter can be used in the case where a SCIM client wants to find all
  * resources that have a value for the {@code profileUrl} attribute. In other
  * words, it requests any resource (likely a {@link UserResource}) that has a
- * profile picture.
+ * profile URL link.
  * <br><br>
  *
  * This example filter can be represented with the following Java code:

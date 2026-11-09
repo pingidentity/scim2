@@ -230,9 +230,9 @@ public abstract class Filter
    *   try
    *   {
    *     List&lt;Filter&gt; components = filter.getLeafComponents();
-   *     if (components.stream().anyMatch(f -> !(f instanceof EqualFilter)))
+   *     if (components.stream().anyMatch(f -> f instanceof StartsWithFilter))
    *     {
-   *       throw new BadRequestException("Example that only allows 'eq'.");
+   *       throw BadRequestException.invalidFilter("Example error for 'sw'.");
    *     }
    *   }
    *   catch (IllegalStateException e)
