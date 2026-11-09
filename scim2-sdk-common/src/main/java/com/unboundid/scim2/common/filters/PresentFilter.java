@@ -38,6 +38,8 @@ import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.UserResource;
 
+import java.util.List;
+
 /**
  * This class represents a SCIM {@code pr} filter. Present filters (also
  * referred to as presence filters) check that the specified filter attribute
@@ -53,7 +55,7 @@ import com.unboundid.scim2.common.types.UserResource;
  * This filter can be used in the case where a SCIM client wants to find all
  * resources that have a value for the {@code profileUrl} attribute. In other
  * words, it requests any resource (likely a {@link UserResource}) that has a
- * profile picture.
+ * profile URL link.
  * <br><br>
  *
  * This example filter can be represented with the following Java code:
@@ -79,8 +81,17 @@ public final class PresentFilter extends Filter
   /**
    * {@inheritDoc}
    */
+  protected void appendLeafNodes(@NotNull final List<Filter> filters,
+                                 final int depth)
+  {
+    filters.add(this);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  @Nullable
+  @NotNull
   public Path getAttributePath()
   {
     return filterAttribute;

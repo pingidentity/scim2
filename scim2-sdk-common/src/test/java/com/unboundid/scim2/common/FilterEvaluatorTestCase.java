@@ -34,12 +34,14 @@ package com.unboundid.scim2.common;
 
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.filters.ComparisonFilter;
+import com.unboundid.scim2.common.filters.EqualFilter;
 import com.unboundid.scim2.common.filters.Filter;
 import com.unboundid.scim2.common.filters.FilterType;
 import com.unboundid.scim2.common.utils.DateTimeUtils;
 import com.unboundid.scim2.common.utils.FilterEvaluator;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import org.assertj.core.api.ThrowableAssert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -47,6 +49,7 @@ import tools.jackson.databind.JsonNode;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,11 +66,13 @@ public class FilterEvaluatorTestCase
   private JsonNode node;
   private Date date;
 
+  private Set<Filter> allTypes;
+
   /**
    * Sets up the test by creating a new JsonNode.
    */
   @BeforeClass
-  public void setup()
+  public void setup() throws Exception
   {
     date = new Date();
 
@@ -135,6 +140,32 @@ public class FilterEvaluatorTestCase
                   }
                 ]
             }""".formatted(DateTimeUtils.format(date)));
+
+    allTypes = Set.of(
+        Filter.eq("attr", "value"),
+        Filter.ne("attr", "value"),
+        Filter.co("attr", "value"),
+        Filter.sw("attr", "val"),
+        Filter.ew("attr", "ue"),
+        Filter.pr("attr"),
+        Filter.gt("num", 1),
+        Filter.ge("num", 1),
+        Filter.lt("num", 1),
+        Filter.le("num", 1),
+        Filter.and(Filter.eq("attr", "value"), Filter.eq("attr2", "VALUE")),
+        Filter.or(Filter.eq("attr", "value"), Filter.eq("attr2", "VALUE")),
+        Filter.not(Filter.pr("attr")),
+        Filter.complex("emails", Filter.eq("primary", true))
+    );
+  }
+
+  /**
+   * Restore the system property to the default value.
+   */
+  @AfterClass
+  public void tearDown()
+  {
+    Filter.MAX_TRAVERSAL_DEPTH = 1000;
   }
 
   /**
@@ -248,7 +279,6 @@ public class FilterEvaluatorTestCase
 
   /**
    * Test the less than filter.
-   * @throws Exception if there are exceptions in the test.
    */
   @Test
   public void testLessThanFilter() throws Exception
@@ -275,7 +305,6 @@ public class FilterEvaluatorTestCase
 
   /**
    * Test the less or equal filter.
-   * @throws Exception if there are exceptions in the test.
    */
   @Test
   public void testLessOrEqualFilter() throws Exception
@@ -302,7 +331,6 @@ public class FilterEvaluatorTestCase
 
   /**
    * Test the greater than filter.
-   * @throws Exception if there are exceptions in the test.
    */
   @Test
   public void testGreaterThanFilter() throws Exception
@@ -328,7 +356,6 @@ public class FilterEvaluatorTestCase
 
   /**
    * Test the greater or equal filter.
-   * @throws Exception if there are exceptions in the test.
    */
   @Test
   public void testGreaterOrEqualFilter() throws Exception
@@ -584,23 +611,6 @@ public class FilterEvaluatorTestCase
   @Test
   public void testTypeMethods() throws Exception
   {
-    List<Filter> allTypes = List.of(
-        Filter.eq("attr", "value"),
-        Filter.ne("attr", "value"),
-        Filter.co("attr", "value"),
-        Filter.sw("attr", "val"),
-        Filter.ew("attr", "ue"),
-        Filter.pr("attr"),
-        Filter.gt("num", 1),
-        Filter.ge("num", 1),
-        Filter.lt("num", 1),
-        Filter.le("num", 1),
-        Filter.and(Filter.eq("attr", "value"), Filter.eq("attr2", "VALUE")),
-        Filter.or(Filter.eq("attr", "value"), Filter.eq("attr2", "VALUE")),
-        Filter.not(Filter.pr("attr")),
-        Filter.complex("emails", Filter.eq("primary", true))
-    );
-
     // Test return values of isCombiningFilter().
     List<Filter> combiningResults =
         allTypes.stream().filter(Filter::isCombiningFilter).toList();
@@ -732,5 +742,115 @@ public class FilterEvaluatorTestCase
     assertThat(complexFilter.equals(otherValue)).isFalse();
     assertThat(otherValue.equals(complexFilter)).isFalse();
     assertThat(otherValue.hashCode()).isNotEqualTo(complexFilter.hashCode());
+  }
+
+  /**
+   * Tests for {@link Filter#getLeafComponents()}.
+   */
+  @Test
+  public void testLeafNodes() throws Exception
+  {
+    // Test that the example filter from the Javadoc behaves as documented.
+    Filter example = Filter.fromString("""
+        id eq "pick" and (displayName ew "pocket" or members[value eq "face"])
+        """);
+    assertThat(example.getLeafComponents()).containsExactly(
+        Filter.eq("id", "pick"),
+        Filter.ew("displayName", "pocket"),
+        Filter.eq("value", "face"));
+
+    // Simple filters like 'id eq "value"' should always return a single element
+    // of themselves.
+    List<Filter> simpleFilters = allTypes.stream()
+        .filter(f -> f.isComparisonFilter() || f.isPresentFilter())
+        .toList();
+    for (var filter : simpleFilters)
+    {
+      assertThat(filter.getLeafComponents())
+          .hasSize(1)
+          .first().isSameAs(filter);
+    }
+
+    // Combining filters should return their elements in a predictable order.
+    Filter and = Filter.and(
+        Filter.eq("key", "value"),
+        Filter.eq("key2", "VALUE"));
+    assertThat(and.getLeafComponents())
+        .containsExactly(Filter.eq("key", "value"), Filter.eq("key2", "VALUE"));
+
+    Filter or = Filter.or(
+        Filter.eq("key", "value"),
+        Filter.eq("key2", "VALUE"));
+    assertThat(or.getLeafComponents())
+        .containsExactly(Filter.eq("key", "value"), Filter.eq("key2", "VALUE"));
+
+    // These filter types encompass one other filter.
+    Filter complex = Filter.complex("emails", Filter.eq("primary", true));
+    Filter not = Filter.not(Filter.pr("attr"));
+    assertThat(complex.getLeafComponents())
+        .containsExactly(complex.getValueFilter());
+    assertThat(not.getLeafComponents())
+        .containsExactly(not.getInvertedFilter());
+
+    // Test an additional layer of nesting for the previous filters.
+    complex = Filter.fromString("emails[type eq \"valid\" and other pr]");
+    assertThat(complex.getLeafComponents())
+        .containsExactly(Filter.eq("type", "valid"), Filter.pr("other"));
+    not = Filter.fromString("not (type eq \"example\" or another pr)");
+    assertThat(not.getLeafComponents())
+        .containsExactly(Filter.eq("type", "example"), Filter.pr("another"));
+
+    // Use a filter of the form: key eq "stub" and key ne 0 and key ne 1 and ...
+    Filter deepNest = Filter.eq("key", "stub");
+    for (int i = 0; i < 1000; i++)
+    {
+      deepNest = Filter.and(deepNest, Filter.ne("key", i));
+    }
+    assertThat(deepNest.getLeafComponents())
+        .hasSize(1001)
+        .allMatch(f -> Path.of("key").equals(f.getAttributePath()));
+    assertThat(deepNest.getLeafComponents())
+        .filteredOn(f -> f instanceof EqualFilter)
+        .hasSize(1);
+
+    // Add one more filter. This will take the filter over the permitted limit
+    // of nesting.
+    Filter tooDeep = Filter.and(deepNest, Filter.ne("key", "exceed"));
+    assertThatThrownBy(tooDeep::getLeafComponents)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("SCIM filter that exceeded the max depth: 1000");
+
+    // For the next phases of the test, use a reduced threshold.
+    Filter.MAX_TRAVERSAL_DEPTH = 20;
+
+    // Repeat the previous test for NOT filters: not (not (not ( ... )))
+    Filter deepNot = Filter.pr("key");
+    for (int i = 0; i < 20; i++)
+    {
+      deepNot = Filter.not(deepNot);
+    }
+    assertThat(deepNot.getLeafComponents())
+        .containsExactly(Filter.pr("key"));
+
+    // Add one more filter to exceed the threshold.
+    Filter tooDeepNot = Filter.not(deepNot);
+    assertThatThrownBy(tooDeepNot::getLeafComponents)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("SCIM filter that exceeded the max depth: 20");
+
+    // Repeat the previous test for complex filters: a[a[a[... a[userName pr]]]]
+    Filter deepComplex = Filter.pr("userName");
+    for (int i = 0; i < 20; i++)
+    {
+      deepComplex = Filter.complex("a", deepComplex);
+    }
+    assertThat(deepComplex.getLeafComponents())
+        .containsExactly(Filter.pr("userName"));
+
+    // Add one more filter to exceed the threshold.
+    Filter tooDeepComplex = Filter.complex("a", deepComplex);
+    assertThatThrownBy(tooDeepComplex::getLeafComponents)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("SCIM filter that exceeded the max depth: 20");
   }
 }
