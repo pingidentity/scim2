@@ -36,6 +36,8 @@ import com.unboundid.scim2.common.annotations.Attribute;
 import com.unboundid.scim2.common.annotations.NotNull;
 import com.unboundid.scim2.common.annotations.Nullable;
 import com.unboundid.scim2.common.annotations.Schema;
+import com.unboundid.scim2.common.utils.EnterpriseManagerDeserializer;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Objects;
 
@@ -102,6 +104,7 @@ public class EnterpriseUserExtension
       isRequired = false,
       mutability = AttributeDefinition.Mutability.READ_WRITE,
       returned = AttributeDefinition.Returned.DEFAULT)
+  @JsonDeserialize(using = EnterpriseManagerDeserializer.class)
   private Manager manager;
 
   /**

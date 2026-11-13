@@ -37,7 +37,6 @@ import com.unboundid.scim2.common.types.GroupResource;
 import com.unboundid.scim2.common.types.Member;
 import com.unboundid.scim2.common.utils.JsonUtils;
 import com.unboundid.scim2.common.utils.SchemaUtils;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -56,19 +55,7 @@ import static org.testng.Assert.assertNull;
 public class GroupResourceTestCase
 {
   // An example representation of a group defined in RFC 7643 section 8.4.
-  private String fullRepresentation;
-
-  // A representation of a group in which members have the 'type' field defined
-  // for each group member.
-  private String membersWithType;
-
-  /**
-   * Initializes the environment before each test method.
-   */
-  @BeforeMethod
-  public void init()
-  {
-    fullRepresentation = """
+  private final String fullRepresentation = """
         {
           "schemas": ["urn:ietf:params:scim:schemas:core:2.0:Group"],
           "id": "e9e30dba-f08f-4109-8486-d5c6a331660a",
@@ -97,7 +84,9 @@ public class GroupResourceTestCase
           }
         }""";
 
-    membersWithType = """
+  // A representation of a group in which members have the 'type' field defined
+  // for each group member.
+  private final String membersWithType = """
         {
           "schemas": ["urn:ietf:params:scim:schemas:core:2.0:Group"],
           "id": "c215de78-5c6a-407b-bea3-9a2a8f0f1202",
@@ -119,7 +108,6 @@ public class GroupResourceTestCase
             }
           ]
         }""";
-  }
 
   /**
    * Test de-serializing the full core user representation copied from
