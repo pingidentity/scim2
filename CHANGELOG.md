@@ -14,8 +14,8 @@ Corrected some filter subclass nullability annotations to allow for null-free an
 permissible before, but should no longer indicate nullability warnings for IDEs configured to use
 the SCIM SDK's nullability annotations.
 
-Added support for deserializing `EnterpriseUserExtension` JSON objects where the `manager` field is
-set to a string instead of an appropriate complex object. The string will be treated as a complex
+Changed behavior when deserializing `EnterpriseUserExtension` JSON objects where the `manager` field
+is set to a string instead of an appropriate complex object. The string will be treated as a complex
 object of `{ "value": "originalString" }`.
 
 ## 6.1.0 - 2026-Oct-15
