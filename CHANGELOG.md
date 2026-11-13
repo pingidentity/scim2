@@ -14,6 +14,10 @@ Corrected some filter subclass nullability annotations to allow for null-free an
 permissible before, but should no longer indicate nullability warnings for IDEs configured to use
 the SCIM SDK's nullability annotations.
 
+Added support for deserializing `EnterpriseUserExtension` JSON objects where the `manager` field is
+set to a string instead of an appropriate complex object. The string will be treated as a complex
+object of `{ "value": "originalString" }`.
+
 ## 6.1.0 - 2026-Oct-15
 Added support for [RFC 9944](https://datatracker.ietf.org/doc/html/rfc9944), an update to the SCIM
 standard describing device management with SCIM. For an overview on leveraging device management
