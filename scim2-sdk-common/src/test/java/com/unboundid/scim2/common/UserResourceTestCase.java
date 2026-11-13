@@ -33,18 +33,16 @@
 package com.unboundid.scim2.common;
 
 import com.unboundid.scim2.common.types.EnterpriseUserExtension;
+import com.unboundid.scim2.common.types.Manager;
 import com.unboundid.scim2.common.types.UserResource;
 import com.unboundid.scim2.common.utils.JsonUtils;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import tools.jackson.core.JacksonException;
 
-import java.io.IOException;
+import java.net.URI;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Some basic tests for serializing and de-serializing of the core user
@@ -52,15 +50,7 @@ import static org.testng.Assert.assertTrue;
  */
 public class UserResourceTestCase
 {
-  private String fullRepresentation;
-
-  /**
-   * Initializes the environment before each test method.
-   */
-  @BeforeMethod
-  public void init()
-  {
-    fullRepresentation = """
+  private final String fullRepresentation = """
         {
           "schemas":[
             "urn:ietf:params:scim:schemas:core:2.0:User",
@@ -206,47 +196,56 @@ public class UserResourceTestCase
         2819c223-7f76-453a-919d-413861904646"
           }
         }""";
-  }
 
   /**
    * Test de-serializing the full core user representation copied from
    * RFC 7643.
-   *
-   * @throws Exception if an error occurs.
    */
   @Test
-  public void testSpecFullRepresentation() throws Exception
+  public void testSpecFullRepresentation()
   {
     UserResource userResource =
         JsonUtils.getObjectReader().forType(UserResource.class).readValue(
             fullRepresentation);
 
-      assertNotNull(userResource.getName());
-      assertNotNull(userResource.getName().getGivenName());
-      assertNotNull(userResource.getEmails());
-      assertNotNull(userResource.getEmails().get(0).getValue());
-      assertNotNull(userResource.getEmails().get(1).getValue());
+    assertThat(userResource.getName()).isNotNull();
+    assertThat(userResource.getName().getGivenName()).isEqualTo("Barbara");
+    assertThat(userResource.getEmails()).hasSize(2);
+
+    assertThat(userResource.getProfileUrl()).asString()
+        .isEqualTo("https://login.example.com/bjensen");
+    assertThat(userResource.getUserType()).isEqualTo("Employee");
+    assertThat(userResource.getPreferredLanguage()).isEqualTo("en-US");
+    assertThat(userResource.getLocale()).isEqualTo("en-US");
+    assertThat(userResource.getTimezone()).isEqualTo("America/Los_Angeles");
 
     EnterpriseUserExtension enterpriseUserExtension =
-        JsonUtils.nodeToValue(userResource.getExtensionValues(
-                Path.root(EnterpriseUserExtension.class)).get(0),
-            EnterpriseUserExtension.class);
+        userResource.getExtension(EnterpriseUserExtension.class);
+    assertThat(enterpriseUserExtension).isNotNull();
+    assertThat(enterpriseUserExtension.getEmployeeNumber()).isEqualTo("701984");
+    assertThat(enterpriseUserExtension.getCostCenter()).isEqualTo("4130");
+    assertThat(enterpriseUserExtension.getDivision()).isEqualTo("Theme Park");
+    assertThat(enterpriseUserExtension.getOrganization())
+        .isEqualTo("Universal Studios");
+    assertThat(enterpriseUserExtension.getDepartment())
+        .isEqualTo("Tour Operations");
 
-    assertNotNull(enterpriseUserExtension);
+    Manager manager = new Manager().setDisplayName("John Smith")
+        .setValue("26118915-6090-4610-87e4-49d8ca9f808d")
+        .setRef(URI.create("../Users/26118915-6090-4610-87e4-49d8ca9f808d"));
+    assertThat(enterpriseUserExtension.getManager()).isEqualTo(manager);
 
     String serializedString =
         JsonUtils.getObjectWriter().writeValueAsString(
             userResource);
 
-    assertEquals(
-        JsonUtils.getObjectReader().forType(UserResource.class).readValue(
-            serializedString),
-        userResource);
+    UserResource reparsed = JsonUtils.getObjectReader()
+        .forType(UserResource.class).readValue(serializedString);
+    assertThat(reparsed).isEqualTo(userResource);
   }
 
   /**
    * Test operations with POJO extension objects.
-   * @throws Exception if an error occurs.
    */
   @Test
   public void testPOJOExtensions() throws Exception
@@ -266,45 +265,42 @@ public class UserResourceTestCase
     EnterpriseUserExtension pojoEUExtension =
                 userResource.getExtension(EnterpriseUserExtension.class);
 
-    assertNotNull(pojoEUExtension);
-    assertEquals(pojoEUExtension, nodeEUExtension);
-    assertTrue(userResource.getSchemaUrns().contains(euExtensionSchema));
+    assertThat(pojoEUExtension).isNotNull().isEqualTo(nodeEUExtension);
+    assertThat(userResource.getSchemaUrns()).contains(euExtensionSchema);
+    assertThat(pojoEUExtension).hasSameHashCodeAs(nodeEUExtension);
 
-    nodeEUExtension.setCostCenter("1111");
-    nodeEUExtension.setOrganization("New Organization 1");
-    nodeEUExtension.setDivision("New Division 1");
-    nodeEUExtension.setDepartment("New Department 1");
+    nodeEUExtension = nodeEUExtension.setCostCenter("1111")
+        .setOrganization("New Organization 1")
+        .setDivision("New Division 1")
+        .setDepartment("New Department 1");
 
     // replace with a path object
     userResource.setExtension(nodeEUExtension);
     pojoEUExtension = userResource.getExtension(EnterpriseUserExtension.class);
 
-    assertNotNull(pojoEUExtension);
-    assertEquals(pojoEUExtension, nodeEUExtension);
-    assertTrue(userResource.getSchemaUrns().contains(euExtensionSchema));
+    assertThat(pojoEUExtension).isNotNull().isEqualTo(nodeEUExtension);
+    assertThat(userResource.getSchemaUrns()).contains(euExtensionSchema);
 
     // remove with path object
-    Assert.assertTrue(
-        userResource.removeExtension(EnterpriseUserExtension.class));
-    Assert.assertNull(userResource.getExtension(EnterpriseUserExtension.class));
-    assertFalse(userResource.getSchemaUrns().contains(euExtensionSchema));
+    assertThat(userResource.removeExtension(EnterpriseUserExtension.class))
+        .isTrue();
+    assertThat(userResource.getExtension(EnterpriseUserExtension.class))
+        .isNull();
+    assertThat(userResource.getSchemaUrns()).doesNotContain(euExtensionSchema);
 
     // now recreate the extension, and make sure it is present
     userResource.setExtension(nodeEUExtension);
     pojoEUExtension = userResource.getExtension(EnterpriseUserExtension.class);
 
-    assertNotNull(pojoEUExtension);
-    assertEquals(pojoEUExtension, nodeEUExtension);
-    assertTrue(userResource.getSchemaUrns().contains(euExtensionSchema));
+    assertThat(pojoEUExtension).isNotNull().isEqualTo(nodeEUExtension);
+    assertThat(userResource.getSchemaUrns()).contains(euExtensionSchema);
   }
 
   /**
    * Test conversion to GenericScimResource.
-   *
-   * @throws IOException indicates a test failure.
    */
   @Test
-  public void testAsGenericScimResource() throws IOException
+  public void testAsGenericScimResource()
   {
     UserResource userResource1 =
         JsonUtils.getObjectReader().forType(UserResource.class).readValue(
@@ -314,6 +310,78 @@ public class UserResourceTestCase
 
     UserResource userResource2 = JsonUtils.nodeToValue(gsr.getObjectNode(),
         UserResource.class);
-    Assert.assertEquals(userResource1, userResource2);
+    assertThat(userResource1).isEqualTo(userResource2);
+  }
+
+  /**
+   * Test deserialization of the {@code manager} subfield.
+   */
+  @Test
+  public void testManagerDeserialization()
+  {
+    var reader = JsonUtils.getObjectReader();
+
+    // Start by validating the structure defined in the standard.
+    String standard = """
+        {
+          "schemas": [
+            "urn:ietf:params:scim:schemas:core:2.0:User",
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
+          ],
+          "userName": "extensionUser",
+          "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
+            "manager": {
+              "value": "a37757f5",
+              "$ref": "https://example.com/v2/a37757f5",
+              "displayName": "Mr. Manager"
+            }
+          }
+        }""";
+    UserResource user = reader.forType(UserResource.class).readValue(standard);
+    Manager manager =
+        user.getExtension(EnterpriseUserExtension.class).getManager();
+    assertThat(manager).isNotNull();
+    assertThat(manager.getValue()).isEqualTo("a37757f5");
+    assertThat(manager.getRef()).asString().endsWith("/v2/a37757f5");
+    assertThat(manager.getDisplayName()).isEqualTo("Mr. Manager");
+
+    // This JSON object should be handled by setting 'manager.value'.
+    String specialCase = """
+        {
+          "schemas": [
+            "urn:ietf:params:scim:schemas:core:2.0:User",
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
+          ],
+          "userName": "extensionUser",
+          "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
+            "manager": "a37757f5"
+          }
+        }""";
+    user = reader.forType(UserResource.class).readValue(specialCase);
+    Manager special =
+        user.getExtension(EnterpriseUserExtension.class).getManager();
+    assertThat(special).isNotNull();
+    assertThat(special.getValue()).isEqualTo("a37757f5");
+    assertThat(special.getRef()).isNull();
+    assertThat(special.getDisplayName()).isNull();
+
+    // Convert the following JSON object to a user. This will not throw an
+    // exception until an attempt to instantiate the extension class.
+    String invalid = """
+        {
+          "schemas": [
+            "urn:ietf:params:scim:schemas:core:2.0:User",
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
+          ],
+          "userName": "extensionUser",
+          "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
+            "manager": 100
+          }
+        }""";
+    UserResource u = reader.forType(UserResource.class).readValue(invalid);
+    assertThatThrownBy(() -> u.getExtension(EnterpriseUserExtension.class))
+        .isInstanceOf(JacksonException.class)
+        .hasMessageContaining("Cannot construct instance")
+        .hasMessageContaining("from Number value (100)");
   }
 }
