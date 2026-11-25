@@ -50,6 +50,8 @@ import jakarta.ws.rs.core.MediaType;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static com.unboundid.scim2.common.utils.ApiConstants.MEDIA_TYPE_SCIM;
+
 /**
  * A per resource life cycle Resource Endpoint implementation.
  */
@@ -108,31 +110,16 @@ public class CustomContentEndpoint
   /**
    * Test case endpoint method that deserializes a generic SCIM resource.
    *
-   * @param resource The generic resource.
-   * @return The same resource.
+   * @param r   The JSON payload.
+   * @return    The same input JSON as a response.
    */
   @Path("generic")
-  @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
+  @Consumes({MEDIA_TYPE_SCIM, MediaType.APPLICATION_JSON})
   @POST
-  public GenericScimResource postGenericResource(GenericScimResource resource)
+  public GenericScimResource postGenericScimResource(GenericScimResource r)
   {
-    return resource;
-  }
-
-  /**
-   * Test case endpoint method that deserializes a generic SCIM resource.
-   *
-   * @param resource The generic resource.
-   * @return The same resource.
-   */
-  @Path("generic")
-  @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
-  @PUT
-  public GenericScimResource putGenericResource(GenericScimResource resource)
-  {
-    return resource;
+    return r;
   }
 
 

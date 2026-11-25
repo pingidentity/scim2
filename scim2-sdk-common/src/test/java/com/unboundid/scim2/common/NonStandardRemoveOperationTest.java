@@ -489,7 +489,7 @@ public class NonStandardRemoveOperationTest
    * JSON values that are improperly formatted.
    */
   @Test
-  public void testInvalidOperations() throws Exception
+  public void testInvalidOperations()
   {
     final var reader = JsonUtils.getObjectReader().forType(PatchRequest.class);
     GenericScimResource resource = new GenericScimResource();
@@ -510,8 +510,12 @@ public class NonStandardRemoveOperationTest
             """;
     assertThatThrownBy(() -> reader.readValue(invalidPath))
         .isInstanceOf(JacksonException.class)
-        .hasMessageContaining("Cannot create the operation since it has a")
-        .hasMessageContaining("value, but an invalid 'emails' path.");
+        .hasMessageContaining("A 'value' is unsupported for remove operations")
+        .cause().isInstanceOfSatisfying(BadRequestException.class,
+            // The underlying ScimException must have the appropriate scimType
+            // for backward compatibility.
+            bre -> assertThat(bre.getScimError().getScimType())
+                .isEqualTo("invalidSyntax"));
 
     // Creating this operation is invalid because the path has a value filter.
     String operationWithFilter = """
@@ -528,8 +532,8 @@ public class NonStandardRemoveOperationTest
             """;
     assertThatThrownBy(() -> reader.readValue(operationWithFilter))
         .isInstanceOf(JacksonException.class)
-        .hasMessageContaining("Cannot create the operation since it has a")
-        .hasMessageContaining("value, but an invalid 'members[value sw");
+        .hasMessageContaining("A 'value' is unsupported for remove operations")
+        .hasMessageContaining("Path: members[value sw");
 
     // Applying this operation is invalid because the Member field has other
     // attributes such as '$ref' and 'display', but it does not have 'value'.

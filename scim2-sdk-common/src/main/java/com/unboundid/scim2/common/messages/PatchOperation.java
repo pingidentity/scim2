@@ -627,8 +627,9 @@ public abstract class PatchOperation
       // supports group membership updates.
       if (this.value != null && !"members".equalsIgnoreCase(path.toString()))
       {
-        throw BadRequestException.invalidSyntax("Cannot create the operation" +
-            " since it has a value, but an invalid '%s' path.".formatted(path));
+        throw BadRequestException.invalidSyntax("A 'value' is unsupported for"
+            + " remove operations, with the exception of the non-standard"
+            + " 'members' path by some SCIM services. Path: " + path);
       }
     }
 
