@@ -629,7 +629,7 @@ public abstract class PatchOperation
       {
         throw BadRequestException.invalidSyntax("A 'value' is unsupported for"
             + " remove operations, with the exception of the non-standard"
-            + " 'members' path by some SCIM services. Path: " + path);
+            + " 'members' path used by some SCIM services. Path: " + path);
       }
     }
 

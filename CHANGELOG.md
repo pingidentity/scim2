@@ -18,6 +18,14 @@ Changed behavior when deserializing `EnterpriseUserExtension` JSON objects where
 is set to a string instead of an appropriate complex object. The string will be treated as a complex
 object of `{ "value": "originalString" }`.
 
+Fixed an issue where the `JacksonExceptionMapper` would print location data when it was unavailable
+("at line: -1, column: -1"). As part of this update, the exception message for GenericScimResource
+deserialization failures was changed to provide more specific information (e.g., "Unable to parse
+request: Unexpected character").
+
+SCIM errors caused by attempts to create a remove patch operation with a `value` other than
+"members" will now include a `scimType` value of "invalidSyntax".
+
 ## 6.1.0 - 2026-Oct-15
 Added support for [RFC 9944](https://datatracker.ietf.org/doc/html/rfc9944), an update to the SCIM
 standard describing device management with SCIM. For an overview on leveraging device management
