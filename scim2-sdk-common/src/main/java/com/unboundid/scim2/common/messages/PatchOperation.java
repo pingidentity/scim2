@@ -627,8 +627,8 @@ public abstract class PatchOperation
       // supports group membership updates.
       if (this.value != null && !"members".equalsIgnoreCase(path.toString()))
       {
-        throw new BadRequestException("Cannot create the operation since it"
-            + " has a value, but an invalid '%s' path.".formatted(path));
+        throw BadRequestException.invalidSyntax("Cannot create the operation" +
+            " since it has a value, but an invalid '%s' path.".formatted(path));
       }
     }
 

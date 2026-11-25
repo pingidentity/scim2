@@ -38,6 +38,7 @@ import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.messages.ErrorResponse;
 import com.unboundid.scim2.server.utils.ServerUtils;
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.TokenStreamLocation;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -78,7 +79,7 @@ public class JacksonExceptionMapper implements
       StringBuilder builder = new StringBuilder();
       builder.append("Unable to parse request: ");
       builder.append(exception.getOriginalMessage());
-      if (exception.getLocation() != null)
+      if (exception.getLocation() != TokenStreamLocation.NA)
       {
         builder.append(" at line: ");
         builder.append(exception.getLocation().getLineNr());

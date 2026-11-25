@@ -32,6 +32,7 @@
 
 package com.unboundid.scim2.server;
 
+import com.unboundid.scim2.common.GenericScimResource;
 import com.unboundid.scim2.common.messages.PatchRequest;
 import com.unboundid.scim2.common.types.Meta;
 import com.unboundid.scim2.common.types.UserResource;
@@ -102,6 +103,36 @@ public class CustomContentEndpoint
   @PATCH
   public void patchResource(PatchRequest patchRequest)
   {
+  }
+
+  /**
+   * Test case endpoint method that deserializes a generic SCIM resource.
+   *
+   * @param resource The generic resource.
+   * @return The same resource.
+   */
+  @Path("generic")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @POST
+  public GenericScimResource postGenericResource(GenericScimResource resource)
+  {
+    return resource;
+  }
+
+  /**
+   * Test case endpoint method that deserializes a generic SCIM resource.
+   *
+   * @param resource The generic resource.
+   * @return The same resource.
+   */
+  @Path("generic")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @PUT
+  public GenericScimResource putGenericResource(GenericScimResource resource)
+  {
+    return resource;
   }
 
 

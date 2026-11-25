@@ -824,7 +824,9 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
       assertThat(errorResponse.getStatus()).isEqualTo(400);
       assertThat(errorResponse.getScimType()).isEqualTo("invalidSyntax");
-      assertThat(errorResponse.getDetail()).isNotNull();
+      assertThat(errorResponse.getDetail())
+          .contains("Unable to parse request")
+          .contains("at line: 1, column: 2");
     }
 
     // Now with application/json
@@ -838,6 +840,78 @@ public class EndpointTestCase extends JerseyTestNg.ContainerPerClassTest
       assertThat(response.getStatus()).isEqualTo(400);
       assertThat(response.getMediaType())
           .isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+    }
+  }
+
+  /**
+   * Test that a syntax error in a request body that is deserialized into a
+   * {@code GenericScimResource} is reported with the underlying parser message
+   * and the location of the error, rather than a generic wrapper message.
+   */
+  @Test
+  public void testInvalidJsonForGenericScimResource()
+  {
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
+
+    // The colon between the field name and value is missing.
+    String badJson = "{\"userName\" \"bob\"}";
+
+    for (String method : List.of("POST", "PUT"))
+    {
+      var request = target.path("CustomContent").path("generic").request()
+          .accept(MediaType.APPLICATION_JSON_TYPE,
+              ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+
+      try (Response response = request.method(method,
+          Entity.entity(badJson, MediaType.APPLICATION_JSON_TYPE)))
+      {
+        assertThat(response.getStatus()).isEqualTo(400);
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        assertThat(errorResponse.getStatus()).isEqualTo(400);
+        assertThat(errorResponse.getScimType()).isEqualTo("invalidSyntax");
+        assertThat(errorResponse.getDetail())
+            .contains("was expecting a colon");
+      }
+    }
+  }
+
+  /**
+   * Test that a PATCH remove operation containing a value for a path other than
+   * {@code members} is rejected with the {@code invalidSyntax} SCIM error type.
+   */
+  @Test
+  public void testPatchRemoveWithValueOnInvalidPath()
+  {
+    WebTarget target = target().register(
+        new JacksonJsonProvider(JsonUtils.createJsonMapper()));
+
+    String body = """
+        {
+          "schemas": [ "urn:ietf:params:scim:api:messages:2.0:PatchOp" ],
+          "Operations": [
+            {
+              "op": "remove",
+              "path": "emails",
+              "value": [ "alice@example.com" ]
+            }
+          ]
+        }
+        """;
+
+    var request = target.path("CustomContent").request()
+        .accept(MediaType.APPLICATION_JSON_TYPE, ServerUtils.MEDIA_TYPE_SCIM_TYPE);
+
+    try (Response response = request.method("PATCH",
+        Entity.entity(body, MediaType.APPLICATION_JSON_TYPE)))
+    {
+      assertThat(response.getStatus()).isEqualTo(400);
+      ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+      System.out.println(errorResponse);
+      assertThat(errorResponse.getStatus()).isEqualTo(400);
+      assertThat(errorResponse.getScimType()).isEqualTo("invalidSyntax");
+      assertThat(errorResponse.getDetail()).contains(
+          "Cannot create the operation since it has a value");
     }
   }
 

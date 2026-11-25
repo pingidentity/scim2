@@ -881,7 +881,8 @@ public class GenericScimResourceTest
 
     assertThatThrownBy(() -> reader.readValue(json))
         .isInstanceOf(ScimDeserializeException.class)
-        .hasMessageContaining("Failed to convert a JSON to an ObjectNode.");
+        .hasMessageContaining("Cannot deserialize value of type")
+        .hasMessageContaining("tools.jackson.databind.node.ObjectNode");
   }
 
   /**

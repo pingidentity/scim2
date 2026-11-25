@@ -64,8 +64,7 @@ public class GenericScimObjectDeserializer
     }
     catch (JacksonException e)
     {
-      throw new ScimDeserializeException(
-          "Failed to convert a JSON to an ObjectNode.", e);
+      throw new ScimDeserializeException(e.getMessage(), e);
     }
   }
 }
